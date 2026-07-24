@@ -1,24 +1,25 @@
 import type { Metadata } from "next";
+import "../../../../interactive/styles/developer-refresh.css";
 import { DeveloperApp } from "../../../../interactive/DeveloperApp";
 
 export const metadata: Metadata = {
-  title: "設計・技術 | COMPASS Interactive",
+  title: "学びの熱を、設計で、途切れさせない。 | COMPASS Interactive",
   description:
-    "COMPASS Interactiveの技術スタック、5秒差分同期、匿名参加、AI教育設計、情報セキュリティ、負荷・費用制御、本番運用の設計判断を紹介します。",
+    "教育現場で継続的に使える実用性と、その体験を支えるUX、アーキテクチャ、セキュリティ、検証を、一つのシステムに統合した開発者向けページです。",
   alternates: { canonical: "/INTRO_Interactive/developers/" },
   openGraph: {
     locale: "ja_JP",
     type: "website",
     siteName: "COMPASS Interactive",
-    title: "学びの熱を、設計で途切れさせない。 | COMPASS Interactive",
-    description: "匿名参加、5秒差分同期、根拠をたどれるAI。教育体験から逆算した実装契約を公開します。",
+    title: "学びの熱を、設計で、途切れさせない。 | COMPASS Interactive",
+    description: "教育体験を支える技術基盤、設計判断、実装、検証を紹介します。",
     url: "/INTRO_Interactive/developers/",
     images: ["/images/hero.desktop.highlight.png"]
   },
   twitter: {
     card: "summary_large_image",
-    title: "学びの熱を、設計で途切れさせない。 | COMPASS Interactive",
-    description: "教育体験から逆算した技術・情報セキュリティ・負荷・費用・運用設計。",
+    title: "学びの熱を、設計で、途切れさせない。 | COMPASS Interactive",
+    description: "教育体験を支える技術基盤、設計判断、実装、検証を紹介します。",
     images: ["/images/hero.desktop.highlight.png"]
   }
 };
