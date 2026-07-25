@@ -664,6 +664,10 @@
     line-height: 1.85;
   }
 
+  .technology-copy-desktop-break {
+    display: none;
+  }
+
   .technology-grid {
     margin-top: 38px;
   }

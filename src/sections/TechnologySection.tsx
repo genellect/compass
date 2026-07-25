@@ -15,8 +15,8 @@ export function TechnologySection() {
           </div>
           <p>
             学びの壁は、努力だけで越えられるものではありません。
-            <br />
-            だからCOMPASSは、仕組みの側から学びを支えます
+            <br className="technology-copy-desktop-break" />
+            だからCOMPASSは、仕組みの側から学びを支えます。
             <br /><br />
             参加できない。届かない。時間が奪われる。答えを信じきれない。そんな教育現場の困りごとを、安全で使いやすく、確かめられる仕組みへと変えていきます。
           </p>
