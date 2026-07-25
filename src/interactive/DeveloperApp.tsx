@@ -41,18 +41,75 @@ export function DeveloperApp() {
           <div className="developer-reframe-hero__grid" aria-hidden="true" />
           <div className="developer-reframe-hero__glow" aria-hidden="true" />
           <div className="developer-reframe-shell developer-reframe-hero__inner">
-            <Reveal>
+            <Reveal className="developer-reframe-hero__content">
               <ChapterMarker number="01" label="IDEA" />
               <p className="developer-reframe-eyebrow">FOR DEVELOPERS</p>
-              <h1 id="developer-title">学びの熱を、<br />設計で、<br />途切れさせない。</h1>
+              <h1 id="developer-title">
+                <span className="developer-reframe-hero__title-desktop">
+                  学びの熱を、<br /><span>実装する。</span>
+                </span>
+                <span className="developer-reframe-hero__title-mobile">
+                  学びの熱を、<br />設計で、<br />途切れさせない。
+                </span>
+              </h1>
               <div className="developer-reframe-hero__copy">
                 <p className="developer-reframe-hero__lead">講義を、参加・理解・対話がつながる体験へ。</p>
                 <p>教育現場で継続的に使える実用性と、その体験を支えるUX、アーキテクチャ、セキュリティ、検証を、一つのシステムに統合した。</p>
               </div>
               <a className="developer-reframe-text-link" href="/INTRO_Interactive/">
-                学生・教員向けページ <span aria-hidden="true">→</span>
+                <span className="developer-reframe-hero__link-desktop">学生向け紹介サイトへ</span>
+                <span className="developer-reframe-hero__link-mobile">学生・教員向けページ</span>
+                <span className="developer-reframe-text-link__arrow" aria-hidden="true">→</span>
               </a>
             </Reveal>
+
+            <div className="developer-reframe-hero__system" aria-hidden="true">
+              <div className="developer-reframe-hero__system-frame" />
+              <div className="developer-reframe-hero__orbit developer-reframe-hero__orbit--outer">
+                <span />
+                <span />
+                <span />
+              </div>
+              <div className="developer-reframe-hero__orbit developer-reframe-hero__orbit--middle">
+                <span />
+                <span />
+              </div>
+              <div className="developer-reframe-hero__orbit developer-reframe-hero__orbit--inner" />
+
+              <div className="developer-reframe-hero__core">
+                <span>SYSTEM CORE</span>
+                <strong>COMPASS<br />INTERACTIVE</strong>
+                <small>INTELLIGENT LEARNING SYSTEM</small>
+              </div>
+
+              <div className="developer-reframe-hero__node developer-reframe-hero__node--ai">
+                <span>01 / INTELLIGENCE</span>
+                <strong>OPENAI API</strong>
+              </div>
+              <div className="developer-reframe-hero__node developer-reframe-hero__node--realtime">
+                <span>02 / REALTIME</span>
+                <strong>EDGE / SYNC</strong>
+              </div>
+              <div className="developer-reframe-hero__node developer-reframe-hero__node--trust">
+                <span>03 / TRUST</span>
+                <strong>AUTH / RLS</strong>
+              </div>
+              <div className="developer-reframe-hero__node developer-reframe-hero__node--code">
+                <span>04 / BUILD</span>
+                <strong>REACT / TS</strong>
+              </div>
+
+              <span className="developer-reframe-hero__signal developer-reframe-hero__signal--one" />
+              <span className="developer-reframe-hero__signal developer-reframe-hero__signal--two" />
+              <span className="developer-reframe-hero__signal developer-reframe-hero__signal--three" />
+
+              <div className="developer-reframe-hero__system-rail">
+                <span>REACT 19</span>
+                <span>TYPESCRIPT 6</span>
+                <span>REALTIME API</span>
+                <span>EDGE FUNCTIONS</span>
+              </div>
+            </div>
           </div>
         </section>
 
