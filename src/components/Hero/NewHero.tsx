@@ -48,7 +48,7 @@ export function NewHero() {
               <strong>Resources</strong>
               <small>Knowledge</small>
             </a>
-            <a className="mobile-orbit-link mobile-orbit-education" href="#workshops">
+            <a className="mobile-orbit-link mobile-orbit-education" href="#experience">
               <span>03</span>
               <strong>Workshops</strong>
               <small>Experience</small>

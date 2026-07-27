@@ -10,9 +10,7 @@ export function SiteFooter() {
 
     <nav className="footer-nav" aria-label="Footer navigation">
       <a href="#technology">Technology</a>
-      <a href="#products">Products</a>
       <a href="#resources">Resources</a>
-      <a href="#workshops">Workshops</a>
       <a href="#community">Community</a>
       <a href="#founder">Founder</a>
       <a href="#contact">Contact</a>

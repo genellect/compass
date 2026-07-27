@@ -34,7 +34,7 @@ export function VisionExperienceSection() {
         <SectionHeading
           label="Vision"
           id="vision-title"
-          title={<span>学びを、<br className="v4-mobile-break" />意思決定の力へ。</span>}
+          title={<span>学びを、<br className="v4-desktop-break" />意思決定の力へ。</span>}
         />
 
         <div className="v4-vision__story v4-vision__story--minimal" data-reveal>
@@ -121,29 +121,15 @@ export function TechnologyCoreSection() {
             title={<><span>学びの壁を、</span><span>仕組みで越える。</span></>}
             description={<p>講義に参加しにくい。必要な情報が届かない。運営に手間がかかる。AIの答えを確かめにくい。COMPASSは、こうした困りごとを、安全で使いやすく、確かめられる仕組みに変えます。</p>}
           />
-        </div>
 
-      </div>
-    </section>
-  );
-}
-
-export function ProductsValidationSection() {
-  return (
-    <section id="products" className="v4-section v4-products" aria-labelledby="products-title">
-      <div className="v4-container">
-        <SectionHeading label="Products & Validation / 実装と検証" id="products-title" title={<><span>構想を、</span><span>動く体験へ。</span></>} />
-
-        <article className="v4-product v4-product--interactive" data-reveal>
-          <div className="v4-product__copy">
+          <article className="v4-technology__interactive" data-reveal>
             <p className="v4-card-kicker">COMPASS INTERACTIVE / 参加型講義システム</p>
             <h3>わからないが、<br className="v4-mobile-break" />動き出す。</h3>
-            <p className="v4-product__lead">教室にいる全員の疑問が、次の説明を動かす。</p>
+            <p className="v4-technology__interactive-lead">教室にいる全員の疑問が、次の説明を動かす。</p>
             <p>COMPASS Interactiveは、一方向だった講義を、学生の反応によって変化する体験へ変えます。</p>
-            <a className="v4-button v4-button--primary v4-product__cta" href={interactiveIntroUrl}>未来を体験する</a>
-          </div>
-          <div className="v4-product__signal" aria-hidden="true"><span>QUESTION</span><strong>RESPONSE</strong><em>NEXT</em></div>
-        </article>
+            <a className="v4-button v4-button--light" href={interactiveIntroUrl}>未来を体験する</a>
+          </article>
+        </div>
       </div>
     </section>
   );
@@ -162,30 +148,6 @@ export function ResourcesExperienceSection() {
         <div className="v4-resource-gateway" data-reveal>
           <a className="v4-button v4-button--primary" href={libraryUrl} {...externalProps}>まだ知らない未来を見る</a>
           <a className="v4-resource-gateway__secondary" href={essentialsUrl} {...externalProps}>薬学部生以外の方はこちら</a>
-        </div>
-      </div>
-    </section>
-  );
-}
-
-export function WorkshopsSection() {
-  return (
-    <section id="workshops" className="v4-section v4-workshops" aria-labelledby="workshops-title">
-      <span id="education" className="v4-anchor-alias" aria-hidden="true" />
-      <div className="v4-container">
-        <SectionHeading
-          label="Workshops / 実際に試す"
-          id="workshops-title"
-          title={<><span>興味が、</span><span>体験に変わる場所。</span></>}
-          description={<><p>英語、AI、生命科学、学習、進路をテーマに、講演、体験型ワークショップ、対話の機会をつくります。</p><p>初めて触れる人も、すでに挑戦を始めている人も、それぞれの現在地から参加できます。</p></>}
-        />
-        <div className="v4-workshops__grid" data-reveal>
-          <article className="v4-workshop-card"><span>EXPLORE</span><h3>新しい可能性に触れる</h3><p>英語、AI、生命科学、研究、キャリアの入口を知る。</p></article>
-          <article className="v4-workshop-card"><span>TRY</span><h3>手を動かして試す</h3><p>AI活用、英語での発表、プレゼンテーション、Web制作を体験する。</p></article>
-          <article className="v4-workshop-card"><span>CONNECT</span><h3>関心と経験を共有する</h3><p>学年や所属を越えて、経験やこれから挑戦したいことを話す。</p></article>
-        </div>
-        <div className="v4-workshops__actions" data-reveal>
-          <a className="v4-button v4-button--primary" href="#contact">ワークショップに参加する</a>
         </div>
       </div>
     </section>
@@ -233,8 +195,8 @@ export function FounderPortfolioSection() {
         <div className="v4-founder__profile" data-reveal>
           <figure className="v4-founder__portrait">
             <picture>
-              <source type="image/webp" srcSet="/images/founder/yuto-matsui-desktop-480.webp 480w, /images/founder/yuto-matsui-desktop-800.webp 800w" sizes="(min-width: 901px) 340px, 100vw" />
-              <img src="/images/founder/yuto-matsui-desktop-800.jpg" width="800" height="1000" loading="lazy" decoding="async" alt="COMPASS代表 松井優知" />
+              <source type="image/webp" srcSet="/images/founder/yuto-matsui-portrait-480.webp 480w, /images/founder/yuto-matsui-portrait-800.webp 800w" sizes="(min-width: 901px) 340px, 100vw" />
+              <img src="/images/founder/yuto-matsui-portrait-800.jpg" width="800" height="1000" loading="lazy" decoding="async" alt="COMPASS代表 松井優知" />
             </picture>
           </figure>
           <div className="v4-founder__profile-copy">

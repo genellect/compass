@@ -11,9 +11,17 @@ type NavItem = {
 };
 
 type NavGroup = {
-  id: "technology" | "resources" | "workshops" | "community";
+  id: "technology" | "resources" | "community";
   items: NavItem[];
   label: string;
+};
+
+type DirectNavItem = {
+  activeId: "founder" | "contact" | "message";
+  description: string;
+  href: string;
+  label: string;
+  mobileLabel: string;
 };
 
 const navGroups: NavGroup[] = [
@@ -22,15 +30,15 @@ const navGroups: NavGroup[] = [
     label: "Technology",
     items: [
       {
-        href: "#technology",
-        label: "Technology Core",
-        description: "学びを動かす仕組みを見る"
+        href: "INTRO_Interactive/",
+        label: "COMPASS Interactive",
+        description: "疑問が届き、講義が動く体験へ",
+        className: "panel-link-interactive"
       },
       {
-        href: "#products",
-        label: "COMPASS Interactive",
-        description: "未来の講義を体験する",
-        className: "panel-link-interactive"
+        href: "#technology",
+        label: "Technology Core",
+        description: "学びを支える仕組みと考え方"
       }
     ]
   },
@@ -41,29 +49,26 @@ const navGroups: NavGroup[] = [
       {
         href: "https://compass-official.pages.dev/future-strategy-library/",
         label: "未来戦略ライブラリ",
-        description: "判断軸を届ける、COMPASSの起点",
+        description: "まだ知らない進路と可能性へ",
+        external: true
+      },
+      {
+        href: "https://forms.gle/sW49M329Dcets8ga9",
+        label: "COMPASS Essentials",
+        description: "薬学部以外にも、選べる学びを",
         external: true
       }
-    ]
-  },
-  {
-    id: "workshops",
-    label: "Workshops",
-    items: [
-      { href: "#workshops", label: "Explore", description: "新しい可能性に触れる" },
-      { href: "#workshops", label: "Try", description: "実際に手を動かして試す" },
-      { href: "#workshops", label: "Connect", description: "関心と経験を共有する" }
     ]
   },
   {
     id: "community",
     label: "Community",
     items: [
-      { href: "#community", label: "コミュニティを知る", description: "仲間と始める、次の一歩" },
+      { href: "#community", label: "About COMPASS", description: "仲間と始める、新しい挑戦" },
       {
         href: "https://docs.google.com/forms/u/1/d/e/1FAIpQLSe8Z0GkK9lmXKutLWO8lGezBoP5zPstNlkAnUEqVOx_IY7v7g/viewform",
         label: "Join COMPASS",
-        description: "学びを一緒につくる",
+        description: "興味を、最初の一歩に変える",
         external: true
       }
     ]
@@ -71,6 +76,30 @@ const navGroups: NavGroup[] = [
 ];
 
 const mobileNavGroups: NavGroup[] = navGroups;
+
+const directNavItems: DirectNavItem[] = [
+  {
+    activeId: "founder",
+    href: "#founder",
+    label: "Founder",
+    mobileLabel: "代表紹介を見る",
+    description: "COMPASSを始めた人を知る"
+  },
+  {
+    activeId: "contact",
+    href: "#contact",
+    label: "Contact",
+    mobileLabel: "お問い合わせフォーム",
+    description: "ご意見・質問・相談はこちら"
+  },
+  {
+    activeId: "message",
+    href: "messages/index.html",
+    label: "Message",
+    mobileLabel: "後輩へのメッセージ",
+    description: "迷いながら進む、後輩のあなたへ"
+  }
+];
 
 const focusableSelector = "a[href], button:not([disabled])";
 
@@ -113,11 +142,9 @@ export function SiteHeader() {
   }, []);
 
   useEffect(() => {
-    const ids = ["top", "experience", "technology", "products", "resources", "workshops", "community", "contact", "founder", "message"];
+    const ids = ["top", "experience", "technology", "resources", "community", "contact", "founder", "message"];
     const sectionMap: Record<string, string> = {
-      experience: "technology",
-      products: "technology",
-      founder: "message"
+      experience: "technology"
     };
     const elements = ids.map((id) => document.getElementById(id)).filter((item): item is HTMLElement => Boolean(item));
     const observer = new IntersectionObserver(
@@ -258,7 +285,21 @@ export function SiteHeader() {
                 </div>
               );
             })}
-            <a className={`nav-link${activeSection === "message" ? " is-current" : ""}`} href="messages/index.html">Messages</a>
+            {directNavItems.map((item) => (
+              <div key={item.activeId} className={`nav-group nav-group--direct${activeSection === item.activeId ? " is-current" : ""}`}>
+                <a
+                  className={`nav-link${activeSection === item.activeId ? " is-current" : ""}`}
+                  href={item.href}
+                  aria-current={activeSection === item.activeId ? "location" : undefined}
+                  title={item.description}
+                >
+                  {item.label}
+                </a>
+                <div className="nav-panel nav-panel--direct" aria-hidden="true">
+                  <p>{item.description}</p>
+                </div>
+              </div>
+            ))}
           </nav>
 
           <div className="header-actions" aria-label="Primary actions">
@@ -318,10 +359,12 @@ export function SiteHeader() {
                 ))}
               </section>
             ))}
-            <section className="mobile-nav-group" aria-labelledby="mobile-messages-title">
-              <h2 id="mobile-messages-title">Messages</h2>
-              <a href="messages/index.html" onClick={(event) => handleMobileNavClick(event, "messages/index.html")}>後輩へのメッセージ</a>
-            </section>
+            {directNavItems.map((item) => (
+              <section key={item.activeId} className="mobile-nav-group" aria-labelledby={`mobile-${item.activeId}-title`}>
+                <h2 id={`mobile-${item.activeId}-title`}>{item.label}</h2>
+                <a href={item.href} onClick={(event) => handleMobileNavClick(event, item.href)}>{item.mobileLabel}</a>
+              </section>
+            ))}
           </nav>
         </div>
       </aside>

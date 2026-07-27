@@ -7,11 +7,9 @@ import {
   CommunityExperienceSection,
   CompassExperienceSection,
   FounderPortfolioSection,
-  ProductsValidationSection,
   ResourcesExperienceSection,
   TechnologyCoreSection,
-  VisionExperienceSection,
-  WorkshopsSection
+  VisionExperienceSection
 } from "./sections/OfficialCoreSections";
 
 export function LegacyPageBody() {
@@ -23,9 +21,7 @@ export function LegacyPageBody() {
         <VisionExperienceSection />
         <CompassExperienceSection />
         <TechnologyCoreSection />
-        <ProductsValidationSection />
         <ResourcesExperienceSection />
-        <WorkshopsSection />
         <CommunityExperienceSection />
         <div className="v4-closing v4-closing--contact">
           <ContactSection />

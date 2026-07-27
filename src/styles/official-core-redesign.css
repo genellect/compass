@@ -69,6 +69,7 @@
 }
 
 .compass-v4-page .v4-mobile-break { display: none; }
+.compass-v4-page .v4-desktop-break { display: inline; }
 
 .compass-v4-page .v4-heading__description {
   max-width: 720px;
@@ -543,8 +544,58 @@
 .compass-v4-page .v4-technology .v4-label { color: #6eeaf2; }
 .compass-v4-page .v4-technology .v4-heading h2 { color: #f5fbff; }
 .compass-v4-page .v4-technology .v4-heading__description { color: #c3d2e3; }
-.compass-v4-page .v4-technology__intro { display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(300px, 0.7fr); gap: 70px; align-items: end; }
+.compass-v4-page .v4-technology__intro { display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(380px, 0.95fr); gap: 64px; align-items: stretch; }
 .compass-v4-page .v4-technology__statement { margin: 0 0 8px; padding: 28px 0 2px 30px; border-left: 2px solid #65e2eb; color: #e4f2fa; font-size: 1.06rem; font-weight: 650; line-height: 1.9; }
+
+.compass-v4-page .v4-technology__interactive {
+  position: relative;
+  display: flex;
+  align-self: stretch;
+  flex-direction: column;
+  padding: clamp(32px, 4vw, 48px);
+  overflow: hidden;
+  border: 1px solid rgba(119, 224, 239, 0.24);
+  border-radius: 28px;
+  background:
+    radial-gradient(circle at 92% 8%, rgba(122, 105, 255, 0.3), transparent 34%),
+    linear-gradient(150deg, rgba(17, 41, 67, 0.94), rgba(20, 18, 62, 0.96));
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05), 0 28px 70px rgba(0, 0, 0, 0.28);
+}
+
+.compass-v4-page .v4-technology__interactive::before {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(120deg, rgba(112, 232, 239, 0.07), transparent 42%);
+  content: "";
+  pointer-events: none;
+}
+
+.compass-v4-page .v4-technology__interactive > * { position: relative; }
+.compass-v4-page .v4-technology__interactive .v4-card-kicker { color: #7eeaf0; }
+.compass-v4-page .v4-technology__interactive h3 { margin: 8px 0 24px; color: #fff; font-size: clamp(2rem, 3.1vw, 3.25rem); letter-spacing: -0.05em; line-height: 1.16; }
+.compass-v4-page .v4-technology__interactive p:not(.v4-card-kicker) { margin: 0; color: #c7d7e5; line-height: 1.84; }
+.compass-v4-page .v4-technology__interactive .v4-technology__interactive-lead { margin-bottom: 14px; color: #f2f8fc; font-size: 1.08rem; font-weight: 760; }
+.compass-v4-page .v4-technology__interactive .v4-button { align-self: flex-start; margin-top: 30px; }
+
+.site-header .nav-panel--direct {
+  width: 250px;
+  padding: 18px 20px;
+}
+
+.site-header .nav-panel--direct p {
+  margin: 0;
+  color: var(--desktop-muted, #b9cada);
+  font-size: 0.78rem;
+  font-weight: 680;
+  line-height: 1.65;
+}
+
+.site-header .nav-group--direct:hover .nav-panel--direct,
+.site-header .nav-group--direct:focus-within .nav-panel--direct {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translate3d(-50%, 0, 0) scale(1);
+}
 
 .compass-v4-page .v4-declaration {
   display: grid;
@@ -791,6 +842,7 @@
   .compass-v4-page .v4-experience__grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .compass-v4-page .v4-experience-card { min-height: 340px; padding: 28px; }
   .compass-v4-page .v4-technology__intro { grid-template-columns: 1fr; gap: 34px; }
+  .compass-v4-page .v4-technology__interactive { width: min(100%, 760px); }
   .compass-v4-page .v4-technology__statement { max-width: 720px; }
   .compass-v4-page .v4-collaboration__paths { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .compass-v4-page .v4-collaboration-path:nth-child(3) { border-left: 0; border-top: 1px solid rgba(220, 210, 255, 0.18); }
@@ -801,6 +853,7 @@
   .compass-v4-page .v4-section { padding: 88px 0; scroll-margin-top: 74px; }
   .compass-v4-page .v4-container { width: calc(100% - 40px); }
   .compass-v4-page .v4-heading h2 { font-size: clamp(2.25rem, 7.2vw, 3.7rem); line-height: 1.13; }
+  .compass-v4-page .v4-desktop-break { display: none; }
   .compass-v4-page .v4-experience .v4-heading h2 { font-size: clamp(2.3rem, 6.3vw, 3.3rem); text-wrap: wrap; }
   .compass-v4-page .v4-heading__description { margin-top: 24px; font-size: 1rem; line-height: 1.88; }
   .compass-v4-page .v4-vision__grid,
@@ -852,6 +905,9 @@
   .compass-v4-page .v4-vision__lead span { display: block; }
   .compass-v4-page .v4-experience .v4-heading h2 { font-size: 2.08rem; text-wrap: wrap; }
   .compass-v4-page .v4-technology .v4-heading h2 { font-size: 2.28rem; text-wrap: wrap; }
+  .compass-v4-page .v4-technology__interactive { padding: 30px 24px; border-radius: 22px; }
+  .compass-v4-page .v4-technology__interactive h3 { font-size: 2rem; }
+  .compass-v4-page .v4-technology__interactive .v4-button { align-self: stretch; }
   .compass-v4-page .v4-workshops .v4-heading h2 { font-size: 1.85rem; }
   .compass-v4-page .v4-community .v4-heading h2 { font-size: 2rem; }
   .compass-v4-page .v4-actions { align-items: stretch; flex-direction: column; }
