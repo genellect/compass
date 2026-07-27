@@ -139,8 +139,8 @@ export function TechnologyCoreSection() {
             <div className="v4-technology__interactive-copy">
               <p>あなたが飲み込んだその疑問を、誰かも同じように抱えているかもしれない。</p>
               <p>問いも、迷いも、ひらめきも。その場にいる全員の思考が重なったとき、講義はただの説明ではなく、自分たちの学びに変わります。</p>
-              <p>講義はもう、聞くだけじゃない。</p>
             </div>
+            <a className="v4-button v4-technology__interactive-cta" href={interactiveIntroUrl}>未来の講義を、いま体験</a>
           </article>
         </div>
       </div>
@@ -155,7 +155,7 @@ export function ResourcesExperienceSection() {
         <div className="v4-resources__editorial">
           <header className="v4-resources__heading" data-reveal>
             <p className="v4-label">Resources / 未来への入口</p>
-            <h2 id="resources-title"><span>知らなかった未来に、</span><span>出会う。</span></h2>
+            <h2 id="resources-title"><span>知らなかった未来に、出会う。</span></h2>
           </header>
 
           <div className="v4-resources__content" data-reveal>
@@ -170,8 +170,8 @@ export function ResourcesExperienceSection() {
 
             <div className="v4-resource-gateway">
               <div className="v4-resource-gateway__primary">
-                <a className="v4-button v4-button--primary" href={libraryUrl} {...externalProps}>まだ知らない世界を見る</a>
                 <small>北里大学薬学部生対象</small>
+                <a className="v4-button v4-button--primary" href={libraryUrl} {...externalProps}>まだ知らない世界を見る</a>
               </div>
               <a className="v4-resource-gateway__secondary" href={essentialsUrl} {...externalProps}>薬学部生以外の方はこちら</a>
             </div>
@@ -193,7 +193,7 @@ export function CommunityExperienceSection() {
         />
         <div className="v4-community__experience" data-reveal>
           <div className="v4-community__lead">
-            <p className="v4-community__opening">イベントも、デザインも、映像も、Webサービスも。<br />「こんなものがあったらいい」を持ち寄り、仲間と話しながら、少しずつ形にしていく。</p>
+            <p className="v4-community__opening">イベントも、デザインも、映像も、Webサービスも。「こんなものがあったらいい」を持ち寄り、仲間と話しながら、少しずつ形にしていく。</p>
             <p>COMPASSは、白金キャンパスを拠点に、学生自身が新しい学びや作品、仕組みを生み出していくコミュニティです。</p>
           </div>
 
@@ -205,8 +205,10 @@ export function CommunityExperienceSection() {
               <p>デザインや開発に触れたことがなくても。</p>
               <p>何をしたいのか、まだ言葉にできなくても大丈夫です。</p>
             </div>
-            <p>まずは話を聞く。誰かのアイデアに意見を添える。できそうなことを、一緒に試してみる。わからないことがあれば教え合い、困ったときには立ち止まりながら、自分に合う役割を見つけていけます。</p>
-            <p>一人で完成させる必要はありません。自信がなくても、ここには一緒に考え、手を動かしてくれる人がいます。</p>
+            <div className="v4-community__support">
+              <p>まずは話を聞く。誰かのアイデアに意見を添える。できそうなことを、一緒に試してみる。わからないことがあれば教え合い、困ったときには立ち止まりながら、自分に合う役割を見つけていけます。</p>
+              <p>一人で完成させる必要はありません。自信がなくても、ここには一緒に考え、手を動かしてくれる人がいます。</p>
+            </div>
           </div>
 
           <div className="v4-community__invitation">

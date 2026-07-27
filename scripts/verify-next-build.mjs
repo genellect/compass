@@ -69,7 +69,7 @@ for (const expected of [
   "わからないが、",
   "動き出す。",
   "あなたが飲み込んだその疑問を、誰かも同じように抱えているかもしれない。",
-  "講義はもう、聞くだけじゃない。",
+  "未来の講義を、いま体験",
   "ひとりでは見えない、",
   "新しい場所へ。",
   "今すぐ使えて、数年後の選択にも効いてくる。",
@@ -78,6 +78,7 @@ for (const expected of [
   "北里大学薬学部生対象",
   "薬学部生以外の方はこちら",
   "Community / 運営メンバー募集",
+  'class="v4-community__support"',
   "面白い大学生活は、",
   "待っていても始まらない。",
   "大学生活に、予定されていなかった挑戦と出会いを。",
@@ -130,7 +131,8 @@ for (const unexpected of [
   "まだ知らない未来を見る",
   "目の前で使える情報から、",
   "これからの選択を有利にする知識まで。",
-  "知らないまま進む前に、一度ここを見てください。"
+  "知らないまま進む前に、一度ここを見てください。",
+  "講義はもう、聞くだけじゃない。"
 ]) expectExcludes(official, unexpected, "Official page");
 
 const visionLineCount = (official.match(/class="v4-vision-line"/g) ?? []).length;
@@ -138,7 +140,8 @@ if (visionLineCount !== 2) throw new Error(`Official page must contain exactly t
 
 const interactiveCard = official.match(/<article class="v4-technology__interactive"[\s\S]*?<\/article>/)?.[0];
 if (!interactiveCard) throw new Error("Official page is missing the Interactive card.");
-if (interactiveCard.includes("<a ")) throw new Error("Interactive card must not contain a CTA link.");
+expectIncludes(interactiveCard, "未来の講義を、いま体験", "Interactive card");
+expectIncludes(interactiveCard, 'href="/INTRO_Interactive/"', "Interactive card");
 
 const resourcesCard = official.match(/<article class="v4-experience-card v4-experience-card--resources"[\s\S]*?<\/article>/)?.[0];
 if (!resourcesCard) throw new Error("Official page is missing the Resources experience card.");
