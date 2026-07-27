@@ -516,6 +516,8 @@
 .compass-v4-page .v4-experience-card--technology h3 { color: #f8fdff; }
 .compass-v4-page .v4-experience-card--technology p { color: #c5d5e4; }
 .compass-v4-page .v4-experience-card--technology .v4-button { width: 100%; padding-inline: 12px; font-size: 0.76rem; }
+.compass-v4-page .v4-experience-card--resources .v4-button { width: 100%; padding-inline: 12px; font-size: 0.76rem; }
+.compass-v4-page .v4-experience-card--community h3 { font-size: clamp(1.25rem, 1.7vw, 1.48rem); letter-spacing: -0.05em; }
 .compass-v4-page .v4-experience-card__details { display: grid; gap: 9px; margin: auto 0 0; padding: 22px 0 0; border-top: 1px solid rgba(15, 35, 60, 0.1); list-style: none; }
 .compass-v4-page .v4-experience-card__details li { position: relative; padding-left: 16px; color: #596a81; font-size: 0.82rem; line-height: 1.65; }
 .compass-v4-page .v4-experience-card__details li::before { position: absolute; top: 0.72em; left: 0; width: 5px; height: 5px; border-radius: 50%; background: var(--v4-violet); content: ""; }
@@ -679,21 +681,38 @@
 .compass-v4-page .v4-learning-loop span { padding: 9px 12px; border: 1px solid rgba(91, 67, 216, 0.18); border-radius: 999px; background: rgba(255, 255, 255, 0.64); color: #5443a4; font-size: 0.62rem; font-weight: 820; letter-spacing: 0.08em; }
 
 /* Resources */
-.compass-v4-page .v4-resources { background: linear-gradient(155deg, #f0ecff, #faf9ff 58%, #eef7fb); }
-.compass-v4-page .v4-resources .v4-heading { margin-bottom: 52px; }
+.compass-v4-page .v4-resources {
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 12% 18%, rgba(107, 79, 222, 0.14), transparent 28%),
+    radial-gradient(circle at 88% 86%, rgba(52, 190, 211, 0.11), transparent 30%),
+    linear-gradient(145deg, #f2efff 0%, #fbfbff 56%, #eef8fb 100%);
+}
+.compass-v4-page .v4-resources::before { position: absolute; top: -190px; right: -160px; width: 520px; height: 520px; border: 1px solid rgba(86, 64, 186, 0.09); border-radius: 50%; box-shadow: inset 0 0 0 70px rgba(255, 255, 255, 0.1), inset 0 0 0 140px rgba(86, 64, 186, 0.025); content: ""; }
+.compass-v4-page .v4-resources__editorial { position: relative; display: grid; grid-template-columns: minmax(300px, 0.84fr) minmax(0, 1.16fr); gap: clamp(52px, 8vw, 118px); align-items: start; }
+.compass-v4-page .v4-resources__heading { padding-top: 14px; }
+.compass-v4-page .v4-resources__heading h2 { margin: 0; color: #17113c; font-size: clamp(2.8rem, 4.2vw, 3.7rem); font-weight: 770; letter-spacing: -0.065em; line-height: 1.05; font-feature-settings: "palt" 1; font-variant-east-asian: proportional-width; }
+.compass-v4-page .v4-resources__heading h2 span { display: block; white-space: nowrap; }
+.compass-v4-page .v4-resources__heading h2 span:first-child { font-size: 0.72em; line-height: 1.16; }
+.compass-v4-page .v4-resources__heading h2 span:last-child { margin-top: 8px; background: linear-gradient(105deg, #4b35b0, #168ca4); background-clip: text; color: transparent; -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+.compass-v4-page .v4-resources__content { padding: clamp(34px, 5vw, 58px); border: 1px solid rgba(59, 43, 133, 0.12); border-radius: 32px; background: rgba(255, 255, 255, 0.72); box-shadow: 0 28px 75px rgba(48, 40, 98, 0.1); backdrop-filter: blur(16px); }
+.compass-v4-page .v4-resources__story { display: grid; gap: 24px; }
+.compass-v4-page .v4-resources__story p { margin: 0; color: #56637a; font-size: 1rem; line-height: 1.92; }
+.compass-v4-page .v4-resources__story .v4-resources__lead { color: #211a4a; font-size: clamp(1.15rem, 1.7vw, 1.38rem); font-weight: 720; line-height: 1.78; }
+.compass-v4-page .v4-resources__promise { display: grid; gap: 10px; margin-top: 8px; padding: 22px 0 0 24px; border-top: 1px solid rgba(75, 53, 176, 0.13); border-left: 3px solid rgba(22, 140, 164, 0.62); }
+.compass-v4-page .v4-resources__promise p:first-child { color: #33256f; font-weight: 780; }
 .compass-v4-page .v4-resource-gateway {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 16px 26px;
-  padding: 28px 30px;
-  border: 1px solid rgba(52, 41, 115, 0.14);
-  border-radius: var(--v4-radius);
-  background: rgba(255, 255, 255, 0.62);
-  box-shadow: 0 18px 50px rgba(48, 40, 98, 0.08);
+  justify-content: space-between;
+  gap: 22px 30px;
+  margin-top: 40px;
+  padding-top: 30px;
+  border-top: 1px solid rgba(52, 41, 115, 0.13);
 }
-.compass-v4-page .v4-resource-gateway__primary { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 16px; }
-.compass-v4-page .v4-resource-gateway__primary small { padding: 7px 11px; border: 1px solid rgba(73, 58, 145, 0.16); border-radius: 999px; color: #665b9a; font-size: 0.68rem; font-weight: 760; letter-spacing: 0.04em; }
+.compass-v4-page .v4-resource-gateway__primary { display: flex; align-items: flex-start; flex-direction: column; gap: 9px; }
+.compass-v4-page .v4-resource-gateway__primary small { padding-left: 8px; color: #7b8092; font-size: 0.64rem; font-weight: 680; letter-spacing: 0.04em; }
 .compass-v4-page .v4-resource-gateway__secondary { color: #4e438f; font-size: 0.86rem; font-weight: 760; text-underline-offset: 4px; }
 .compass-v4-page .v4-resource-gateway__secondary:hover { color: #241a6d; }
 .compass-v4-page .v4-resource-gateway .v4-card-kicker { margin: 0 0 18px; color: var(--v4-violet-deep); }
@@ -749,22 +768,17 @@
 .compass-v4-page .v4-community .v4-heading h2 > span { white-space: nowrap; }
 .compass-v4-page .v4-community__experience {
   position: relative;
-  overflow: hidden;
   margin-top: 58px;
-  border: 1px solid rgba(220, 210, 255, 0.18);
-  border-radius: var(--v4-radius);
-  background: rgba(255, 255, 255, 0.05);
-  box-shadow: 0 30px 80px rgba(4, 7, 24, 0.24);
 }
 .compass-v4-page .v4-community__experience p { margin: 0; color: #d2dce9; line-height: 1.94; }
-.compass-v4-page .v4-community__lead { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(300px, 0.8fr); gap: 46px; align-items: end; padding: clamp(34px, 5vw, 62px); border-bottom: 1px solid rgba(220, 210, 255, 0.15); background: linear-gradient(125deg, rgba(255, 255, 255, 0.055), rgba(255, 255, 255, 0.01)); }
+.compass-v4-page .v4-community__lead { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(300px, 0.8fr); gap: clamp(34px, 6vw, 84px); align-items: end; max-width: 1040px; }
 .compass-v4-page .v4-community__lead .v4-community__opening { color: #fff; font-size: clamp(1.22rem, 2vw, 1.65rem); font-weight: 760; line-height: 1.72; }
-.compass-v4-page .v4-community__body { display: grid; gap: 28px; max-width: 930px; padding: clamp(36px, 5vw, 62px); }
-.compass-v4-page .v4-community__pivot { color: #fff !important; font-size: 1.08rem; font-weight: 760; }
-.compass-v4-page .v4-community__welcome { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); border: 1px solid rgba(238, 177, 129, 0.22); border-radius: 18px; overflow: hidden; background: rgba(238, 177, 129, 0.06); }
-.compass-v4-page .v4-community__welcome p { display: flex; align-items: center; min-height: 126px; padding: 24px; color: #fff; font-size: 0.92rem; font-weight: 700; line-height: 1.75; }
-.compass-v4-page .v4-community__welcome p + p { border-left: 1px solid rgba(238, 177, 129, 0.18); }
-.compass-v4-page .v4-community__invitation { display: flex; align-items: center; justify-content: space-between; gap: 34px; padding: clamp(32px, 4vw, 48px) clamp(34px, 5vw, 62px); border-top: 1px solid rgba(220, 210, 255, 0.15); background: linear-gradient(110deg, rgba(238, 159, 99, 0.14), rgba(87, 226, 234, 0.08)); }
+.compass-v4-page .v4-community__body { display: grid; gap: 30px; max-width: 880px; margin: clamp(44px, 6vw, 78px) 0 0 clamp(0px, 7vw, 96px); }
+.compass-v4-page .v4-community__pivot { max-width: 760px; padding-left: 22px; border-left: 3px solid rgba(242, 180, 134, 0.72); color: #fff !important; font-size: 1.08rem; font-weight: 760; }
+.compass-v4-page .v4-community__welcome { display: grid; gap: 8px; padding: 8px 0 8px 26px; border-left: 1px solid rgba(238, 177, 129, 0.32); }
+.compass-v4-page .v4-community__welcome p { position: relative; padding-left: 18px; color: #f7f2ff; font-size: 0.94rem; font-weight: 680; line-height: 1.75; }
+.compass-v4-page .v4-community__welcome p::before { position: absolute; top: 0.78em; left: 0; width: 5px; height: 5px; border-radius: 50%; background: #f2b486; content: ""; }
+.compass-v4-page .v4-community__invitation { display: flex; align-items: center; justify-content: space-between; gap: 34px; margin-top: clamp(48px, 7vw, 86px); padding: clamp(30px, 4vw, 46px) clamp(30px, 5vw, 58px); border: 1px solid rgba(220, 210, 255, 0.16); border-radius: var(--v4-radius); background: linear-gradient(110deg, rgba(238, 159, 99, 0.14), rgba(87, 226, 234, 0.08)); box-shadow: 0 26px 70px rgba(4, 7, 24, 0.2); }
 .compass-v4-page .v4-community__invitation p { color: #fff; font-size: clamp(1.08rem, 1.8vw, 1.35rem); font-weight: 760; line-height: 1.75; }
 .compass-v4-page .v4-community__cta { flex: 0 0 auto; min-height: 60px; padding-inline: 30px; background: linear-gradient(135deg, #8ff0ee, #b5ffda); color: #071a28; font-size: 0.94rem; box-shadow: 0 18px 38px rgba(70, 226, 218, 0.22); }
 .compass-v4-page .v4-community__cta:hover { background: #fff; color: #071a28; box-shadow: 0 20px 46px rgba(70, 226, 218, 0.3); }
@@ -887,14 +901,16 @@
   .compass-v4-page .v4-product--infrastructure,
   .compass-v4-page .v4-product--future { min-height: auto; }
   .compass-v4-page .v4-product__signal { min-height: 320px; }
-  .compass-v4-page .v4-resource-gateway { grid-template-columns: 1fr; align-items: flex-start; }
+  .compass-v4-page .v4-resources__editorial { grid-template-columns: 1fr; gap: 46px; }
+  .compass-v4-page .v4-resources__heading { max-width: 700px; }
+  .compass-v4-page .v4-resources__heading h2 { font-size: clamp(3rem, 8vw, 4.6rem); }
+  .compass-v4-page .v4-resources__heading h2 span:first-child { font-size: 0.72em; }
   .compass-v4-page .v4-workshops__signal .v4-button { margin-left: 0; }
   .compass-v4-page .v4-workshops__grid { grid-template-columns: 1fr; }
   .compass-v4-page .v4-workshop-card { min-height: 280px; }
   .compass-v4-page .v4-workshop-card h3 { margin-top: 42px; }
   .compass-v4-page .v4-community__lead { grid-template-columns: 1fr; align-items: start; }
-  .compass-v4-page .v4-community__welcome { grid-template-columns: 1fr; }
-  .compass-v4-page .v4-community__welcome p + p { border-top: 1px solid rgba(238, 177, 129, 0.18); border-left: 0; }
+  .compass-v4-page .v4-community__body { margin-left: 0; }
   .compass-v4-page .v4-community__invitation { align-items: flex-start; flex-direction: column; }
   .compass-v4-page .v4-founder__profile { gap: 36px; }
   .compass-v4-page .v4-founder__portrait { width: min(100%, 420px); }
@@ -938,10 +954,14 @@
   .compass-v4-page .v4-principle { padding: 28px 22px; }
   .compass-v4-page .v4-products .v4-heading,
   .compass-v4-page .v4-resources .v4-heading { margin-bottom: 44px; }
-  .compass-v4-page .v4-resource-gateway { padding: 28px 22px; }
+  .compass-v4-page .v4-resources__editorial { gap: 34px; }
+  .compass-v4-page .v4-resources__heading h2 { font-size: clamp(2.4rem, 12vw, 3.2rem); }
+  .compass-v4-page .v4-resources__content { padding: 28px 22px; border-radius: 22px; }
+  .compass-v4-page .v4-resources__story { gap: 20px; }
+  .compass-v4-page .v4-resources__promise { padding: 20px 0 0 18px; }
+  .compass-v4-page .v4-resource-gateway { align-items: stretch; flex-direction: column; margin-top: 32px; padding-top: 26px; }
   .compass-v4-page .v4-resource-gateway__primary { align-items: stretch; flex-direction: column; width: 100%; }
-  .compass-v4-page .v4-resource-gateway__primary small { align-self: center; text-align: center; }
-  .compass-v4-page .v4-resource-gateway .v4-button { margin-top: 8px; }
+  .compass-v4-page .v4-resource-gateway__primary small { align-self: flex-start; padding-left: 4px; text-align: left; }
   .compass-v4-page .v4-resource-gateway__secondary { width: 100%; text-align: center; }
   .compass-v4-page .v4-workshops__actions { justify-content: stretch; }
   .compass-v4-page .v4-product__copy,
@@ -954,11 +974,12 @@
   .compass-v4-page .v4-resource-card h3 br { display: none; }
   .compass-v4-page .v4-product__copy h3 { font-size: 1.85rem; }
   .compass-v4-page .v4-product__signal { min-height: 250px; padding: 34px 24px; }
-  .compass-v4-page .v4-community__experience { margin-top: 38px; border-radius: 22px; }
-  .compass-v4-page .v4-community__lead,
-  .compass-v4-page .v4-community__body,
-  .compass-v4-page .v4-community__invitation { padding: 30px 24px; }
-  .compass-v4-page .v4-community__welcome p { min-height: auto; padding: 20px; }
+  .compass-v4-page .v4-community__experience { margin-top: 38px; }
+  .compass-v4-page .v4-community__lead { gap: 26px; }
+  .compass-v4-page .v4-community__body { gap: 25px; margin-top: 42px; }
+  .compass-v4-page .v4-community__welcome { padding-left: 18px; }
+  .compass-v4-page .v4-community__welcome p { padding-left: 16px; }
+  .compass-v4-page .v4-community__invitation { margin-top: 46px; padding: 28px 24px; border-radius: 22px; }
   .compass-v4-page .v4-community__cta { width: 100%; }
   .compass-v4-page .v4-product__status { align-items: flex-start; flex-direction: column; margin-bottom: 36px; }
   .compass-v4-page .v4-infrastructure-flow { gap: 4px; }

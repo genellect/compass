@@ -66,7 +66,10 @@ export function CompassExperienceSection() {
       name: "Resources",
       value: "未来を知る",
       title: <><span>知らなかった</span><span>未来に、出会う。</span></>,
-      description: "英語、AI、研究室選び、大学院進学、キャリア形成まで、未来を考えるための知識と戦略を届けます。"
+      description: "英語、AI、研究室選び、大学院進学、キャリア形成まで、未来を考えるための知識と戦略を届けます。",
+      href: libraryUrl,
+      cta: "ライブラリを見る",
+      external: true
     },
     {
       number: "03",
@@ -79,7 +82,7 @@ export function CompassExperienceSection() {
       number: "04",
       name: "Community",
       value: "一緒につくる",
-      title: <><span>ひとりでは、</span><span>たどり着けない場所へ。</span></>,
+      title: <><span>ひとりでは見えない、</span><span>新しい場所へ。</span></>,
       description: "白金キャンパスを主な拠点に、学生同士が気軽につながり、新しい学びや挑戦を一緒に形にするコミュニティです。"
     }
   ];
@@ -96,11 +99,19 @@ export function CompassExperienceSection() {
 
         <div className="v4-experience__grid">
           {experiences.map((item) => (
-            <article key={item.name} className={`v4-experience-card${item.name === "Technology" ? " v4-experience-card--technology" : ""}`} data-reveal>
+            <article key={item.name} className={`v4-experience-card v4-experience-card--${item.name.toLowerCase()}`} data-reveal>
               <div className="v4-card-meta"><span>{item.number}</span><strong>{item.name}</strong><em>{item.value}</em></div>
               <h3>{item.title}</h3>
               <p>{item.description}</p>
-              {item.href && item.cta ? <a className="v4-button v4-button--light" href={item.href}>{item.cta}</a> : null}
+              {item.href && item.cta ? (
+                <a
+                  className={`v4-button ${item.name === "Technology" ? "v4-button--light" : "v4-button--primary"}`}
+                  href={item.href}
+                  {...(item.external ? externalProps : {})}
+                >
+                  {item.cta}
+                </a>
+              ) : null}
             </article>
           ))}
         </div>
@@ -141,18 +152,30 @@ export function ResourcesExperienceSection() {
   return (
     <section id="resources" className="v4-section v4-resources" aria-labelledby="resources-title">
       <div className="v4-container">
-        <SectionHeading
-          label="Resources / 未来への入口"
-          id="resources-title"
-          title={<span>知らなかった<br className="v4-mobile-break" />未来に、出会う。</span>}
-          description={<><p>次の試験に役立つ情報を探しに来たはずが、<br />気づけば、その先の未来まで見えてくる。</p><p>同じ大学、同じ授業、同じ試験。<br />それでも、知っている情報によって、その先は変わります。</p><p>目の前で使える情報から、<br />これからの選択を有利にする知識まで。</p><p>知らないまま進む前に、一度ここを見てください。</p></>}
-        />
-        <div className="v4-resource-gateway" data-reveal>
-          <div className="v4-resource-gateway__primary">
-            <a className="v4-button v4-button--primary" href={libraryUrl} {...externalProps}>まだ知らない世界を見る</a>
-            <small>北里大学薬学部生対象</small>
+        <div className="v4-resources__editorial">
+          <header className="v4-resources__heading" data-reveal>
+            <p className="v4-label">Resources / 未来への入口</p>
+            <h2 id="resources-title"><span>知らなかった未来に、</span><span>出会う。</span></h2>
+          </header>
+
+          <div className="v4-resources__content" data-reveal>
+            <div className="v4-resources__story">
+              <p className="v4-resources__lead">次の試験に役立つ情報を探しに来たはずが、<br />気づけば、その先の未来まで見えてくる。</p>
+              <p>同じ大学、同じ授業、同じ試験。<br />それでも、知っている情報によって、その先は変わります。</p>
+              <div className="v4-resources__promise">
+                <p>今すぐ使えて、数年後の選択にも効いてくる。</p>
+                <p>未来戦略ライブラリは、学生生活の「次に知りたい」を、一つの場所につなぎます。</p>
+              </div>
+            </div>
+
+            <div className="v4-resource-gateway">
+              <div className="v4-resource-gateway__primary">
+                <a className="v4-button v4-button--primary" href={libraryUrl} {...externalProps}>まだ知らない世界を見る</a>
+                <small>北里大学薬学部生対象</small>
+              </div>
+              <a className="v4-resource-gateway__secondary" href={essentialsUrl} {...externalProps}>薬学部生以外の方はこちら</a>
+            </div>
           </div>
-          <a className="v4-resource-gateway__secondary" href={essentialsUrl} {...externalProps}>薬学部生以外の方はこちら</a>
         </div>
       </div>
     </section>

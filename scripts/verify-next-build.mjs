@@ -70,6 +70,10 @@ for (const expected of [
   "動き出す。",
   "あなたが飲み込んだその疑問を、誰かも同じように抱えているかもしれない。",
   "講義はもう、聞くだけじゃない。",
+  "ひとりでは見えない、",
+  "新しい場所へ。",
+  "今すぐ使えて、数年後の選択にも効いてくる。",
+  "未来戦略ライブラリは、学生生活の「次に知りたい」を、一つの場所につなぎます。",
   "まだ知らない世界を見る",
   "北里大学薬学部生対象",
   "薬学部生以外の方はこちら",
@@ -123,7 +127,10 @@ for (const unexpected of [
   "未来を体験する",
   "教室にいる全員の疑問が、次の説明を動かす。",
   "COMPASS Interactiveは、一方向だった講義を、学生の反応によって変化する体験へ変えます。",
-  "まだ知らない未来を見る"
+  "まだ知らない未来を見る",
+  "目の前で使える情報から、",
+  "これからの選択を有利にする知識まで。",
+  "知らないまま進む前に、一度ここを見てください。"
 ]) expectExcludes(official, unexpected, "Official page");
 
 const visionLineCount = (official.match(/class="v4-vision-line"/g) ?? []).length;
@@ -132,6 +139,11 @@ if (visionLineCount !== 2) throw new Error(`Official page must contain exactly t
 const interactiveCard = official.match(/<article class="v4-technology__interactive"[\s\S]*?<\/article>/)?.[0];
 if (!interactiveCard) throw new Error("Official page is missing the Interactive card.");
 if (interactiveCard.includes("<a ")) throw new Error("Interactive card must not contain a CTA link.");
+
+const resourcesCard = official.match(/<article class="v4-experience-card v4-experience-card--resources"[\s\S]*?<\/article>/)?.[0];
+if (!resourcesCard) throw new Error("Official page is missing the Resources experience card.");
+expectIncludes(resourcesCard, "ライブラリを見る", "Resources experience card");
+expectIncludes(resourcesCard, 'href="https://compass-official.pages.dev/future-strategy-library/"', "Resources experience card");
 
 for (const expected of [
   '<html lang="ja"',
