@@ -9,6 +9,10 @@ function expectIncludes(html, expected, label) {
   if (!html.includes(expected)) throw new Error(`${label} is missing: ${expected}`);
 }
 
+function expectExcludes(html, unexpected, label) {
+  if (html.includes(unexpected)) throw new Error(`${label} still contains: ${unexpected}`);
+}
+
 function expectOneH1(html, label) {
   const count = (html.match(/<h1\b/gi) ?? []).length;
   if (count !== 1) throw new Error(`${label} must contain exactly one h1; found ${count}.`);
@@ -47,9 +51,12 @@ for (const expected of [
   "Better Education.",
   "Better Decisions.",
   'id="vision"',
-  'id="directions"',
+  'id="experience"',
   'id="technology"',
+  'id="products"',
   'id="resources"',
+  'id="workshops"',
+  'id="founder"',
   'id="education"',
   'id="community"',
   'id="contact"',
@@ -57,10 +64,45 @@ for (const expected of [
   'href="INTRO_Interactive/"',
   'rel="canonical" href="https://compass-official.pages.dev/"',
   'type="application/ld+json"',
-  "COMPASS System Infrastructure",
+  "次の1歩は、",
+  "ここから始まる。",
+  "わからないが、",
+  "動き出す。",
+  "未来を体験する",
+  "まだ知らない未来を見る",
+  "薬学部生以外の方はこちら",
+  "ひとりでは、",
+  "たどり着けない場所へ。",
+  "面白そうなので、",
+  "始めました。",
+  "Web開発・プログラミング 4年",
   "学生主導の教育・テクノロジープラットフォーム",
   "G-EHKJ8B8N0Y"
 ]) expectIncludes(official, expected, "Official page");
+
+for (const unexpected of [
+  "β版",
+  "E2E",
+  "フロントエンド",
+  "バックエンド",
+  "フルスタック",
+  "Developer Portfolio",
+  "Collaboration",
+  "For Faculty",
+  "DESIGN PRINCIPLES / 設計方針",
+  "現在の公開・試験状況",
+  "約20名・複数端末で一連の講義操作を確認",
+  "学生用・教員用・会場表示の画面を用意",
+  "3分で試せる公開デモ",
+  "COMPASSの運営システム",
+  "登録・案内・利用権限を、",
+  "知らなかった選択肢に出会う。",
+  "疑問を言葉にする。",
+  "自分の手で試してみる。",
+  "その一つひとつが、未来を選ぶ力になります。",
+  "知る。試す。つくる。",
+  "資料が届く。疑問を送れる。理解を確かめられる。講義のあとも振り返れる。"
+]) expectExcludes(official, unexpected, "Official page");
 
 for (const expected of [
   '<html lang="ja"',

@@ -10,7 +10,7 @@ const organizationSchema = {
   logo: "https://compass-official.pages.dev/images/compass-mark.svg",
   image: "https://compass-official.pages.dev/images/hero.desktop.highlight.png",
   description:
-    "COMPASSは、北里大学薬学部を起点に、独自教育システム、実践的な資料、講義・ワークショップ、学生コミュニティを通じて、学びとより良い意思決定を支える学生主導型教育・テクノロジープラットフォームです。",
+    "COMPASSは、北里大学薬学部を起点に、WebシステムとAIを中核として、資料、ワークショップ、学生との共創をつなぎ、学びとより良い意思決定を支える学生主導型教育・テクノロジープラットフォームです。",
   founder: { "@type": "Person", name: "松井優知", alternateName: "Yuto Matsui" },
   keywords:
     "COMPASS, コンパス, 北里大学, 北里薬学部, 教育テクノロジー, 教育DX, COMPASS Interactive, 未来戦略ライブラリ, 松井優知",

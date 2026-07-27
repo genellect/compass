@@ -11,7 +11,7 @@ type NavItem = {
 };
 
 type NavGroup = {
-  id: "technology" | "resources" | "education" | "community";
+  id: "technology" | "resources" | "workshops" | "community";
   items: NavItem[];
   label: string;
 };
@@ -22,15 +22,15 @@ const navGroups: NavGroup[] = [
     label: "Technology",
     items: [
       {
-        href: "INTRO_Interactive/",
-        label: "COMPASS Interactive",
-        description: "質問・投票・字幕・AIで講義参加を支える",
-        className: "panel-link-interactive"
+        href: "#technology",
+        label: "Technology Core",
+        description: "学びを動かす仕組みを見る"
       },
       {
-        href: "#technology-infrastructure",
-        label: "ライブラリ登録基盤",
-        description: "安全な登録と権限管理を支える基盤"
+        href: "#products",
+        label: "COMPASS Interactive",
+        description: "未来の講義を体験する",
+        className: "panel-link-interactive"
       }
     ]
   },
@@ -43,36 +43,29 @@ const navGroups: NavGroup[] = [
         label: "未来戦略ライブラリ",
         description: "判断軸を届ける、COMPASSの起点",
         external: true
-      },
-      {
-        href: "https://forms.gle/sW49M329Dcets8ga9",
-        label: "COMPASS Essentials",
-        description: "英語・AIを中心とした厳選資料集",
-        external: true
       }
     ]
   },
   {
-    id: "education",
-    label: "Education",
+    id: "workshops",
+    label: "Workshops",
     items: [
-      { href: "#english-education", label: "English Education / 英語教育", description: "専門性を世界へ接続する力" },
-      { href: "#ai-literacy-education", label: "AI Literacy Education / AI活用教育", description: "人間が主語のAI活用" },
-      { href: "#life-science-education", label: "Life Science Education / 生命科学教育", description: "学びを研究と社会へつなげる" }
+      { href: "#workshops", label: "Explore", description: "新しい可能性に触れる" },
+      { href: "#workshops", label: "Try", description: "実際に手を動かして試す" },
+      { href: "#workshops", label: "Connect", description: "関心と経験を共有する" }
     ]
   },
   {
     id: "community",
     label: "Community",
     items: [
-      { href: "#vision", label: "About COMPASS", description: "学生支援の新しい羅針盤" },
+      { href: "#community", label: "コミュニティを知る", description: "仲間と始める、次の一歩" },
       {
         href: "https://docs.google.com/forms/u/1/d/e/1FAIpQLSe8Z0GkK9lmXKutLWO8lGezBoP5zPstNlkAnUEqVOx_IY7v7g/viewform",
         label: "Join COMPASS",
-        description: "学びを共につくる運営文化",
+        description: "学びを一緒につくる",
         external: true
-      },
-      { href: "#activities", label: "Activities", description: "講演・交流・資料改善" }
+      }
     ]
   }
 ];
@@ -120,14 +113,19 @@ export function SiteHeader() {
   }, []);
 
   useEffect(() => {
-    const ids = ["top", "technology", "resources", "education", "community", "message"];
+    const ids = ["top", "experience", "technology", "products", "resources", "workshops", "community", "contact", "founder", "message"];
+    const sectionMap: Record<string, string> = {
+      experience: "technology",
+      products: "technology",
+      founder: "message"
+    };
     const elements = ids.map((id) => document.getElementById(id)).filter((item): item is HTMLElement => Boolean(item));
     const observer = new IntersectionObserver(
       (entries) => {
         const visible = entries
           .filter((entry) => entry.isIntersecting)
           .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
-        if (visible?.target.id) setActiveSection(visible.target.id);
+        if (visible?.target.id) setActiveSection(sectionMap[visible.target.id] ?? visible.target.id);
       },
       { rootMargin: "-18% 0px -62% 0px", threshold: [0, 0.12, 0.4] }
     );
@@ -246,7 +244,7 @@ export function SiteHeader() {
                   <div id={menuId} className="nav-panel">
                     {group.items.map((item) => (
                       <a
-                        key={item.href}
+                        key={`${item.href}-${item.label}`}
                         className={`panel-link ${item.className ?? ""}`.trim()}
                         href={item.href}
                         target={item.external ? "_blank" : undefined}
@@ -308,7 +306,7 @@ export function SiteHeader() {
                 <h2 id={`mobile-${group.id}-title`}>{group.label}</h2>
                 {group.items.map((item) => (
                   <a
-                    key={item.href}
+                    key={`${item.href}-${item.label}`}
                     className={item.className === "panel-link-interactive" ? "mobile-nav-highlight" : undefined}
                     href={item.href}
                     target={item.external ? "_blank" : undefined}

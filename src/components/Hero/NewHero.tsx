@@ -34,7 +34,7 @@ export function NewHero() {
               target="_blank"
               rel="noopener noreferrer"
             >
-              ライブラリを見る <span aria-hidden="true">→</span>
+              ライブラリを見る
             </a>
           </div>
           <nav className="mobile-orbit-brief" aria-label="Four Directions">
@@ -48,15 +48,15 @@ export function NewHero() {
               <strong>Resources</strong>
               <small>Knowledge</small>
             </a>
-            <a className="mobile-orbit-link mobile-orbit-education" href="#education">
+            <a className="mobile-orbit-link mobile-orbit-education" href="#workshops">
               <span>03</span>
-              <strong>Education</strong>
-              <small>Learning</small>
+              <strong>Workshops</strong>
+              <small>Experience</small>
             </a>
             <a className="mobile-orbit-link mobile-orbit-community" href="#community">
               <span>04</span>
               <strong>Community</strong>
-              <small>Connection</small>
+              <small>Co-creation</small>
             </a>
           </nav>
         </div>
@@ -65,7 +65,7 @@ export function NewHero() {
           className="hero-visual hero-visual--editorial"
           data-reveal
           role="img"
-          aria-label="COMPASSを中心にTechnology、Resources、Education、Communityの四つの方向を示す羅針盤"
+          aria-label="COMPASSを中心にTechnology、Resources、Workshops、Communityの四つの方向を示す羅針盤"
         >
           <div className="precision-compass" aria-hidden="true">
             <div className="precision-compass__field" />
@@ -84,7 +84,7 @@ export function NewHero() {
               <span>02 · EAST</span><strong>Resources</strong><small>KNOWLEDGE</small>
             </div>
             <div className="precision-compass__axis precision-compass__axis--education">
-              <span>03 · SOUTH</span><strong>Education</strong><small>LEARNING</small>
+              <span>03 · SOUTH</span><strong>Workshops</strong><small>EXPERIENCE</small>
             </div>
             <div className="precision-compass__axis precision-compass__axis--community">
               <span>04 · WEST</span><strong>Community</strong><small>CONNECTION</small>

@@ -6,12 +6,13 @@ import "../../styles/hero.css";
 import "../../styles/desktop-system.css";
 import "../../styles/official-immersive.css";
 import "../../styles/official-four-directions.css";
+import "../../styles/official-core-redesign.css";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://compass-official.pages.dev"),
   title: "COMPASS | 学生主導の教育・テクノロジープラットフォーム",
   description:
-    "COMPASSは、北里大学薬学部を起点に、独自教育システム、実践的な資料、講義・ワークショップ、学生コミュニティを通じて、学生の学びとより良い意思決定を支える任意の学生支援活動です。",
+    "COMPASSは、北里大学薬学部を起点に、WebシステムとAIを中核として、資料、ワークショップ、学生との共創をつなぎ、学びとより良い意思決定を支える任意の学生支援活動です。",
   keywords:
     "COMPASS, コンパス, 北里大学, 北里薬学部, 学生主導, 教育テクノロジー, 教育DX, リアルタイム講義支援, 未来戦略ライブラリ, AI活用教育, 生命科学教育, 学生コミュニティ, 松井優知",
   authors: [{ name: "COMPASS / 松井優知" }],
@@ -30,7 +31,7 @@ export const metadata: Metadata = {
     siteName: "COMPASS",
     title: "COMPASS | 学生主導の教育・テクノロジープラットフォーム",
     description:
-      "北里大学薬学部を起点に、独自教育システム、資料、教育実践、学生コミュニティを横断して、学びとより良い意思決定を支えます。",
+      "WebシステムとAIを中核に、資料、ワークショップ、共創をつなぎ、学生の学びとより良い意思決定を支えます。",
     url: "/",
     images: ["/images/hero.desktop.highlight.png"]
   },
@@ -38,7 +39,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "COMPASS | 学生主導の教育・テクノロジープラットフォーム",
     description:
-      "北里大学薬学部を起点に、独自教育システム、資料、教育実践、学生コミュニティを横断して、学びとより良い意思決定を支えます。",
+      "WebシステムとAIを中核に、資料、ワークショップ、共創をつなぎ、学生の学びとより良い意思決定を支えます。",
     images: ["/images/hero.desktop.highlight.png"]
   },
   formatDetection: { telephone: false }
