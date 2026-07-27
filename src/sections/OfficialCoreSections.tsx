@@ -34,7 +34,7 @@ export function VisionExperienceSection() {
         <SectionHeading
           label="Vision"
           id="vision-title"
-          title={<span>学びを、<br className="v4-desktop-break" />意思決定の力へ。</span>}
+          title={<><span className="v4-vision-line">学びを、</span><span className="v4-vision-line">意思決定の力へ。</span></>}
         />
 
         <div className="v4-vision__story v4-vision__story--minimal" data-reveal>
@@ -123,11 +123,13 @@ export function TechnologyCoreSection() {
           />
 
           <article className="v4-technology__interactive" data-reveal>
-            <p className="v4-card-kicker">COMPASS INTERACTIVE / 参加型講義システム</p>
-            <h3>わからないが、<br className="v4-mobile-break" />動き出す。</h3>
-            <p className="v4-technology__interactive-lead">教室にいる全員の疑問が、次の説明を動かす。</p>
-            <p>COMPASS Interactiveは、一方向だった講義を、学生の反応によって変化する体験へ変えます。</p>
-            <a className="v4-button v4-button--light" href={interactiveIntroUrl}>未来を体験する</a>
+            <p className="v4-card-kicker">COMPASS INTERACTIVE</p>
+            <h3>わからないが、動き出す。</h3>
+            <div className="v4-technology__interactive-copy">
+              <p>あなたが飲み込んだその疑問を、誰かも同じように抱えているかもしれない。</p>
+              <p>問いも、迷いも、ひらめきも。その場にいる全員の思考が重なったとき、講義はただの説明ではなく、自分たちの学びに変わります。</p>
+              <p>講義はもう、聞くだけじゃない。</p>
+            </div>
           </article>
         </div>
       </div>
@@ -143,10 +145,13 @@ export function ResourcesExperienceSection() {
           label="Resources / 未来への入口"
           id="resources-title"
           title={<span>知らなかった<br className="v4-mobile-break" />未来に、出会う。</span>}
-          description={<><p>進路は、知っている選択肢の中からしか選べません。</p><p>未来戦略ライブラリは、英語、AI、研究室選び、大学院進学、キャリア形成まで、学生が自分の未来を考えるための知識と戦略を一つにつなぎます。</p><p>知らなかった選択肢が、次の一歩を変えるかもしれません。</p></>}
+          description={<><p>次の試験に役立つ情報を探しに来たはずが、<br />気づけば、その先の未来まで見えてくる。</p><p>同じ大学、同じ授業、同じ試験。<br />それでも、知っている情報によって、その先は変わります。</p><p>目の前で使える情報から、<br />これからの選択を有利にする知識まで。</p><p>知らないまま進む前に、一度ここを見てください。</p></>}
         />
         <div className="v4-resource-gateway" data-reveal>
-          <a className="v4-button v4-button--primary" href={libraryUrl} {...externalProps}>まだ知らない未来を見る</a>
+          <div className="v4-resource-gateway__primary">
+            <a className="v4-button v4-button--primary" href={libraryUrl} {...externalProps}>まだ知らない世界を見る</a>
+            <small>北里大学薬学部生対象</small>
+          </div>
           <a className="v4-resource-gateway__secondary" href={essentialsUrl} {...externalProps}>薬学部生以外の方はこちら</a>
         </div>
       </div>
@@ -159,16 +164,32 @@ export function CommunityExperienceSection() {
     <section id="community" className="v4-section v4-community" aria-labelledby="community-title">
       <div className="v4-container">
         <SectionHeading
-          label="Community"
+          label="Community / 運営メンバー募集"
           id="community-title"
-          title={<span>ひとりでは、<br className="v4-mobile-break" />たどり着けない場所へ。</span>}
+          title={<><span>面白い大学生活は、</span><span>待っていても始まらない。</span></>}
         />
-        <div className="v4-community__story" data-reveal>
-          <p>COMPASSは、白金キャンパスを主な拠点に、学生がつながり、新しい学びや挑戦を一緒に形にしていくコミュニティです。</p>
-          <p>教育イベントやワークショップ、情報発信、資料制作、広報、デザイン、動画制作、Webシステム開発など、活動の形はさまざまです。普段の大学生活だけでは出会えない人や考え方に触れながら、自分の興味を企画や作品として形にできます。</p>
-          <p>最初から得意なことや、やりたいことが決まっている必要はありません。専門知識や経験がなくても、活動に触れ、仲間と話す中で、自分に合った関わり方を見つけられます。</p>
-          <p>何か新しいことを始めたい。大学生活を少し変えてみたい。そんな気持ちがあれば、十分です。私たちと一緒に、ここから始めてみませんか。</p>
-          <a className="v4-button v4-button--light" href={joinUrl} {...externalProps}>コミュニティに参加する</a>
+        <div className="v4-community__experience" data-reveal>
+          <div className="v4-community__lead">
+            <p className="v4-community__opening">イベントも、デザインも、映像も、Webサービスも。<br />「こんなものがあったらいい」を持ち寄り、仲間と話しながら、少しずつ形にしていく。</p>
+            <p>COMPASSは、白金キャンパスを拠点に、学生自身が新しい学びや作品、仕組みを生み出していくコミュニティです。</p>
+          </div>
+
+          <div className="v4-community__body">
+            <p>教育イベントやワークショップの企画・運営、情報発信、教材や資料の制作、広報、デザイン、写真・動画制作、Webシステム開発。興味のある活動に加わることも、自分のアイデアから新しい企画を始めることもできます。</p>
+            <p className="v4-community__pivot">けれど、ここは、最初から何かができる人だけの場所ではありません。</p>
+            <div className="v4-community__welcome">
+              <p>文章を書いたことがなくても。</p>
+              <p>デザインや開発に触れたことがなくても。</p>
+              <p>何をしたいのか、まだ言葉にできなくても大丈夫です。</p>
+            </div>
+            <p>まずは話を聞く。誰かのアイデアに意見を添える。できそうなことを、一緒に試してみる。わからないことがあれば教え合い、困ったときには立ち止まりながら、自分に合う役割を見つけていけます。</p>
+            <p>一人で完成させる必要はありません。自信がなくても、ここには一緒に考え、手を動かしてくれる人がいます。</p>
+          </div>
+
+          <div className="v4-community__invitation">
+            <p>大学生活に、予定されていなかった挑戦と出会いを。<br />その最初の一歩を、ここから始めてみませんか。</p>
+            <a className="v4-button v4-community__cta" href={joinUrl} {...externalProps}>コミュニティに参加する</a>
+          </div>
         </div>
       </div>
     </section>

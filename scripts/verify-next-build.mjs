@@ -62,17 +62,21 @@ for (const expected of [
   'href="https://forms.gle/sW49M329Dcets8ga9"',
   'rel="canonical" href="https://compass-official.pages.dev/"',
   'type="application/ld+json"',
-  'class="v4-desktop-break"',
+  'class="v4-vision-line"',
   'class="v4-technology__interactive"',
   "次の1歩は、",
   "ここから始まる。",
   "わからないが、",
   "動き出す。",
-  "未来を体験する",
-  "まだ知らない未来を見る",
+  "あなたが飲み込んだその疑問を、誰かも同じように抱えているかもしれない。",
+  "講義はもう、聞くだけじゃない。",
+  "まだ知らない世界を見る",
+  "北里大学薬学部生対象",
   "薬学部生以外の方はこちら",
-  "ひとりでは、",
-  "たどり着けない場所へ。",
+  "Community / 運営メンバー募集",
+  "面白い大学生活は、",
+  "待っていても始まらない。",
+  "大学生活に、予定されていなかった挑戦と出会いを。",
   "面白そうなので、",
   "始めました。",
   "About COMPASS",
@@ -115,8 +119,19 @@ for (const unexpected of [
   "自分の手で試してみる。",
   "その一つひとつが、未来を選ぶ力になります。",
   "知る。試す。つくる。",
-  "資料が届く。疑問を送れる。理解を確かめられる。講義のあとも振り返れる。"
+  "資料が届く。疑問を送れる。理解を確かめられる。講義のあとも振り返れる。",
+  "未来を体験する",
+  "教室にいる全員の疑問が、次の説明を動かす。",
+  "COMPASS Interactiveは、一方向だった講義を、学生の反応によって変化する体験へ変えます。",
+  "まだ知らない未来を見る"
 ]) expectExcludes(official, unexpected, "Official page");
+
+const visionLineCount = (official.match(/class="v4-vision-line"/g) ?? []).length;
+if (visionLineCount !== 2) throw new Error(`Official page must contain exactly two Vision lines; found ${visionLineCount}.`);
+
+const interactiveCard = official.match(/<article class="v4-technology__interactive"[\s\S]*?<\/article>/)?.[0];
+if (!interactiveCard) throw new Error("Official page is missing the Interactive card.");
+if (interactiveCard.includes("<a ")) throw new Error("Interactive card must not contain a CTA link.");
 
 for (const expected of [
   '<html lang="ja"',
