@@ -140,7 +140,7 @@ export function TechnologyCoreSection() {
               <p>あなたが飲み込んだその疑問を、誰かも同じように抱えているかもしれない。</p>
               <p>問いも、迷いも、ひらめきも。その場にいる全員の思考が重なったとき、講義はただの説明ではなく、自分たちの学びに変わります。</p>
             </div>
-            <a className="v4-button v4-technology__interactive-cta" href={interactiveIntroUrl}>未来の講義を、いま体験</a>
+            <a className="v4-button v4-technology__interactive-cta" href={interactiveIntroUrl}>未来の講義を、いま体験。</a>
           </article>
         </div>
       </div>
@@ -192,29 +192,26 @@ export function CommunityExperienceSection() {
           title={<><span>面白い大学生活は、</span><span>待っていても始まらない。</span></>}
         />
         <div className="v4-community__experience" data-reveal>
-          <div className="v4-community__lead">
-            <p className="v4-community__opening">イベントも、デザインも、映像も、Webサービスも。「こんなものがあったらいい」を持ち寄り、仲間と話しながら、少しずつ形にしていく。</p>
-            <p>COMPASSは、白金キャンパスを拠点に、学生自身が新しい学びや作品、仕組みを生み出していくコミュニティです。</p>
+          <div className="v4-community__overview">
+            <p>ふと思いついた企画を、休み時間に誰かと話してみる。<br />アイデアを出し合い、デザインや映像をつくり、実際のイベントやサービスとして学生に届ける。</p>
+            <p>COMPASSは、白金キャンパスを拠点に、学生の「やってみたい」を、仲間と形にするコミュニティです。</p>
           </div>
 
-          <div className="v4-community__body">
-            <p>教育イベントやワークショップの企画・運営、情報発信、教材や資料の制作、広報、デザイン、写真・動画制作、Webシステム開発。興味のある活動に加わることも、自分のアイデアから新しい企画を始めることもできます。</p>
-            <p className="v4-community__pivot">けれど、ここは、最初から何かができる人だけの場所ではありません。</p>
-            <div className="v4-community__welcome">
-              <p>文章を書いたことがなくても。</p>
-              <p>デザインや開発に触れたことがなくても。</p>
-              <p>何をしたいのか、まだ言葉にできなくても大丈夫です。</p>
+          <details className="v4-community__details">
+            <summary>
+              <span className="v4-community__read-more">続きを読む</span>
+              <span className="v4-community__read-less">閉じる</span>
+            </summary>
+            <div className="v4-community__details-copy">
+              <p>教育イベントやワークショップの企画・運営、SNSでの情報発信、教材や資料の制作、広報、デザイン、写真・動画制作、Webシステム開発。<br />興味のある活動に加わることも、自分のアイデアから新しい企画を始めることもできます。</p>
+              <p>完全な初心者からでも大丈夫です。<br />投稿やイベントのアイデアを考えるところから始めて、デザイン、動画制作、Web開発まで、興味に合わせて一から挑戦できます。</p>
+              <p>最初は「少し面白そう」だけでも、やがて本格的な映像や、実際に学生が使うWebサービスまでつくれるようになる。<br />仲間と楽しみながら、自分でも驚くような作品や経験を増やしていけます。</p>
+              <p>一人では思いつかなかったことが、会話の中で生まれる。<br />一人では形にできなかったことが、仲間となら形になる。</p>
+              <p>大学生活に、予定されていなかった挑戦と出会いを。</p>
             </div>
-            <div className="v4-community__support">
-              <p>まずは話を聞く。誰かのアイデアに意見を添える。できそうなことを、一緒に試してみる。わからないことがあれば教え合い、困ったときには立ち止まりながら、自分に合う役割を見つけていけます。</p>
-              <p>一人で完成させる必要はありません。自信がなくても、ここには一緒に考え、手を動かしてくれる人がいます。</p>
-            </div>
-          </div>
+          </details>
 
-          <div className="v4-community__invitation">
-            <p>大学生活に、予定されていなかった挑戦と出会いを。<br />その最初の一歩を、ここから始めてみませんか。</p>
-            <a className="v4-button v4-community__cta" href={joinUrl} {...externalProps}>コミュニティに参加する</a>
-          </div>
+          <a className="v4-button v4-community__cta" href={joinUrl} {...externalProps}>コミュニティに参加する</a>
         </div>
       </div>
     </section>

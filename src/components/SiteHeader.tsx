@@ -113,8 +113,6 @@ export function SiteHeader() {
   const [mobileMounted, setMobileMounted] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [pendingMobileTarget, setPendingMobileTarget] = useState<string | null>(null);
-  const [scrolled, setScrolled] = useState(false);
-  const [onLightHero, setOnLightHero] = useState(true);
 
   const closeMobileMenu = (restoreFocus = true) => {
     setMobileOpen(false);
@@ -128,18 +126,6 @@ export function SiteHeader() {
     setMobileMounted(true);
     window.requestAnimationFrame(() => setMobileOpen(true));
   };
-
-  useEffect(() => {
-    const updateHeader = () => {
-      setScrolled(window.scrollY > 12);
-      const hero = document.querySelector(".hero--editorial");
-      const headerHeight = headerRef.current?.getBoundingClientRect().height ?? 0;
-      setOnLightHero(Boolean(hero && hero.getBoundingClientRect().bottom > headerHeight));
-    };
-    updateHeader();
-    window.addEventListener("scroll", updateHeader, { passive: true });
-    return () => window.removeEventListener("scroll", updateHeader);
-  }, []);
 
   useEffect(() => {
     const ids = ["top", "experience", "technology", "resources", "community", "contact", "founder", "message"];
@@ -230,16 +216,10 @@ export function SiteHeader() {
     setPendingMobileTarget(href);
   };
 
-  const headerClasses = [
-    "site-header",
-    scrolled ? "is-scrolled" : "",
-    onLightHero ? "is-on-light-hero" : ""
-  ].filter(Boolean).join(" ");
-
   return (
     <>
       <a className="skip-link" href="#main">本文へスキップ</a>
-      <header ref={headerRef} className={headerClasses} data-site-header>
+      <header ref={headerRef} className="site-header" data-site-header>
         <div className="header-inner">
           <a className="site-logo" href="#top" aria-label="COMPASS Home">
             <span className="logo-mark" aria-hidden="true"><span /></span>

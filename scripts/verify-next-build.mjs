@@ -69,7 +69,7 @@ for (const expected of [
   "わからないが、",
   "動き出す。",
   "あなたが飲み込んだその疑問を、誰かも同じように抱えているかもしれない。",
-  "未来の講義を、いま体験",
+  "未来の講義を、いま体験。",
   "ひとりでは見えない、",
   "新しい場所へ。",
   "今すぐ使えて、数年後の選択にも効いてくる。",
@@ -78,9 +78,13 @@ for (const expected of [
   "北里大学薬学部生対象",
   "薬学部生以外の方はこちら",
   "Community / 運営メンバー募集",
-  'class="v4-community__support"',
+  'class="v4-community__details"',
+  "続きを読む",
   "面白い大学生活は、",
   "待っていても始まらない。",
+  "ふと思いついた企画を、休み時間に誰かと話してみる。",
+  "COMPASSは、白金キャンパスを拠点に、学生の「やってみたい」を、仲間と形にするコミュニティです。",
+  "完全な初心者からでも大丈夫です。",
   "大学生活に、予定されていなかった挑戦と出会いを。",
   "面白そうなので、",
   "始めました。",
@@ -132,7 +136,11 @@ for (const unexpected of [
   "目の前で使える情報から、",
   "これからの選択を有利にする知識まで。",
   "知らないまま進む前に、一度ここを見てください。",
-  "講義はもう、聞くだけじゃない。"
+  "講義はもう、聞くだけじゃない。",
+  'class="v4-community__lead"',
+  'class="v4-community__support"',
+  'class="v4-community__invitation"',
+  "イベントも、デザインも、映像も、Webサービスも。"
 ]) expectExcludes(official, unexpected, "Official page");
 
 const visionLineCount = (official.match(/class="v4-vision-line"/g) ?? []).length;
@@ -140,8 +148,17 @@ if (visionLineCount !== 2) throw new Error(`Official page must contain exactly t
 
 const interactiveCard = official.match(/<article class="v4-technology__interactive"[\s\S]*?<\/article>/)?.[0];
 if (!interactiveCard) throw new Error("Official page is missing the Interactive card.");
-expectIncludes(interactiveCard, "未来の講義を、いま体験", "Interactive card");
+expectIncludes(interactiveCard, "未来の講義を、いま体験。", "Interactive card");
 expectIncludes(interactiveCard, 'href="/INTRO_Interactive/"', "Interactive card");
+
+const communitySection = official.match(/<section id="community"[\s\S]*?<\/section>/)?.[0];
+if (!communitySection) throw new Error("Official page is missing the Community section.");
+expectIncludes(communitySection, '<details class="v4-community__details">', "Community section");
+expectIncludes(communitySection, "続きを読む", "Community section");
+expectIncludes(communitySection, "SNSでの情報発信", "Community section");
+if (/<details class="v4-community__details"\s+open/.test(communitySection)) {
+  throw new Error("Community details must be closed by default.");
+}
 
 const resourcesCard = official.match(/<article class="v4-experience-card v4-experience-card--resources"[\s\S]*?<\/article>/)?.[0];
 if (!resourcesCard) throw new Error("Official page is missing the Resources experience card.");
