@@ -19,7 +19,7 @@ export function SiteFooter() {
 
     <nav className="footer-cta" aria-label="Footer calls to action">
       <a href="https://compass-official.pages.dev/future-strategy-library/" target="_blank" rel="noopener noreferrer">未来戦略ライブラリを見る</a>
-      <a href="https://docs.google.com/forms/u/1/d/e/1FAIpQLSe8Z0GkK9lmXKutLWO8lGezBoP5zPstNlkAnUEqVOx_IY7v7g/viewform" target="_blank" rel="noopener noreferrer">COMPASSに参加する</a>
+      <a href="/community/join/">COMPASSに参加する</a>
     </nav>
 
     <div className="footer-note">

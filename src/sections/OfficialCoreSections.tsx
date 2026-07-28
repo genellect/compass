@@ -3,7 +3,7 @@ import type { ReactNode } from "react";
 const interactiveIntroUrl = "/INTRO_Interactive/";
 const libraryUrl = "https://compass-official.pages.dev/future-strategy-library/";
 const essentialsUrl = "https://forms.gle/sW49M329Dcets8ga9";
-const joinUrl = "https://docs.google.com/forms/u/1/d/e/1FAIpQLSe8Z0GkK9lmXKutLWO8lGezBoP5zPstNlkAnUEqVOx_IY7v7g/viewform";
+const joinUrl = "/community/join/";
 
 const externalProps = { target: "_blank", rel: "noopener noreferrer" } as const;
 
@@ -211,7 +211,7 @@ export function CommunityExperienceSection() {
             </div>
           </details>
 
-          <a className="v4-button v4-community__cta" href={joinUrl} {...externalProps}>コミュニティに参加する</a>
+          <a className="v4-button v4-community__cta" href={joinUrl}>コミュニティに参加する</a>
         </div>
       </div>
     </section>

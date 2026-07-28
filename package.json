@@ -4,24 +4,29 @@
   "version": "3.0.0",
   "scripts": {
     "dev": "next dev --hostname 127.0.0.1",
+    "dev:pages": "wrangler pages dev out --port 8788",
     "typecheck": "tsc --noEmit",
+    "test:registration": "vitest run tests/community-registration-schema.test.ts tests/community-registration-function.test.ts",
     "clean": "node scripts/clean-next-output.mjs",
     "optimize:images": "node scripts/optimize-images.mjs",
     "build": "npm run clean && npm run optimize:images && next build --webpack && node scripts/assemble-next-export.mjs",
     "verify": "node scripts/verify-next-build.mjs",
-    "deploy:cloudflare": "npx wrangler pages deploy out --project-name compass-official",
-    "check": "npm run typecheck && npm run build && npm run verify"
+    "deploy:cloudflare": "wrangler pages deploy out --project-name compass-official",
+    "check": "npm run test:registration && npm run typecheck && npm run build && npm run verify"
   },
   "dependencies": {
     "next": "^16.0.0",
     "react": "^19.2.7",
-    "react-dom": "^19.2.7"
+    "react-dom": "^19.2.7",
+    "zod": "^4.4.3"
   },
   "devDependencies": {
     "@types/node": "^24.0.0",
     "@types/react": "^19.2.17",
     "@types/react-dom": "^19.2.3",
     "sharp": "0.34.5",
-    "typescript": "5.9.3"
+    "typescript": "5.9.3",
+    "vitest": "^4.1.10",
+    "wrangler": "^4.114.0"
   }
 }

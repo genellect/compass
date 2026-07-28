@@ -93,7 +93,7 @@ export function CommunitySection() {
             </div>
           </Disclosure>
 
-          <a className="button button-primary community-join-button" href="https://docs.google.com/forms/u/1/d/e/1FAIpQLSe8Z0GkK9lmXKutLWO8lGezBoP5zPstNlkAnUEqVOx_IY7v7g/viewform" target="_blank" rel="noopener noreferrer">
+          <a className="button button-primary community-join-button" href="/community/join/">
             コミュニティに参加する
           </a>
         </div>

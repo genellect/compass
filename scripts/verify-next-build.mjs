@@ -45,6 +45,8 @@ function expectSameMap(label, expected, actual) {
 
 const official = await readFile(path.join(out, "index.html"), "utf8");
 const interactive = await readFile(path.join(out, "INTRO_Interactive", "index.html"), "utf8");
+const communityJoin = await readFile(path.join(out, "community", "join", "index.html"), "utf8");
+const messages = await readFile(path.join(out, "messages", "index.html"), "utf8");
 
 for (const expected of [
   '<html lang="ja"',
@@ -59,6 +61,7 @@ for (const expected of [
   'id="contact"',
   'href="messages/index.html"',
   'href="INTRO_Interactive/"',
+  'href="/community/join/"',
   'href="https://forms.gle/sW49M329Dcets8ga9"',
   'rel="canonical" href="https://compass-official.pages.dev/"',
   'type="application/ld+json"',
@@ -96,6 +99,12 @@ for (const expected of [
   "学生主導の教育・テクノロジープラットフォーム",
   "G-EHKJ8B8N0Y"
 ]) expectIncludes(official, expected, "Official page");
+
+expectExcludes(
+  official,
+  "https://docs.google.com/forms/u/1/d/e/1FAIpQLSe8Z0GkK9lmXKutLWO8lGezBoP5zPstNlkAnUEqVOx_IY7v7g/viewform",
+  "Official page"
+);
 
 for (const unexpected of [
   "β版",
@@ -187,10 +196,57 @@ if (interactive.includes('<div id="root"></div>')) {
 expectOneH1(official, "Official page");
 expectOneH1(interactive, "Interactive page");
 
+for (const expected of [
+  '<html lang="ja"',
+  "COMPASS Communityに参加する",
+  "必要事項をご入力ください。",
+  "氏名",
+  "学生メールアドレス",
+  "学部・学科",
+  "学籍番号",
+  "やってみたい活動",
+  "デザイン",
+  "カメラマン",
+  "Web開発",
+  "AIの使い方",
+  "深層学習・AIエージェント",
+  "大学院生",
+  "興味を持った理由や、やってみたいことがあればご記入ください",
+  "参加を申し込む",
+  'rel="canonical" href="https://compass-official.pages.dev/community/join/"',
+  'content="noindex, follow"'
+]) expectIncludes(communityJoin, expected, "Community registration page");
+
+for (const unexpected of [
+  "興味を、",
+  "フォームを入力",
+  "所要時間 約3分",
+  "北里大学の学生が対象です",
+  "APPLICATION FORM",
+  "sample@st.kitasato-u.ac.jp",
+  "自由にご記入ください",
+  "私はロボットではありません",
+  "For testing only."
+]) expectExcludes(communityJoin, unexpected, "Community registration page");
+
+expectOneH1(communityJoin, "Community registration page");
+
+expectIncludes(
+  messages,
+  '<a href="/community/join/" target="_blank" rel="noopener noreferrer">コミュニティに参加する</a>',
+  "Messages community link"
+);
+expectExcludes(
+  messages,
+  "https://docs.google.com/forms/u/1/d/e/1FAIpQLSe8Z0GkK9lmXKutLWO8lGezBoP5zPstNlkAnUEqVOx_IY7v7g/viewform",
+  "Messages community link"
+);
+
 for (const relative of [
   "messages/index.html",
   "future-strategy-library/index.html",
   "images/compass-mark.svg",
+  "_routes.json",
   "_headers",
   "_redirects",
   "robots.txt",

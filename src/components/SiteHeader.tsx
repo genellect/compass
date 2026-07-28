@@ -66,10 +66,9 @@ const navGroups: NavGroup[] = [
     items: [
       { href: "#community", label: "About COMPASS", description: "仲間と始める、新しい挑戦" },
       {
-        href: "https://docs.google.com/forms/u/1/d/e/1FAIpQLSe8Z0GkK9lmXKutLWO8lGezBoP5zPstNlkAnUEqVOx_IY7v7g/viewform",
+        href: "/community/join/",
         label: "Join COMPASS",
-        description: "興味を、最初の一歩に変える",
-        external: true
+        description: "興味を、最初の一歩に変える"
       }
     ]
   }
