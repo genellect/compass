@@ -5,8 +5,8 @@ import { INTEREST_OPTIONS, TURNSTILE_ACTION } from "../src/lib/community-registr
 const origin = "https://compass-official.pages.dev";
 const requestId = "1f386090-84e0-4c2f-a4d7-6f8f4f8ad141";
 const env: RegistrationEnv = {
-  REGISTRATION_FROM_EMAIL: "COMPASS <community@mail.compass-official.example>",
-  RESEND_API_KEY: "test-resend-key",
+  GOOGLE_APPS_SCRIPT_URL: "https://script.google.com/macros/s/test-deployment-id_123/exec",
+  GOOGLE_APPS_SCRIPT_SECRET: "test-shared-secret-that-is-long-enough",
   TURNSTILE_SECRET_KEY: "test-turnstile-secret"
 };
 const payload = {
@@ -47,11 +47,10 @@ afterEach(() => {
 });
 
 describe("community registration Pages Function", () => {
-  it("verifies Turnstile and sends the operator and applicant emails", async () => {
+  it("verifies Turnstile and relays only validated fields to Google Apps Script", async () => {
     const fetchMock = vi.fn()
       .mockResolvedValueOnce(acceptedTurnstile())
-      .mockResolvedValueOnce(new Response(JSON.stringify({ id: "operator-email" }), { status: 200 }))
-      .mockResolvedValueOnce(new Response(JSON.stringify({ id: "applicant-email" }), { status: 200 }));
+      .mockResolvedValueOnce(new Response(JSON.stringify({ ok: true, requestId }), { status: 200 }));
     vi.stubGlobal("fetch", fetchMock);
 
     const response = await onRequest({ env, request: registrationRequest() });
@@ -59,7 +58,7 @@ describe("community registration Pages Function", () => {
 
     expect(response.status).toBe(200);
     expect(result).toEqual({ ok: true, requestId });
-    expect(fetchMock).toHaveBeenCalledTimes(3);
+    expect(fetchMock).toHaveBeenCalledTimes(2);
 
     const turnstileCall = fetchMock.mock.calls[0];
     expect(turnstileCall[0]).toBe("https://challenges.cloudflare.com/turnstile/v0/siteverify");
@@ -67,43 +66,23 @@ describe("community registration Pages Function", () => {
     expect(turnstileBody.get("response")).toBe("verified-token");
     expect(turnstileBody.get("remoteip")).toBe("192.0.2.10");
 
-    const operatorInit = fetchMock.mock.calls[1][1] as RequestInit;
-    const operator = JSON.parse(String(operatorInit.body)) as { reply_to: string; subject: string; text: string; to: string[] };
-    expect(operator.to).toEqual(["matsui.yuto@st.kitasato-u.ac.jp"]);
-    expect(operator.reply_to).toBe(payload.email);
-    expect(operator.subject).toBe("【COMPASS】Community登録申請");
-    expect(operator.text).toContain("COMPASS Communityの登録申請がありました。");
-    expect(operator.text).toContain("・氏名：松井 優人");
-    expect(operator.text).toContain("・学籍番号：PP00000");
-    expect(operator.text).toContain(`・${INTEREST_OPTIONS[1]}`);
-    expect(new Headers(operatorInit.headers).get("Idempotency-Key")).toBe(`community-operator-${requestId}`);
-
-    const applicantInit = fetchMock.mock.calls[2][1] as RequestInit;
-    const applicant = JSON.parse(String(applicantInit.body)) as { reply_to: string; subject: string; text: string; to: string[] };
-    expect(applicant.to).toEqual([payload.email]);
-    expect(applicant.reply_to).toBe("matsui.yuto@st.kitasato-u.ac.jp");
-    expect(applicant.subject).toBe("【COMPASS】コミュニティ参加フォームを受け付けました");
-    expect(applicant.text).toBe(`松井 優人 さん
-
-COMPASSにご関心をお寄せいただき、ありがとうございます。
-
-コミュニティ参加フォームへのご登録を受け付けました。
-今後の活動等につきましては、内容を確認のうえ、代表よりご登録のメールアドレス宛にご連絡いたします。
-
-今後ともCOMPASSをよろしくお願いいたします。
-
-【本メールにお心当たりのない方へ】
-
-メールアドレスが誤って入力された可能性がございます。大変お手数ですが、本メールへの返信、または公式サイトのお問い合わせフォームよりご連絡いただけますと幸いです。
-
-――――――――――――――――
-学生支援団体COMPASS
-代表　Yuto Matsui
-
-公式サイト
-https://compass-official.pages.dev/
-――――――――――――――――`);
-    expect(new Headers(applicantInit.headers).get("Idempotency-Key")).toBe(`community-applicant-${requestId}`);
+    const gasCall = fetchMock.mock.calls[1];
+    expect(gasCall[0]).toBe(env.GOOGLE_APPS_SCRIPT_URL);
+    const gasBody = JSON.parse(String(gasCall[1]?.body)) as Record<string, unknown>;
+    expect(gasBody).toMatchObject({
+      sharedSecret: env.GOOGLE_APPS_SCRIPT_SECRET,
+      requestId,
+      name: payload.name,
+      email: payload.email,
+      facultyDepartment: payload.facultyDepartment,
+      studentId: payload.studentId,
+      year: payload.year,
+      interests: payload.interests,
+      motivation: payload.motivation
+    });
+    expect(gasBody.receivedAt).toEqual(expect.any(String));
+    expect(gasBody).not.toHaveProperty("turnstileToken");
+    expect(gasBody).not.toHaveProperty("website");
   });
 
   it("rejects malformed fields before any external request", async () => {
@@ -131,7 +110,7 @@ https://compass-official.pages.dev/
     expect(fetchMock).not.toHaveBeenCalled();
   });
 
-  it("stops before email delivery when Turnstile evidence is invalid", async () => {
+  it("stops before GAS delivery when Turnstile evidence is invalid", async () => {
     const fetchMock = vi.fn().mockResolvedValueOnce(new Response(JSON.stringify({ success: false }), { status: 200 }));
     vi.stubGlobal("fetch", fetchMock);
 
@@ -141,5 +120,36 @@ https://compass-official.pages.dev/
     expect(response.status).toBe(422);
     expect(result.code).toBe("turnstile");
     expect(fetchMock).toHaveBeenCalledTimes(1);
+  });
+
+  it("rejects non-Google or test deployment URLs", async () => {
+    const fetchMock = vi.fn();
+    vi.stubGlobal("fetch", fetchMock);
+
+    const nonGoogle = await onRequest({
+      env: { ...env, GOOGLE_APPS_SCRIPT_URL: "https://attacker.example/exec" },
+      request: registrationRequest()
+    });
+    const developmentUrl = await onRequest({
+      env: { ...env, GOOGLE_APPS_SCRIPT_URL: "https://script.google.com/macros/s/test/development/dev" },
+      request: registrationRequest()
+    });
+
+    expect(nonGoogle.status).toBe(503);
+    expect(developmentUrl.status).toBe(503);
+    expect(fetchMock).not.toHaveBeenCalled();
+  });
+
+  it("returns an email error when GAS does not confirm the same request", async () => {
+    const fetchMock = vi.fn()
+      .mockResolvedValueOnce(acceptedTurnstile())
+      .mockResolvedValueOnce(new Response(JSON.stringify({ ok: false, code: "email" }), { status: 200 }));
+    vi.stubGlobal("fetch", fetchMock);
+
+    const response = await onRequest({ env, request: registrationRequest() });
+    const result = await response.json() as { code: string };
+
+    expect(response.status).toBe(502);
+    expect(result.code).toBe("email");
   });
 });

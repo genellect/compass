@@ -47,6 +47,8 @@ const official = await readFile(path.join(out, "index.html"), "utf8");
 const interactive = await readFile(path.join(out, "INTRO_Interactive", "index.html"), "utf8");
 const communityJoin = await readFile(path.join(out, "community", "join", "index.html"), "utf8");
 const messages = await readFile(path.join(out, "messages", "index.html"), "utf8");
+const registrationFunction = await readFile(path.join(root, "functions", "api", "community-registration.ts"), "utf8");
+const gasCode = await readFile(path.join(root, "google-apps-script", "Code.gs"), "utf8");
 
 for (const expected of [
   '<html lang="ja"',
@@ -241,6 +243,29 @@ expectExcludes(
   "https://docs.google.com/forms/u/1/d/e/1FAIpQLSe8Z0GkK9lmXKutLWO8lGezBoP5zPstNlkAnUEqVOx_IY7v7g/viewform",
   "Messages community link"
 );
+
+for (const expected of [
+  "GOOGLE_APPS_SCRIPT_URL",
+  "GOOGLE_APPS_SCRIPT_SECRET",
+  "TURNSTILE_SECRET_KEY",
+  "script.google.com",
+  "sharedSecret"
+]) expectIncludes(registrationFunction, expected, "Community registration Pages Function");
+
+for (const expected of [
+  'ADMIN_EMAIL: "matsui.yuto@st.kitasato-u.ac.jp"',
+  'FORM_SECRET_PROPERTY: "FORM_SHARED_SECRET"',
+  "COMPASS Communityの登録申請がありました。",
+  "コミュニティ参加フォームへのご登録を受け付けました。",
+  "MailApp.sendEmail",
+  "validateRegistration_",
+  "constantTimeEquals_"
+]) expectIncludes(gasCode, expected, "Community registration GAS code");
+
+for (const unexpected of ["RESEND_API_KEY", "REGISTRATION_FROM_EMAIL", "api.resend.com"]) {
+  expectExcludes(registrationFunction, unexpected, "Community registration Pages Function");
+  expectExcludes(gasCode, unexpected, "Community registration GAS code");
+}
 
 for (const relative of [
   "messages/index.html",

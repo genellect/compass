@@ -7,13 +7,12 @@ import {
 } from "../../src/lib/community-registration-schema";
 
 const MAX_BODY_BYTES = 16 * 1024;
-const OPERATOR_EMAIL = "matsui.yuto@st.kitasato-u.ac.jp";
-const RESEND_ENDPOINT = "https://api.resend.com/emails";
+const GAS_TIMEOUT_MS = 20_000;
 const TURNSTILE_ENDPOINT = "https://challenges.cloudflare.com/turnstile/v0/siteverify";
 
 export type RegistrationEnv = {
-  REGISTRATION_FROM_EMAIL?: string;
-  RESEND_API_KEY?: string;
+  GOOGLE_APPS_SCRIPT_SECRET?: string;
+  GOOGLE_APPS_SCRIPT_URL?: string;
   TURNSTILE_SECRET_KEY?: string;
 };
 
@@ -28,12 +27,9 @@ type TurnstileResult = {
   success: boolean;
 };
 
-type ResendMessage = {
-  from: string;
-  reply_to: string;
-  subject: string;
-  text: string;
-  to: string[];
+type GasRelayResult = {
+  ok?: boolean;
+  requestId?: string;
 };
 
 const jsonHeaders = {
@@ -46,11 +42,29 @@ function jsonResponse(body: unknown, status: number) {
   return new Response(JSON.stringify(body), { status, headers: jsonHeaders });
 }
 
+function isAllowedGasWebAppUrl(value: string | undefined) {
+  if (!value) return false;
+
+  try {
+    const url = new URL(value);
+    return (
+      url.protocol === "https:" &&
+      url.hostname === "script.google.com" &&
+      /^\/macros\/s\/[A-Za-z0-9_-]+\/exec$/.test(url.pathname) &&
+      !url.search &&
+      !url.hash
+    );
+  } catch {
+    return false;
+  }
+}
+
 function hasRequiredConfiguration(env: RegistrationEnv): env is Required<RegistrationEnv> {
   return Boolean(
-    env.REGISTRATION_FROM_EMAIL &&
-    env.RESEND_API_KEY &&
-    env.TURNSTILE_SECRET_KEY
+    env.GOOGLE_APPS_SCRIPT_SECRET &&
+    env.GOOGLE_APPS_SCRIPT_SECRET.length >= 32 &&
+    env.TURNSTILE_SECRET_KEY &&
+    isAllowedGasWebAppUrl(env.GOOGLE_APPS_SCRIPT_URL)
   );
 }
 
@@ -80,61 +94,40 @@ async function verifyTurnstile(request: Request, env: Required<RegistrationEnv>,
   return result.success && result.hostname === requestHostname && result.action === TURNSTILE_ACTION;
 }
 
-function buildOperatorText(payload: CommunityRegistrationRequest, receivedAt: string) {
-  const interests = payload.interests.map((interest) => `  ・${interest}`).join("\n");
-  const motivation = payload.motivation || "（記入なし）";
-
-  return `COMPASS Communityの登録申請がありました。
-
-・氏名：${payload.name}
-・学生メールアドレス：${payload.email}
-・学部・学科：${payload.facultyDepartment}
-・学籍番号：${payload.studentId}
-・学年：${payload.year}
-・やってみたい活動：
-${interests}
-・興味を持った理由や、やってみたいこと：
-${motivation}
-
-・受付日時：${receivedAt}
-・受付ID：${payload.requestId}`;
-}
-
-function buildApplicantText(payload: CommunityRegistrationRequest) {
-  return `${payload.name} さん
-
-COMPASSにご関心をお寄せいただき、ありがとうございます。
-
-コミュニティ参加フォームへのご登録を受け付けました。
-今後の活動等につきましては、内容を確認のうえ、代表よりご登録のメールアドレス宛にご連絡いたします。
-
-今後ともCOMPASSをよろしくお願いいたします。
-
-【本メールにお心当たりのない方へ】
-
-メールアドレスが誤って入力された可能性がございます。大変お手数ですが、本メールへの返信、または公式サイトのお問い合わせフォームよりご連絡いただけますと幸いです。
-
-――――――――――――――――
-学生支援団体COMPASS
-代表　Yuto Matsui
-
-公式サイト
-https://compass-official.pages.dev/
-――――――――――――――――`;
-}
-
-async function sendResendEmail(env: Required<RegistrationEnv>, message: ResendMessage, idempotencyKey: string) {
-  const response = await fetch(RESEND_ENDPOINT, {
+async function relayToGoogleAppsScript(
+  env: Required<RegistrationEnv>,
+  payload: CommunityRegistrationRequest,
+  receivedAt: string
+) {
+  const response = await fetch(env.GOOGLE_APPS_SCRIPT_URL, {
     method: "POST",
-    headers: {
-      Authorization: `Bearer ${env.RESEND_API_KEY}`,
-      "Content-Type": "application/json",
-      "Idempotency-Key": idempotencyKey
-    },
-    body: JSON.stringify(message)
+    headers: { "Content-Type": "application/json; charset=utf-8" },
+    redirect: "follow",
+    signal: AbortSignal.timeout(GAS_TIMEOUT_MS),
+    body: JSON.stringify({
+      sharedSecret: env.GOOGLE_APPS_SCRIPT_SECRET,
+      requestId: payload.requestId,
+      receivedAt,
+      name: payload.name,
+      email: payload.email,
+      facultyDepartment: payload.facultyDepartment,
+      studentId: payload.studentId,
+      year: payload.year,
+      interests: payload.interests,
+      motivation: payload.motivation
+    })
   });
 
-  return response.ok;
+  if (!response.ok) return false;
+
+  let result: GasRelayResult;
+  try {
+    result = await response.json() as GasRelayResult;
+  } catch {
+    return false;
+  }
+
+  return result.ok === true && result.requestId === payload.requestId;
 }
 
 export async function onRequest(context: PagesContext): Promise<Response> {
@@ -201,36 +194,9 @@ export async function onRequest(context: PagesContext): Promise<Response> {
     return jsonResponse({ ok: false, code: "turnstile", message: "Bot確認を完了できませんでした。もう一度お試しください。" }, 422);
   }
 
-  const receivedAt = new Date().toISOString();
-  const operatorMessage: ResendMessage = {
-    from: env.REGISTRATION_FROM_EMAIL,
-    to: [OPERATOR_EMAIL],
-    reply_to: parsed.data.email,
-    subject: "【COMPASS】Community登録申請",
-    text: buildOperatorText(parsed.data, receivedAt)
-  };
-  const applicantMessage: ResendMessage = {
-    from: env.REGISTRATION_FROM_EMAIL,
-    to: [parsed.data.email],
-    reply_to: OPERATOR_EMAIL,
-    subject: "【COMPASS】コミュニティ参加フォームを受け付けました",
-    text: buildApplicantText(parsed.data)
-  };
-
   try {
-    const operatorAccepted = await sendResendEmail(
-      env,
-      operatorMessage,
-      `community-operator-${parsed.data.requestId}`
-    );
-    if (!operatorAccepted) throw new Error("operator_email_rejected");
-
-    const applicantAccepted = await sendResendEmail(
-      env,
-      applicantMessage,
-      `community-applicant-${parsed.data.requestId}`
-    );
-    if (!applicantAccepted) throw new Error("applicant_email_rejected");
+    const accepted = await relayToGoogleAppsScript(env, parsed.data, new Date().toISOString());
+    if (!accepted) throw new Error("gas_relay_rejected");
   } catch {
     console.error(`Community registration email delivery failed for request ${parsed.data.requestId}.`);
     return jsonResponse({ ok: false, code: "email", message: "メール送信を完了できませんでした。時間をおいて再度お試しください。" }, 502);
