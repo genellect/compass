@@ -28,7 +28,7 @@ const universityEmailSchema = z
   .transform((value) => value.toLowerCase())
   .refine((value) => value.slice(value.lastIndexOf("@") + 1) === "st.kitasato-u.ac.jp", FORM_ERROR_MESSAGE);
 
-export const communityRegistrationFieldsSchema = z.object({
+export const communityRegistrationFieldSchemas = {
   name: z.string().trim().min(2, FORM_ERROR_MESSAGE).max(20, FORM_ERROR_MESSAGE),
   email: universityEmailSchema,
   facultyDepartment: z.string().trim().min(5, FORM_ERROR_MESSAGE).max(30, FORM_ERROR_MESSAGE),
@@ -44,7 +44,9 @@ export const communityRegistrationFieldsSchema = z.object({
     .max(INTEREST_OPTIONS.length, FORM_ERROR_MESSAGE)
     .refine((items) => new Set(items).size === items.length, FORM_ERROR_MESSAGE),
   motivation: z.string().trim().max(1000, FORM_ERROR_MESSAGE)
-});
+};
+
+export const communityRegistrationFieldsSchema = z.object(communityRegistrationFieldSchemas);
 
 export const communityRegistrationRequestSchema = communityRegistrationFieldsSchema.extend({
   requestId: z.string().uuid(FORM_ERROR_MESSAGE),

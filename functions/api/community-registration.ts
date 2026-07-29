@@ -28,8 +28,18 @@ type TurnstileResult = {
 };
 
 type GasRelayResult = {
+  code?: string;
   ok?: boolean;
   requestId?: string;
+};
+
+type GasRelayOutcome = {
+  accepted: boolean;
+  contentType: string;
+  finalHost: string;
+  reason: string;
+  redirected: boolean;
+  status: number;
 };
 
 const jsonHeaders = {
@@ -98,7 +108,7 @@ async function relayToGoogleAppsScript(
   env: Required<RegistrationEnv>,
   payload: CommunityRegistrationRequest,
   receivedAt: string
-) {
+): Promise<GasRelayOutcome> {
   const response = await fetch(env.GOOGLE_APPS_SCRIPT_URL, {
     method: "POST",
     headers: { "Content-Type": "application/json; charset=utf-8" },
@@ -118,16 +128,51 @@ async function relayToGoogleAppsScript(
     })
   });
 
-  if (!response.ok) return false;
+  const contentType = response.headers.get("Content-Type")?.split(";", 1)[0]?.trim().toLowerCase() || "unknown";
+  let finalHost = "unknown";
+  try {
+    if (response.url) finalHost = new URL(response.url).hostname;
+  } catch {
+    finalHost = "invalid";
+  }
+
+  const outcome = (accepted: boolean, reason: string): GasRelayOutcome => ({
+    accepted,
+    contentType,
+    finalHost,
+    reason,
+    redirected: response.redirected,
+    status: response.status
+  });
+
+  if (!response.ok) return outcome(false, `http_${response.status}`);
 
   let result: GasRelayResult;
   try {
     result = await response.json() as GasRelayResult;
   } catch {
-    return false;
+    return outcome(false, "invalid_json");
   }
 
-  return result.ok === true && result.requestId === payload.requestId;
+  if (result.ok !== true) {
+    const safeCode = typeof result.code === "string" && /^[a-z][a-z0-9_]{0,39}$/.test(result.code)
+      ? result.code
+      : "rejected";
+    return outcome(false, `gas_${safeCode}`);
+  }
+
+  if (result.requestId !== payload.requestId) return outcome(false, "request_id_mismatch");
+  return outcome(true, "accepted");
+}
+
+function gasDiagnostic(outcome: GasRelayOutcome) {
+  return [
+    `reason=${outcome.reason}`,
+    `status=${outcome.status}`,
+    `contentType=${outcome.contentType}`,
+    `redirected=${outcome.redirected}`,
+    `finalHost=${outcome.finalHost}`
+  ].join(" ");
 }
 
 export async function onRequest(context: PagesContext): Promise<Response> {
@@ -195,10 +240,16 @@ export async function onRequest(context: PagesContext): Promise<Response> {
   }
 
   try {
-    const accepted = await relayToGoogleAppsScript(env, parsed.data, new Date().toISOString());
-    if (!accepted) throw new Error("gas_relay_rejected");
-  } catch {
-    console.error(`Community registration email delivery failed for request ${parsed.data.requestId}.`);
+    const outcome = await relayToGoogleAppsScript(env, parsed.data, new Date().toISOString());
+    if (!outcome.accepted) {
+      console.error(
+        `Community registration email delivery failed for request ${parsed.data.requestId}. ${gasDiagnostic(outcome)}`
+      );
+      return jsonResponse({ ok: false, code: "email", message: "メール送信を完了できませんでした。時間をおいて再度お試しください。" }, 502);
+    }
+  } catch (error) {
+    const reason = error instanceof Error && error.name === "TimeoutError" ? "timeout" : "network_error";
+    console.error(`Community registration email delivery failed for request ${parsed.data.requestId}. reason=${reason}`);
     return jsonResponse({ ok: false, code: "email", message: "メール送信を完了できませんでした。時間をおいて再度お試しください。" }, 502);
   }
 

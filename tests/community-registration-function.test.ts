@@ -141,9 +141,13 @@ describe("community registration Pages Function", () => {
   });
 
   it("returns an email error when GAS does not confirm the same request", async () => {
+    const errorSpy = vi.spyOn(console, "error").mockImplementation(() => undefined);
     const fetchMock = vi.fn()
       .mockResolvedValueOnce(acceptedTurnstile())
-      .mockResolvedValueOnce(new Response(JSON.stringify({ ok: false, code: "email" }), { status: 200 }));
+      .mockResolvedValueOnce(new Response(JSON.stringify({ ok: false, code: "quota" }), {
+        status: 200,
+        headers: { "Content-Type": "application/json; charset=utf-8" }
+      }));
     vi.stubGlobal("fetch", fetchMock);
 
     const response = await onRequest({ env, request: registrationRequest() });
@@ -151,5 +155,34 @@ describe("community registration Pages Function", () => {
 
     expect(response.status).toBe(502);
     expect(result.code).toBe("email");
+    expect(errorSpy).toHaveBeenCalledWith(expect.stringContaining("reason=gas_quota"));
+    expect(errorSpy).toHaveBeenCalledWith(expect.stringContaining("contentType=application/json"));
+  });
+
+  it("logs only safe response metadata when GAS redirects to a non-JSON sign-in page", async () => {
+    const errorSpy = vi.spyOn(console, "error").mockImplementation(() => undefined);
+    const loginResponse = new Response("<html>private response body</html>", {
+      status: 200,
+      headers: { "Content-Type": "text/html; charset=utf-8" }
+    });
+    Object.defineProperties(loginResponse, {
+      redirected: { value: true },
+      url: { value: "https://accounts.google.com/ServiceLogin?continue=private" }
+    });
+    const fetchMock = vi.fn()
+      .mockResolvedValueOnce(acceptedTurnstile())
+      .mockResolvedValueOnce(loginResponse);
+    vi.stubGlobal("fetch", fetchMock);
+
+    const response = await onRequest({ env, request: registrationRequest() });
+    const loggedMessage = String(errorSpy.mock.calls[0]?.[0]);
+
+    expect(response.status).toBe(502);
+    expect(loggedMessage).toContain("reason=invalid_json");
+    expect(loggedMessage).toContain("contentType=text/html");
+    expect(loggedMessage).toContain("redirected=true");
+    expect(loggedMessage).toContain("finalHost=accounts.google.com");
+    expect(loggedMessage).not.toContain("private response body");
+    expect(loggedMessage).not.toContain("ServiceLogin");
   });
 });

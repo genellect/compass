@@ -282,6 +282,24 @@
 .interestGrid .choice input:checked + span::before { border-width: 1px; background: #15929e; box-shadow: inset 0 0 0 3px #e9f8f7; }
 
 .fieldError { margin: 8px 0 0; color: #b82940; font-size: 0.76rem; font-weight: 700; line-height: 1.5; }
+.fieldValid {
+  display: flex;
+  justify-content: flex-end;
+  margin: 7px 2px 0;
+}
+.fieldValid span {
+  display: grid;
+  place-items: center;
+  width: 18px;
+  height: 18px;
+  border: 1px solid rgba(21, 128, 88, 0.35);
+  border-radius: 50%;
+  background: #edf9f3;
+  color: #158058;
+  font-size: 0.66rem;
+  font-weight: 850;
+  line-height: 1;
+}
 .textareaMeta { display: flex; justify-content: space-between; gap: 12px; min-height: 25px; }
 .textareaMeta > span { margin: 7px 0 0 auto; color: #7b899a; font-size: 0.7rem; }
 

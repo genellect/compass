@@ -4,6 +4,7 @@ import Script from "next/script";
 import { useEffect, useMemo, useRef, useState } from "react";
 import {
   COMMUNITY_REGISTRATION_ENDPOINT,
+  communityRegistrationFieldSchemas,
   communityRegistrationFieldsSchema,
   FORM_ERROR_MESSAGE,
   getFieldErrors,
@@ -60,6 +61,15 @@ function FieldError({ id, visible }: { id: string; visible: boolean }) {
   return <p className={styles.fieldError} id={id} role="alert">{FORM_ERROR_MESSAGE}</p>;
 }
 
+function FieldValid({ visible }: { visible: boolean }) {
+  if (!visible) return null;
+  return (
+    <p className={styles.fieldValid} aria-label="入力内容は有効です">
+      <span aria-hidden="true">✓</span>
+    </p>
+  );
+}
+
 function RequiredBadge({ optional = false }: { optional?: boolean }) {
   return <span className={optional ? styles.optional : styles.required}>{optional ? "任意" : "必須"}</span>;
 }
@@ -78,6 +88,15 @@ export function CommunityJoinForm() {
   const requestIdRef = useRef("");
 
   const validation = useMemo(() => communityRegistrationFieldsSchema.safeParse(form), [form]);
+  const fieldValidity = useMemo(() => ({
+    name: communityRegistrationFieldSchemas.name.safeParse(form.name).success,
+    email: communityRegistrationFieldSchemas.email.safeParse(form.email).success,
+    facultyDepartment: communityRegistrationFieldSchemas.facultyDepartment.safeParse(form.facultyDepartment).success,
+    studentId: communityRegistrationFieldSchemas.studentId.safeParse(form.studentId).success,
+    year: communityRegistrationFieldSchemas.year.safeParse(form.year).success,
+    interests: communityRegistrationFieldSchemas.interests.safeParse(form.interests).success,
+    motivation: communityRegistrationFieldSchemas.motivation.safeParse(form.motivation).success
+  }), [form]);
   const clientErrors = validation.success ? {} : getFieldErrors(validation.error);
   const visibleErrors = { ...clientErrors, ...serverErrors };
   const canSubmit = validation.success && Boolean(turnstileToken) && status === "idle";
@@ -120,6 +139,11 @@ export function CommunityJoinForm() {
     const value = form[field];
     const hasValue = Array.isArray(value) ? value.length > 0 : value.length > 0;
     return Boolean(visibleErrors[field] && (touched[field] || hasValue));
+  };
+  const hasValidValue = (field: FieldName) => {
+    const value = form[field];
+    const hasValue = Array.isArray(value) ? value.length > 0 : value.trim().length > 0;
+    return hasValue && fieldValidity[field] && !visibleErrors[field];
   };
   const describedBy = (field: FieldName, helperId?: string) =>
     [helperId, hasError(field) ? `${field}-error` : undefined].filter(Boolean).join(" ") || undefined;
@@ -234,6 +258,7 @@ export function CommunityJoinForm() {
             placeholder="例：北里花子"
           />
           <FieldError id="name-error" visible={hasError("name")} />
+          <FieldValid visible={hasValidValue("name")} />
         </div>
 
         <div className={styles.fieldGroup}>
@@ -254,6 +279,7 @@ export function CommunityJoinForm() {
             onChange={(event) => updateField("email", event.target.value)}
           />
           <FieldError id="email-error" visible={hasError("email")} />
+          <FieldValid visible={hasValidValue("email")} />
         </div>
 
         <div className={styles.twoColumns}>
@@ -275,6 +301,7 @@ export function CommunityJoinForm() {
               placeholder="例：薬学部 薬学科"
             />
             <FieldError id="facultyDepartment-error" visible={hasError("facultyDepartment")} />
+            <FieldValid visible={hasValidValue("facultyDepartment")} />
           </div>
 
           <div className={styles.fieldGroup}>
@@ -296,6 +323,7 @@ export function CommunityJoinForm() {
               placeholder="例：PP00000"
             />
             <FieldError id="studentId-error" visible={hasError("studentId")} />
+            <FieldValid visible={hasValidValue("studentId")} />
           </div>
         </div>
 
@@ -319,6 +347,7 @@ export function CommunityJoinForm() {
             ))}
           </div>
           <FieldError id="year-error" visible={hasError("year")} />
+          <FieldValid visible={hasValidValue("year")} />
         </fieldset>
 
         <fieldset className={styles.fieldset} aria-describedby={describedBy("interests", "interests-helper")}>
@@ -339,6 +368,7 @@ export function CommunityJoinForm() {
             ))}
           </div>
           <FieldError id="interests-error" visible={hasError("interests")} />
+          <FieldValid visible={hasValidValue("interests")} />
         </fieldset>
 
         <div className={styles.fieldGroup}>
@@ -355,6 +385,7 @@ export function CommunityJoinForm() {
             onChange={(event) => updateField("motivation", event.target.value)}
           />
           <FieldError id="motivation-error" visible={hasError("motivation")} />
+          <FieldValid visible={hasValidValue("motivation")} />
         </div>
 
         <div className={styles.honeypot} aria-hidden="true">
