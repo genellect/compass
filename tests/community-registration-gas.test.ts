@@ -120,6 +120,7 @@ describe("Community registration Google Apps Script", () => {
     expect(operator.body).toContain("・氏名：松井 優人");
     expect(operator.body).toContain("・学籍番号：PP00000");
     expect(operator.body).toContain(`・${INTEREST_OPTIONS[1]}`);
+    expect(operator.body).toContain("※本メールはGoogle Apps Scriptにより自動送信されています。");
 
     const applicant = runtime.sentEmails[1];
     expect(applicant.to).toBe(payload.email);
@@ -136,6 +137,8 @@ COMPASSにご関心をお寄せいただき、ありがとうございます。
 今後の活動等につきましては、内容を確認のうえ、代表よりご登録のメールアドレス宛にご連絡いたします。
 
 今後ともCOMPASSをよろしくお願いいたします。
+
+※本メールはGoogle Apps Scriptにより自動送信されています。
 
 【本メールにお心当たりのない方へ】
 
