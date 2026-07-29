@@ -223,7 +223,9 @@ ${interests}
 ${motivation}
 
 ・受付日時：${receivedAt}（日本時間）
-・受付ID：${payload.requestId}`;
+・受付ID：${payload.requestId}
+
+※本メールはGoogle Apps Scriptにより自動送信されています。`;
 }
 
 function buildApplicantText_(payload) {
@@ -235,6 +237,8 @@ COMPASSにご関心をお寄せいただき、ありがとうございます。
 今後の活動等につきましては、内容を確認のうえ、代表よりご登録のメールアドレス宛にご連絡いたします。
 
 今後ともCOMPASSをよろしくお願いいたします。
+
+※本メールはGoogle Apps Scriptにより自動送信されています。
 
 【本メールにお心当たりのない方へ】
 
