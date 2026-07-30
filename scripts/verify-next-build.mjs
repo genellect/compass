@@ -56,6 +56,11 @@ const contactFormSource = await readFile(
   path.join(root, "src", "app", "(official)", "contact", "ContactForm.tsx"),
   "utf8"
 );
+const contactStyles = await readFile(
+  path.join(root, "src", "app", "(official)", "contact", "contact.module.css"),
+  "utf8"
+);
+const siteHeaderSource = await readFile(path.join(root, "src", "components", "SiteHeader.tsx"), "utf8");
 
 for (const expected of [
   '<html lang="ja"',
@@ -283,6 +288,18 @@ for (const unexpected of [
 ]) expectExcludes(contact, unexpected, "Contact page");
 
 expectOneH1(contact, "Contact page");
+
+for (const expected of [
+  'activeId: "contact"',
+  'href: "/contact/"',
+  'mobileLabel: "お問い合わせ"'
+]) expectIncludes(siteHeaderSource, expected, "Official header source");
+expectExcludes(siteHeaderSource, 'mobileLabel: "お問い合わせフォーム"', "Official header source");
+expectIncludes(
+  contactStyles,
+  ".helper {\n  margin: 7px 0 11px;\n  color: var(--copy);",
+  "Contact helper contrast"
+);
 
 expectIncludes(
   messages,

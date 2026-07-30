@@ -86,9 +86,9 @@ const directNavItems: DirectNavItem[] = [
   },
   {
     activeId: "contact",
-    href: "#contact",
+    href: "/contact/",
     label: "Contact",
-    mobileLabel: "お問い合わせフォーム",
+    mobileLabel: "お問い合わせ",
     description: "ご意見・質問・相談はこちら"
   },
   {
