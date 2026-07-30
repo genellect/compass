@@ -191,7 +191,7 @@ function requestCode_(scriptProperties, otpPepper, payload, now) {
       buildVerificationText_(payload.name, payload.verificationCode),
       {
         name: CONFIG.SENDER_NAME,
-        replyTo: CONFIG.ADMIN_EMAIL
+        noReply: true
       }
     );
   } catch (error) {

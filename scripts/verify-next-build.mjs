@@ -71,6 +71,7 @@ for (const expected of [
   'href="messages/index.html"',
   'href="INTRO_Interactive/"',
   'href="/community/join/"',
+  'href="/contact/"',
   'href="https://forms.gle/sW49M329Dcets8ga9"',
   'rel="canonical" href="https://compass-official.pages.dev/"',
   'type="application/ld+json"',
@@ -113,6 +114,11 @@ expectExcludes(
   official,
   "https://docs.google.com/forms/u/1/d/e/1FAIpQLSe8Z0GkK9lmXKutLWO8lGezBoP5zPstNlkAnUEqVOx_IY7v7g/viewform",
   "Official page"
+);
+expectExcludes(
+  official,
+  "https://docs.google.com/forms/d/e/1FAIpQLSehSdW10_HOjAigq_42AzooHtiV1P8AvI_1tWu5D3DaR2QxJQ/viewform?usp=publish-editor",
+  "Official contact link"
 );
 
 for (const unexpected of [

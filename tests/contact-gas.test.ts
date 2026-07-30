@@ -48,7 +48,7 @@ const verifyPayload = {
 
 type SentEmail = {
   body: string;
-  options: { name: string; replyTo: string };
+  options: { name: string; noReply?: boolean; replyTo?: string };
   subject: string;
   to: string;
 };
@@ -185,9 +185,10 @@ describe("Contact Google Apps Script", () => {
       subject: "【COMPASS】お問い合わせ確認コード",
       options: {
         name: "学生支援団体COMPASS",
-        replyTo: "matsui.yuto@st.kitasato-u.ac.jp"
+        noReply: true
       }
     });
+    expect(runtime.sentEmails[0]?.options.replyTo).toBeUndefined();
     expect(runtime.sentEmails[0]?.body).toContain("123456");
     expect(runtime.sentEmails[0]?.body).toContain("※本メールはGoogle Apps Scriptにより自動送信されています。");
 
