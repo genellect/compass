@@ -4,7 +4,6 @@ import { useEffect, useRef, useState } from "react";
 import { resolveSiteHref, type SiteRouteContext } from "./siteRouteContext";
 
 type NavItem = {
-  className?: string;
   description: string;
   external?: boolean;
   href: string;
@@ -37,8 +36,7 @@ const navGroups: NavGroup[] = [
       {
         href: "INTRO_Interactive/",
         label: "COMPASS Interactive",
-        description: "疑問が届き、講義が動く体験へ",
-        className: "panel-link-interactive"
+        description: "疑問が届き、講義が動く体験へ"
       },
       {
         href: "#technology",
@@ -57,10 +55,9 @@ const navGroups: NavGroup[] = [
         description: "まだ知らない進路と可能性へ"
       },
       {
-        href: "https://forms.gle/sW49M329Dcets8ga9",
-        label: "COMPASS Essentials",
-        description: "薬学部以外にも、選べる学びを",
-        external: true
+        href: "/messages/",
+        label: "Manifesto",
+        description: "AI時代の学生へ贈る、COMPASSの決意"
       }
     ]
   },
@@ -89,18 +86,18 @@ const directNavItems: DirectNavItem[] = [
     description: "COMPASSを始めた人を知る"
   },
   {
-    activeId: "contact",
-    href: "/contact/",
-    label: "Contact",
-    mobileLabel: "お問い合わせ",
-    description: "ご意見・質問・相談はこちら"
-  },
-  {
     activeId: "manifesto",
     href: "/messages/",
     label: "Manifesto",
     mobileLabel: "Manifesto",
     description: "AI時代の学生へ贈る、COMPASSの決意"
+  },
+  {
+    activeId: "contact",
+    href: "/contact/",
+    label: "Contact",
+    mobileLabel: "お問い合わせ",
+    description: "ご意見・質問・相談はこちら"
   }
 ];
 
@@ -134,7 +131,7 @@ export function SiteHeader({ routeContext = "root" }: { routeContext?: SiteRoute
 
   useEffect(() => {
     if (routeContext !== "root") return;
-    const ids = ["top", "experience", "technology", "resources", "community", "contact", "founder", "manifesto"];
+    const ids = ["top", "experience", "technology", "resources", "community", "founder", "manifesto", "contact"];
     const sectionMap: Record<string, string> = {
       experience: "technology"
     };
@@ -258,7 +255,7 @@ export function SiteHeader({ routeContext = "root" }: { routeContext?: SiteRoute
                     {group.items.map((item) => (
                       <a
                         key={`${item.href}-${item.label}`}
-                        className={`panel-link ${item.className ?? ""}`.trim()}
+                        className="panel-link"
                         href={resolveHref(item.href)}
                         target={item.external ? "_blank" : undefined}
                         rel={item.external ? "noopener noreferrer" : undefined}
@@ -353,7 +350,6 @@ export function SiteHeader({ routeContext = "root" }: { routeContext?: SiteRoute
                 {group.items.map((item) => (
                   <a
                     key={`${item.href}-${item.label}`}
-                    className={item.className === "panel-link-interactive" ? "mobile-nav-highlight" : undefined}
                     href={resolveHref(item.href)}
                     target={item.external ? "_blank" : undefined}
                     rel={item.external ? "noopener noreferrer" : undefined}

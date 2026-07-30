@@ -23,12 +23,12 @@ export function LegacyPageBody() {
         <TechnologyCoreSection />
         <ResourcesExperienceSection />
         <CommunityExperienceSection />
-        <div className="v4-closing v4-closing--contact">
-          <ContactSection />
-        </div>
         <FounderPortfolioSection />
         <div className="v4-closing v4-closing--manifesto">
           <ManifestoSection />
+        </div>
+        <div className="v4-closing v4-closing--contact">
+          <ContactSection />
         </div>
       </main>
       <SiteFooter />

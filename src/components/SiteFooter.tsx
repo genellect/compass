@@ -21,8 +21,8 @@ export function SiteFooter({ routeContext = "root" }: { routeContext?: SiteRoute
       <a href={resolveHref("#resources")}>Resources</a>
       <a href={resolveHref("#community")}>Community</a>
       <a href={resolveHref("#founder")}>Founder</a>
-      <a href="/contact/">Contact</a>
       <a href="/messages/" aria-current={routeContext === "messages" ? "page" : undefined}>Manifesto</a>
+      <a href="/contact/">Contact</a>
     </nav>
 
     <nav className="footer-cta" aria-label="Footer calls to action">
@@ -30,8 +30,10 @@ export function SiteFooter({ routeContext = "root" }: { routeContext?: SiteRoute
         <a href={libraryRegistrationUrl} target="_blank" rel="noopener noreferrer">大学アカウントで無料登録する ↗</a>
       ) : (
         <>
-          <a href={libraryUrl}>未来戦略ライブラリを見る</a>
-          <a href="/community/join/">COMPASSに参加する</a>
+          <a href={resolveHref("INTRO_Interactive/")}>COMPASS Interactive紹介サイト</a>
+          <a href={libraryUrl}>未来戦略ライブラリ紹介サイト</a>
+          <a href="/messages/" aria-current={routeContext === "messages" ? "page" : undefined}>Manifest</a>
+          <a href="/community/join/">Community参加フォーム</a>
         </>
       )}
     </nav>

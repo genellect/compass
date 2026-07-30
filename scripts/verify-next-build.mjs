@@ -12,6 +12,15 @@ function expectExcludes(html, unexpected, label) {
   if (html.includes(unexpected)) throw new Error(`${label} still contains: ${unexpected}`);
 }
 
+function expectOrdered(html, expected, label) {
+  let cursor = -1;
+  for (const item of expected) {
+    const next = html.indexOf(item, cursor + 1);
+    if (next === -1) throw new Error(`${label} is missing or out of order: ${item}`);
+    cursor = next;
+  }
+}
+
 function expectOneH1(html, label) {
   const count = (html.match(/<h1\b/gi) ?? []).length;
   if (count !== 1) throw new Error(`${label} must contain exactly one h1; found ${count}.`);
@@ -125,7 +134,6 @@ for (const expected of [
   "面白そうなので、",
   "始めました。",
   "About COMPASS",
-  "COMPASS Essentials",
   "MANIFESTO",
   "Manifesto",
   "観客席から見ているには、",
@@ -136,8 +144,17 @@ for (const expected of [
   "Web開発・プログラミング 4年",
   "/images/founder/yuto-matsui-portrait-800.jpg",
   "学生主導の教育・テクノロジープラットフォーム",
+  "COMPASS Interactive紹介サイト",
+  "未来戦略ライブラリ紹介サイト",
+  "Community参加フォーム",
   "G-EHKJ8B8N0Y"
 ]) expectIncludes(official, expected, "Official page");
+
+expectOrdered(
+  official,
+  ['id="community"', 'id="founder"', 'id="manifesto"', 'id="contact"', 'class="site-footer"'],
+  "Official closing section order"
+);
 
 expectExcludes(
   official,
@@ -153,6 +170,8 @@ expectExcludes(official, 'href="#contact"', "Official contact navigation");
 expectExcludes(official, "未来の後輩へ。", "Retired message section");
 expectExcludes(official, "創設者メッセージを見る", "Retired message CTA");
 expectExcludes(official, ">Message<", "Retired Message navigation label");
+expectExcludes(official, "未来戦略ライブラリを見る", "Retired footer CTA");
+expectExcludes(official, "COMPASSに参加する", "Retired footer CTA");
 
 for (const unexpected of [
   "β版",
@@ -333,7 +352,16 @@ for (const expected of [
   'href: "/contact/"',
   'mobileLabel: "お問い合わせ"'
 ]) expectIncludes(siteHeaderSource, expected, "Official header source");
+expectIncludes(
+  siteHeaderSource.replace(/\r\n/g, "\n"),
+  'href: "/messages/",\n        label: "Manifesto",\n        description: "AI時代の学生へ贈る、COMPASSの決意"',
+  "Resources Manifesto navigation"
+);
 expectExcludes(siteHeaderSource, 'mobileLabel: "お問い合わせフォーム"', "Official header source");
+expectExcludes(siteHeaderSource, 'label: "COMPASS Essentials"', "Official header source");
+expectExcludes(siteHeaderSource, "https://forms.gle/sW49M329Dcets8ga9", "Official header source");
+expectExcludes(siteHeaderSource, "panel-link-interactive", "Official header source");
+expectExcludes(siteHeaderSource, "mobile-nav-highlight", "Official header source");
 expectIncludes(
   contactStyles.replace(/\r\n/g, "\n"),
   ".helper {\n  margin: 7px 0 11px;\n  color: var(--copy);",
@@ -433,7 +461,10 @@ for (const unexpected of [
   "利用登録・ご相談はGoogleフォームから受け付けています。",
   "Development%26Governance.pdf",
   "Future_Strategy_Library_Design_Philosophy.pdf.pdf",
-  "/images/future-strategy-library/ai-guide.webp"
+  "/images/future-strategy-library/ai-guide.webp",
+  "COMPASS Interactive紹介サイト",
+  "未来戦略ライブラリ紹介サイト",
+  "Community参加フォーム"
 ]) expectExcludes(library, unexpected, "Future Strategy Library page");
 
 expectOneH1(library, "Future Strategy Library page");
