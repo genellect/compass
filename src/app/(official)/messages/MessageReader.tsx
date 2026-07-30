@@ -271,7 +271,7 @@ export function MessageReader({ message }: { message: MessageDocument }) {
 
                   <nav className={styles.pageNavigation} aria-label="章の移動">
                     {index > 0 ? (
-                      <button type="button" onClick={() => goToChapter(index - 1)}>
+                      <button className={styles.previousChapterButton} type="button" onClick={() => goToChapter(index - 1)}>
                         <span aria-hidden="true">←</span><small>前の章</small><strong>{message.chapters[index - 1].title}</strong>
                       </button>
                     ) : <span />}
