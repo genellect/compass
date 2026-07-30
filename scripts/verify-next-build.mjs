@@ -125,6 +125,7 @@ expectExcludes(
   "https://docs.google.com/forms/d/e/1FAIpQLSehSdW10_HOjAigq_42AzooHtiV1P8AvI_1tWu5D3DaR2QxJQ/viewform?usp=publish-editor",
   "Official contact link"
 );
+expectExcludes(official, 'href="#contact"', "Official contact navigation");
 
 for (const unexpected of [
   "β版",
