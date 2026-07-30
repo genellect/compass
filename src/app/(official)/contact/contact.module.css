@@ -177,7 +177,7 @@
   line-height: 1.6;
 }
 
-.helper p { margin: 0; }
+.helper p { margin: 0; color: inherit; }
 .helper p + p { margin-top: 4px; }
 
 .inputWrap { position: relative; margin-top: 11px; }
