@@ -1,7 +1,7 @@
 import { SiteHeader } from "./components/SiteHeader";
 import { Hero } from "./components/Hero";
 import { SiteFooter } from "./components/SiteFooter";
-import { MessageSection } from "./sections/MessageSection";
+import { ManifestoSection } from "./sections/ManifestoSection";
 import { ContactSection } from "./sections/ContactSection";
 import {
   CommunityExperienceSection,
@@ -27,8 +27,8 @@ export function LegacyPageBody() {
           <ContactSection />
         </div>
         <FounderPortfolioSection />
-        <div className="v4-closing v4-closing--message">
-          <MessageSection />
+        <div className="v4-closing v4-closing--manifesto">
+          <ManifestoSection />
         </div>
       </main>
       <SiteFooter />

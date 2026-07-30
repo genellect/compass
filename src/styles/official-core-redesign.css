@@ -836,24 +836,202 @@
 .compass-v4-page .v4-founder__profile-copy dt { margin-bottom: 8px; color: #70e7ef; font-size: 0.67rem; font-weight: 850; letter-spacing: 0.12em; text-transform: uppercase; }
 .compass-v4-page .v4-founder__profile-copy dd { margin: 0; color: #e4edf6; font-size: 0.92rem; line-height: 1.6; }
 
-/* Messages / Contact: preserve copy, modernize presentation. */
+/* Contact / Manifesto */
 .compass-v4-page .v4-closing { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; padding: clamp(80px, 8vw, 120px) max(36px, calc((100% - var(--v4-container)) / 2)); background: #f5f7fa; }
 .compass-v4-page .v4-closing--contact,
-.compass-v4-page .v4-closing--message { grid-template-columns: 1fr; }
+.compass-v4-page .v4-closing--manifesto { grid-template-columns: 1fr; }
 .compass-v4-page .v4-closing .section { min-height: 100%; padding: 0; background: transparent; }
 .compass-v4-page .v4-closing .container { width: 100%; height: 100%; margin: 0; }
-.compass-v4-page .v4-closing .message-panel,
-.compass-v4-page .v4-closing .contact-card { display: flex; flex-direction: column; align-items: flex-start; justify-content: space-between; min-height: 420px; padding: clamp(34px, 4vw, 52px); border: 1px solid var(--v4-line); border-radius: var(--v4-radius); background: #fff; color: var(--v4-copy); box-shadow: 0 18px 52px rgba(21, 35, 58, 0.08); text-align: left; }
-.compass-v4-page .v4-closing--contact .contact-card,
-.compass-v4-page .v4-closing--message .message-panel { min-height: 340px; }
-.compass-v4-page .v4-closing .message-panel { background: linear-gradient(145deg, #11153c, #162f52); color: #cbd9e8; }
+.compass-v4-page .v4-closing .contact-card { display: flex; flex-direction: column; align-items: flex-start; justify-content: space-between; min-height: 340px; padding: clamp(34px, 4vw, 52px); border: 1px solid var(--v4-line); border-radius: var(--v4-radius); background: #fff; color: var(--v4-copy); box-shadow: 0 18px 52px rgba(21, 35, 58, 0.08); text-align: left; }
 .compass-v4-page .v4-closing .section-label { margin: 0 0 20px; color: var(--v4-cyan-deep); font-size: 0.7rem; font-weight: 850; letter-spacing: 0.15em; text-transform: uppercase; }
-.compass-v4-page .v4-closing .message-panel .section-label { color: #74e8ef; }
 .compass-v4-page .v4-closing h2 { margin: 0 0 24px; color: var(--v4-ink); font-size: clamp(2rem, 3.3vw, 3rem); letter-spacing: -0.045em; line-height: 1.22; }
-.compass-v4-page .v4-closing .message-panel h2 { color: #fff; }
 .compass-v4-page .v4-closing p:not(.section-label) { max-width: 600px; margin: 0; color: inherit; line-height: 1.85; }
-.compass-v4-page .v4-closing .message-actions,
 .compass-v4-page .v4-closing .contact-card > .button { margin-top: 34px; }
+
+.compass-v4-page .v4-closing--manifesto {
+  padding-block: clamp(28px, 5vw, 72px);
+  background: #050b16;
+}
+
+.compass-v4-page .v4-manifesto__frame {
+  position: relative;
+  min-height: clamp(600px, 72vw, 760px);
+  display: flex;
+  align-items: center;
+  padding: clamp(48px, 8vw, 104px);
+  overflow: hidden;
+  border: 1px solid rgba(115, 231, 255, 0.2);
+  border-radius: 34px;
+  background:
+    linear-gradient(90deg, rgba(3, 12, 23, 0.98) 0%, rgba(3, 12, 23, 0.92) 54%, rgba(6, 26, 43, 0.72) 100%),
+    radial-gradient(circle at 88% 24%, rgba(115, 231, 255, 0.2), transparent 24%),
+    #06101e;
+  box-shadow: 0 40px 120px rgba(0, 0, 0, 0.36);
+}
+
+.compass-v4-page .v4-manifesto__frame::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(115, 231, 255, 0.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(115, 231, 255, 0.035) 1px, transparent 1px);
+  background-size: 64px 64px;
+  mask-image: linear-gradient(90deg, transparent 8%, #000 65%);
+  pointer-events: none;
+}
+
+.compass-v4-page .v4-manifesto__frame::after {
+  content: "";
+  position: absolute;
+  z-index: 1;
+  inset: 0;
+  opacity: 0.36;
+  background: linear-gradient(180deg, transparent 0%, rgba(115, 231, 255, 0.18) 50%, transparent 51%) 0 -220px / 100% 440px no-repeat;
+  pointer-events: none;
+}
+
+.compass-v4-page .v4-manifesto__copy {
+  position: relative;
+  z-index: 2;
+  width: min(1050px, 96%);
+}
+
+.compass-v4-page .v4-manifesto__label {
+  margin: 0 0 clamp(30px, 5vw, 58px) !important;
+  color: #73e7ff !important;
+  font-size: 0.72rem;
+  font-weight: 900;
+  letter-spacing: 0.24em;
+  line-height: 1;
+}
+
+.compass-v4-page .v4-manifesto__label::before {
+  content: "";
+  display: inline-block;
+  width: 44px;
+  height: 1px;
+  margin: 0 16px 0 0;
+  vertical-align: middle;
+  background: currentColor;
+}
+
+.compass-v4-page .v4-closing .v4-manifesto__copy h2 {
+  max-width: 1050px;
+  margin: 0;
+  color: #f7fbff;
+  font-size: clamp(2.5rem, 3.7vw, 3.9rem);
+  font-weight: 820;
+  letter-spacing: -0.07em;
+  line-height: 1.06;
+  text-wrap: balance;
+}
+
+.compass-v4-page .v4-manifesto__copy h2 span {
+  display: block;
+  white-space: nowrap;
+}
+
+.compass-v4-page .v4-manifesto__declaration {
+  margin-top: clamp(42px, 6vw, 70px);
+  padding-left: 22px;
+  border-left: 1px solid rgba(115, 231, 255, 0.45);
+}
+
+.compass-v4-page .v4-closing .v4-manifesto__declaration p {
+  max-width: none;
+  color: rgba(225, 238, 247, 0.78);
+  font-size: clamp(0.94rem, 1.4vw, 1.08rem);
+  line-height: 1.65;
+}
+
+.compass-v4-page .v4-closing .v4-manifesto__declaration p:nth-child(2) {
+  color: #fff;
+  font-weight: 800;
+}
+
+.compass-v4-page .v4-manifesto__cta {
+  width: fit-content;
+  min-height: 60px;
+  margin-top: 42px;
+  padding: 0 9px 0 26px;
+  display: inline-flex;
+  align-items: center;
+  gap: 28px;
+  border: 1px solid rgba(115, 231, 255, 0.42);
+  border-radius: 999px;
+  color: #f5fcff;
+  background: rgba(115, 231, 255, 0.07);
+  font-size: 0.9rem;
+  font-weight: 850;
+  text-decoration: none;
+  transition: transform 180ms ease, border-color 180ms ease, background 180ms ease;
+}
+
+.compass-v4-page .v4-manifesto__cta i {
+  width: 42px;
+  height: 42px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  color: #03111d;
+  background: #73e7ff;
+  font-style: normal;
+}
+
+.compass-v4-page .v4-manifesto__cta:hover {
+  transform: translateY(-2px);
+  border-color: rgba(115, 231, 255, 0.86);
+  background: rgba(115, 231, 255, 0.12);
+}
+
+.compass-v4-page .v4-manifesto__cta:focus-visible {
+  outline: 3px solid var(--v4-orange);
+  outline-offset: 5px;
+}
+
+.compass-v4-page .v4-manifesto__folio {
+  position: absolute;
+  right: 32px;
+  bottom: 32px;
+  z-index: 2;
+  display: flex;
+  gap: 18px;
+  color: rgba(211, 234, 244, 0.38) !important;
+  font-size: 0.58rem;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+}
+
+.compass-v4-page .v4-manifesto__constellation {
+  position: absolute;
+  z-index: 1;
+  top: 12%;
+  right: 3%;
+  width: min(34vw, 430px);
+  aspect-ratio: 1;
+  opacity: 0.68;
+  background:
+    linear-gradient(31deg, transparent 47%, rgba(115, 231, 255, 0.2) 47.4%, rgba(115, 231, 255, 0.2) 47.7%, transparent 48.1%),
+    linear-gradient(142deg, transparent 46%, rgba(115, 231, 255, 0.15) 46.4%, rgba(115, 231, 255, 0.15) 46.7%, transparent 47.1%);
+  transform: rotate(-8deg);
+}
+
+.compass-v4-page .v4-manifesto__constellation span {
+  position: absolute;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 0 18px rgba(115, 231, 255, 0.96);
+}
+
+.compass-v4-page .v4-manifesto__constellation span:nth-child(1) { left: 8%; top: 54%; }
+.compass-v4-page .v4-manifesto__constellation span:nth-child(2) { left: 33%; top: 21%; }
+.compass-v4-page .v4-manifesto__constellation span:nth-child(3) { left: 48%; top: 62%; }
+.compass-v4-page .v4-manifesto__constellation span:nth-child(4) { left: 68%; top: 34%; }
+.compass-v4-page .v4-manifesto__constellation span:nth-child(5) { left: 88%; top: 12%; }
+.compass-v4-page .v4-manifesto__constellation span:nth-child(6) { left: 83%; top: 77%; }
 
 .compass-v4-page + .site-footer .footer-inner {
   width: min(1200px, calc(100% - 72px));
@@ -993,10 +1171,17 @@
   .compass-v4-page .v4-founder__profile-copy dl div:nth-child(odd),
   .compass-v4-page .v4-founder__profile-copy dl div:nth-child(even) { padding: 18px 0; border-left: 0; }
   .compass-v4-page .v4-closing { padding: 64px 14px; }
-  .compass-v4-page .v4-closing .message-panel,
   .compass-v4-page .v4-closing .contact-card { min-height: auto; padding: 30px 24px; border-radius: 20px; }
-  .compass-v4-page .v4-closing .message-actions { display: flex; flex-direction: column; width: 100%; }
   .compass-v4-page .v4-closing .button { width: 100%; }
+  .compass-v4-page .v4-closing--manifesto { padding: 16px 14px 48px; }
+  .compass-v4-page .v4-manifesto__frame { min-height: 680px; padding: 48px 24px 82px; border-radius: 24px; }
+  .compass-v4-page .v4-manifesto__copy { width: 100%; }
+  .compass-v4-page .v4-closing .v4-manifesto__copy h2 { font-size: clamp(2.15rem, 9.2vw, 3rem); }
+  .compass-v4-page .v4-manifesto__copy h2 span { white-space: normal; }
+  .compass-v4-page .v4-manifesto__declaration { margin-top: 42px; padding-left: 16px; }
+  .compass-v4-page .v4-manifesto__cta { width: 100%; justify-content: space-between; }
+  .compass-v4-page .v4-manifesto__constellation { top: auto; right: -15%; bottom: 5%; width: 80vw; opacity: 0.34; }
+  .compass-v4-page .v4-manifesto__folio { right: 24px; bottom: 24px; left: 24px; justify-content: space-between; }
   .compass-v4-page + .site-footer .footer-inner { width: calc(100% - 28px); }
 }
 

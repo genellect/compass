@@ -6,7 +6,7 @@ const outDir = path.join(root, "out");
 
 await mkdir(outDir, { recursive: true });
 
-for (const directory of ["messages", "future-strategy-library"]) {
+for (const directory of ["future-strategy-library"]) {
   await cp(path.join(root, directory), path.join(outDir, directory), {
     recursive: true,
     force: true,
@@ -27,4 +27,4 @@ for (const file of [
   await cp(path.join(root, file), path.join(outDir, file), { force: true });
 }
 
-console.log("Assembled frozen static sites and Cloudflare control files into out/.");
+console.log("Assembled the frozen library and Cloudflare control files into out/.");

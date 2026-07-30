@@ -1,4 +1,8 @@
-export function SiteFooter() {
+import { resolveSiteHref, type SiteRouteContext } from "./siteRouteContext";
+
+export function SiteFooter({ routeContext = "root" }: { routeContext?: SiteRouteContext }) {
+  const resolveHref = (href: string) => resolveSiteHref(href, routeContext);
+
   return (
     <>
 <footer className="site-footer">
@@ -9,12 +13,12 @@ export function SiteFooter() {
     </div>
 
     <nav className="footer-nav" aria-label="Footer navigation">
-      <a href="#technology">Technology</a>
-      <a href="#resources">Resources</a>
-      <a href="#community">Community</a>
-      <a href="#founder">Founder</a>
+      <a href={resolveHref("#technology")}>Technology</a>
+      <a href={resolveHref("#resources")}>Resources</a>
+      <a href={resolveHref("#community")}>Community</a>
+      <a href={resolveHref("#founder")}>Founder</a>
       <a href="/contact/">Contact</a>
-      <a href="messages/index.html">Messages</a>
+      <a href="/messages/" aria-current={routeContext === "messages" ? "page" : undefined}>Manifesto</a>
     </nav>
 
     <nav className="footer-cta" aria-label="Footer calls to action">

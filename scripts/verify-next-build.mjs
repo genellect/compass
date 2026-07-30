@@ -18,6 +18,44 @@ function expectOneH1(html, label) {
   if (count !== 1) throw new Error(`${label} must contain exactly one h1; found ${count}.`);
 }
 
+function decodeEntities(value) {
+  return value
+    .replace(/&amp;/g, "&")
+    .replace(/&lt;/g, "<")
+    .replace(/&gt;/g, ">")
+    .replace(/&quot;/g, '"')
+    .replace(/&#x27;|&#39;/g, "'")
+    .replace(/&#(\d+);/g, (_, code) => String.fromCodePoint(Number(code)))
+    .replace(/&#x([0-9a-f]+);/gi, (_, code) => String.fromCodePoint(Number.parseInt(code, 16)));
+}
+
+function normalizeText(value) {
+  return decodeEntities(value)
+    .replace(/<!--[\s\S]*?-->/g, "")
+    .replace(/<br\s*\/?>/gi, " ")
+    .replace(/<[^>]+>/g, "")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function normalizeMessageSource(value) {
+  return value
+    .replace(/\r\n/g, "\n")
+    .replace(/^---\s*$/gm, "")
+    .replace(/^#{1,2}\s+/gm, "")
+    .replace(/\*\*([\s\S]*?)\*\*/g, "$1")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function renderedMessageCopy(html) {
+  return [...html.matchAll(/<span data-message-copy="true">([\s\S]*?)<\/span>/g)]
+    .map((match) => normalizeText(match[1]))
+    .join(" ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
 async function fileMap(directory) {
   const result = new Map();
 
@@ -48,6 +86,10 @@ const interactive = await readFile(path.join(out, "INTRO_Interactive", "index.ht
 const communityJoin = await readFile(path.join(out, "community", "join", "index.html"), "utf8");
 const contact = await readFile(path.join(out, "contact", "index.html"), "utf8");
 const messages = await readFile(path.join(out, "messages", "index.html"), "utf8");
+const messageSource = await readFile(
+  path.join(root, "src", "app", "(official)", "messages", "message.md"),
+  "utf8"
+);
 const registrationFunction = await readFile(path.join(root, "functions", "api", "community-registration.ts"), "utf8");
 const gasCode = await readFile(path.join(root, "google-apps-script", "Code.gs"), "utf8");
 const contactFunction = await readFile(path.join(root, "functions", "api", "contact.ts"), "utf8");
@@ -73,7 +115,8 @@ for (const expected of [
   'id="founder"',
   'id="community"',
   'id="contact"',
-  'href="messages/index.html"',
+  'id="manifesto"',
+  'href="/messages/"',
   'href="INTRO_Interactive/"',
   'href="/community/join/"',
   'href="/contact/"',
@@ -108,6 +151,12 @@ for (const expected of [
   "始めました。",
   "About COMPASS",
   "COMPASS Essentials",
+  "MANIFESTO",
+  "Manifesto",
+  "観客席から見ているには、",
+  "この時代は面白すぎる。",
+  "AI時代の学生へ贈る、COMPASSの決意。",
+  "ストーリーを読む",
   "お問い合わせフォーム",
   "Web開発・プログラミング 4年",
   "/images/founder/yuto-matsui-portrait-800.jpg",
@@ -126,6 +175,9 @@ expectExcludes(
   "Official contact link"
 );
 expectExcludes(official, 'href="#contact"', "Official contact navigation");
+expectExcludes(official, "未来の後輩へ。", "Retired message section");
+expectExcludes(official, "創設者メッセージを見る", "Retired message CTA");
+expectExcludes(official, ">Message<", "Retired Message navigation label");
 
 for (const unexpected of [
   "β版",
@@ -297,21 +349,46 @@ for (const expected of [
 ]) expectIncludes(siteHeaderSource, expected, "Official header source");
 expectExcludes(siteHeaderSource, 'mobileLabel: "お問い合わせフォーム"', "Official header source");
 expectIncludes(
-  contactStyles,
+  contactStyles.replace(/\r\n/g, "\n"),
   ".helper {\n  margin: 7px 0 11px;\n  color: var(--copy);",
   "Contact helper contrast"
 );
 
-expectIncludes(
-  messages,
-  '<a href="/community/join/" target="_blank" rel="noopener noreferrer">コミュニティに参加する</a>',
-  "Messages community link"
-);
-expectExcludes(
-  messages,
-  "https://docs.google.com/forms/u/1/d/e/1FAIpQLSe8Z0GkK9lmXKutLWO8lGezBoP5zPstNlkAnUEqVOx_IY7v7g/viewform",
-  "Messages community link"
-);
+for (const expected of [
+  '<html lang="ja"',
+  "AIに仕事を奪われる？",
+  "私は先に、AIを部下にしました。",
+  "観客席から見ているには、この時代は面白すぎる。",
+  'rel="canonical" href="https://compass-official.pages.dev/messages/"',
+  'data-reader-state="cover"',
+  'data-message-manuscript="true"',
+  'data-message-copy="true"',
+  "最初から読む",
+  "章を選ぶ",
+  "CHAPTERS",
+  'href="/#technology"',
+  'href="/INTRO_Interactive/"',
+  'href="/messages/"',
+  'type="application/ld+json"'
+]) expectIncludes(messages, expected, "Messages page");
+
+for (const unexpected of [
+  "messages/script.js",
+  "messages/style.css",
+  "series-desktop.css",
+  "未来の後輩へ",
+  "FINAL MESSAGE TEXT - DO NOT EDIT"
+]) expectExcludes(messages, unexpected, "Messages page");
+
+expectOneH1(messages, "Messages page");
+
+const expectedMessageCopy = normalizeMessageSource(messageSource);
+const actualMessageCopy = renderedMessageCopy(messages);
+if (actualMessageCopy !== expectedMessageCopy) {
+  throw new Error(
+    `Messages copy differs from message.md (expected ${expectedMessageCopy.length} normalized characters, found ${actualMessageCopy.length}).`
+  );
+}
 
 for (const expected of [
   "GOOGLE_APPS_SCRIPT_URL",
@@ -381,7 +458,7 @@ for (const relative of [
   "sitemap.xml"
 ]) await access(path.join(out, relative));
 
-for (const directory of ["messages", "future-strategy-library"]) {
+for (const directory of ["future-strategy-library"]) {
   const source = await fileMap(path.join(root, directory));
   const built = await fileMap(path.join(out, directory));
   expectSameMap(directory, source, built);
@@ -389,4 +466,4 @@ for (const directory of ["messages", "future-strategy-library"]) {
 }
 
 await access(path.join(out, "_next", "static"));
-console.log("Verified static HTML, route metadata, one h1 per Next route, frozen sites, and deployment assets.");
+console.log("Verified Next routes, exact messages copy, frozen library content, and deployment assets.");

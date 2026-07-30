@@ -8,7 +8,7 @@ const originalHtmlPath = process.argv[3] ?? path.join(originalRoot, "index.html"
 
 const projectRoot = process.cwd();
 const distRoot = path.join(projectRoot, "out");
-const frozenDirectories = ["messages", "future-strategy-library"];
+const frozenDirectories = ["future-strategy-library"];
 const ignoredSegments = new Set(["node_modules", "dist", ".build", ".git"]);
 
 async function fileMap(root) {

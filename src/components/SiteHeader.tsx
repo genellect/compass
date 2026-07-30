@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { resolveSiteHref, type SiteRouteContext } from "./siteRouteContext";
 
 type NavItem = {
   className?: string;
@@ -17,7 +18,7 @@ type NavGroup = {
 };
 
 type DirectNavItem = {
-  activeId: "founder" | "contact" | "message";
+  activeId: "founder" | "contact" | "manifesto";
   description: string;
   href: string;
   label: string;
@@ -92,17 +93,17 @@ const directNavItems: DirectNavItem[] = [
     description: "ご意見・質問・相談はこちら"
   },
   {
-    activeId: "message",
-    href: "messages/index.html",
-    label: "Message",
-    mobileLabel: "後輩へのメッセージ",
-    description: "迷いながら進む、後輩のあなたへ"
+    activeId: "manifesto",
+    href: "/messages/",
+    label: "Manifesto",
+    mobileLabel: "Manifesto",
+    description: "AI時代の学生へ贈る、COMPASSの決意"
   }
 ];
 
 const focusableSelector = "a[href], button:not([disabled])";
 
-export function SiteHeader() {
+export function SiteHeader({ routeContext = "root" }: { routeContext?: SiteRouteContext }) {
   const headerRef = useRef<HTMLElement>(null);
   const toggleRef = useRef<HTMLButtonElement>(null);
   const mobilePanelRef = useRef<HTMLDivElement>(null);
@@ -112,6 +113,8 @@ export function SiteHeader() {
   const [mobileMounted, setMobileMounted] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [pendingMobileTarget, setPendingMobileTarget] = useState<string | null>(null);
+  const visibleSection = routeContext === "messages" ? "manifesto" : activeSection;
+  const resolveHref = (href: string) => resolveSiteHref(href, routeContext);
 
   const closeMobileMenu = (restoreFocus = true) => {
     setMobileOpen(false);
@@ -127,7 +130,8 @@ export function SiteHeader() {
   };
 
   useEffect(() => {
-    const ids = ["top", "experience", "technology", "resources", "community", "contact", "founder", "message"];
+    if (routeContext === "messages") return;
+    const ids = ["top", "experience", "technology", "resources", "community", "contact", "founder", "manifesto"];
     const sectionMap: Record<string, string> = {
       experience: "technology"
     };
@@ -143,7 +147,7 @@ export function SiteHeader() {
     );
     elements.forEach((element) => observer.observe(element));
     return () => observer.disconnect();
-  }, []);
+  }, [routeContext]);
 
   useEffect(() => {
     const handlePointer = (event: PointerEvent) => {
@@ -220,7 +224,7 @@ export function SiteHeader() {
       <a className="skip-link" href="#main">本文へスキップ</a>
       <header ref={headerRef} className="site-header" data-site-header>
         <div className="header-inner">
-          <a className="site-logo" href="#top" aria-label="COMPASS Home">
+          <a className="site-logo" href={resolveHref("#top")} aria-label="COMPASS Home">
             <span className="logo-mark" aria-hidden="true"><span /></span>
             <span className="logo-copy"><strong>COMPASS</strong><small>Better Decisions</small></span>
           </a>
@@ -228,7 +232,7 @@ export function SiteHeader() {
           <nav className="desktop-nav" aria-label="Main navigation">
             {navGroups.map((group) => {
               const menuId = `${group.id}-menu`;
-              const current = activeSection === group.id;
+              const current = visibleSection === group.id;
               return (
                 <div key={group.id} className={`nav-group${activeMenu === group.id ? " is-open" : ""}${current ? " is-current" : ""}`}>
                   <button
@@ -252,7 +256,7 @@ export function SiteHeader() {
                       <a
                         key={`${item.href}-${item.label}`}
                         className={`panel-link ${item.className ?? ""}`.trim()}
-                        href={item.href}
+                        href={resolveHref(item.href)}
                         target={item.external ? "_blank" : undefined}
                         rel={item.external ? "noopener noreferrer" : undefined}
                         onClick={() => setActiveMenu(null)}
@@ -265,11 +269,11 @@ export function SiteHeader() {
               );
             })}
             {directNavItems.map((item) => (
-              <div key={item.activeId} className={`nav-group nav-group--direct${activeSection === item.activeId ? " is-current" : ""}`}>
+              <div key={item.activeId} className={`nav-group nav-group--direct${visibleSection === item.activeId ? " is-current" : ""}`}>
                 <a
-                  className={`nav-link${activeSection === item.activeId ? " is-current" : ""}`}
-                  href={item.href}
-                  aria-current={activeSection === item.activeId ? "location" : undefined}
+                  className={`nav-link${visibleSection === item.activeId ? " is-current" : ""}`}
+                  href={resolveHref(item.href)}
+                  aria-current={visibleSection === item.activeId ? (routeContext === "messages" ? "page" : "location") : undefined}
                   title={item.description}
                 >
                   {item.label}
@@ -285,7 +289,7 @@ export function SiteHeader() {
             <a className="header-cta" href="https://compass-official.pages.dev/future-strategy-library/" target="_blank" rel="noopener noreferrer">
               ライブラリを見る
             </a>
-            <a className="header-cta header-cta--interactive" href="INTRO_Interactive/">
+            <a className="header-cta header-cta--interactive" href={resolveHref("INTRO_Interactive/")}>
               講義を体験する
             </a>
           </div>
@@ -328,10 +332,10 @@ export function SiteHeader() {
                   <a
                     key={`${item.href}-${item.label}`}
                     className={item.className === "panel-link-interactive" ? "mobile-nav-highlight" : undefined}
-                    href={item.href}
+                    href={resolveHref(item.href)}
                     target={item.external ? "_blank" : undefined}
                     rel={item.external ? "noopener noreferrer" : undefined}
-                    onClick={(event) => handleMobileNavClick(event, item.href)}
+                    onClick={(event) => handleMobileNavClick(event, resolveHref(item.href))}
                   >
                     {item.label}
                   </a>
@@ -341,7 +345,13 @@ export function SiteHeader() {
             {directNavItems.map((item) => (
               <section key={item.activeId} className="mobile-nav-group" aria-labelledby={`mobile-${item.activeId}-title`}>
                 <h2 id={`mobile-${item.activeId}-title`}>{item.label}</h2>
-                <a href={item.href} onClick={(event) => handleMobileNavClick(event, item.href)}>{item.mobileLabel}</a>
+                <a
+                  href={resolveHref(item.href)}
+                  aria-current={visibleSection === item.activeId ? (routeContext === "messages" ? "page" : "location") : undefined}
+                  onClick={(event) => handleMobileNavClick(event, resolveHref(item.href))}
+                >
+                  {item.mobileLabel}
+                </a>
               </section>
             ))}
           </nav>
