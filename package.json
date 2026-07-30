@@ -6,7 +6,7 @@
     "dev": "next dev --hostname 127.0.0.1",
     "dev:pages": "wrangler pages dev out --port 8788",
     "typecheck": "tsc --noEmit",
-    "test:registration": "vitest run tests/community-registration-schema.test.ts tests/community-registration-function.test.ts tests/community-registration-gas.test.ts",
+    "test:registration": "vitest run tests/community-registration-schema.test.ts tests/community-registration-function.test.ts tests/community-registration-gas.test.ts tests/contact-schema.test.ts tests/contact-function.test.ts tests/contact-gas.test.ts",
     "clean": "node scripts/clean-next-output.mjs",
     "optimize:images": "node scripts/optimize-images.mjs",
     "build": "npm run clean && npm run optimize:images && next build --webpack && node scripts/assemble-next-export.mjs",

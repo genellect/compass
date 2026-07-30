@@ -46,9 +46,16 @@ function expectSameMap(label, expected, actual) {
 const official = await readFile(path.join(out, "index.html"), "utf8");
 const interactive = await readFile(path.join(out, "INTRO_Interactive", "index.html"), "utf8");
 const communityJoin = await readFile(path.join(out, "community", "join", "index.html"), "utf8");
+const contact = await readFile(path.join(out, "contact", "index.html"), "utf8");
 const messages = await readFile(path.join(out, "messages", "index.html"), "utf8");
 const registrationFunction = await readFile(path.join(root, "functions", "api", "community-registration.ts"), "utf8");
 const gasCode = await readFile(path.join(root, "google-apps-script", "Code.gs"), "utf8");
+const contactFunction = await readFile(path.join(root, "functions", "api", "contact.ts"), "utf8");
+const contactGasCode = await readFile(path.join(root, "google-apps-script", "contact", "Code.gs"), "utf8");
+const contactFormSource = await readFile(
+  path.join(root, "src", "app", "(official)", "contact", "ContactForm.tsx"),
+  "utf8"
+);
 
 for (const expected of [
   '<html lang="ja"',
@@ -233,6 +240,44 @@ for (const unexpected of [
 
 expectOneH1(communityJoin, "Community registration page");
 
+for (const expected of [
+  '<html lang="ja"',
+  "COMPASS お問い合わせフォーム",
+  "Webサイト、イベント、講演、共同企画、取材、共同開発など、COMPASSに関するお問い合わせを受け付けています。",
+  "学生・教職員・団体・企業の方など、どなたでもお気軽にお問い合わせください。",
+  "お名前",
+  "学部・学科 / 所属",
+  "メールアドレス",
+  "メールアドレスの確認",
+  "お問い合わせ内容",
+  "確認コードを送信",
+  "お問い合わせを送信",
+  'minLength="2"',
+  'maxLength="20"',
+  'minLength="5"',
+  'maxLength="50"',
+  'minLength="10"',
+  'maxLength="1000"',
+  'rel="canonical" href="https://compass-official.pages.dev/contact/"',
+  'content="noindex, follow"'
+]) expectIncludes(contact, expected, "Contact page");
+
+for (const expected of [
+  "メールアドレスを確認",
+  "メールアドレスの確認が完了しました。",
+  'action: "verify_code"',
+  "verificationProof"
+]) expectIncludes(contactFormSource, expected, "Contact form source");
+
+for (const unexpected of [
+  "@st.kitasato-u.ac.jp",
+  "sample@",
+  "Googleフォーム",
+  "For testing only."
+]) expectExcludes(contact, unexpected, "Contact page");
+
+expectOneH1(contact, "Contact page");
+
 expectIncludes(
   messages,
   '<a href="/community/join/" target="_blank" rel="noopener noreferrer">コミュニティに参加する</a>',
@@ -265,6 +310,40 @@ for (const expected of [
 for (const unexpected of ["RESEND_API_KEY", "REGISTRATION_FROM_EMAIL", "api.resend.com"]) {
   expectExcludes(registrationFunction, unexpected, "Community registration Pages Function");
   expectExcludes(gasCode, unexpected, "Community registration GAS code");
+}
+
+for (const expected of [
+  "CONTACT_GOOGLE_APPS_SCRIPT_URL",
+  "CONTACT_GOOGLE_APPS_SCRIPT_SECRET",
+  "CONTACT_RATE_LIMIT_SECRET",
+  "CONTACT_TURNSTILE_SECRET_KEY",
+  "CONTACT_TURNSTILE_ACTION",
+  "clientFingerprint",
+  "generateVerificationCode",
+  "verificationProof",
+  "verify_code",
+  "script.google.com"
+]) expectIncludes(contactFunction, expected, "Contact Pages Function");
+
+for (const expected of [
+  'FORM_SECRET_PROPERTY: "CONTACT_FORM_SHARED_SECRET"',
+  'OTP_PEPPER_PROPERTY: "CONTACT_OTP_PEPPER"',
+  "MAX_CODE_ATTEMPTS: 5",
+  "RESEND_COOLDOWN_MS: 60 * 1000",
+  "EMAIL_RATE_LIMIT: 3",
+  "IP_RATE_LIMIT: 10",
+  "GLOBAL_RATE_LIMIT: 100",
+  "computeHmacSha256Signature",
+  "verifyCode_",
+  "MailApp.sendEmail",
+  "COMPASSへのお問い合わせがありました。",
+  "お問い合わせを受け付けました",
+  "※本メールはGoogle Apps Scriptにより自動送信されています。"
+]) expectIncludes(contactGasCode, expected, "Contact GAS code");
+
+for (const unexpected of ['FORM_SECRET_PROPERTY: "FORM_SHARED_SECRET"', "COMMUNITY_REGISTRATION_IDEMPOTENCY", "@st.kitasato-u.ac.jp$"]) {
+  expectExcludes(contactFunction, unexpected, "Contact Pages Function");
+  expectExcludes(contactGasCode, unexpected, "Contact GAS code");
 }
 
 for (const relative of [

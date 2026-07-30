@@ -1,5 +1,5 @@
 {
   "version": 1,
-  "include": ["/api/community-registration"],
+  "include": ["/api/community-registration", "/api/contact"],
   "exclude": []
 }
