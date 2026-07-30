@@ -25,6 +25,10 @@ type DirectNavItem = {
   mobileLabel: string;
 };
 
+const libraryUrl = "/future-strategy-library/";
+const libraryRegistrationUrl =
+  "https://docs.google.com/forms/d/e/1FAIpQLSf8gLujuK-giYnkCnv-Cxp7qon1kY8mhnGvfkA62hOlrJgAHA/viewform";
+
 const navGroups: NavGroup[] = [
   {
     id: "technology",
@@ -48,10 +52,9 @@ const navGroups: NavGroup[] = [
     label: "Resources",
     items: [
       {
-        href: "https://compass-official.pages.dev/future-strategy-library/",
+        href: libraryUrl,
         label: "未来戦略ライブラリ",
-        description: "まだ知らない進路と可能性へ",
-        external: true
+        description: "まだ知らない進路と可能性へ"
       },
       {
         href: "https://forms.gle/sW49M329Dcets8ga9",
@@ -113,7 +116,7 @@ export function SiteHeader({ routeContext = "root" }: { routeContext?: SiteRoute
   const [mobileMounted, setMobileMounted] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [pendingMobileTarget, setPendingMobileTarget] = useState<string | null>(null);
-  const visibleSection = routeContext === "messages" ? "manifesto" : activeSection;
+  const visibleSection = routeContext === "messages" ? "manifesto" : routeContext === "library" ? "resources" : activeSection;
   const resolveHref = (href: string) => resolveSiteHref(href, routeContext);
 
   const closeMobileMenu = (restoreFocus = true) => {
@@ -130,7 +133,7 @@ export function SiteHeader({ routeContext = "root" }: { routeContext?: SiteRoute
   };
 
   useEffect(() => {
-    if (routeContext === "messages") return;
+    if (routeContext !== "root") return;
     const ids = ["top", "experience", "technology", "resources", "community", "contact", "founder", "manifesto"];
     const sectionMap: Record<string, string> = {
       experience: "technology"
@@ -240,7 +243,7 @@ export function SiteHeader({ routeContext = "root" }: { routeContext?: SiteRoute
                     type="button"
                     aria-expanded={activeMenu === group.id}
                     aria-controls={menuId}
-                    aria-current={current ? "location" : undefined}
+                    aria-current={current ? (routeContext === "root" ? "location" : "page") : undefined}
                     onClick={() => setActiveMenu((open) => open === group.id ? null : group.id)}
                     onKeyDown={(event) => {
                       if (event.key !== "ArrowDown") return;
@@ -273,7 +276,7 @@ export function SiteHeader({ routeContext = "root" }: { routeContext?: SiteRoute
                 <a
                   className={`nav-link${visibleSection === item.activeId ? " is-current" : ""}`}
                   href={resolveHref(item.href)}
-                  aria-current={visibleSection === item.activeId ? (routeContext === "messages" ? "page" : "location") : undefined}
+                  aria-current={visibleSection === item.activeId ? (routeContext === "root" ? "location" : "page") : undefined}
                   title={item.description}
                 >
                   {item.label}
@@ -286,12 +289,20 @@ export function SiteHeader({ routeContext = "root" }: { routeContext?: SiteRoute
           </nav>
 
           <div className="header-actions" aria-label="Primary actions">
-            <a className="header-cta" href="https://compass-official.pages.dev/future-strategy-library/" target="_blank" rel="noopener noreferrer">
-              ライブラリを見る
-            </a>
-            <a className="header-cta header-cta--interactive" href={resolveHref("INTRO_Interactive/")}>
-              講義を体験する
-            </a>
+            {routeContext === "library" ? (
+              <a className="header-cta" href={libraryRegistrationUrl} target="_blank" rel="noopener noreferrer">
+                大学アカウントで無料登録する
+              </a>
+            ) : (
+              <>
+                <a className="header-cta" href={libraryUrl}>
+                  ライブラリを見る
+                </a>
+                <a className="header-cta header-cta--interactive" href={resolveHref("INTRO_Interactive/")}>
+                  講義を体験する
+                </a>
+              </>
+            )}
           </div>
 
           <button
@@ -324,6 +335,17 @@ export function SiteHeader({ routeContext = "root" }: { routeContext?: SiteRoute
               <span aria-hidden="true" /><span aria-hidden="true" />
             </button>
           </div>
+          {routeContext === "library" ? (
+            <a
+              className="mobile-menu-primary"
+              href={libraryRegistrationUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={() => closeMobileMenu(false)}
+            >
+              大学アカウントで無料登録する
+            </a>
+          ) : null}
           <nav className="mobile-nav" aria-label="Mobile menu links">
             {mobileNavGroups.map((group) => (
               <section key={group.id} className="mobile-nav-group" aria-labelledby={`mobile-${group.id}-title`}>
@@ -335,6 +357,7 @@ export function SiteHeader({ routeContext = "root" }: { routeContext?: SiteRoute
                     href={resolveHref(item.href)}
                     target={item.external ? "_blank" : undefined}
                     rel={item.external ? "noopener noreferrer" : undefined}
+                    aria-current={routeContext === "library" && item.href === libraryUrl ? "page" : undefined}
                     onClick={(event) => handleMobileNavClick(event, resolveHref(item.href))}
                   >
                     {item.label}
@@ -347,7 +370,7 @@ export function SiteHeader({ routeContext = "root" }: { routeContext?: SiteRoute
                 <h2 id={`mobile-${item.activeId}-title`}>{item.label}</h2>
                 <a
                   href={resolveHref(item.href)}
-                  aria-current={visibleSection === item.activeId ? (routeContext === "messages" ? "page" : "location") : undefined}
+                  aria-current={visibleSection === item.activeId ? (routeContext === "root" ? "location" : "page") : undefined}
                   onClick={(event) => handleMobileNavClick(event, resolveHref(item.href))}
                 >
                   {item.mobileLabel}

@@ -6,16 +6,6 @@ const outDir = path.join(root, "out");
 
 await mkdir(outDir, { recursive: true });
 
-for (const directory of ["future-strategy-library"]) {
-  await cp(path.join(root, directory), path.join(outDir, directory), {
-    recursive: true,
-    force: true,
-    filter(source) {
-      return !["node_modules", ".git", "dist", ".build", ".next", "out"].includes(path.basename(source));
-    }
-  });
-}
-
 for (const file of [
   ".nojekyll",
   "_headers",
@@ -27,4 +17,4 @@ for (const file of [
   await cp(path.join(root, file), path.join(outDir, file), { force: true });
 }
 
-console.log("Assembled the frozen library and Cloudflare control files into out/.");
+console.log("Assembled Cloudflare control files into the Next.js export.");

@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 
 const interactiveIntroUrl = "/INTRO_Interactive/";
-const libraryUrl = "https://compass-official.pages.dev/future-strategy-library/";
+const libraryUrl = "/future-strategy-library/";
 const essentialsUrl = "https://forms.gle/sW49M329Dcets8ga9";
 const joinUrl = "/community/join/";
 
@@ -68,8 +68,7 @@ export function CompassExperienceSection() {
       title: <><span>知らなかった</span><span>未来に、出会う。</span></>,
       description: "英語、AI、研究室選び、大学院進学、キャリア形成まで、未来を考えるための知識と戦略を届けます。",
       href: libraryUrl,
-      cta: "ライブラリを見る",
-      external: true
+      cta: "ライブラリを見る"
     },
     {
       number: "03",
@@ -107,7 +106,6 @@ export function CompassExperienceSection() {
                 <a
                   className={`v4-button ${item.name === "Technology" ? "v4-button--light" : "v4-button--primary"}`}
                   href={item.href}
-                  {...(item.external ? externalProps : {})}
                 >
                   {item.cta}
                 </a>
@@ -171,7 +169,7 @@ export function ResourcesExperienceSection() {
             <div className="v4-resource-gateway">
               <div className="v4-resource-gateway__primary">
                 <small>北里大学薬学部生対象</small>
-                <a className="v4-button v4-button--primary" href={libraryUrl} {...externalProps}>まだ知らない世界を見る</a>
+                <a className="v4-button v4-button--primary" href={libraryUrl}>まだ知らない世界を見る</a>
               </div>
               <a className="v4-resource-gateway__secondary" href={essentialsUrl} {...externalProps}>薬学部生以外の方はこちら</a>
             </div>

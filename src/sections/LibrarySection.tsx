@@ -9,7 +9,7 @@ export function LibrarySection() {
           <p>
             未来戦略ライブラリは、COMPASSの理念である「選択肢と判断軸を届ける」を、実践的な資料を通して形にした基幹プロジェクトです。
           </p>
-          <a className="button button-secondary" href="https://compass-official.pages.dev/future-strategy-library/" target="_blank" rel="noopener noreferrer">
+          <a className="button button-secondary" href="/future-strategy-library/">
             公式サイトを見る
           </a>
         </div>

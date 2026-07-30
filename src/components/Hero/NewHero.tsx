@@ -30,9 +30,7 @@ export function NewHero() {
             </a>
             <a
               className="button button-secondary hero-library-link"
-              href="https://compass-official.pages.dev/future-strategy-library/"
-              target="_blank"
-              rel="noopener noreferrer"
+              href="/future-strategy-library/"
             >
               ライブラリを見る
             </a>

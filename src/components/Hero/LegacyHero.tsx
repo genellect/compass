@@ -16,7 +16,7 @@ export function LegacyHero() {
           </p>
           <div className="hero-actions" aria-label="Hero actions">
             <a className="button button-primary" href="#vision">Discover COMPASS</a>
-            <a className="button button-secondary" href="https://compass-official.pages.dev/future-strategy-library/" target="_blank" rel="noopener noreferrer">Explore the library</a>
+            <a className="button button-secondary" href="/future-strategy-library/">Explore the library</a>
           </div>
           <nav className="mobile-orbit-brief" aria-label="Mobile Three Orbits">
             <a className="mobile-orbit-link mobile-orbit-resources" href="#resources">

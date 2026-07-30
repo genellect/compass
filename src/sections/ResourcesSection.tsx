@@ -24,7 +24,7 @@ export function ResourcesSection() {
             <p>
               大学アカウントで対象者を確認し、利用ルールへの同意後、資料へのアクセス権と案内を自動で付与します。
             </p>
-            <a href="https://compass-official.pages.dev/future-strategy-library/" target="_blank" rel="noopener noreferrer">
+            <a href="/future-strategy-library/">
               未来戦略ライブラリを見る
             </a>
           </article>

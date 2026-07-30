@@ -1,5 +1,4 @@
-import { createHash } from "node:crypto";
-import { access, readFile, readdir } from "node:fs/promises";
+import { access, readFile } from "node:fs/promises";
 import path from "node:path";
 
 const root = process.cwd();
@@ -56,36 +55,12 @@ function renderedMessageCopy(html) {
     .trim();
 }
 
-async function fileMap(directory) {
-  const result = new Map();
-
-  async function visit(current, relative = "") {
-    for (const entry of await readdir(current, { withFileTypes: true })) {
-      const absolute = path.join(current, entry.name);
-      const nextRelative = path.posix.join(relative, entry.name);
-      if (entry.isDirectory()) await visit(absolute, nextRelative);
-      if (entry.isFile()) {
-        const bytes = await readFile(absolute);
-        result.set(nextRelative, createHash("sha256").update(bytes).digest("hex"));
-      }
-    }
-  }
-
-  await visit(directory);
-  return result;
-}
-
-function expectSameMap(label, expected, actual) {
-  const keys = new Set([...expected.keys(), ...actual.keys()]);
-  const differences = [...keys].filter((key) => expected.get(key) !== actual.get(key));
-  if (differences.length) throw new Error(`${label} changed: ${differences.slice(0, 10).join(", ")}`);
-}
-
 const official = await readFile(path.join(out, "index.html"), "utf8");
 const interactive = await readFile(path.join(out, "INTRO_Interactive", "index.html"), "utf8");
 const communityJoin = await readFile(path.join(out, "community", "join", "index.html"), "utf8");
 const contact = await readFile(path.join(out, "contact", "index.html"), "utf8");
 const messages = await readFile(path.join(out, "messages", "index.html"), "utf8");
+const library = await readFile(path.join(out, "future-strategy-library", "index.html"), "utf8");
 const messageSource = await readFile(
   path.join(root, "src", "app", "(official)", "messages", "message.md"),
   "utf8"
@@ -245,7 +220,18 @@ if (/<details class="v4-community__details"\s+open/.test(communitySection)) {
 const resourcesCard = official.match(/<article class="v4-experience-card v4-experience-card--resources"[\s\S]*?<\/article>/)?.[0];
 if (!resourcesCard) throw new Error("Official page is missing the Resources experience card.");
 expectIncludes(resourcesCard, "ライブラリを見る", "Resources experience card");
-expectIncludes(resourcesCard, 'href="https://compass-official.pages.dev/future-strategy-library/"', "Resources experience card");
+expectIncludes(resourcesCard, 'href="/future-strategy-library/"', "Resources experience card");
+
+const officialLibraryLinks = official.match(/<a\b[^>]*href="\/future-strategy-library\/"[^>]*>/g) ?? [];
+if (officialLibraryLinks.length !== 7) {
+  throw new Error(`Official page must contain seven same-domain library links; found ${officialLibraryLinks.length}.`);
+}
+for (const link of officialLibraryLinks) {
+  expectExcludes(link, 'target="_blank"', "Same-domain library link");
+}
+if (/<a\b[^>]*href="https:\/\/compass-official\.pages\.dev\/future-strategy-library\/"[^>]*>/.test(official)) {
+  throw new Error("Official page must not retain a legacy external library link.");
+}
 
 for (const expected of [
   '<html lang="ja"',
@@ -391,6 +377,107 @@ if (actualMessageCopy !== expectedMessageCopy) {
 }
 
 for (const expected of [
+  '<html lang="ja"',
+  'data-library-page="true"',
+  'data-mobile-hero="legacy"',
+  'data-mobile-hero-needs="true"',
+  "知ることが、",
+  "未来を変える。",
+  "過去問は、次の試験を",
+  "救ってくれる。",
+  "でも、卒業後までは",
+  "決めてくれない。",
+  "四つの領域。ひとつの未来。",
+  "試験を乗り切る。理解も置いていかない。",
+  "翻訳できる。だからこそ、使える人が強い。",
+  "AIを使う。AIに使われない。",
+  "配属されてから、初めて考えない。",
+  "未来は、案外、一つの資料から動き出す。",
+  "こんな人には、かなり向いています。",
+  "限定公開。",
+  "だから、実用に",
+  "踏み込める。",
+  "「もっと早く知りたかった」を、減らす。",
+  "資料を見る",
+  'data-library-material="true"',
+  "北里大学薬学部生",
+  "登録・利用無料",
+  "北里大学の大学アカウント必須",
+  "無断共有・転載・再配布は禁止しています。",
+  "大学アカウントで無料登録する",
+  "大学の公式組織ではありません。",
+  "その他の非公開情報は公表していません。",
+  'href="https://docs.google.com/forms/d/e/1FAIpQLSf8gLujuK-giYnkCnv-Cxp7qon1kY8mhnGvfkA62hOlrJgAHA/viewform"',
+  'target="_blank"',
+  'rel="canonical" href="https://compass-official.pages.dev/future-strategy-library/"',
+  '/images/future-strategy-library/library-horizon.webp',
+  '/images/future-strategy-library/why-english.webp',
+  '/images/future-strategy-library/ai-guide-sanitized.webp',
+  '/images/future-strategy-library/research-career.webp',
+  'type="application/ld+json"',
+  'aria-current="page"'
+]) expectIncludes(library, expected, "Future Strategy Library page");
+
+for (const unexpected of [
+  "future-strategy-library/style.css",
+  "compact-desktop.css",
+  "desktop-editorial.css",
+  "series-desktop.css",
+  "G-6M7JL9VCWK",
+  "OPEN THE ESSAY",
+  "PROJECT TIMELINE",
+  "学びに使える。",
+  "未来につながる。",
+  "まだ知らない未来への、三つの入口。",
+  "安心して学びに使えるために。",
+  "利用登録・ご相談はGoogleフォームから受け付けています。",
+  "Development%26Governance.pdf",
+  "Future_Strategy_Library_Design_Philosophy.pdf.pdf",
+  "/images/future-strategy-library/ai-guide.webp"
+]) expectExcludes(library, unexpected, "Future Strategy Library page");
+
+expectOneH1(library, "Future Strategy Library page");
+
+const libraryMain = library.match(/<main\b[\s\S]*?<\/main>/)?.[0];
+if (!libraryMain) throw new Error("Future Strategy Library main content was not found.");
+
+const librarySectionCount = (libraryMain.match(/<section\b/g) ?? []).length;
+if (librarySectionCount !== 8) {
+  throw new Error(`Future Strategy Library page must contain eight primary sections; found ${librarySectionCount}.`);
+}
+
+for (const expected of [
+  "数字で見る、",
+  "未来戦略ライブラリ",
+  "学生の「知りたかった」を、少しずつ形にしてきました。",
+  "創設日",
+  "2024",
+  ".02",
+  "登録者数",
+  "(2026年6月時点）",
+  'data-count-target="73"',
+  "掲載資料数",
+  'data-count-target="100"'
+]) expectIncludes(libraryMain, expected, "Future Strategy Library statistics");
+
+const libraryRegistrationCount = (
+  libraryMain.match(/data-library-registration="true"/g) ?? []
+).length;
+if (libraryRegistrationCount !== 4) {
+  throw new Error(`Future Strategy Library body must contain four registration actions; found ${libraryRegistrationCount}.`);
+}
+
+const libraryMaterialActions = libraryMain.match(/<a\b[^>]*data-library-material="true"[^>]*>/g) ?? [];
+if (libraryMaterialActions.length !== 3) {
+  throw new Error(`Future Strategy Library must contain three material actions; found ${libraryMaterialActions.length}.`);
+}
+
+for (const action of libraryMaterialActions) {
+  expectIncludes(action, 'href="https://docs.google.com/forms/d/e/1FAIpQLSf8gLujuK-giYnkCnv-Cxp7qon1kY8mhnGvfkA62hOlrJgAHA/viewform"', "Library material action");
+  expectIncludes(action, 'target="_blank"', "Library material action");
+}
+
+for (const expected of [
   "GOOGLE_APPS_SCRIPT_URL",
   "GOOGLE_APPS_SCRIPT_SECRET",
   "TURNSTILE_SECRET_KEY",
@@ -451,6 +538,10 @@ for (const relative of [
   "messages/index.html",
   "future-strategy-library/index.html",
   "images/compass-mark.svg",
+  "images/future-strategy-library/library-horizon.webp",
+  "images/future-strategy-library/why-english.webp",
+  "images/future-strategy-library/ai-guide-sanitized.webp",
+  "images/future-strategy-library/research-career.webp",
   "_routes.json",
   "_headers",
   "_redirects",
@@ -458,12 +549,5 @@ for (const relative of [
   "sitemap.xml"
 ]) await access(path.join(out, relative));
 
-for (const directory of ["future-strategy-library"]) {
-  const source = await fileMap(path.join(root, directory));
-  const built = await fileMap(path.join(out, directory));
-  expectSameMap(directory, source, built);
-  console.log(`${directory}: ${source.size} files preserved byte-for-byte`);
-}
-
 await access(path.join(out, "_next", "static"));
-console.log("Verified Next routes, exact messages copy, frozen library content, and deployment assets.");
+console.log("Verified Next routes, exact messages copy, the library gateway, and deployment assets.");
