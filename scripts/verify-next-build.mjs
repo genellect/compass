@@ -66,6 +66,10 @@ function renderedMessageCopy(html) {
 
 const official = await readFile(path.join(out, "index.html"), "utf8");
 const interactive = await readFile(path.join(out, "INTRO_Interactive", "index.html"), "utf8");
+const interactiveDevelopers = await readFile(
+  path.join(out, "INTRO_Interactive", "developers", "index.html"),
+  "utf8"
+);
 const communityJoin = await readFile(path.join(out, "community", "join", "index.html"), "utf8");
 const contact = await readFile(path.join(out, "contact", "index.html"), "utf8");
 const messages = await readFile(path.join(out, "messages", "index.html"), "utf8");
@@ -92,6 +96,22 @@ const livingHeroStyles = await readFile(
   "utf8"
 );
 const legacyInteractions = await readFile(path.join(root, "src", "legacy-interactions.ts"), "utf8");
+const deploymentHeaders = await readFile(path.join(out, "_headers"), "utf8");
+
+const parentGaMeasurementId = "G-EHKJ8B8N0Y";
+for (const [html, label] of [
+  [official, "Official page"],
+  [interactive, "Interactive introduction"],
+  [interactiveDevelopers, "Interactive developer introduction"],
+  [communityJoin, "Community join"],
+  [contact, "Contact"],
+  [messages, "Messages"],
+  [library, "Future Strategy Library"]
+]) {
+  expectIncludes(html, parentGaMeasurementId, `${label} parent GA4`);
+  expectExcludes(html, "G-7VT6Z59NE0", `${label} legacy Interactive GA4`);
+  expectExcludes(html, "G-6M7JL9VCWK", `${label} legacy Library GA4`);
+}
 
 expectIncludes(
   livingHeroStyles,
@@ -167,7 +187,7 @@ for (const expected of [
   "COMPASS Interactive紹介サイト",
   "未来戦略ライブラリ紹介サイト",
   "Community参加フォーム",
-  "G-EHKJ8B8N0Y"
+  parentGaMeasurementId
 ]) expectIncludes(official, expected, "Official page");
 
 expectOrdered(
@@ -284,7 +304,7 @@ for (const expected of [
   "わからないが、動き出す。",
   "未来の講義を、いま体験。",
   'rel="canonical" href="https://compass-official.pages.dev/INTRO_Interactive/"',
-  "G-7VT6Z59NE0"
+  parentGaMeasurementId
 ]) expectIncludes(interactive, expected, "Interactive page");
 
 if (interactive.includes('<div id="root"></div>')) {
@@ -596,6 +616,14 @@ for (const expected of [
 for (const unexpected of ['FORM_SECRET_PROPERTY: "FORM_SHARED_SECRET"', "COMMUNITY_REGISTRATION_IDEMPOTENCY", "@st.kitasato-u.ac.jp$"]) {
   expectExcludes(contactFunction, unexpected, "Contact Pages Function");
   expectExcludes(contactGasCode, unexpected, "Contact GAS code");
+}
+
+const cloudflareBeaconOrigin = "https://static.cloudflareinsights.com";
+const beaconCspOccurrences = deploymentHeaders.split(cloudflareBeaconOrigin).length - 1;
+if (beaconCspOccurrences !== 2) {
+  throw new Error(
+    `Deployment headers must allow the Cloudflare Web Analytics beacon on both form routes; found ${beaconCspOccurrences}.`
+  );
 }
 
 for (const relative of [

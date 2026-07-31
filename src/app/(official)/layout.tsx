@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import Script from "next/script";
 import type { ReactNode } from "react";
+import { COMPASS_PARENT_GA_MEASUREMENT_ID } from "../../analytics";
 import "../../styles/legacy.css";
 import "../../styles/hero.css";
 import "../../styles/desktop-system.css";
@@ -63,12 +64,15 @@ export default function OfficialLayout({ children }: Readonly<{ children: ReactN
       </head>
       <body>
         {children}
-        <Script src="https://www.googletagmanager.com/gtag/js?id=G-EHKJ8B8N0Y" strategy="afterInteractive" />
+        <Script
+          src={`https://www.googletagmanager.com/gtag/js?id=${COMPASS_PARENT_GA_MEASUREMENT_ID}`}
+          strategy="afterInteractive"
+        />
         <Script id="compass-official-analytics" strategy="afterInteractive">
           {`window.dataLayer = window.dataLayer || [];
 function gtag(){dataLayer.push(arguments);}
 gtag('js', new Date());
-gtag('config', 'G-EHKJ8B8N0Y');`}
+gtag('config', '${COMPASS_PARENT_GA_MEASUREMENT_ID}');`}
         </Script>
       </body>
     </html>
