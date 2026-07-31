@@ -11,6 +11,27 @@ type ViewTransitionDocument = Document & {
 
 const storageKey = "compass-message-reader-chapter";
 const focusableSelector = "button:not([disabled]), a[href]";
+const chapterTitleLines: Record<string, string[]> = {
+  "ai-as-a-team-member": ["私は先に、", "AIを部下にしました。"],
+  "no-time-to-think": ["「忙しいので、考える時間が", "ありません」が通用しなくなる"],
+  "effort-is-not-a-receipt": ["努力した時間は、", "領収書ではない"],
+  "ai-makes-mistakes": ["なお、AIは", "普通に間違えます"],
+  "polished-mistakes": ["AI時代には、", "賢そうな間違いが増える"],
+  "between-science-and-development": ["私は、生命科学者なのか、", "エンジニアなのか"],
+  "ai-did-not-do-everything": ["AIが全部やったなら、", "私はもう少し寝ている"],
+  "humans-make-the-bet": ["AIは候補を出す。", "人間は賭ける。"],
+  "using-ai-is-not-the-point": ["「AIを使えます」は、", "たぶん自慢にならなくなる"],
+  "skills-for-the-future": ["未来に必要な能力を", "五つ挙げます"],
+  "five-years-from-now": ["5年後、あなたはAIに", "何をさせていますか"],
+  epilogue: ["観客席から見ているには、", "この時代は面白すぎる。"]
+};
+
+function titleScale(lines: string[]) {
+  const longestLine = Math.max(...lines.map((line) => Array.from(line).length));
+  if (longestLine >= 14) return "compact";
+  if (longestLine >= 10) return "balanced";
+  return "standard";
+}
 
 function renderInline(text: string) {
   const lines = text.split("\n");
@@ -244,6 +265,7 @@ export function MessageReader({ message }: { message: MessageDocument }) {
         <article className={styles.chapterStack} data-message-manuscript="true">
           {message.chapters.map((chapter, index) => {
             const active = index === currentChapter;
+            const titleLines = chapterTitleLines[chapter.id] ?? [chapter.title];
             return (
               <section
                 id={chapter.id}
@@ -258,9 +280,19 @@ export function MessageReader({ message }: { message: MessageDocument }) {
                       <p>{chapter.kind === "epilogue" ? "EPILOGUE" : `CHAPTER ${String(index + 1).padStart(2, "0")}`}</p>
                       <span>{String(index + 1).padStart(2, "0")} / {String(message.chapters.length).padStart(2, "0")}</span>
                     </div>
-                    <h2 ref={(element) => { chapterHeadingRefs.current[index] = element; }} tabIndex={-1}>
-                      <span data-message-copy="true">{chapter.title}</span>
+                    <h2
+                      ref={(element) => { chapterHeadingRefs.current[index] = element; }}
+                      tabIndex={-1}
+                      aria-label={chapter.title}
+                      data-title-scale={titleScale(titleLines)}
+                    >
+                      <span className={styles.chapterTitle} aria-hidden="true">
+                        {titleLines.map((line) => (
+                          <span className={styles.chapterTitleLine} key={line}>{line}</span>
+                        ))}
+                      </span>
                     </h2>
+                    <span data-message-copy="true" hidden>{chapter.title}</span>
                   </header>
 
                   <div className={styles.prose}>

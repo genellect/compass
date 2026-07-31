@@ -1,4 +1,4 @@
-export type SiteRouteContext = "root" | "messages" | "library";
+export type SiteRouteContext = "root" | "messages" | "library" | "community" | "contact";
 
 export function resolveSiteHref(href: string, routeContext: SiteRouteContext) {
   if (routeContext === "root") return href;

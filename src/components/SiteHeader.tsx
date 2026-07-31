@@ -8,6 +8,8 @@ type NavItem = {
   external?: boolean;
   href: string;
   label: string;
+  mobileDescription?: string;
+  mobileLabel?: string;
 };
 
 type NavGroup = {
@@ -17,11 +19,17 @@ type NavGroup = {
 };
 
 type DirectNavItem = {
-  activeId: "founder" | "contact" | "manifesto";
+  activeId: "founder" | "contact";
   description: string;
   href: string;
   label: string;
   mobileLabel: string;
+};
+
+type MobileNavGroup = {
+  id: "education" | "learning" | "community" | "other";
+  items: NavItem[];
+  label: string;
 };
 
 const libraryUrl = "/future-strategy-library/";
@@ -36,7 +44,8 @@ const navGroups: NavGroup[] = [
       {
         href: "INTRO_Interactive/",
         label: "COMPASS Interactive",
-        description: "疑問が届き、講義が動く体験へ"
+        description: "疑問が届く、参加型講義システム",
+        mobileDescription: "疑問が届く、参加型講義システム"
       },
       {
         href: "#technology",
@@ -52,12 +61,14 @@ const navGroups: NavGroup[] = [
       {
         href: libraryUrl,
         label: "未来戦略ライブラリ",
-        description: "まだ知らない進路と可能性へ"
+        description: "北里薬学生への未来の羅針盤",
+        mobileDescription: "北里薬学生への未来の羅針盤"
       },
       {
         href: "/messages/",
-        label: "Manifesto",
-        description: "AI時代の学生へ贈る、COMPASSの決意"
+        label: "AI時代をどう生きるか",
+        description: "COMPASS Manifesto",
+        mobileDescription: "COMPASS Manifesto"
       }
     ]
   },
@@ -65,32 +76,27 @@ const navGroups: NavGroup[] = [
     id: "community",
     label: "Community",
     items: [
-      { href: "#community", label: "About COMPASS", description: "仲間と始める、新しい挑戦" },
+      {
+        href: "#community",
+        label: "COMPASSを知る",
+        description: "学生の挑戦を、仲間と形にする"
+      },
       {
         href: "/community/join/",
-        label: "Join COMPASS",
+        label: "運営メンバーとして参加する",
         description: "興味を、最初の一歩に変える"
       }
     ]
   }
 ];
 
-const mobileNavGroups: NavGroup[] = navGroups;
-
 const directNavItems: DirectNavItem[] = [
   {
     activeId: "founder",
     href: "#founder",
     label: "Founder",
-    mobileLabel: "代表紹介を見る",
+    mobileLabel: "代表について",
     description: "COMPASSを始めた人を知る"
-  },
-  {
-    activeId: "manifesto",
-    href: "/messages/",
-    label: "Manifesto",
-    mobileLabel: "Manifesto",
-    description: "AI時代の学生へ贈る、COMPASSの決意"
   },
   {
     activeId: "contact",
@@ -98,6 +104,33 @@ const directNavItems: DirectNavItem[] = [
     label: "Contact",
     mobileLabel: "お問い合わせ",
     description: "ご意見・質問・相談はこちら"
+  }
+];
+
+const mobileNavGroups: MobileNavGroup[] = [
+  {
+    id: "education",
+    label: "教育を変える",
+    items: [navGroups[0].items[0]]
+  },
+  {
+    id: "learning",
+    label: "学ぶ・考える",
+    items: navGroups[1].items
+  },
+  {
+    id: "community",
+    label: "コミュニティに参加する",
+    items: navGroups[2].items
+  },
+  {
+    id: "other",
+    label: "その他",
+    items: directNavItems.map((item) => ({
+      href: item.href,
+      label: item.mobileLabel,
+      description: item.description
+    }))
   }
 ];
 
@@ -113,8 +146,20 @@ export function SiteHeader({ routeContext = "root" }: { routeContext?: SiteRoute
   const [mobileMounted, setMobileMounted] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [pendingMobileTarget, setPendingMobileTarget] = useState<string | null>(null);
-  const visibleSection = routeContext === "messages" ? "manifesto" : routeContext === "library" ? "resources" : activeSection;
+  const routeSection: Record<Exclude<SiteRouteContext, "root">, string> = {
+    messages: "resources",
+    library: "resources",
+    community: "community",
+    contact: "contact"
+  };
+  const visibleSection = routeContext === "root" ? activeSection : routeSection[routeContext];
   const resolveHref = (href: string) => resolveSiteHref(href, routeContext);
+  const currentMobileHref =
+    routeContext === "library" ? libraryUrl
+      : routeContext === "messages" ? "/messages/"
+        : routeContext === "community" ? "/community/join/"
+          : routeContext === "contact" ? "/contact/"
+            : null;
 
   const closeMobileMenu = (restoreFocus = true) => {
     setMobileOpen(false);
@@ -133,7 +178,8 @@ export function SiteHeader({ routeContext = "root" }: { routeContext?: SiteRoute
     if (routeContext !== "root") return;
     const ids = ["top", "experience", "technology", "resources", "community", "founder", "manifesto", "contact"];
     const sectionMap: Record<string, string> = {
-      experience: "technology"
+      experience: "technology",
+      manifesto: "resources"
     };
     const elements = ids.map((id) => document.getElementById(id)).filter((item): item is HTMLElement => Boolean(item));
     const observer = new IntersectionObserver(
@@ -287,16 +333,21 @@ export function SiteHeader({ routeContext = "root" }: { routeContext?: SiteRoute
 
           <div className="header-actions" aria-label="Primary actions">
             {routeContext === "library" ? (
-              <a className="header-cta" href={libraryRegistrationUrl} target="_blank" rel="noopener noreferrer">
-                大学アカウントで無料登録する
+              <a
+                className="header-cta header-cta--interactive header-cta--registration"
+                href={libraryRegistrationUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                無料登録する
               </a>
             ) : (
               <>
-                <a className="header-cta" href={libraryUrl}>
-                  ライブラリを見る
-                </a>
                 <a className="header-cta header-cta--interactive" href={resolveHref("INTRO_Interactive/")}>
                   講義を体験する
+                </a>
+                <a className="header-cta header-cta--optional" href={libraryUrl}>
+                  ライブラリを見る
                 </a>
               </>
             )}
@@ -340,7 +391,7 @@ export function SiteHeader({ routeContext = "root" }: { routeContext?: SiteRoute
               rel="noopener noreferrer"
               onClick={() => closeMobileMenu(false)}
             >
-              大学アカウントで無料登録する
+              無料登録する
             </a>
           ) : null}
           <nav className="mobile-nav" aria-label="Mobile menu links">
@@ -353,24 +404,17 @@ export function SiteHeader({ routeContext = "root" }: { routeContext?: SiteRoute
                     href={resolveHref(item.href)}
                     target={item.external ? "_blank" : undefined}
                     rel={item.external ? "noopener noreferrer" : undefined}
-                    aria-current={routeContext === "library" && item.href === libraryUrl ? "page" : undefined}
+                    aria-current={item.href === currentMobileHref ? "page" : undefined}
                     onClick={(event) => handleMobileNavClick(event, resolveHref(item.href))}
                   >
-                    {item.label}
+                    <span className="mobile-nav-link-copy">
+                      <strong className="mobile-nav-link-title">{item.mobileLabel ?? item.label}</strong>
+                      {item.mobileDescription ? (
+                        <small className="mobile-nav-link-description">{item.mobileDescription}</small>
+                      ) : null}
+                    </span>
                   </a>
                 ))}
-              </section>
-            ))}
-            {directNavItems.map((item) => (
-              <section key={item.activeId} className="mobile-nav-group" aria-labelledby={`mobile-${item.activeId}-title`}>
-                <h2 id={`mobile-${item.activeId}-title`}>{item.label}</h2>
-                <a
-                  href={resolveHref(item.href)}
-                  aria-current={visibleSection === item.activeId ? (routeContext === "root" ? "location" : "page") : undefined}
-                  onClick={(event) => handleMobileNavClick(event, resolveHref(item.href))}
-                >
-                  {item.mobileLabel}
-                </a>
               </section>
             ))}
           </nav>

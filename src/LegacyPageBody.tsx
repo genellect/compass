@@ -22,11 +22,11 @@ export function LegacyPageBody() {
         <CompassExperienceSection />
         <TechnologyCoreSection />
         <ResourcesExperienceSection />
-        <CommunityExperienceSection />
-        <FounderPortfolioSection />
-        <div className="v4-closing v4-closing--manifesto">
+        <div className="v4-closing v4-closing--manifesto v4-closing--resource-manifesto">
           <ManifestoSection />
         </div>
+        <CommunityExperienceSection />
+        <FounderPortfolioSection />
         <div className="v4-closing v4-closing--contact">
           <ContactSection />
         </div>

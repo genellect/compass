@@ -133,7 +133,7 @@
 .coverConstellation span:nth-child(5) { top: 73%; right: 15%; animation-delay: -0.7s; }
 
 .coverInner {
-  width: min(850px, 76vw);
+  width: min(900px, 76vw);
   position: relative;
   z-index: 2;
 }
@@ -158,16 +158,24 @@
 }
 
 .cover h1 {
-  max-width: 10ch;
+  max-width: 9ch;
   margin: clamp(1.5rem, 3vw, 2.8rem) 0 0;
   color: #f8fbff;
   font-family: var(--font-sans);
-  font-size: clamp(3rem, 5.4vw, 5.8rem);
+  font-size: clamp(3.3rem, 5.7vw, 6.15rem);
   font-weight: 950;
-  letter-spacing: -0.065em;
-  line-height: 0.98;
+  letter-spacing: -0.07em;
+  line-height: 0.94;
   text-wrap: balance;
   text-shadow: 0 28px 90px rgba(0, 0, 0, 0.4);
+}
+
+.cover h1 > span {
+  background: linear-gradient(118deg, #ffffff 0%, #f7fbff 62%, #8cefff 100%);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 18px 42px rgba(0, 0, 0, 0.28));
 }
 
 .coverSubtitle {
@@ -202,26 +210,43 @@
 
 .primaryAction,
 .secondaryAction {
-  min-height: 58px;
-  padding: 0 1.65rem;
   border-radius: 999px;
   font-weight: 900;
   transition: transform 180ms ease, background 180ms ease, border-color 180ms ease;
 }
 
 .primaryAction {
+  min-height: 66px;
   display: inline-flex;
   align-items: center;
-  gap: 1.2rem;
+  gap: 1.4rem;
+  padding: 0 2rem;
+  border: 1px solid rgba(255, 255, 255, 0.7) !important;
   color: #03111d;
-  background: linear-gradient(135deg, var(--message-cyan), #f4fff9 70%);
-  box-shadow: 0 18px 54px rgba(115, 231, 255, 0.2);
+  background: linear-gradient(118deg, #77edff 0%, #f8fffb 64%, #fff1bd 100%);
+  box-shadow:
+    0 0 0 8px rgba(115, 231, 255, 0.055),
+    0 22px 62px rgba(115, 231, 255, 0.28);
+}
+
+.primaryAction > span {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: rgba(3, 17, 29, 0.1);
 }
 
 .secondaryAction {
+  min-height: 44px;
+  padding: 0 0.35rem;
   color: rgba(247, 251, 255, 0.88);
-  background: rgba(255, 255, 255, 0.055);
-  border: 1px solid rgba(255, 255, 255, 0.18) !important;
+  background: transparent;
+  border: 0 !important;
+  border-radius: 0;
+  box-shadow: inset 0 -1px rgba(255, 255, 255, 0.32);
+  font-size: 0.84rem;
 }
 
 .primaryAction:hover,
@@ -429,15 +454,32 @@
 }
 
 .chapterHeader h2 {
-  max-width: 18ch;
+  width: 100%;
+  max-width: none;
   margin: clamp(2rem, 4vw, 3.2rem) 0 0;
   color: var(--message-ink);
   font-family: var(--font-sans);
-  font-size: clamp(2.25rem, 5.4vw, 4.9rem);
+  font-size: clamp(2.3rem, 4.6vw, 4.1rem);
   font-weight: 950;
-  letter-spacing: -0.055em;
-  line-height: 1.12;
-  text-wrap: balance;
+  letter-spacing: -0.05em;
+  line-height: 1.08;
+}
+
+.chapterHeader h2[data-title-scale="balanced"] {
+  font-size: clamp(2.15rem, 4vw, 3.5rem);
+}
+
+.chapterHeader h2[data-title-scale="compact"] {
+  font-size: clamp(1.95rem, 3.5vw, 3.1rem);
+}
+
+.chapterTitle,
+.chapterTitleLine {
+  display: block;
+}
+
+.chapterTitleLine {
+  white-space: nowrap;
 }
 
 .chapterHeader h2:focus {
@@ -801,7 +843,11 @@
 
   .primaryAction,
   .secondaryAction {
-    min-height: 50px;
+    min-height: 44px;
+  }
+
+  .primaryAction {
+    min-height: 54px;
   }
 
   .coverAuthor {
@@ -835,11 +881,11 @@
   }
 
   .cover h1 {
-    max-width: none;
+    max-width: 8ch;
     margin-top: 1.8rem;
-    font-size: clamp(1.7rem, 7.4vw, 2rem);
-    line-height: 1.06;
-    white-space: nowrap;
+    font-size: clamp(2.45rem, 11.8vw, 3.25rem);
+    line-height: 0.98;
+    white-space: normal;
   }
 
   .coverSubtitle {
@@ -857,6 +903,17 @@
   .coverActions button {
     width: 100%;
     justify-content: space-between;
+  }
+
+  .coverActions .primaryAction {
+    min-height: 64px;
+  }
+
+  .coverActions .secondaryAction {
+    width: fit-content;
+    min-height: 42px;
+    align-self: center;
+    justify-content: center;
   }
 
   .coverAuthor {
@@ -915,10 +972,19 @@
   }
 
   .chapterHeader h2 {
-    max-width: 12ch;
+    width: 100%;
+    max-width: none;
     margin-top: 2.25rem;
-    font-size: clamp(2.5rem, 12vw, 4.1rem);
-    line-height: 1.12;
+    font-size: clamp(2.15rem, 9.8vw, 2.85rem);
+    line-height: 1.1;
+  }
+
+  .chapterHeader h2[data-title-scale="balanced"] {
+    font-size: clamp(1.6rem, 7vw, 1.9rem);
+  }
+
+  .chapterHeader h2[data-title-scale="compact"] {
+    font-size: clamp(1.32rem, 5.7vw, 1.55rem);
   }
 
   .prose {
@@ -1048,11 +1114,19 @@
   }
 
   .cover h1 {
-    font-size: clamp(1.6rem, 7.2vw, 1.9rem);
+    font-size: clamp(2.35rem, 11.5vw, 2.95rem);
   }
 
   .chapterHeader h2 {
-    font-size: clamp(2.25rem, 11.4vw, 3.55rem);
+    font-size: clamp(2.05rem, 9.5vw, 2.65rem);
+  }
+
+  .chapterHeader h2[data-title-scale="balanced"] {
+    font-size: clamp(1.55rem, 6.8vw, 1.8rem);
+  }
+
+  .chapterHeader h2[data-title-scale="compact"] {
+    font-size: clamp(1.28rem, 5.5vw, 1.48rem);
   }
 }
 

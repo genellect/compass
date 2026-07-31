@@ -57,7 +57,7 @@ function normalizeMessageSource(value) {
 }
 
 function renderedMessageCopy(html) {
-  return [...html.matchAll(/<span data-message-copy="true">([\s\S]*?)<\/span>/g)]
+  return [...html.matchAll(/<span\b[^>]*\bdata-message-copy="true"[^>]*>([\s\S]*?)<\/span>/g)]
     .map((match) => normalizeText(match[1]))
     .join(" ")
     .replace(/\s+/g, " ")
@@ -133,7 +133,7 @@ for (const expected of [
   "大学生活に、予定されていなかった挑戦と出会いを。",
   "面白そうなので、",
   "始めました。",
-  "About COMPASS",
+  "COMPASSを知る",
   "MANIFESTO",
   "Manifesto",
   "観客席から見ているには、",
@@ -152,7 +152,7 @@ for (const expected of [
 
 expectOrdered(
   official,
-  ['id="community"', 'id="founder"', 'id="manifesto"', 'id="contact"', 'class="site-footer"'],
+  ['id="resources"', 'id="manifesto"', 'id="community"', 'id="founder"', 'id="contact"', 'class="site-footer"'],
   "Official closing section order"
 );
 
@@ -296,7 +296,6 @@ for (const expected of [
 ]) expectIncludes(communityJoin, expected, "Community registration page");
 
 for (const unexpected of [
-  "興味を、",
   "フォームを入力",
   "所要時間 約3分",
   "北里大学の学生が対象です",
@@ -350,13 +349,25 @@ expectOneH1(contact, "Contact page");
 for (const expected of [
   'activeId: "contact"',
   'href: "/contact/"',
-  'mobileLabel: "お問い合わせ"'
+  'mobileLabel: "お問い合わせ"',
+  'label: "教育を変える"',
+  'label: "学ぶ・考える"',
+  'label: "コミュニティに参加する"',
+  'label: "その他"',
+  'mobileLabel: "代表について"',
+  "疑問が届く、参加型講義システム",
+  "北里薬学生への未来の羅針盤",
+  "運営メンバーとして参加する",
+  "無料登録する"
 ]) expectIncludes(siteHeaderSource, expected, "Official header source");
 expectIncludes(
   siteHeaderSource.replace(/\r\n/g, "\n"),
-  'href: "/messages/",\n        label: "Manifesto",\n        description: "AI時代の学生へ贈る、COMPASSの決意"',
+  'href: "/messages/",\n        label: "AI時代をどう生きるか",\n        description: "COMPASS Manifesto",\n        mobileDescription: "COMPASS Manifesto"',
   "Resources Manifesto navigation"
 );
+expectExcludes(siteHeaderSource, 'activeId: "manifesto"', "Independent Manifesto navigation");
+expectIncludes(siteHeaderSource, 'label: "Technology Core"', "Desktop Technology navigation");
+expectIncludes(siteHeaderSource, "items: [navGroups[0].items[0]]", "Mobile Technology navigation");
 expectExcludes(siteHeaderSource, 'mobileLabel: "お問い合わせフォーム"', "Official header source");
 expectExcludes(siteHeaderSource, 'label: "COMPASS Essentials"', "Official header source");
 expectExcludes(siteHeaderSource, "https://forms.gle/sW49M329Dcets8ga9", "Official header source");

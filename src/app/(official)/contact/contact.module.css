@@ -9,8 +9,11 @@
   min-height: 100vh;
   overflow: clip;
   background:
-    radial-gradient(circle at 12% 0%, rgba(100, 224, 232, 0.13), transparent 27rem),
-    linear-gradient(180deg, #f8fbfc 0%, var(--paper) 52%, #eef4f6 100%);
+    radial-gradient(circle at 12% 2%, rgba(100, 224, 232, 0.18), transparent 29rem),
+    linear-gradient(rgba(104, 226, 235, 0.045) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(104, 226, 235, 0.045) 1px, transparent 1px),
+    linear-gradient(180deg, #020812 0, #07182a 470px, #edf3f6 470px, var(--paper) 100%);
+  background-size: auto, 72px 72px, 72px 72px, auto;
   color: var(--ink);
   font-family: "Noto Sans JP", "Hiragino Kaku Gothic ProN", "Yu Gothic", system-ui, sans-serif;
 }
@@ -90,26 +93,39 @@
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  color: #22364d;
+  width: fit-content;
+  margin: 0 0 22px auto;
+  color: rgba(238, 249, 255, 0.82);
   font-size: 0.84rem;
   font-weight: 750;
   text-decoration: none;
 }
 
-.backLink:hover { color: var(--cyan-deep); }
+.backLink:hover { color: var(--cyan); }
 
 .main {
   width: min(760px, calc(100% - 48px));
-  margin: 44px auto 104px;
+  margin: 0 auto;
+  padding: calc(var(--header-height) + 54px) 0 112px;
 }
 
 .formCard {
+  position: relative;
   width: 100%;
   padding: clamp(38px, 6vw, 72px);
   border: 1px solid rgba(15, 40, 68, 0.1);
   border-radius: 28px;
   background: rgba(255, 255, 255, 0.97);
   box-shadow: 0 28px 84px rgba(18, 42, 64, 0.12);
+  overflow: hidden;
+}
+
+.formCard::before {
+  position: absolute;
+  inset: 0 0 auto;
+  height: 3px;
+  background: linear-gradient(90deg, var(--cyan), #725ee8, transparent 86%);
+  content: "";
 }
 
 .formHeading {
@@ -128,11 +144,13 @@
 
 .formHeading h1,
 .successCard h1 {
+  max-width: 100%;
   margin: 0;
   color: var(--ink);
-  font-size: clamp(2rem, 4vw, 3rem);
+  font-size: clamp(2rem, 3.1vw, 2.65rem);
   letter-spacing: -0.045em;
-  line-height: 1.25;
+  line-height: 1.22;
+  text-wrap: balance;
 }
 
 .formHeading > p:not(.formKicker) {
@@ -382,13 +400,12 @@
 }
 
 @media (max-width: 680px) {
-  .header { width: calc(100% - 32px); min-height: 78px; }
   .backLink { font-size: 0.72rem; }
   .backLink span { font-size: 0.9rem; }
-  .main { width: calc(100% - 24px); margin: 32px auto 80px; }
+  .main { width: calc(100% - 24px); margin: 0 auto; padding: calc(var(--header-height) + 28px) 0 80px; }
   .formCard { padding: 34px 20px; border-radius: 19px; }
   .formHeading { margin-bottom: 40px; }
-  .formHeading h1 { font-size: 1.82rem; }
+  .formHeading h1 { font-size: 1.76rem; }
   .formCard form { gap: 32px; }
   .verificationPanel { padding: 18px; }
   .turnstile { margin-inline: -5px; transform: scale(0.92); transform-origin: left center; }

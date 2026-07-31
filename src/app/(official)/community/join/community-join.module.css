@@ -12,8 +12,11 @@
   min-height: 100vh;
   overflow: clip;
   background:
-    radial-gradient(circle at 50% 0%, rgba(101, 226, 235, 0.1), transparent 28rem),
-    var(--paper);
+    radial-gradient(circle at 50% 2%, rgba(101, 226, 235, 0.17), transparent 30rem),
+    linear-gradient(rgba(104, 226, 235, 0.045) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(104, 226, 235, 0.045) 1px, transparent 1px),
+    linear-gradient(180deg, #020812 0, #07182a 470px, #edf3f6 470px, var(--paper) 100%);
+  background-size: auto, 72px 72px, 72px 72px, auto;
   color: var(--ink);
   font-family: "Noto Sans JP", "Hiragino Kaku Gothic ProN", "Yu Gothic", system-ui, sans-serif;
 }
@@ -85,17 +88,20 @@
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  color: #22364d;
+  width: fit-content;
+  margin: 0 0 22px auto;
+  color: rgba(238, 249, 255, 0.82);
   font-size: 0.84rem;
   font-weight: 750;
   text-decoration: none;
 }
 
-.backLink:hover { color: var(--cyan-deep); }
+.backLink:hover { color: var(--cyan); }
 
 .main {
   width: min(780px, calc(100% - 48px));
-  margin: 44px auto 104px;
+  margin: 0 auto;
+  padding: calc(var(--header-height) + 54px) 0 112px;
   background: transparent;
 }
 
@@ -169,18 +175,36 @@
 .helper code { color: inherit; font-family: ui-monospace, "SFMono-Regular", Consolas, monospace; }
 
 .formCard {
+  position: relative;
   width: 100%;
   padding: clamp(36px, 5vw, 72px);
   border: 1px solid rgba(15, 40, 68, 0.1);
   border-radius: 28px;
   background: rgba(255, 255, 255, 0.96);
   box-shadow: 0 30px 90px rgba(11, 27, 48, 0.14);
+  overflow: hidden;
+}
+
+.formCard::before {
+  position: absolute;
+  inset: 0 0 auto;
+  height: 3px;
+  background: linear-gradient(90deg, var(--cyan), var(--violet), transparent 86%);
+  content: "";
 }
 
 .formHeading { margin-bottom: 52px; padding-bottom: 32px; border-bottom: 1px solid var(--line); }
 .formKicker { margin-bottom: 15px; color: var(--cyan-deep); }
 .formHeading h1,
-.successCard h2 { margin: 0; color: var(--ink); font-size: clamp(2rem, 3.4vw, 3rem); letter-spacing: -0.045em; line-height: 1.25; }
+.successCard h2 {
+  max-width: 100%;
+  margin: 0;
+  color: var(--ink);
+  font-size: clamp(2rem, 3.1vw, 2.65rem);
+  letter-spacing: -0.045em;
+  line-height: 1.22;
+  text-wrap: balance;
+}
 .formHeading > p:last-child { margin: 18px 0 0; color: var(--copy); font-size: 0.86rem; }
 
 .formCard form { display: grid; gap: 38px; }
@@ -370,20 +394,17 @@
 }
 
 @media (max-width: 1040px) {
-  .header { width: calc(100% - 48px); }
-  .backLink { color: #22364d; }
-  .main { width: min(760px, calc(100% - 48px)); margin-top: 46px; }
+  .main { width: min(760px, calc(100% - 48px)); }
   .footer { width: calc(100% - 48px); }
 }
 
 @media (max-width: 680px) {
-  .header { width: calc(100% - 32px); min-height: 78px; }
   .backLink { font-size: 0.72rem; }
   .backLink span { font-size: 0.9rem; }
-  .main { width: calc(100% - 24px); margin: 32px auto 80px; }
+  .main { width: calc(100% - 24px); margin: 0 auto; padding: calc(var(--header-height) + 28px) 0 80px; }
   .formCard { padding: 34px 20px; border-radius: 19px; }
   .formHeading { margin-bottom: 42px; }
-  .formHeading h1 { font-size: 1.85rem; }
+  .formHeading h1 { font-size: 1.78rem; }
   .formCard form { gap: 34px; }
   .twoColumns { grid-template-columns: 1fr; }
   .choiceGrid,

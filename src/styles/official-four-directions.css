@@ -479,7 +479,7 @@
 }
 
 @media (min-width: 1121px) and (max-width: 1280px) {
-  .site-header .header-actions .header-cta:not(.header-cta--interactive) {
+  .site-header .header-actions .header-cta--optional {
     display: none;
   }
 
