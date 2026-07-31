@@ -66,6 +66,10 @@ function renderedMessageCopy(html) {
 
 const official = await readFile(path.join(out, "index.html"), "utf8");
 const interactive = await readFile(path.join(out, "INTRO_Interactive", "index.html"), "utf8");
+const interactiveDevelopers = await readFile(
+  path.join(out, "INTRO_Interactive", "developers", "index.html"),
+  "utf8"
+);
 const communityJoin = await readFile(path.join(out, "community", "join", "index.html"), "utf8");
 const contact = await readFile(path.join(out, "contact", "index.html"), "utf8");
 const messages = await readFile(path.join(out, "messages", "index.html"), "utf8");
@@ -87,11 +91,47 @@ const contactStyles = await readFile(
   "utf8"
 );
 const siteHeaderSource = await readFile(path.join(root, "src", "components", "SiteHeader.tsx"), "utf8");
+const livingHeroStyles = await readFile(
+  path.join(root, "src", "styles", "living-intelligence-hero.css"),
+  "utf8"
+);
+const legacyInteractions = await readFile(path.join(root, "src", "legacy-interactions.ts"), "utf8");
+const deploymentHeaders = await readFile(path.join(out, "_headers"), "utf8");
+
+const parentGaMeasurementId = "G-EHKJ8B8N0Y";
+for (const [html, label] of [
+  [official, "Official page"],
+  [interactive, "Interactive introduction"],
+  [interactiveDevelopers, "Interactive developer introduction"],
+  [communityJoin, "Community join"],
+  [contact, "Contact"],
+  [messages, "Messages"],
+  [library, "Future Strategy Library"]
+]) {
+  expectIncludes(html, parentGaMeasurementId, `${label} parent GA4`);
+  expectExcludes(html, "G-7VT6Z59NE0", `${label} legacy Interactive GA4`);
+  expectExcludes(html, "G-6M7JL9VCWK", `${label} legacy Library GA4`);
+}
+
+expectIncludes(
+  livingHeroStyles,
+  "-webkit-text-fill-color: #e6fbff;",
+  "Mobile Hero solid title fallback"
+);
+expectIncludes(
+  legacyInteractions,
+  "isLivingIntelligence ||",
+  "Living Intelligence desktop particle layer"
+);
 
 for (const expected of [
   '<html lang="ja"',
-  "Better Education.",
-  "Better Decisions.",
+  "Don’t Just Learn.",
+  "Build What’s",
+  "独自システム、実践資料、教育活動、",
+  "学生コミュニティをひとつに。",
+  "学生の「知る」を、",
+  "「選ぶ」「動く」へ変える。",
   'id="vision"',
   'id="experience"',
   'id="technology"',
@@ -147,7 +187,7 @@ for (const expected of [
   "COMPASS Interactive紹介サイト",
   "未来戦略ライブラリ紹介サイト",
   "Community参加フォーム",
-  "G-EHKJ8B8N0Y"
+  parentGaMeasurementId
 ]) expectIncludes(official, expected, "Official page");
 
 expectOrdered(
@@ -242,8 +282,8 @@ expectIncludes(resourcesCard, "ライブラリを見る", "Resources experience 
 expectIncludes(resourcesCard, 'href="/future-strategy-library/"', "Resources experience card");
 
 const officialLibraryLinks = official.match(/<a\b[^>]*href="\/future-strategy-library\/"[^>]*>/g) ?? [];
-if (officialLibraryLinks.length !== 7) {
-  throw new Error(`Official page must contain seven same-domain library links; found ${officialLibraryLinks.length}.`);
+if (officialLibraryLinks.length !== 6) {
+  throw new Error(`Official page must contain six same-domain library links; found ${officialLibraryLinks.length}.`);
 }
 for (const link of officialLibraryLinks) {
   expectExcludes(link, 'target="_blank"', "Same-domain library link");
@@ -264,7 +304,7 @@ for (const expected of [
   "わからないが、動き出す。",
   "未来の講義を、いま体験。",
   'rel="canonical" href="https://compass-official.pages.dev/INTRO_Interactive/"',
-  "G-7VT6Z59NE0"
+  parentGaMeasurementId
 ]) expectIncludes(interactive, expected, "Interactive page");
 
 if (interactive.includes('<div id="root"></div>')) {
@@ -381,14 +421,15 @@ expectIncludes(
 
 for (const expected of [
   '<html lang="ja"',
-  "AIに仕事を奪われる？",
+  "そのAI、",
+  "まだ質問相手ですか？",
   "私は先に、AIを部下にしました。",
   "観客席から見ているには、この時代は面白すぎる。",
   'rel="canonical" href="https://compass-official.pages.dev/messages/"',
   'data-reader-state="cover"',
   'data-message-manuscript="true"',
   'data-message-copy="true"',
-  "最初から読む",
+  "第1章を読む",
   "章を選ぶ",
   "CHAPTERS",
   'href="/#technology"',
@@ -420,8 +461,9 @@ for (const expected of [
   'data-library-page="true"',
   'data-mobile-hero="legacy"',
   'data-mobile-hero-needs="true"',
-  "知ることが、",
-  "未来を変える。",
+  "未来は、",
+  "知っている人から",
+  "動き出す。",
   "過去問は、次の試験を",
   "救ってくれる。",
   "でも、卒業後までは",
@@ -574,6 +616,14 @@ for (const expected of [
 for (const unexpected of ['FORM_SECRET_PROPERTY: "FORM_SHARED_SECRET"', "COMMUNITY_REGISTRATION_IDEMPOTENCY", "@st.kitasato-u.ac.jp$"]) {
   expectExcludes(contactFunction, unexpected, "Contact Pages Function");
   expectExcludes(contactGasCode, unexpected, "Contact GAS code");
+}
+
+const cloudflareBeaconOrigin = "https://static.cloudflareinsights.com";
+const beaconCspOccurrences = deploymentHeaders.split(cloudflareBeaconOrigin).length - 1;
+if (beaconCspOccurrences !== 2) {
+  throw new Error(
+    `Deployment headers must allow the Cloudflare Web Analytics beacon on both form routes; found ${beaconCspOccurrences}.`
+  );
 }
 
 for (const relative of [

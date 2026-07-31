@@ -1,0 +1,1 @@
+export const COMPASS_PARENT_GA_MEASUREMENT_ID = "G-EHKJ8B8N0Y" as const;
