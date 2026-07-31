@@ -48,7 +48,12 @@ export function NewHero() {
           <div className="li-hero-origin">
             <p className="li-hero-eyebrow">
               <span className="li-hero-eyebrow__signal" aria-hidden="true" />
-              <span>Academic Intelligence / Student-built</span>
+              <span className="li-hero-eyebrow__desktop">
+                学生主導型 教育・テクノロジープラットフォーム
+              </span>
+              <span className="li-hero-eyebrow__mobile">
+                学生主導型 教育・テクノロジープラットフォーム
+              </span>
             </p>
             <p className="li-hero-trust">任意学生支援団体 COMPASS</p>
           </div>
@@ -66,8 +71,15 @@ export function NewHero() {
           </p>
 
           <p className="li-hero-support">
-            <span>独自システム、実践資料、教育活動、学生コミュニティをひとつに。</span>
-            <span>学生の「知る」を、「選ぶ」「動く」へ変える。</span>
+            <span>
+              独自システム、実践資料、教育活動、
+              <br className="li-hero-support-break" />
+              学生コミュニティをひとつに。
+            </span>
+            <span>
+              学生の「知る」を、
+              「選ぶ」「動く」へ変える。
+            </span>
           </p>
 
           <nav className="li-system-index" aria-label="COMPASS system index">

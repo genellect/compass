@@ -184,8 +184,9 @@ export default function FutureStrategyLibraryPage() {
               <p className={styles.mobileLabel}>未来戦略ライブラリ</p>
               <p className={styles.kicker}>PHARMACY STUDENTS&apos; RESOURCE LIBRARY</p>
               <h1 id="library-title">
-                <span>知ることが、</span>
-                <span>未来を変える。</span>
+                <span>未来は、</span>
+                <span>知っている人から</span>
+                <span>動き出す。</span>
               </h1>
               <p className={styles.heroLead}>
                 北里大学薬学部生のための、<br />

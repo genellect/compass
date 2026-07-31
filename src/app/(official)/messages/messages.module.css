@@ -158,19 +158,20 @@
 }
 
 .cover h1 {
-  max-width: 9ch;
+  max-width: none;
   margin: clamp(1.5rem, 3vw, 2.8rem) 0 0;
   color: #f8fbff;
   font-family: var(--font-sans);
-  font-size: clamp(3.3rem, 5.7vw, 6.15rem);
+  font-size: clamp(3.2rem, 5.15vw, 4.9rem);
   font-weight: 950;
-  letter-spacing: -0.07em;
-  line-height: 0.94;
-  text-wrap: balance;
+  letter-spacing: -0.055em;
+  line-height: 1.04;
   text-shadow: 0 28px 90px rgba(0, 0, 0, 0.4);
 }
 
 .cover h1 > span {
+  display: block;
+  white-space: pre-line;
   background: linear-gradient(118deg, #ffffff 0%, #f7fbff 62%, #8cefff 100%);
   background-clip: text;
   -webkit-background-clip: text;
@@ -829,7 +830,7 @@
 
   .cover h1 {
     margin-top: 1.25rem;
-    font-size: clamp(3rem, 5vw, 4.8rem);
+    font-size: clamp(3rem, 4.7vw, 4.45rem);
   }
 
   .coverSubtitle {
@@ -881,11 +882,11 @@
   }
 
   .cover h1 {
-    max-width: 8ch;
+    max-width: none;
     margin-top: 1.8rem;
-    font-size: clamp(2.45rem, 11.8vw, 3.25rem);
-    line-height: 0.98;
-    white-space: normal;
+    font-size: clamp(2rem, 8.15vw, 2.6rem);
+    letter-spacing: -0.04em;
+    line-height: 1.08;
   }
 
   .coverSubtitle {
@@ -1114,7 +1115,7 @@
   }
 
   .cover h1 {
-    font-size: clamp(2.35rem, 11.5vw, 2.95rem);
+    font-size: clamp(2rem, 8.15vw, 2.55rem);
   }
 
   .chapterHeader h2 {

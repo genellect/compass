@@ -234,11 +234,15 @@ export function MessageReader({ message }: { message: MessageDocument }) {
         <div className={styles.coverInner}>
           <p className={styles.coverKicker}>COMPASS / MANIFESTO</p>
           <p className={styles.coverCount}>12 CHAPTERS · A LETTER FOR THE AI ERA</p>
-          <h1 id="message-title"><span data-message-copy="true">{message.title}</span></h1>
+          <h1 id="message-title">
+            <span data-message-copy="true">
+              {message.title.replace("、 ", "、\n")}
+            </span>
+          </h1>
           <p className={styles.coverSubtitle}>{message.chapters[0].title}</p>
           <div className={styles.coverActions} aria-label="読書を開始">
             <button type="button" className={styles.primaryAction} onClick={() => goToChapter(0)}>
-              最初から読む <span aria-hidden="true">→</span>
+              第1章を読む <span aria-hidden="true">→</span>
             </button>
             {resumeChapter !== null && resumeChapter > 0 ? (
               <button type="button" className={styles.secondaryAction} onClick={() => goToChapter(resumeChapter)}>
