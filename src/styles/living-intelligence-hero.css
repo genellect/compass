@@ -56,7 +56,10 @@
 }
 
 .hero--living-intelligence .hero-particles {
-  display: none !important;
+  z-index: -1;
+  display: block !important;
+  opacity: 0.24;
+  mix-blend-mode: screen;
 }
 
 .li-hero-atmosphere,
@@ -1141,6 +1144,9 @@
 
   .hero--living-intelligence .li-hero-title__line--active {
     padding-top: 0.05em;
+    color: #e6fbff;
+    background: none;
+    -webkit-text-fill-color: #e6fbff;
     filter: drop-shadow(0 10px 30px rgba(var(--li-cyan-rgb), 0.12));
   }
 
@@ -1149,7 +1155,17 @@
     width: max-content;
     max-width: 100%;
     margin-inline: auto;
+    color: #e6fbff;
+    -webkit-text-fill-color: #e6fbff;
     white-space: nowrap !important;
+  }
+
+  .hero--living-intelligence .li-hero-title__line--active > span:last-child {
+    color: #bff6cf;
+    -webkit-text-fill-color: #bff6cf;
+    text-shadow:
+      0 0 22px rgba(var(--li-green-rgb), 0.14),
+      0 16px 36px rgba(0, 0, 0, 0.28);
   }
 
   .hero--living-intelligence .li-hero-title span {

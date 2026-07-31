@@ -262,11 +262,11 @@
   };
 
   const drawMobileLightRays = (time = 0, elapsed = 0) => {
-    if (!mobileQuery.matches) return;
     if (isLivingIntelligence) {
       drawLivingIntelligenceField(time);
       return;
     }
+    if (!mobileQuery.matches) return;
 
     const compassX = width * 0.54;
     const compassY = height * 0.2;
@@ -427,7 +427,9 @@
 
   const startParticleLayer = () => {
     const particlesEnabled =
-      !hero?.classList.contains("hero--editorial") || mobileQuery.matches;
+      isLivingIntelligence ||
+      !hero?.classList.contains("hero--editorial") ||
+      mobileQuery.matches;
     if (!particlesEnabled) {
       context.clearRect(0, 0, width, height);
       return;

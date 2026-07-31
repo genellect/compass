@@ -87,6 +87,22 @@ const contactStyles = await readFile(
   "utf8"
 );
 const siteHeaderSource = await readFile(path.join(root, "src", "components", "SiteHeader.tsx"), "utf8");
+const livingHeroStyles = await readFile(
+  path.join(root, "src", "styles", "living-intelligence-hero.css"),
+  "utf8"
+);
+const legacyInteractions = await readFile(path.join(root, "src", "legacy-interactions.ts"), "utf8");
+
+expectIncludes(
+  livingHeroStyles,
+  "-webkit-text-fill-color: #e6fbff;",
+  "Mobile Hero solid title fallback"
+);
+expectIncludes(
+  legacyInteractions,
+  "isLivingIntelligence ||",
+  "Living Intelligence desktop particle layer"
+);
 
 for (const expected of [
   '<html lang="ja"',
