@@ -90,8 +90,10 @@ const siteHeaderSource = await readFile(path.join(root, "src", "components", "Si
 
 for (const expected of [
   '<html lang="ja"',
-  "Better Education.",
-  "Better Decisions.",
+  "Don’t Just Learn.",
+  "Build What’s",
+  "独自システム、実践資料、教育活動、学生コミュニティをひとつに。",
+  "学生の「知る」を、「選ぶ」「動く」へ変える。",
   'id="vision"',
   'id="experience"',
   'id="technology"',
@@ -242,8 +244,8 @@ expectIncludes(resourcesCard, "ライブラリを見る", "Resources experience 
 expectIncludes(resourcesCard, 'href="/future-strategy-library/"', "Resources experience card");
 
 const officialLibraryLinks = official.match(/<a\b[^>]*href="\/future-strategy-library\/"[^>]*>/g) ?? [];
-if (officialLibraryLinks.length !== 7) {
-  throw new Error(`Official page must contain seven same-domain library links; found ${officialLibraryLinks.length}.`);
+if (officialLibraryLinks.length !== 6) {
+  throw new Error(`Official page must contain six same-domain library links; found ${officialLibraryLinks.length}.`);
 }
 for (const link of officialLibraryLinks) {
   expectExcludes(link, 'target="_blank"', "Same-domain library link");

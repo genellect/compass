@@ -251,7 +251,9 @@
   };
 
   const startParticleLayer = () => {
-    const particlesEnabled = !hero?.classList.contains("hero--editorial") || mobileQuery.matches;
+    const particlesEnabled =
+      !hero?.classList.contains("hero--editorial") ||
+      (mobileQuery.matches && !hero?.classList.contains("hero--living-intelligence"));
     if (!particlesEnabled) {
       context.clearRect(0, 0, width, height);
       return;
