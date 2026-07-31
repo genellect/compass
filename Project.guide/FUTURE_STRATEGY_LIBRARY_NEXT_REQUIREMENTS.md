@@ -1,5 +1,12 @@
 # Future Strategy Library Next.js migration requirements
 
+Status: Completed
+Completed: 2026-07-31
+Implementation commit: `0400155`
+Current authority: route source, `PROJECT_GUIDE.md`, and `docs/CONTENT_GOVERNANCE.md`
+
+This document records the requirements used for the completed migration from the retired standalone page to the native Next.js static-export route. It is retained for implementation history and must not override later copy, architecture, or production decisions.
+
 ## 1. Objective
 
 Replace the standalone HTML implementation at `/future-strategy-library/` with a native Next.js static-export route on the existing COMPASS domain.

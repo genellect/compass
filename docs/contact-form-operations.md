@@ -1,5 +1,12 @@
 # COMPASSお問い合わせフォーム 設定・運用手順
 
+Status: Operational Runbook
+Scope: `/contact/`と`/api/contact`
+Last source verification: 2026-08-01 (`origin/main`)
+External configuration: Operator verification required
+Owner: COMPASS representative / designated operator
+Data classification: Public-safe procedure; no secret values or inquiry data
+
 ## 1. 構成
 
 - 画面: `/contact/`（Next.js静的ページ）
@@ -12,16 +19,16 @@
 
 稼働中のCommunity登録フォームとは、Pages Function、GASプロジェクト、共有シークレット、Turnstileウィジェットとactionを分離しています。既存のCommunity用 `google-apps-script/Code.gs` は変更しません。
 
-## 2. 現在Cloudflareへ設定済みの項目
+## 2. Cloudflareで必要なProduction設定
 
-次の4項目はCloudflare Pagesプロジェクト `compass-official` のProductionシークレットへ登録します。値は暗号化され、再表示できません。
+次の4項目をCloudflare Pagesプロジェクト `compass-official` のProductionシークレットへ登録し、release時に存在を確認します。値は暗号化され、再表示できません。
 
 - `CONTACT_TURNSTILE_SECRET_KEY`
 - `CONTACT_RATE_LIMIT_SECRET`
 - `CONTACT_GOOGLE_APPS_SCRIPT_URL`
 - `CONTACT_GOOGLE_APPS_SCRIPT_SECRET`
 
-Turnstileウィジェットも次の内容で作成済みです。
+本番Turnstileウィジェットは次の構成を使用します。Cloudflare dashboard上の現在値はoperatorが確認します。
 
 - 名前: `COMPASS Contact Form`
 - モード: Managed
@@ -165,9 +172,9 @@ http://127.0.0.1:3100/contact/
 5. Cloudflare previewでUIとAPIレスポンスを確認する。自動テストから実メールは送らない。
 6. 明示的に承認した1件だけで、確認コードメール、確認完了表示、管理者メール、問い合わせ受付メールを確認する。
 7. 本番 `/contact/` を確認する。
-8. 最後に、公式サイトの既存Contact CTAを `/contact/` へ変更する。
+8. 公式siteのheader、本文、footerにあるContact導線が `/contact/` を指すことを確認する。
 
-新しい `/contact/` は、公式Contact CTAを変更する前に単独で本番公開して検証します。実メールの疎通を承認された1件で確認できた後、最後に既存Contact CTAを `/contact/` へ変更します。
+`/contact/`と公式siteのContact導線は現行sourceへ統合済みです。今後のreleaseでは、実メール疎通と導線のregression確認を分けて記録します。
 
 ## 9. 制限と安全設計
 

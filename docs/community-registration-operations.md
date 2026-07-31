@@ -1,5 +1,12 @@
 # Community登録フォーム運用設定
 
+Status: Operational Runbook
+Scope: `/community/join/`と`/api/community-registration`
+Last source verification: 2026-08-01 (`origin/main`)
+External configuration: Operator verification required
+Owner: COMPASS representative / designated operator
+Data classification: Public-safe procedure; no secret values or applicant data
+
 `/community/join/` はNext.jsの静的ページ、`/api/community-registration` はCloudflare Pages Functionです。登録データはデータベースやファイルへ保存せず、Turnstile検証後にGoogle Apps Script（GAS）へ転送し、大学Googleアカウントから2通のメールを送ります。
 
 ## Google Apps Scriptの設定
@@ -19,9 +26,9 @@
 ## Cloudflare Pagesの設定
 
 1. Cloudflare Turnstileの許可ホストが `compass-official.pages.dev` であることを確認する。
-2. 本番Turnstileサイトキーはクライアント側へ設定済み。別ウィジェットを使う場合のみ、Pagesのビルド環境変数 `NEXT_PUBLIC_TURNSTILE_SITE_KEY` で上書きする。
-3. Pagesプロジェクト `compass-official` のProduction用暗号化済みSecretsに次を設定する。
-   - `TURNSTILE_SECRET_KEY`: Turnstileの秘密鍵（設定済み）
+2. 本番Turnstileサイトキーはクライアント側の既定値を使用する。別ウィジェットを使う場合のみ、Pagesのビルド環境変数 `NEXT_PUBLIC_TURNSTILE_SITE_KEY` で上書きする。
+3. Pagesプロジェクト `compass-official` のProduction用暗号化済みSecretsに次を設定し、release時に存在を確認する。
+   - `TURNSTILE_SECRET_KEY`: Turnstileの秘密鍵
    - `GOOGLE_APPS_SCRIPT_URL`: GASが発行した末尾 `/exec` のURL
    - `GOOGLE_APPS_SCRIPT_SECRET`: GASの `FORM_SHARED_SECRET` と同一の値
 

@@ -1,5 +1,12 @@
 # COMPASS static-site analytics operations
 
+Status: Operational Runbook
+Scope: `compass-official.pages.dev`の公開Pages project
+Last source verification: 2026-08-01 (`origin/main`)
+External configuration: Operator verification required
+Owner: COMPASS representative / designated operator
+Data classification: Public-safe procedure; no secret values
+
 This runbook covers visitor analytics for `compass-official.pages.dev` only. It does not cover the separate `compass-interactive.pages.dev` product.
 
 ## Data boundaries

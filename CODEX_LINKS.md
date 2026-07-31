@@ -1,78 +1,71 @@
-﻿# CODEX_LINKS.md
+# COMPASS Canonical Links
 
-## COMPASS Official Website Development - Shared Links
+Status: Canonical
+Last source verification: 2026-08-01
+Reference: `origin/main`
 
-This document provides permanent project links that should be referenced whenever they are relevant during future COMPASS website development.
+`Join`、`Register`、`Get Started`等の一般ラベルだけから遷移先を推測しない。利用者の目的とroute-specific contractに対応するURLを選ぶ。
 
----
+## Public Brand and Content
 
-## Official Website
+| Purpose | Canonical URL | Navigation |
+|---|---|---|
+| COMPASS公式home | <https://compass-official.pages.dev/> | Same tab |
+| COMPASS Interactive紹介 | <https://compass-official.pages.dev/INTRO_Interactive/> | Same tab |
+| COMPASS Interactive Developer紹介 | <https://compass-official.pages.dev/INTRO_Interactive/developers/> | Same tab |
+| 未来戦略ライブラリ紹介 | <https://compass-official.pages.dev/future-strategy-library/> | Same tab |
+| COMPASS Manifesto | <https://compass-official.pages.dev/messages/> | Same tab |
+| Community参加 | <https://compass-official.pages.dev/community/join/> | Same tab |
+| Contact | <https://compass-official.pages.dev/contact/> | Same tab |
 
-Future Strategy Library Official Website
+## COMPASS Interactive Product
 
-**URL**
+COMPASS Interactive本体は別deploymentである。
 
-https://compass-official.pages.dev/future-strategy-library/
+| Purpose | Canonical URL | Notes |
+|---|---|---|
+| 公開demo | <https://compass-interactive.pages.dev/demo> | 講義体験を開始する場合だけ使用 |
+| Lecture join | <https://compass-interactive.pages.dev/join> | 講義codeを持つ利用者だけ使用 |
 
-### Usage
+## Registration Destinations
 
-When implementing or redesigning pages related to COMPASS, Future Strategy Library, or associated educational resources:
+### 未来戦略ライブラリ
 
-* Use this website as the primary design and branding reference.
-* Preserve overall visual consistency unless explicitly instructed otherwise.
-* If appropriate, create navigation links back to the official website.
-* If a page naturally belongs as part of the official ecosystem, integrate links in a way that feels seamless and consistent with the existing UX.
+- Primary label: `大学アカウントで無料登録する`
+- URL: <https://docs.google.com/forms/d/e/1FAIpQLSf8gLujuK-giYnkCnv-Cxp7qon1kY8mhnGvfkA62hOlrJgAHA/viewform>
+- Source owners: `src/app/(official)/future-strategy-library/page.tsx`、`src/components/SiteHeader.tsx`、`src/components/SiteFooter.tsx`
+- Navigation: external formのためnew tab
 
----
+### COMPASS Essentials
 
-## Registration Form
+- URL: <https://forms.gle/sW49M329Dcets8ga9>
+- Current label: `薬学部生以外の方はこちら`
+- Source owner: `src/sections/OfficialCoreSections.tsx`
+- Navigation: external formのためnew tab
 
-COMPASS Essentials Registration Form
+Essentials URLを、未来戦略ライブラリ登録、Community参加、Contact、Interactive demo、lecture joinへ流用しない。
 
-**URL**
+## Journey Ownership
 
-https://forms.gle/sW49M329Dcets8ga9
+| Journey | Destination |
+|---|---|
+| COMPASSを知る | 公式home |
+| 参加型講義systemを知る | Interactive紹介 |
+| 技術・設計を評価する | Developer紹介 |
+| Interactiveを試す | Interactive demo |
+| 講義codeで参加する | Interactive lecture join |
+| Libraryを知る | Library紹介 |
+| Libraryへ登録する | Library専用Google Form |
+| 薬学部生以外が一部資料へアクセスする | Essentials Form |
+| COMPASSの思想を読む | Manifesto |
+| 運営・共同制作へ参加する | Community参加route |
+| 問い合わせる | Contact route |
 
-### Usage
+## Link Rules
 
-Whenever a page includes:
-
-* Join
-* Register
-* Get Started
-* Resources
-* Access Materials
-* CTA buttons
-* Hero CTA
-* Navigation buttons
-* Footer buttons
-* Cards inviting students to access COMPASS resources
-
-consider linking users to the registration form when appropriate.
-
-Do **not** force the link into every page.
-Instead, evaluate whether it improves user experience and naturally supports the page's purpose.
-
----
-
-## Design Principle
-
-When adding hyperlinks:
-
-* Prioritize clean UX.
-* Avoid duplicate buttons linking to the same destination.
-* Maintain visual consistency with the existing COMPASS design language.
-* Navigation should feel intentional rather than promotional.
-
----
-
-## Important
-
-Unless explicitly instructed by the user:
-
-* Do not modify these URLs.
-* Do not replace them with placeholders.
-* Do not change the destination.
-* Use these links whenever they are appropriate for the page being developed.
-
-These URLs should be treated as the canonical project links for future COMPASS website development.
+- 同一domainのnavigationは同一tabを使用する。
+- 承認済みの外部form・別productは、既存route contractに従いnew tabを使用できる。
+- canonical destinationをplaceholderへ置換しない。
+- protected material URLを公開sourceへ直接記載しない。
+- registration destination変更前に、対象route、shared header/footer、test、static verifierを確認する。
+- 親brandの基準は公式home。子service一つをCOMPASS全体の唯一のdesign referenceにしない。

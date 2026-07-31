@@ -1,896 +1,249 @@
-﻿# PROJECT_GUIDE.md
+# COMPASS PROJECT GUIDE
 
-## Project Name
+Status: Canonical
+Scope: COMPASSの公開brand、公式Webサイト、接続する公開体験
+Last verified: 2026-08-01
+Reference: `my270yuto0413-cmyk/compass` / `origin/main`
 
-Future Strategy Library  
-大学生のための未来戦略ライブラリ
+## 1. この文書の役割
 
-Official Website:  
-https://compass-official.pages.dev/future-strategy-library/
+この文書は、COMPASSの現行identity、project間の関係、教育上の原則、designの方向性、公開実装の境界を定義する。
 
-Parent Organization:  
-COMPASS — 学生支援団体COMPASS
+COMPASSは、学生団体の紹介ページでも、未来戦略ライブラリ単体のWebサイトでもない。独自system、実践資料、教育体験、学生による共創を一つにつなぐ、学生主導型の教育・テクノロジープラットフォームである。
 
-Representative:  
-Yuto Matsui（松井優知）
+この文書はproject-levelの意味を管理する。coding agentの実行規則は`AGENTS.md`、技術境界は`docs/ARCHITECTURE.md`、copy・CTA・status・metricsの管理は`docs/CONTENT_GOVERNANCE.md`を正本とする。
 
----
+## 2. Current Identity
 
-## 1. Purpose of This Guide
+### Brand statement
 
-This document defines the core design, development, and implementation principles for the Future Strategy Library website.
+> Don’t Just Learn. Build What’s Next.
 
-Before modifying any HTML, CSS, JavaScript, copy, layout, visual assets, or interaction design, Codex and any AI-assisted development tool must first understand this guide.
+### Vision
 
-The website is not merely a static landing page.  
-It is the digital entrance to an educational support platform designed to help pharmacy and life science students broaden their future possibilities.
+> 学びを、意思決定の力へ。
 
-The source code must therefore be treated as an implementation of a broader educational philosophy.
+### Core promise
 
----
+> 北里大学薬学部から、学び・研究・未来をつなぐ。<br>
+> 独自システム、実践資料、教育活動、学生コミュニティをひとつに。<br>
+> 学生の「知る」を、「選ぶ」「動く」へ変える。
 
-## 2. Primary Source Documents
+### Organizational status
 
-The following documents are the constitutional references for this project.
+COMPASSは学生有志による任意の学生支援活動である。北里大学、同大学の学部・研究室・関連機関の公式組織ではない。
 
-They should be read before making major design, content, or structural changes:
+## 3. なぜCOMPASSが必要か
 
-- `Future_Strategy_Library_Design_Philosophy.pdf`
-- `COMPASS_Founding_Vision.pdf`
-- `PROJECT_GUIDE.md`
+知識を受け取るだけでは、学生は次の選択へ進めない。必要なのは、情報へ到達する経路、考えるための判断軸、実際に試せる道具、問いを共有できる場、そして行動へ移す機会である。
 
-If there is any conflict between short-term aesthetic improvement and the principles described in these documents, preserve the principles.
+COMPASSは、講義で飲み込まれた疑問、進路選択で不足する情報、AI時代への戸惑い、何かを始めたい学生の孤立といった身近な課題から出発する。課題を観察し、根拠を集め、system・resource・learning experience・communityとして実装し、学生が自分の意思で次の一歩を選べる状態をつくる。
 
-The design must always serve the mission.
+Technology自体を目的にしない。資料の数やfeatureの多さも目的にしない。COMPASSの価値は、学生の問いが理解、判断、参加、制作、行動へ変わることにある。
 
----
+## 4. 二つの「4分類」
 
-## 3. Core Mission
+現行COMPASSには、活動領域と公開導線という二つの4分類がある。文書・UI・説明で混同しない。
 
-The core mission of the Future Strategy Library is:
+### 4.1 活動領域 — Capability Model
 
-> To broaden students’ future possibilities.
+| 領域 | 役割 |
+|---|---|
+| Technology | 教育・運営上の課題を、実際に使えるsystemとして実装する |
+| Resources | 情報を、学生が使える資料と判断軸へ変換する |
+| Education | 講義・講演・workshopを通じ、知識を学習体験へ変える |
+| Community | 学生の挑戦、対話、共同制作、継続運営を支える |
 
-The platform provides learning and career-related resources that help students think, decide, and act independently.
+親サイトのExperience UIでは、Educationの主要な提供形式を`Workshops`として示している。これは領域の廃止ではない。`Education`が活動領域、lecture / talk / workshopが提供形式である。
 
-It does not impose a single correct answer.  
-It does not push students toward a specific laboratory, career path, qualification, AI service, or worldview.
+### 4.2 公開導線 — Public Experience Map
 
-Instead, it provides:
+| 導線 | 役割 |
+|---|---|
+| Interactive | 中核product・参加型講義体験 |
+| Library | 中核resource・意思決定支援 |
+| Manifesto | AI時代における思想・行動宣言 |
+| Community | 学生の参加・共同制作・運営参加 |
 
-- options
-- decision frameworks
-- educational context
-- intellectual motivation
-- practical resources
-- pathways toward future action
+Manifestoは独立事業ではなく、COMPASSの思想と言語を外部へ伝えるbrand layerである。Founderは起源・専門性・説明責任を示す信頼layerであり、projectや活動領域そのものではない。
 
-The website should communicate that this library is not just “useful for studying,” but also “connected to the future.”
+## 5. Project / Experienceの関係
 
----
+### COMPASS
 
-## 4. Target Audience
+全体brandであり、Technology / Resources / Education / Communityを統合する母体。北里大学薬学部を起点にするが、価値は一つの学部・一つの専攻へ閉じない。
 
-The primary audience is:
+### COMPASS Interactive
 
-- Kitasato University pharmacy students
-- pharmacy students
-- life science students
-- students interested in English, AI, research, graduate school, and career development
+リアルタイムとAIを用いて、質問、反応、理解、教材、教員操作を一つの講義体験へ接続する旗艦product。公開repositoryには紹介・Developer説明routeが含まれるが、product本体は別の非公開repository・別deploymentで管理される。
 
-The secondary audience includes:
+### 未来戦略ライブラリ
 
-- university faculty members
-- graduate students
-- alumni
-- educational collaborators
-- external partners interested in student support
+主に北里大学薬学部生を対象とする登録制の資料・判断支援service。試験等の直近課題から、英語、AI、研究、大学院、careerまでを接続する。COMPASS全体の中心そのものではなく、Resources領域の中核experienceである。
 
-The website must therefore balance two impressions:
+### COMPASS Essentials
 
-1. It must feel accessible and inviting to undergraduate students.
-2. It must feel credible and well-governed to faculty members and collaborators.
+薬学部生以外も利用できる一部resourceへの外部form導線。未来戦略ライブラリ登録、Community参加、Contact、Interactive lecture joinとは別のjourneyとして扱う。
 
-Avoid making the site feel too casual, too corporate, too childish, or too aggressive.
+### COMPASS Manifesto
 
-The ideal impression is:
+AI時代を生きる学生へ向けた思想と行動のessay。技術仕様でも、独立した運営部門でもない。問いを投げかけ、読者を観客席から行動へ誘う。
 
-> student-friendly, intellectually serious, hopeful, polished, and trustworthy.
+### COMPASS Community
 
----
+白金campusを主な拠点とする共同制作・学習community。教育企画、情報発信、教材、design、media、Web開発等を、関心と経験に応じて学生が一緒に形にする。
 
-## 5. Founder Context and Intellectual Identity
+## 6. Audience
 
-This project reflects the founder’s interdisciplinary identity.
+### Primary
 
-The representative, Yuto Matsui, has a background in:
+- 北里大学薬学部生
+- 薬学・生命科学を学ぶ学生
+- 研究、英語、AI、大学院、career designに関心を持つ学生
+- 講義や学習へより主体的に参加したい学生
 
-- molecular biology
-- life science research
-- pharmaceutical science
-- English learning and teaching
-- international academic orientation
-- AI-assisted knowledge creation
-- student education and career support
+### Secondary
 
-This background should shape the design language.
+- 教員・教育関係者
+- 大学院生・卒業生
+- engineer・technical reviewer
+- 外部協力者・組織
 
-The website should not look like a generic student club website.  
-It should look like a student-led academic platform with a serious intellectual foundation.
+公開contentは学生が直感的に理解でき、同時に教員・engineerが事実関係と設計意図を評価できる精度を持つ。
 
-The project integrates:
+## 7. Experience Principle
 
-- life science
-- English
-- AI literacy
-- research culture
-- career decision-making
-- educational design
-- international perspective
+COMPASSの体験は、次の流れを支える。
 
-The website should express the idea that students can connect their current learning to future research, professional growth, and global opportunities.
+```text
+Question → Evidence → Model → Prototype → Decision → Action
+```
 
----
+- 興味を生む前に情報を詰め込みすぎない。
+- 興味だけで終わらせず、根拠と具体的な次の行動を示す。
+- 一つの正解を押し付けず、選択肢と判断軸を提供する。
+- student concernを長期の学び・研究・将来へ接続する。
+- system上の便利さと教育的価値を区別して説明する。
+- Mobileでの理解、可読性、tap、安定したlayoutを最優先する。
 
-## 6. Brand Concept
+## 8. Voice and Writing
 
-The brand concept is:
+COMPASSの文体は次を満たす。
 
-> Future, learning, autonomy, and intellectual expansion.
+- 明快で、意思がある
+- 知的に誠実で、学生に開かれている
+- 大胆だが、誇張しない
+- 温度があるが、曖昧にしない
+- 技術を語るときは、利用者価値と責任まで示す
+- 短いcopyで関心を生み、その後に根拠を置く
 
-The current visual identity includes:
+避けるもの:
 
-- space
-- stars
-- horizon
-- future city
-- light
-- depth
-- quiet motion
-- refined contrast
-- hope
-- exploration
-- academic ambition
+- genericなAI startup表現
+- 根拠のない最上級・導入実績・教育効果
+- 読者価値より先に続く長い自己説明
+- 技術の複雑さ自体を価値とする表現
+- founder中心の自己宣伝
+- 官僚的で学生から遠い大学文書調
 
-These motifs should be preserved.
+## 9. Design Identity
 
-The visual atmosphere should feel like:
+現行のvisual systemは、deep navy、cyan、抑制したwarm gold、scientific grid、horizon、orbital geometry、neural particle、controlled motionを組み合わせる。
 
-- looking toward the future
-- standing at the entrance of a new intellectual journey
-- seeing learning as a gateway to possibility
-- connecting local student life to a broader world
+伝えるべき印象は、知性、方向性、academic credibility、scientific curiosity、future possibilityである。次へ寄せすぎない。
 
-The website should not feel like a flashy startup advertisement.  
-It should feel like a refined educational platform with a sense of direction and dignity.
+- generic neon AI dashboard
+- 意味のない装飾密度
+- fantasy色の強いscience fiction
+- 空間だけが余り、情報階層を失ったminimalism
+- animationがcopyとCTAを上回る構成
 
----
+「見やすいのに密度が高い」を基準とする。Heroと主要messageが主役であり、背景演出はAI、life science、latest technologyを想起させながら、それらを支える。Japanese readability、contrast、reduced motion、stable layout、device performanceを優先する。
 
-## 7. Design Keywords
+## 10. Content Principles
 
-Use these keywords as design anchors:
+### 判断軸を届ける
 
-- Future-oriented
-- Educational
-- Trustworthy
-- Polished
-- Hopeful
-- Intellectual
-- Accessible
-- Student-centered
-- Scientific
-- International
-- Calmly ambitious
-- Premium but not commercial
-- Emotional but not sentimental
-- Modern but not trendy
+資格、研究室、career、AI service、特定の思想を唯一の正解として推奨しない。利用者が選択肢、評価基準、risk、公式情報を理解し、自分で決められるcontentを作る。
 
-Avoid these directions:
+### 現在の課題を未来へつなぐ
 
-- overly flashy
-- excessively corporate
-- childish
-- noisy
-- cluttered
-- aggressive
-- purely decorative
-- SaaS-template-like
-- generic AI startup aesthetic
-- excessive neon
-- excessive gradients
-- meaningless animation
+試験、英語資格、AI tool、講義、研究室選択等の身近な入口を、研究literacy、大学院、professional identity、international opportunity、長期的な成長へ接続する。
 
----
+### AI利用では人間を主語にする
 
-## 8. Visual Design Principles
+AIは学習、思考、執筆、research preparation、system operationを支援できる。一方で、判断、academic integrity、安全性、公開責任を代替しない。AI outputは検証とhuman reviewを経て使用する。
 
-### 8.1 Space and Future Motifs
+### Trustを機能として扱う
 
-The space/future motif is central to the current identity.
+対象者、費用、登録条件、利用規約、privacy、再配布制限、公式情報との区別を、装飾ではなくproduct architectureの一部として示す。
 
-Use it to communicate:
+## 11. Evidence and Status
 
-- possibility
-- exploration
-- long-term vision
-- intellectual expansion
-- a broader horizon beyond routine student life
+次を必ず分離する。
 
-However, do not overuse space visuals to the point where the site becomes fantasy-like or sci-fi-heavy.
+- Productionへ反映済みのもの
+- 明示した実環境でoperationally verifiedなもの
+- 実装済みだが必要な実環境確認が残るもの
+- plannedなもの
+- historicalなもの
 
-The tone should remain educational and credible.
+人数、資料数、行数、migration数、function数、test数、performance等には、測定日、対象system、scope、除外を付ける。設計上のcapacityや目標同時接続数は、完了したload testではない。mock participantは利用実績ではない。技術的な動作と教育効果は関連するが、同一の主張ではない。
 
-### 8.2 Light and Contrast
+状態語彙と更新手順は`docs/CONTENT_GOVERNANCE.md`に従う。
 
-Light should symbolize:
+## 12. Technical Boundary
 
-- discovery
-- hope
-- intellectual clarity
-- future orientation
+この公開repositoryは、Next.js static export、React、TypeScript、Cloudflare Pages、Pages Functions、Turnstile、Google Apps Script、analytics、automated verificationを使用する。
 
-Dark backgrounds can be used to create depth and premium atmosphere, but readability must always come first.
+COMPASS Interactive本体は別repository・別deploymentで、独自のfrontend、data、authorization、AI、storage、verification architectureを持つ。保護されたLibrary content、Production user data、private credential、Production databaseは公開repositoryへ置かない。
 
-Ensure sufficient contrast between text and background.
+詳細は`docs/ARCHITECTURE.md`を参照する。
 
-### 8.3 Typography
+## 13. Trust, Privacy, and Neutrality
 
-Japanese readability is critical.
+- 目的に必要なdataだけを収集する。
+- 個人情報、credential、保護資料をsource・log・analyticsへ出さない。
+- 大学公式情報とCOMPASS独自の解説・提案を明確に区別する。
+- 試験、履修、進級、研究室配属、career要件は公式情報での確認を促す。
+- 特定研究室、career、資格、AI service、価値観を唯一の正解として扱わない。
+- public content、AI output、安全判断、教育上の主張には人間が責任を持つ。
 
-Prioritize:
+## 14. Success Criteria
 
-- clean Japanese typography
-- generous line height
-- consistent font sizing
-- readable paragraph width
-- clear hierarchy between headings, subheadings, and body text
+COMPASSは、学生が次のいずれかへ進めたときに価値を生む。
 
-Avoid:
+- 知らなかった可能性を発見する
+- 問いをより明確に理解する
+- より良い根拠で選択肢を比較する
+- 学習体験へ参加する
+- 具体的な次の行動を始める
+- 仲間と役立つものをつくる
 
-- overly small Japanese text
-- excessive letter spacing in Japanese body copy
-- too many font sizes
-- inconsistent heading styles
+traffic、登録、code量、feature数は補助指標であり、missionそのものではない。
 
-### 8.4 Layout
+## 15. Canonical Sources and Priority
 
-The layout should feel structured, intentional, and calm.
+1. そのtaskでユーザーが明示した要件
+2. 現行Production挙動と最新`origin/main`の実装
+3. `AGENTS.md`
+4. `Project.guide/PROJECT_GUIDE.md`
+5. `docs/ARCHITECTURE.md` / `docs/CONTENT_GOVERNANCE.md`
+6. route-specific requirement・test・runbook
+7. completed migration record・旧PDF・過去資料
 
-Use:
+Productionと`origin/main`が食い違う場合は、一方を推測で正本化せず差分を報告する。旧PDFと完了済み要件は`Historical`または`Completed`として扱い、現行sourceを上書きしない。
 
-- generous spacing
-- clear section separation
-- card-based information design
-- strong hierarchy
-- balanced grids
-- mobile-first readability
+## 16. Change Principle
 
-Avoid cramming too much information into one viewport.
+- 大規模な情報階層、Hero、navigation、registration flow、color system、dependency、deploymentの変更は、分析・提案・明示承認を経て実施する。
+- 承認済みscope以外を「整理」の名目で変更しない。
+- active / legacy / unusedは名称で判断せず、import、build、Git history、Production挙動で確認する。
+- UI変更ではDesktopとMobileを別々に検証し、overflow、console、focus、motion、CTA destinationを確認する。
+- local / CI passをProduction acceptanceと同一視しない。
 
-This site should guide the reader step by step from curiosity to understanding to registration.
+## 17. Core Principle
 
----
+> COMPASSは、学生が知識を受け取る場所ではなく、問いを根拠と行動へ変えるためのplatformである。
 
-## 9. UX Philosophy
-
-The website should function as a bridge:
-
-> student concern → intellectual curiosity → future possibility → concrete action
-
-The user journey should be:
-
-1. A student enters with a practical concern.
-   - TOEIC
-   - EIKEN
-   - exams
-   - AI usage
-   - laboratory selection
-   - graduate school
-   - career uncertainty
-
-2. The website reframes that concern as part of a larger future.
-
-3. The student understands that the library provides practical resources and decision frameworks.
-
-4. The student feels that registration is safe, useful, and meaningful.
-
-5. The student takes action through the Google Form.
-
-The site must not rely only on emotional appeal.  
-It must combine emotional engagement with practical clarity.
-
----
-
-## 10. Content Philosophy
-
-The content should follow these principles:
-
-### 10.1 Provide Decision Frameworks, Not Answers
-
-The library does not tell students what they must choose.
-
-It helps them understand:
-
-- what options exist
-- what criteria matter
-- what risks should be considered
-- how learning connects to future possibilities
-- how to make better decisions independently
-
-### 10.2 Connect Practical Needs to Long-Term Growth
-
-Start from familiar student needs:
-
-- exams
-- English qualifications
-- AI tools
-- laboratory selection
-- study methods
-
-Then connect them to:
-
-- research
-- graduate school
-- professional identity
-- international opportunities
-- life science careers
-- long-term intellectual growth
-
-### 10.3 Maintain Educational Neutrality
-
-Do not excessively promote:
-
-- a specific AI service
-- a specific qualification
-- a specific laboratory
-- a specific career path
-- a specific ideology
-
-The platform should respect diverse student goals.
-
-### 10.4 Preserve Trust
-
-The website must clearly communicate:
-
-- registration rules
-- university account requirement
-- prohibition of unauthorized redistribution
-- copyright awareness
-- privacy-conscious operation
-- need to verify important academic information with official university sources
-
-Trust is part of the educational value.
-
----
-
-## 11. Content Areas
-
-The website and library are organized around the following core areas:
-
-### 11.1 Pharmacy and Life Science Learning
-
-Support undergraduate learning in pharmacy and life science.
-
-Do not frame learning as short-term memorization only.  
-Connect it to conceptual understanding, research literacy, and future professional competence.
-
-### 11.2 English Learning
-
-English should be presented not merely as a qualification skill, but as a way to connect expertise to the world.
-
-TOEIC and EIKEN should be treated as gateways, not final goals.
-
-The tone should encourage students to see English as a tool for:
-
-- accessing information
-- reading scientific literature
-- communicating internationally
-- expanding career possibilities
-- connecting their expertise to a global context
-
-### 11.3 AI Utilization
-
-AI should be presented as a partner for learning, thinking, writing, research preparation, and decision-making.
-
-The core principle is:
-
-> The human remains the subject.
-
-AI must not replace responsibility, judgment, academic integrity, or intellectual ownership.
-
-The website should frame AI use as:
-
-- thoughtful
-- ethical
-- responsible
-- academically honest
-- productivity-enhancing
-- cognition-expanding
-
-### 11.4 Research and Career Formation
-
-Research, laboratory selection, graduate school, and career formation should be presented as connected decisions.
-
-The site should help students consider:
-
-- research interests
-- laboratory culture
-- mentorship
-- future growth
-- graduate school
-- pharmaceutical careers
-- international research opportunities
-- life science careers
-
-The goal is not to push students into research.  
-The goal is to help them understand research and career options more clearly.
-
----
-
-## 12. Organizational Philosophy
-
-COMPASS is not simply an information provider.
-
-It is a student support project that aims to create:
-
-- learning opportunities
-- peer learning culture
-- educational collaboration
-- student-led initiatives
-- bridges between students and experts
-
-The website should reflect that the Future Strategy Library is the core permanent program of COMPASS.
-
-The relationship is:
-
-- COMPASS: organization and community vision
-- Future Strategy Library: permanent resource platform
-- Website: entrance, explanation, registration pathway, and brand expression
-
-Future development may include:
-
-- student members
-- faculty collaboration
-- seminars
-- workshops
-- AI literacy events
-- English learning events
-- research/career sessions
-- university-recognized student organization status
-
-Any implementation should preserve long-term scalability and credibility.
-
----
-
-## 13. Tone of Voice
-
-The writing style should be:
-
-- clear
-- sincere
-- mature
-- encouraging
-- intellectually stimulating
-- student-friendly
-- credible to faculty
-- concise but meaningful
-
-Preferred expressions:
-
-- “未来の選択肢を広げる”
-- “知ることが、未来を変える”
-- “学びに使える。未来につながる。”
-- “選択肢と判断軸を届ける”
-- “自分の意思で学び、考え、行動する”
-- “専門性を世界へ接続する”
-- “学びを未来へつなげる”
-
-Avoid:
-
-- exaggerated marketing language
-- manipulative urgency
-- empty inspirational slogans
-- overly casual student slang
-- overly bureaucratic university language
-- excessive self-praise
-
-The tone should feel like a serious older student or young researcher speaking to younger students with clarity, care, and vision.
-
----
-
-## 14. Technical Architecture
-
-The current site is a static GitHub Pages website.
-
-Primary files:
-
-- `index.html`
-- `style.css`
-- image assets
-- design philosophy documents
-- Google Search Console verification file
-
-There is currently no build system.
-
-This simplicity is a strength.
-
-Preserve the static architecture unless there is a strong reason to introduce additional complexity.
-
-Do not add frameworks, package managers, bundlers, or dependencies without explicit approval.
-
-Avoid unnecessary use of:
-
-- React
-- Vue
-- Next.js
-- Tailwind
-- build pipelines
-- heavy animation libraries
-- unnecessary JavaScript dependencies
-
-The website should remain easy to understand, edit, and deploy.
-
----
-
-## 15. HTML Principles
-
-Use semantic HTML.
-
-Prioritize:
-
-- `header`
-- `main`
-- `section`
-- `article`
-- `nav`
-- `footer`
-- meaningful headings
-- accessible links
-- descriptive alt text
-- ARIA only when helpful
-- skip links where appropriate
-
-Maintain clear document structure.
-
-Do not flatten the page into generic `div` blocks.
-
-Do not sacrifice accessibility for visual effects.
-
----
-
-## 16. CSS Principles
-
-The CSS should remain organized by design system and section.
-
-Use:
-
-- CSS custom properties
-- consistent spacing tokens
-- consistent border radius
-- consistent shadows
-- consistent color system
-- reusable card patterns
-- responsive grid and flex layouts
-
-If the stylesheet grows further, consider modular organization in the future.
-
-Possible future structure:
-
-- `css/tokens.css`
-- `css/base.css`
-- `css/header.css`
-- `css/hero.css`
-- `css/sections.css`
-- `css/components.css`
-- `css/animations.css`
-- `css/responsive.css`
-
-Do not split CSS files unless the benefit clearly outweighs the complexity.
-
----
-
-## 17. JavaScript Principles
-
-JavaScript should enhance the experience, not define it.
-
-Use JS for:
-
-- reveal animations
-- count-up numbers
-- parallax effects
-- mobile interactions
-- progressive enhancement
-
-Do not make essential content inaccessible without JavaScript.
-
-Respect:
-
-- `prefers-reduced-motion`
-- performance
-- mobile battery usage
-- readability
-- smooth scrolling without excessive motion
-
-Avoid:
-
-- heavy libraries
-- unnecessary animation frameworks
-- scroll effects that distract from reading
-- unstable layout shifts
-- complex state management
-
----
-
-## 18. Animation Principles
-
-Animations should feel:
-
-- calm
-- elegant
-- meaningful
-- premium
-- hopeful
-- subtle
-
-They should support the themes of:
-
-- discovery
-- future
-- intellectual expansion
-- movement toward action
-
-Do not overuse motion.
-
-Animations must never reduce:
-
-- readability
-- accessibility
-- loading speed
-- mobile usability
-- perceived credibility
-
-Always preserve reduced-motion support.
-
-The ideal animation impression is:
-
-> refined momentum, not visual noise.
-
----
-
-## 19. Responsive Design Principles
-
-Mobile experience is critical.
-
-Many student users will access the site from smartphones.
-
-Prioritize:
-
-- readable Japanese text
-- clear buttons
-- generous tap targets
-- reduced visual clutter
-- stable layout
-- fast loading
-- simple registration flow
-
-On mobile, the site should still feel premium, but not cramped.
-
-Do not preserve desktop visual complexity if it harms mobile comprehension.
-
----
-
-## 20. Performance Principles
-
-The site should load quickly on ordinary student devices.
-
-Pay attention to:
-
-- image file size
-- lazy loading
-- layout shift
-- unused CSS
-- excessive shadows or filters
-- JavaScript scroll performance
-
-Large images should be optimized when appropriate.
-
-Consider WebP or compressed assets when it does not compromise visual quality.
-
-Performance is part of trust.
-
----
-
-## 21. Accessibility Principles
-
-Accessibility is not optional.
-
-Ensure:
-
-- sufficient color contrast
-- readable font sizes
-- keyboard navigability
-- meaningful link text
-- alt text for important images
-- reduced-motion support
-- logical heading order
-- clear focus states
-
-The website should be usable by students with diverse visual, cognitive, and device environments.
-
----
-
-## 22. Governance and Trust Principles
-
-The website must preserve the credibility of the project.
-
-Always maintain or improve clarity around:
-
-- registration requirements
-- university account usage
-- free access
-- target audience
-- copyright policy
-- prohibition of unauthorized redistribution
-- privacy-conscious operation
-- official information verification
-- educational neutrality
-
-Do not remove these trust signals for the sake of visual simplicity.
-
-Trust is not secondary decoration.  
-It is part of the platform architecture.
-
----
-
-## 23. SEO and Metadata Principles
-
-The site should remain discoverable and professionally presented.
-
-Maintain:
-
-- meaningful title
-- meta description
-- canonical URL
-- Open Graph tags
-- Twitter card tags
-- structured data when appropriate
-- descriptive headings
-- image alt text
-
-SEO should support legitimate discovery, not clickbait.
-
-The site should be discoverable by students searching for the project, English learning, AI utilization, pharmacy learning, research preparation, or Future Strategy Library-related terms.
-
----
-
-## 24. Development Workflow for Codex
-
-When asked to modify the site, follow this workflow:
-
-1. Read `PROJECT_GUIDE.md`.
-2. Read the relevant design philosophy PDFs if needed.
-3. Inspect the current HTML/CSS/JS structure.
-4. Explain the intended change before editing.
-5. Make minimal, focused changes.
-6. Preserve existing design philosophy.
-7. Preserve responsive behavior.
-8. Preserve accessibility.
-9. Preserve reduced-motion support.
-10. Summarize what changed.
-11. Mention any risks or follow-up recommendations.
-
-Do not make broad redesigns unless explicitly requested.
-
-Do not remove existing sections unless explicitly requested.
-
-Do not replace the current identity with a generic template.
-
----
-
-## 25. Change Approval Rules
-
-Before making large changes, ask for confirmation.
-
-Large changes include:
-
-- redesigning the hero section
-- changing the color system
-- changing the navigation structure
-- splitting files
-- adding new dependencies
-- changing the registration flow
-- removing trust/rules sections
-- replacing major images
-- rewriting core messaging
-- adding external scripts
-- changing GitHub Pages deployment structure
-
-Small changes can be made directly when requested, but must still preserve the design philosophy.
-
----
-
-## 26. Preferred Improvement Directions
-
-Future improvements should focus on:
-
-- image optimization
-- stronger README and documentation
-- clearer file organization
-- improved maintainability
-- refined mobile spacing
-- polished typography
-- accessibility audit
-- sitemap and robots.txt
-- 404 page
-- light performance optimization
-- better documentation for future operators
-- possible separation of inline JavaScript if the site grows
-
-Do not prioritize novelty over clarity.
-
----
-
-## 27. What Must Not Be Broken
-
-Never break:
-
-- GitHub Pages deployment
-- Google Form registration links
-- Google Search Console verification
-- Google Analytics setup
-- responsive layout
-- reduced-motion support
-- accessibility structure
-- core Japanese copy
-- visual identity
-- trust and rules sections
-- educational neutrality
-- official information disclaimer
-- university account registration explanation
-
-If any change might affect these, explain the risk before editing.
-
----
-
-## 28. Design Direction Summary
-
-The ideal website should feel like:
-
-> A refined, future-oriented academic platform created by a life science student-researcher to help younger students connect learning, English, AI, research, and career decisions to their future possibilities.
-
-It should not feel like:
-
-- a generic student club page
-- a flashy startup landing page
-- a corporate recruitment site
-- a personal portfolio
-- a simple document list
-- a decorative sci-fi website
-
-The project exists at the intersection of:
-
-- education
-- life science
-- English
-- AI literacy
-- research culture
-- student support
-- future design
-
-The website must preserve this identity.
-
----
-
-## 29. Core Principle
-
-When in doubt, follow this principle:
-
-> Expand future possibilities by providing trustworthy choices, clear decision frameworks, and a hopeful but credible learning experience.
-
-The purpose of the site is not simply to impress visitors.
-
-The purpose is to help students think:
-
-> “I understand my options more clearly now. I know what I can do next.”
-
-That is the final success criterion of this website.
+design、copy、system、resource、event、communityのすべては、この原則と学生のより良い意思決定を支える。
