@@ -95,6 +95,10 @@ const livingHeroStyles = await readFile(
   path.join(root, "src", "styles", "living-intelligence-hero.css"),
   "utf8"
 );
+const brandSystemStyles = await readFile(
+  path.join(root, "src", "styles", "official-brand-system.css"),
+  "utf8"
+);
 const legacyInteractions = await readFile(path.join(root, "src", "legacy-interactions.ts"), "utf8");
 const deploymentHeaders = await readFile(path.join(out, "_headers"), "utf8");
 
@@ -142,6 +146,15 @@ expectIncludes(
   "isLivingIntelligence ||",
   "Living Intelligence desktop particle layer"
 );
+for (const expected of [
+  ".v4-brand-field--vision",
+  ".v4-brand-field--experience",
+  ".v4-brand-field--resources",
+  ".v4-community__network",
+  "@media (prefers-reduced-motion: reduce)"
+]) expectIncludes(brandSystemStyles, expected, "Official brand system");
+expectExcludes(brandSystemStyles, ".hero--living-intelligence", "Hero protection");
+expectExcludes(brandSystemStyles, ".v4-manifesto", "Manifesto protection");
 
 for (const expected of [
   '<html lang="ja"',
@@ -296,6 +309,24 @@ expectIncludes(communitySection, "SNSでの情報発信", "Community section");
 if (/<details class="v4-community__details"\s+open/.test(communitySection)) {
   throw new Error("Community details must be closed by default.");
 }
+expectOrdered(
+  communitySection,
+  [
+    'class="v4-community__overview"',
+    '<details class="v4-community__details">',
+    'class="v4-community__network"',
+    'class="v4-button v4-community__cta"'
+  ],
+  "Community reading and action flow"
+);
+
+const resourcesSection = official.match(/<section id="resources"[\s\S]*?<\/section>/)?.[0];
+if (!resourcesSection) throw new Error("Official page is missing the Resources section.");
+expectOrdered(
+  resourcesSection,
+  ['class="v4-resources__story"', 'class="v4-resource-gateway"'],
+  "Resources reading and action flow"
+);
 
 const resourcesCard = official.match(/<article class="v4-experience-card v4-experience-card--resources"[\s\S]*?<\/article>/)?.[0];
 if (!resourcesCard) throw new Error("Official page is missing the Resources experience card.");

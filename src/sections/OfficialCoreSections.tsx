@@ -1,4 +1,10 @@
 import type { ReactNode } from "react";
+import {
+  CommunityNetworkGraphic,
+  ExperienceFieldGraphic,
+  ResourceKnowledgeGraphic,
+  VisionFieldGraphic
+} from "../components/BrandSignalGraphics";
 import { GitHubProfileLink } from "../components/GitHubProfileLink";
 
 const interactiveIntroUrl = "/INTRO_Interactive/";
@@ -31,6 +37,7 @@ function SectionHeading({
 export function VisionExperienceSection() {
   return (
     <section id="vision" className="v4-section v4-vision" aria-labelledby="vision-title">
+      <VisionFieldGraphic />
       <div className="v4-container v4-vision__grid">
         <SectionHeading
           label="Vision"
@@ -89,6 +96,7 @@ export function CompassExperienceSection() {
 
   return (
     <section id="experience" className="v4-section v4-experience" aria-labelledby="experience-title">
+      <ExperienceFieldGraphic />
       <div className="v4-container">
         <SectionHeading
           label="COMPASS Experience"
@@ -150,6 +158,7 @@ export function TechnologyCoreSection() {
 export function ResourcesExperienceSection() {
   return (
     <section id="resources" className="v4-section v4-resources" aria-labelledby="resources-title">
+      <ResourceKnowledgeGraphic />
       <div className="v4-container">
         <div className="v4-resources__editorial">
           <header className="v4-resources__heading" data-reveal>
@@ -210,6 +219,7 @@ export function CommunityExperienceSection() {
             </div>
           </details>
 
+          <CommunityNetworkGraphic />
           <a className="v4-button v4-community__cta" href={joinUrl}>コミュニティに参加する</a>
         </div>
       </div>

@@ -8,6 +8,7 @@ import "../../styles/desktop-system.css";
 import "../../styles/official-immersive.css";
 import "../../styles/official-four-directions.css";
 import "../../styles/official-core-redesign.css";
+import "../../styles/official-brand-system.css";
 import "../../styles/living-intelligence-hero.css";
 import "../../styles/github-profile-link.css";
 
