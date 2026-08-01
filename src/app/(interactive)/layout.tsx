@@ -10,6 +10,7 @@ import "../../interactive/styles/sections.css";
 import "../../interactive/styles/animations.css";
 import "../../interactive/styles/experience.css";
 import "../../interactive/styles/redesign.css";
+import "../../styles/github-profile-link.css";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://compass-official.pages.dev"),

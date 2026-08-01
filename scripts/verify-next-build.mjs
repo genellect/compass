@@ -98,6 +98,24 @@ const livingHeroStyles = await readFile(
 const legacyInteractions = await readFile(path.join(root, "src", "legacy-interactions.ts"), "utf8");
 const deploymentHeaders = await readFile(path.join(out, "_headers"), "utf8");
 
+const githubProfileUrl = "https://github.com/my270yuto0413-cmyk";
+for (const [html, label] of [
+  [official, "Official founder profile"],
+  [interactive, "Interactive developer profile"],
+  [interactiveDevelopers, "Interactive developer introduction profile"]
+]) {
+  const links = html.match(new RegExp(`<a\\b[^>]*href="${githubProfileUrl}"[^>]*>`, "g")) ?? [];
+  if (links.length !== 1) {
+    throw new Error(`${label} must contain exactly one GitHub portfolio link; found ${links.length}.`);
+  }
+  expectIncludes(links[0], 'target="_blank"', `${label} GitHub link`);
+  expectIncludes(links[0], 'rel="noopener noreferrer"', `${label} GitHub link`);
+}
+
+if (!/<h2 id="resources-title"><span>知らなかった未来に、<\/span><span>出会う。<\/span><\/h2>/.test(official)) {
+  throw new Error("Resources title must preserve its semantic two-line structure.");
+}
+
 const parentGaMeasurementId = "G-EHKJ8B8N0Y";
 for (const [html, label] of [
   [official, "Official page"],

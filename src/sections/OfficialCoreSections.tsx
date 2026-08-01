@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { GitHubProfileLink } from "../components/GitHubProfileLink";
 
 const interactiveIntroUrl = "/INTRO_Interactive/";
 const libraryUrl = "/future-strategy-library/";
@@ -153,7 +154,7 @@ export function ResourcesExperienceSection() {
         <div className="v4-resources__editorial">
           <header className="v4-resources__heading" data-reveal>
             <p className="v4-label">Resources / 未来への入口</p>
-            <h2 id="resources-title"><span>知らなかった未来に、出会う。</span></h2>
+            <h2 id="resources-title"><span>知らなかった未来に、</span><span>出会う。</span></h2>
           </header>
 
           <div className="v4-resources__content" data-reveal>
@@ -251,6 +252,7 @@ export function FounderPortfolioSection() {
             <dl>
               {background.map(([term, description]) => <div key={term}><dt>{term}</dt><dd>{description}</dd></div>)}
             </dl>
+            <GitHubProfileLink className="v4-founder__github" />
           </div>
         </div>
       </div>

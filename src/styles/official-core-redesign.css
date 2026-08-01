@@ -692,8 +692,8 @@
 .compass-v4-page .v4-resources::before { position: absolute; top: -190px; right: -160px; width: 520px; height: 520px; border: 1px solid rgba(86, 64, 186, 0.09); border-radius: 50%; box-shadow: inset 0 0 0 70px rgba(255, 255, 255, 0.1), inset 0 0 0 140px rgba(86, 64, 186, 0.025); content: ""; }
 .compass-v4-page .v4-resources__editorial { position: relative; display: grid; grid-template-columns: minmax(280px, 0.72fr) minmax(0, 1.28fr); gap: clamp(34px, 4.6vw, 66px); align-items: start; }
 .compass-v4-page .v4-resources__heading { padding-top: 14px; }
-.compass-v4-page .v4-resources__heading h2 { margin: 0; color: #17113c; font-size: clamp(2.8rem, 4.2vw, 3.7rem); font-weight: 770; letter-spacing: -0.065em; line-height: 1.12; font-feature-settings: "palt" 1; font-variant-east-asian: proportional-width; text-wrap: balance; }
-.compass-v4-page .v4-resources__heading h2 span { display: block; }
+.compass-v4-page .v4-resources__heading h2 { margin: 0; color: #17113c; font-size: clamp(2.1rem, 2.7vw, 2.55rem); font-weight: 770; letter-spacing: -0.065em; line-height: 1.16; font-feature-settings: "palt" 1; font-variant-east-asian: proportional-width; }
+.compass-v4-page .v4-resources__heading h2 span { display: block; white-space: nowrap; }
 .compass-v4-page .v4-resources__content { padding: clamp(34px, 5vw, 58px); border: 1px solid rgba(59, 43, 133, 0.12); border-radius: 32px; background: rgba(255, 255, 255, 0.72); box-shadow: 0 28px 75px rgba(48, 40, 98, 0.1); backdrop-filter: blur(16px); }
 .compass-v4-page .v4-resources__story { display: grid; gap: 24px; }
 .compass-v4-page .v4-resources__story p { margin: 0; color: #56637a; font-size: 1rem; line-height: 1.92; }
@@ -835,6 +835,8 @@
 .compass-v4-page .v4-founder__profile-copy dl div:nth-child(even) { padding-left: 26px; border-left: 1px solid var(--v4-line-dark); }
 .compass-v4-page .v4-founder__profile-copy dt { margin-bottom: 8px; color: #70e7ef; font-size: 0.67rem; font-weight: 850; letter-spacing: 0.12em; text-transform: uppercase; }
 .compass-v4-page .v4-founder__profile-copy dd { margin: 0; color: #e4edf6; font-size: 0.92rem; line-height: 1.6; }
+.compass-v4-page .v4-founder__github { margin-top: 22px; color: #b9cbd9; background: rgba(255, 255, 255, 0.025); }
+.compass-v4-page .v4-founder__github:hover { border-color: rgba(112, 231, 239, 0.72); background: rgba(112, 231, 239, 0.055); color: #f2fcff; }
 
 /* Contact / Manifesto */
 .compass-v4-page .v4-closing { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; padding: clamp(80px, 8vw, 120px) max(36px, calc((100% - var(--v4-container)) / 2)); background: #f5f7fa; }
@@ -1055,6 +1057,8 @@
   .compass-v4-page .v4-technology__intro { grid-template-columns: 1fr; gap: 34px; }
   .compass-v4-page .v4-technology__interactive { width: min(100%, 760px); }
   .compass-v4-page .v4-technology__statement { max-width: 720px; }
+  .compass-v4-page .v4-resources__editorial { grid-template-columns: 1fr; gap: 46px; }
+  .compass-v4-page .v4-resources__heading { max-width: 700px; }
   .compass-v4-page .v4-collaboration__paths { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .compass-v4-page .v4-collaboration-path:nth-child(3) { border-left: 0; border-top: 1px solid rgba(220, 210, 255, 0.18); }
   .compass-v4-page .v4-collaboration-path:nth-child(4) { border-top: 1px solid rgba(220, 210, 255, 0.18); }
@@ -1089,9 +1093,7 @@
   .compass-v4-page .v4-product--infrastructure,
   .compass-v4-page .v4-product--future { min-height: auto; }
   .compass-v4-page .v4-product__signal { min-height: 320px; }
-  .compass-v4-page .v4-resources__editorial { grid-template-columns: 1fr; gap: 46px; }
-  .compass-v4-page .v4-resources__heading { max-width: 700px; }
-  .compass-v4-page .v4-resources__heading h2 { font-size: clamp(3rem, 8vw, 4.6rem); }
+  .compass-v4-page .v4-resources__heading h2 { font-size: clamp(2.35rem, 6.4vw, 3.15rem); }
   .compass-v4-page .v4-workshops__signal .v4-button { margin-left: 0; }
   .compass-v4-page .v4-workshops__grid { grid-template-columns: 1fr; }
   .compass-v4-page .v4-workshop-card { min-height: 280px; }
@@ -1139,7 +1141,7 @@
   .compass-v4-page .v4-products .v4-heading,
   .compass-v4-page .v4-resources .v4-heading { margin-bottom: 44px; }
   .compass-v4-page .v4-resources__editorial { gap: 34px; }
-  .compass-v4-page .v4-resources__heading h2 { font-size: clamp(2.4rem, 12vw, 3.2rem); }
+  .compass-v4-page .v4-resources__heading h2 { font-size: clamp(1.72rem, 8vw, 2.35rem); }
   .compass-v4-page .v4-resources__content { padding: 28px 22px; border-radius: 22px; }
   .compass-v4-page .v4-resources__story { gap: 20px; }
   .compass-v4-page .v4-resources__promise { padding: 20px 0 0 18px; }

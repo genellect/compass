@@ -656,6 +656,19 @@
   font-weight: 750;
 }
 
+.developer-credit__github {
+  position: relative;
+  margin-top: 18px;
+  color: rgba(223, 251, 255, 0.78);
+  background: rgba(3, 8, 21, 0.18);
+}
+
+.developer-credit__github:hover {
+  border-color: rgba(125, 211, 252, 0.64);
+  background: rgba(6, 182, 212, 0.09);
+  color: #f3fdff;
+}
+
 .developer-credit__grid {
   position: relative;
   display: grid;

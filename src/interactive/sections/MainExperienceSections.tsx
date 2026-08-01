@@ -1,4 +1,5 @@
 import { CTAButton } from "../components/ui/CTAButton";
+import { GitHubProfileLink } from "../../components/GitHubProfileLink";
 import { ProductExperienceMock } from "../components/ui/ProductExperienceMock";
 import { Reveal } from "../components/ui/Reveal";
 import { Section } from "../components/ui/Section";
@@ -223,6 +224,7 @@ export function DeveloperGateway() {
           <span>開発者・プロダクト設計者</span>
           <strong>Yuto Matsui</strong>
           <p>生命科学・教育・AIを横断し、研究・教育現場で自ら見いだした課題を、実装可能なプロダクトへ変換する。</p>
+          <GitHubProfileLink className="developer-credit__github" />
           <div className="developer-credit__grid">
             <div>
               <h3>得意領域</h3>
