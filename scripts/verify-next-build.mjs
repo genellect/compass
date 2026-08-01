@@ -110,6 +110,7 @@ for (const [html, label] of [
   }
   expectIncludes(links[0], 'target="_blank"', `${label} GitHub link`);
   expectIncludes(links[0], 'rel="noopener noreferrer"', `${label} GitHub link`);
+  expectIncludes(html, "GitHub Portfolio", `${label} GitHub CTA label`);
 }
 
 if (!/<h2 id="resources-title"><span>知らなかった未来に、<\/span><span>出会う。<\/span><\/h2>/.test(official)) {

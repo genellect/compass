@@ -36,19 +36,11 @@
   line-height: 1.15;
 }
 
-.github-profile-link small {
-  color: inherit;
-  font-size: 0.58rem;
-  font-weight: 760;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-}
-
 .github-profile-link strong {
   color: inherit;
-  font-size: 0.76rem;
+  font-size: 0.78rem;
   font-weight: 720;
-  letter-spacing: 0.01em;
+  letter-spacing: 0.04em;
 }
 
 .github-profile-link i {
