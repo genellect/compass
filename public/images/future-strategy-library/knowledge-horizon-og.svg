@@ -1,0 +1,71 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#020812"/>
+      <stop offset="0.58" stop-color="#061426"/>
+      <stop offset="1" stop-color="#071b2c"/>
+    </linearGradient>
+    <linearGradient id="signal" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#66e6ef" stop-opacity=".12"/>
+      <stop offset=".5" stop-color="#66e6ef"/>
+      <stop offset="1" stop-color="#b6fff1" stop-opacity=".3"/>
+    </linearGradient>
+    <linearGradient id="sheet" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#fff" stop-opacity=".12"/>
+      <stop offset="1" stop-color="#66e6ef" stop-opacity=".025"/>
+    </linearGradient>
+    <pattern id="grid" width="48" height="48" patternUnits="userSpaceOnUse">
+      <path d="M48 0H0V48" fill="none" stroke="#b8d8e8" stroke-opacity=".055"/>
+    </pattern>
+    <filter id="glow" x="-200%" y="-200%" width="500%" height="500%">
+      <feGaussianBlur stdDeviation="6" result="blur"/>
+      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+  <rect width="1200" height="630" fill="url(#bg)"/>
+  <rect width="1200" height="630" fill="url(#grid)"/>
+  <path d="M0 523C245 510 429 443 616 351S934 178 1200 116" fill="none" stroke="#66e6ef" stroke-opacity=".09" stroke-width="24"/>
+  <path d="M0 523C245 510 429 443 616 351S934 178 1200 116" fill="none" stroke="url(#signal)" stroke-width="2"/>
+  <g fill="none" stroke="#b9dce8" stroke-opacity=".22">
+    <path d="M52 48h86M52 48v54M1148 48h-86M1148 48v54M52 582h86M52 582v-54M1148 582h-86M1148 582v-54"/>
+  </g>
+  <g transform="translate(690 96)">
+    <g fill="url(#sheet)" stroke="#a9dce7" stroke-opacity=".23">
+      <rect x="0" y="236" width="280" height="138" rx="10"/>
+      <rect x="52" y="188" width="294" height="138" rx="10"/>
+      <rect x="110" y="140" width="270" height="138" rx="10"/>
+      <rect x="162" y="92" width="286" height="138" rx="10"/>
+      <rect x="220" y="44" width="266" height="138" rx="10"/>
+      <rect x="276" width="252" height="138" rx="10"/>
+    </g>
+    <g fill="#91aebc" font-family="Arial, sans-serif" font-size="12" font-weight="700" letter-spacing="2">
+      <text x="20" y="264">01 / EXAM</text>
+      <text x="72" y="216">02 / ENGLISH</text>
+      <text x="130" y="168">03 / AI</text>
+      <text x="182" y="120">04 / LAB</text>
+      <text x="240" y="72">05 / GRADUATE</text>
+      <text x="296" y="28">06 / CAREER</text>
+    </g>
+    <g stroke-width="2">
+      <path d="M20 278h212" stroke="#66e6ef"/>
+      <path d="M72 230h222" stroke="#e7bc5d"/>
+      <path d="M130 182h202" stroke="#9587ff"/>
+      <path d="M182 134h218" stroke="#77dfc6"/>
+      <path d="M240 86h198" stroke="#77dfc6"/>
+      <path d="M296 42h184" stroke="#77dfc6"/>
+    </g>
+  </g>
+  <g transform="translate(70 78)" font-family="Arial, sans-serif">
+    <text fill="#7f9aa8" font-size="14" font-weight="700" letter-spacing="3">COMPASS / FUTURE STRATEGY LIBRARY</text>
+    <text y="125" fill="#ffffff" font-size="74" font-weight="800" letter-spacing="-3">BEYOND THE</text>
+    <text y="205" fill="#ffffff" font-size="74" font-weight="800" letter-spacing="-3">SYLLABUS.</text>
+    <circle cx="374" cy="191" r="7" fill="#66e6ef" filter="url(#glow)"/>
+    <text y="273" fill="#c4d5de" font-size="21" font-weight="600" letter-spacing=".5">KNOWLEDGE BECOMES VISIBLE CHOICES.</text>
+  </g>
+  <g transform="translate(70 516)" fill="#7e9aa8" font-family="Arial, sans-serif" font-size="12" font-weight="700" letter-spacing="2">
+    <text>PHARMACY</text><text x="126">ENGLISH</text><text x="234">AI LITERACY</text><text x="376">RESEARCH &amp; CAREER</text>
+  </g>
+  <circle cx="1044" cy="165" r="6" fill="#cafff5" filter="url(#glow)"/>
+  <circle cx="945" cy="225" r="4" fill="#e7bc5d"/>
+  <circle cx="846" cy="291" r="4" fill="#9587ff"/>
+</svg>

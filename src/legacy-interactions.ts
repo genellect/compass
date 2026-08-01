@@ -17,10 +17,17 @@
     }, { threshold: 0.14, rootMargin: "0px 0px -8% 0px" });
 
     revealTargets.forEach((target, index) => {
+      const rect = target.getBoundingClientRect();
+      if (rect.bottom >= 0 && rect.top <= window.innerHeight * 1.08) {
+        target.classList.add("is-visible");
+        return;
+      }
       target.style.transitionDelay = `${Math.min((index % 6) * 70, 280)}ms`;
       revealObserver.observe(target);
     });
+    root.classList.add("reveal-ready");
   } else {
+    root.classList.remove("reveal-ready");
     revealTargets.forEach((target) => target.classList.add("is-visible"));
   }
 

@@ -98,7 +98,7 @@ export function ResourceKnowledgeGraphic() {
 export function CommunityNetworkGraphic() {
   return (
     <div className="v4-community__network" aria-hidden="true">
-      <svg viewBox="0 0 420 280" role="presentation" focusable="false">
+      <svg className="v4-community__network-compact" viewBox="0 0 420 280" role="presentation" focusable="false">
         <defs>
           <linearGradient id="community-signal-gradient" x1="0" y1="0" x2="1" y2="1">
             <stop offset="0" stopColor="#8ff0ee" />
@@ -119,6 +119,43 @@ export function CommunityNetworkGraphic() {
           <circle cx="291" cy="49" r="7" />
           <circle cx="319" cy="222" r="8" />
           <circle cx="375" cy="171" r="6" />
+        </g>
+      </svg>
+      <svg className="v4-community__network-trajectory" viewBox="0 0 260 760" role="presentation" focusable="false">
+        <defs>
+          <linearGradient id="community-trajectory-gradient" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stopColor="#8ff0ee" />
+            <stop offset="0.52" stopColor="#b8a8ff" />
+            <stop offset="1" stopColor="#f2b486" />
+          </linearGradient>
+          <radialGradient id="community-trajectory-core" cx="50%" cy="45%" r="58%">
+            <stop offset="0" stopColor="#f5ffff" />
+            <stop offset="0.34" stopColor="#8ff0ee" />
+            <stop offset="1" stopColor="#7864d9" />
+          </radialGradient>
+        </defs>
+        <g className="v4-community__trajectory-rails">
+          <path d="M130 46C99 121 165 178 130 245S94 365 130 435s31 132 0 198c-13 27-13 54 0 81" />
+          <path d="M130 118 63 176M130 118l65 54M130 320l-74 53M130 320l78 58M130 526l-72 62M130 526l70 57" />
+        </g>
+        <path className="v4-community__trajectory-flow" pathLength="1" d="M130 46C99 121 165 178 130 245S94 365 130 435s31 132 0 198c-13 27-13 54 0 81" />
+        <g className="v4-community__trajectory-rings">
+          <circle cx="130" cy="118" r="49" />
+          <circle cx="130" cy="320" r="58" />
+          <circle cx="130" cy="526" r="54" />
+          <circle cx="130" cy="686" r="42" />
+        </g>
+        <g className="v4-community__trajectory-nodes" fill="url(#community-trajectory-gradient)">
+          <circle cx="130" cy="118" r="12" fill="url(#community-trajectory-core)" />
+          <circle cx="63" cy="176" r="6" />
+          <circle cx="195" cy="172" r="7" />
+          <circle cx="130" cy="320" r="14" fill="url(#community-trajectory-core)" />
+          <circle cx="56" cy="373" r="7" />
+          <circle cx="208" cy="378" r="6" />
+          <circle cx="130" cy="526" r="13" fill="url(#community-trajectory-core)" />
+          <circle cx="58" cy="588" r="6" />
+          <circle cx="200" cy="583" r="7" />
+          <circle cx="130" cy="686" r="15" fill="url(#community-trajectory-core)" />
         </g>
       </svg>
     </div>

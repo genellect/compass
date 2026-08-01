@@ -100,7 +100,27 @@ const brandSystemStyles = await readFile(
   "utf8"
 );
 const legacyInteractions = await readFile(path.join(root, "src", "legacy-interactions.ts"), "utf8");
+const legacyInteractionComponent = await readFile(
+  path.join(root, "src", "components", "LegacyInteractions.tsx"),
+  "utf8"
+);
+const legacyStyles = await readFile(path.join(root, "src", "styles", "legacy.css"), "utf8");
 const deploymentHeaders = await readFile(path.join(out, "_headers"), "utf8");
+
+for (const expected of [
+  '.js.reveal-ready [data-reveal]',
+  '.js.reveal-ready [data-reveal].is-visible'
+]) expectIncludes(legacyStyles, expected, "Failure-safe reveal styles");
+for (const expected of [
+  'root.classList.add("reveal-ready")',
+  'root.classList.remove("reveal-ready")',
+  'target.getBoundingClientRect()'
+]) expectIncludes(legacyInteractions, expected, "Failure-safe reveal initialization");
+for (const expected of [
+  '.catch(() =>',
+  'root.classList.remove("reveal-ready")',
+  'target.classList.add("is-visible")'
+]) expectIncludes(legacyInteractionComponent, expected, "Failure-safe reveal fallback");
 
 const githubProfileUrl = "https://github.com/my270yuto0413-cmyk";
 for (const [html, label] of [
@@ -189,6 +209,10 @@ for (const expected of [
   "未来の講義を、いま体験。",
   "ひとりでは見えない、",
   "新しい場所へ。",
+  "次の試験に役立つ情報を",
+  "探しに来たはずが、",
+  "気づけば、その先の未来まで",
+  "見えてくる。",
   "今すぐ使えて、数年後の選択にも効いてくる。",
   "未来戦略ライブラリは、学生生活の「次に知りたい」を、一つの場所につなぎます。",
   "まだ知らない世界を見る",
@@ -208,9 +232,12 @@ for (const expected of [
   "COMPASSを知る",
   "MANIFESTO",
   "Manifesto",
-  "観客席から見ているには、",
-  "この時代は面白すぎる。",
-  "AI時代の学生へ贈る、COMPASSからの招待状。",
+  "観客席から",
+  "見ているには、",
+  "この時代は",
+  "面白すぎる。",
+  "AI時代の学生へ贈る、",
+  "COMPASSからの招待状。",
   "ストーリーを読む",
   "お問い合わせフォーム",
   "Web開発・プログラミング 4年",
@@ -306,6 +333,8 @@ if (!communitySection) throw new Error("Official page is missing the Community s
 expectIncludes(communitySection, '<details class="v4-community__details">', "Community section");
 expectIncludes(communitySection, "続きを読む", "Community section");
 expectIncludes(communitySection, "SNSでの情報発信", "Community section");
+expectIncludes(communitySection, 'class="v4-community__network-compact"', "Community compact graphic");
+expectIncludes(communitySection, 'class="v4-community__network-trajectory"', "Community expanded graphic");
 if (/<details class="v4-community__details"\s+open/.test(communitySection)) {
   throw new Error("Community details must be closed by default.");
 }
@@ -332,6 +361,12 @@ const resourcesCard = official.match(/<article class="v4-experience-card v4-expe
 if (!resourcesCard) throw new Error("Official page is missing the Resources experience card.");
 expectIncludes(resourcesCard, "ライブラリを見る", "Resources experience card");
 expectIncludes(resourcesCard, 'href="/future-strategy-library/"', "Resources experience card");
+
+for (const experienceName of ["technology", "resources", "workshops", "community"]) {
+  const experienceCard = official.match(new RegExp(`<article class="v4-experience-card v4-experience-card--${experienceName}"[\\s\\S]*?<\\/article>`))?.[0];
+  if (!experienceCard) throw new Error(`Official page is missing the ${experienceName} experience card.`);
+  expectExcludes(experienceCard, "data-reveal", `${experienceName} experience card initial motion`);
+}
 
 const officialLibraryLinks = official.match(/<a\b[^>]*href="\/future-strategy-library\/"[^>]*>/g) ?? [];
 if (officialLibraryLinks.length !== 6) {
@@ -511,44 +546,26 @@ if (actualMessageCopy !== expectedMessageCopy) {
 for (const expected of [
   '<html lang="ja"',
   'data-library-page="true"',
-  'data-mobile-hero="legacy"',
-  'data-mobile-hero-needs="true"',
-  "未来は、",
-  "知っている人から",
-  "動き出す。",
-  "過去問は、次の試験を",
-  "救ってくれる。",
-  "でも、卒業後までは",
-  "決めてくれない。",
-  "四つの領域。ひとつの未来。",
-  "試験を乗り切る。理解も置いていかない。",
-  "翻訳できる。だからこそ、使える人が強い。",
-  "AIを使う。AIに使われない。",
-  "配属されてから、初めて考えない。",
-  "未来は、案外、一つの資料から動き出す。",
-  "こんな人には、かなり向いています。",
-  "限定公開。",
-  "だから、実用に",
-  "踏み込める。",
-  "「もっと早く知りたかった」を、減らす。",
-  "資料を見る",
+  'data-fsl-landing-header="true"',
+  'data-library-section="hero"',
+  'data-library-section="thesis"',
+  'data-library-section="materials"',
+  'data-library-section="fields"',
+  'data-library-section="trust"',
+  'data-library-section="final"',
+  "BEYOND THE SYLLABUS.",
+  "FSL / KNOWLEDGE HORIZON",
+  "4 DOMAIN RAILS",
   'data-library-material="true"',
-  "北里大学薬学部生",
-  "登録・利用無料",
-  "北里大学の大学アカウント必須",
-  "無断共有・転載・再配布は禁止しています。",
   "大学アカウントで無料登録する",
-  "大学の公式組織ではありません。",
-  "その他の非公開情報は公表していません。",
   'href="https://docs.google.com/forms/d/e/1FAIpQLSf8gLujuK-giYnkCnv-Cxp7qon1kY8mhnGvfkA62hOlrJgAHA/viewform"',
   'target="_blank"',
   'rel="canonical" href="https://compass-official.pages.dev/future-strategy-library/"',
-  '/images/future-strategy-library/library-horizon.webp',
   '/images/future-strategy-library/why-english.webp',
   '/images/future-strategy-library/ai-guide-sanitized.webp',
   '/images/future-strategy-library/research-career.webp',
-  'type="application/ld+json"',
-  'aria-current="page"'
+  '/images/future-strategy-library/knowledge-horizon-og.png',
+  'type="application/ld+json"'
 ]) expectIncludes(library, expected, "Future Strategy Library page");
 
 for (const unexpected of [
@@ -567,6 +584,9 @@ for (const unexpected of [
   "Development%26Governance.pdf",
   "Future_Strategy_Library_Design_Philosophy.pdf.pdf",
   "/images/future-strategy-library/ai-guide.webp",
+  'data-mobile-hero="legacy"',
+  'data-mobile-hero-needs="true"',
+  "資料を見る",
   "COMPASS Interactive紹介サイト",
   "未来戦略ライブラリ紹介サイト",
   "Community参加フォーム"
@@ -578,39 +598,94 @@ const libraryMain = library.match(/<main\b[\s\S]*?<\/main>/)?.[0];
 if (!libraryMain) throw new Error("Future Strategy Library main content was not found.");
 
 const librarySectionCount = (libraryMain.match(/<section\b/g) ?? []).length;
-if (librarySectionCount !== 8) {
-  throw new Error(`Future Strategy Library page must contain eight primary sections; found ${librarySectionCount}.`);
+if (librarySectionCount !== 6) {
+  throw new Error(`Future Strategy Library page must contain six primary sections; found ${librarySectionCount}.`);
 }
 
-for (const expected of [
-  "数字で見る、",
-  "未来戦略ライブラリ",
-  "学生の「知りたかった」を、少しずつ形にしてきました。",
-  "創設日",
-  "2024",
-  ".02",
-  "登録者数",
-  "(2026年6月時点）",
-  'data-count-target="73"',
-  "掲載資料数",
-  'data-count-target="100"'
-]) expectIncludes(libraryMain, expected, "Future Strategy Library statistics");
+const libraryText = normalizeText(libraryMain);
+expectOrdered(libraryText, [
+  "BEYOND THE SYLLABUS.",
+  "未来は、知っている人から動き出す。",
+  "北里大学薬学部生のための、 学生目線の資料ライブラリ。",
+  "WHY THIS LIBRARY",
+  "未来戦略ライブラリは、北里大学薬学部生のための資料ライブラリです。",
+  "試験対策、英語、AI、研究室、大学院、キャリア。 一見ばらばらに見えるテーマをつなぎ、大学で学ぶ「今」を、これからの選択へ変えていきます。",
+  "まずは、次の試験のためでも構いません。 登録した理由より、登録したあとに見える景色のほうが大切です。",
+  "2024.02活動開始",
+  "73+利用登録者 2026年6月時点",
+  "100+掲載資料",
+  "FEATURED MATERIALS",
+  "未来は、案外、一つの資料から動き出す。",
+  "まずは、気になるテーマから。",
+  "読み始める理由は、英語でも、AIでも、研究室選びでも構いません。 読み終える頃に、少し先の自分まで見える資料を目指しています。",
+  "翻訳できる時代に、なぜ英語を学ぶのか。",
+  "翻訳AIがあっても、英語を使える人の選択肢は減りません。むしろ、これまで以上に広がります。",
+  "資格勉強を、試験のためだけで終わらせず、専門性を世界へ届ける力へ変えるための導入資料です。",
+  "AIで、未来を設計する。",
+  "答えを出させるだけなら、AIの力のほんの一部です。",
+  "学習、研究、開発、情報整理、アイデアの実現。AIを「便利なチャットボット」で終わらせず、自分の可能性を広げるための実践ガイドです。",
+  "研究を、未来の仕事にする。",
+  "研究室は、配属先を決めるだけの場所ではありません。",
+  "研究テーマ、指導環境、大学院、企業、アカデミア。研究室選びとその先の進路を、一続きで考えるガイドです。",
+  "掲載資料は100点以上。試験対策、TOEIC・英検、英会話、大学院進学なども扱っています。",
+  "WHAT YOU GET",
+  "目の前の試験も、その先の未来も。",
+  "必要なのは、全部を知ることではありません。 今の自分に必要な知識から、選択肢を増やしていくことです。",
+  "まず、次の試験を乗り切る。でも、そこで終わらない。",
+  "試験前に使える対策資料から、暗記に頼りすぎない理解の組み立て方まで。",
+  "講義で学んだ知識が、実習・研究・臨床へどうつながるのかを扱います。",
+  "点数を取る。その英語を、使える力に変える。",
+  "TOEIC・英検などの資格対策から、論文読解、研究発表、英会話まで。",
+  "試験のために覚えた英語を、その先で実際に使うところまで支えます。",
+  "AIを使う。AIに使われない。",
+  "学習・研究・制作のどこをAIに任せ、どこを人間が確かめるのか。",
+  "便利さだけでなく、精度・責任・信頼まで含めたAI活用を考えます。",
+  "配属されてから考えるには、進路は少し大きすぎる。",
+  "研究テーマ、指導環境、大学院進学、その先の仕事まで。",
+  "誰かの正解を押しつけるのではなく、自分で比較し、選ぶための判断材料を整理します。",
+  "FOR KITASATO PHARMACY STUDENTS",
+  "誰にでも公開しない。だから、守れるものがある。",
+  "このライブラリは、北里大学薬学部生だけが利用できる限定公開です。 登録・利用は無料。大学アカウントによる認証で、資料と利用者の信頼を守ります。",
+  "COMPASSは、学生有志による独立した活動です。 大学・学部が運営する公式サービスではありません。",
+  "個人の学習利用に限ります無断共有・転載・再配布は禁止です",
+  "試験、履修、進級、研究室配属、進路などの重要事項は、 必ず大学・学部が発信する最新の公式情報と照合してください。",
+  "YOUR NEXT MOVE",
+  "まだ知らない未来は、ここから選択肢になる。",
+  "入口は、次の試験でも、英語でも、研究室選びでも構いません。 今の自分に必要な一つを知ることから、未来は少しずつ動き始めます。"
+], "Future Strategy Library canonical copy");
+
+for (const expected of ["2024.02", "73", "100"]) {
+  expectIncludes(libraryMain, expected, "Future Strategy Library server-rendered metrics");
+}
+for (const unexpected of ['data-count-target=', ">0+</", "/images/future-strategy-library/library-horizon.webp"]) {
+  expectExcludes(libraryMain, unexpected, "Future Strategy Library initial render");
+}
 
 const libraryRegistrationCount = (
-  libraryMain.match(/data-library-registration="true"/g) ?? []
+  library.match(/data-library-registration="true"/g) ?? []
 ).length;
 if (libraryRegistrationCount !== 4) {
-  throw new Error(`Future Strategy Library body must contain four registration actions; found ${libraryRegistrationCount}.`);
+  throw new Error("Future Strategy Library must contain four registration actions; found " + libraryRegistrationCount + ".");
 }
 
-const libraryMaterialActions = libraryMain.match(/<a\b[^>]*data-library-material="true"[^>]*>/g) ?? [];
-if (libraryMaterialActions.length !== 3) {
-  throw new Error(`Future Strategy Library must contain three material actions; found ${libraryMaterialActions.length}.`);
+const libraryRegistrationActions = library.match(/<a\b[^>]*data-library-registration="true"[^>]*>[\s\S]*?<\/a>/g) ?? [];
+for (const action of libraryRegistrationActions) {
+  expectIncludes(action, 'href="https://docs.google.com/forms/d/e/1FAIpQLSf8gLujuK-giYnkCnv-Cxp7qon1kY8mhnGvfkA62hOlrJgAHA/viewform"', "Library registration action");
+  expectIncludes(action, 'target="_blank"', "Library registration action");
+  const visibleLabel = normalizeText(action).replace("（新しいタブで開きます）", "").trim();
+  if (visibleLabel !== "大学アカウントで無料登録する↗") {
+    throw new Error("Future Strategy Library registration CTA label changed: " + normalizeText(action));
+  }
 }
 
-for (const action of libraryMaterialActions) {
-  expectIncludes(action, 'href="https://docs.google.com/forms/d/e/1FAIpQLSf8gLujuK-giYnkCnv-Cxp7qon1kY8mhnGvfkA62hOlrJgAHA/viewform"', "Library material action");
-  expectIncludes(action, 'target="_blank"', "Library material action");
+const libraryMaterialStatuses = libraryMain.match(/<span\b[^>]*data-library-material="true"[^>]*>[\s\S]*?<\/span>/g) ?? [];
+if (libraryMaterialStatuses.length !== 3) {
+  throw new Error("Future Strategy Library must contain three non-interactive material statuses; found " + libraryMaterialStatuses.length + ".");
+}
+for (const status of libraryMaterialStatuses) {
+  if (normalizeText(status) !== "登録後に閲覧できます") {
+    throw new Error("Future Strategy Library material status changed: " + normalizeText(status));
+  }
 }
 
 for (const expected of [
@@ -682,7 +757,7 @@ for (const relative of [
   "messages/index.html",
   "future-strategy-library/index.html",
   "images/compass-mark.svg",
-  "images/future-strategy-library/library-horizon.webp",
+  "images/future-strategy-library/knowledge-horizon-og.png",
   "images/future-strategy-library/why-english.webp",
   "images/future-strategy-library/ai-guide-sanitized.webp",
   "images/future-strategy-library/research-career.webp",

@@ -33,7 +33,8 @@ COMPASS Interactive本体は別deploymentである。
 
 - Primary label: `大学アカウントで無料登録する`
 - URL: <https://docs.google.com/forms/d/e/1FAIpQLSf8gLujuK-giYnkCnv-Cxp7qon1kY8mhnGvfkA62hOlrJgAHA/viewform>
-- Source owners: `src/app/(official)/future-strategy-library/page.tsx`、`src/components/SiteHeader.tsx`、`src/components/SiteFooter.tsx`
+- Source owner: `src/lib/futureStrategyLibrary.ts`
+- Placement contract: FSL Landing Header / Hero / Featured Materials末尾 / Final CTA の4か所
 - Navigation: external formのためnew tab
 
 ### COMPASS Essentials

@@ -13,7 +13,9 @@ Last verified: 2026-08-01
 | COMPASS origin | `北里大学薬学部から、学び・研究・未来をつなぐ。` |
 | COMPASS transition | `学生の「知る」を、「選ぶ」「動く」へ変える。` |
 | Interactive | `わからないが、動き出す。` |
-| Library Hero | `未来は、知っている人から動き出す。` |
+| Library Hero H1 | `BEYOND THE SYLLABUS.` |
+| Library Hero Sub Hero | `未来は、知っている人から動き出す。` |
+| Library Hero description | `北里大学薬学部生のための、学生目線の資料ライブラリ。` |
 | Manifesto Hero | `そのAI、まだ質問相手ですか？` |
 | Manifesto closing | `観客席から見ているには、この時代は面白すぎる。` |
 | Community | `面白い大学生活は、待っていても始まらない。` |

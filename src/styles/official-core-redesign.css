@@ -1013,7 +1013,7 @@
   text-wrap: balance;
 }
 
-.compass-v4-page .v4-manifesto__copy h2 span {
+.compass-v4-page .v4-manifesto__copy h2 > .v4-manifesto__title-line {
   display: block;
   white-space: nowrap;
 }
@@ -1332,7 +1332,9 @@
   .compass-v4-page .v4-manifesto__frame { min-height: 680px; padding: 48px 24px 82px; border-radius: 24px; }
   .compass-v4-page .v4-manifesto__copy { width: 100%; }
   .compass-v4-page .v4-closing .v4-manifesto__copy h2 { font-size: clamp(2.15rem, 9.2vw, 3rem); }
-  .compass-v4-page .v4-manifesto__copy h2 span { white-space: normal; }
+  .compass-v4-page .v4-manifesto__copy h2 > .v4-manifesto__title-line { white-space: normal; }
+  .compass-v4-page .v4-manifesto__title-line > span,
+  .compass-v4-page .v4-manifesto__invitation > span { display: block; white-space: nowrap; }
   .compass-v4-page .v4-manifesto__declaration { margin-top: 42px; padding-left: 16px; }
   .compass-v4-page .v4-manifesto__cta { width: 100%; justify-content: space-between; }
   .compass-v4-page .v4-manifesto__constellation { top: auto; right: -15%; bottom: 5%; width: 80vw; opacity: 0.34; }

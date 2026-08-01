@@ -107,7 +107,7 @@ export function CompassExperienceSection() {
 
         <div className="v4-experience__grid">
           {experiences.map((item) => (
-            <article key={item.name} className={`v4-experience-card v4-experience-card--${item.name.toLowerCase()}`} data-reveal>
+            <article key={item.name} className={`v4-experience-card v4-experience-card--${item.name.toLowerCase()}`}>
               <div className="v4-card-meta"><span>{item.number}</span><strong>{item.name}</strong><em>{item.value}</em></div>
               <h3>{item.title}</h3>
               <p>{item.description}</p>
@@ -142,7 +142,7 @@ export function TechnologyCoreSection() {
 
           <article className="v4-technology__interactive" data-reveal>
             <p className="v4-card-kicker">COMPASS INTERACTIVE</p>
-            <h3>わからないが、動き出す。</h3>
+            <h3 className="v4-technology__interactive-title"><span>わからないが、</span><span>動き出す。</span></h3>
             <div className="v4-technology__interactive-copy">
               <p>あなたが飲み込んだその疑問を、誰かも同じように抱えているかもしれない。</p>
               <p>問いも、迷いも、ひらめきも。その場にいる全員の思考が重なったとき、講義はただの説明ではなく、自分たちの学びに変わります。</p>
@@ -168,7 +168,10 @@ export function ResourcesExperienceSection() {
 
           <div className="v4-resources__content" data-reveal>
             <div className="v4-resources__story">
-              <p className="v4-resources__lead">次の試験に役立つ情報を探しに来たはずが、<br />気づけば、その先の未来まで見えてくる。</p>
+              <p className="v4-resources__lead">
+                <span className="v4-resources__lead-line"><span>次の試験に役立つ情報を</span><span>探しに来たはずが、</span></span>
+                <span className="v4-resources__lead-line"><span>気づけば、その先の未来まで</span><span>見えてくる。</span></span>
+              </p>
               <p>同じ大学、同じ授業、同じ試験。<br />それでも、知っている情報によって、その先は変わります。</p>
               <div className="v4-resources__promise">
                 <p>今すぐ使えて、数年後の選択にも効いてくる。</p>

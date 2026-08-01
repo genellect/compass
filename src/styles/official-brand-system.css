@@ -319,6 +319,18 @@
   line-height: 1.78;
 }
 
+.compass-v4-page .v4-experience-card .v4-button {
+  transition: background-color 180ms ease, border-color 180ms ease, box-shadow 180ms ease, transform 120ms ease;
+}
+
+.compass-v4-page .v4-experience-card .v4-button:active {
+  transform: translateY(1px) scale(0.99);
+}
+
+.compass-v4-page .v4-technology__interactive-title > span {
+  display: inline;
+}
+
 /* Technology and founder inherit the same signal language without layout changes. */
 .compass-v4-page .v4-technology__mesh {
   opacity: 0.94;
@@ -423,6 +435,14 @@
 
 .compass-v4-page .v4-resources__story > p {
   grid-column: 1;
+}
+
+.compass-v4-page .v4-resources__lead-line {
+  display: block;
+}
+
+.compass-v4-page .v4-resources__lead-line > span {
+  display: inline;
 }
 
 .compass-v4-page .v4-resources__promise {
@@ -594,6 +614,73 @@
   transform-origin: center;
 }
 
+.compass-v4-page .v4-community__network-trajectory {
+  display: none;
+}
+
+@media (min-width: 901px) {
+  .compass-v4-page .v4-community__details[open] ~ .v4-community__network {
+    min-height: 620px;
+    background:
+      radial-gradient(circle at 50% 16%, rgba(143, 240, 238, 0.12), transparent 22%),
+      radial-gradient(circle at 50% 54%, rgba(184, 168, 255, 0.1), transparent 26%),
+      radial-gradient(circle at 50% 88%, rgba(242, 180, 134, 0.08), transparent 20%),
+      linear-gradient(rgba(197, 219, 244, 0.035) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(197, 219, 244, 0.035) 1px, transparent 1px),
+      rgba(5, 17, 38, 0.32);
+    background-size: auto, auto, auto, 30px 30px, 30px 30px, auto;
+  }
+
+  .compass-v4-page .v4-community__details[open] ~ .v4-community__network::before {
+    inset: 5% 20%;
+    border-radius: 999px;
+    box-shadow: inset 0 0 0 34px rgba(143, 240, 238, 0.018), inset 0 0 0 92px rgba(184, 168, 255, 0.012);
+  }
+
+  .compass-v4-page .v4-community__details[open] ~ .v4-community__network .v4-community__network-compact {
+    display: none;
+  }
+
+  .compass-v4-page .v4-community__details[open] ~ .v4-community__network .v4-community__network-trajectory {
+    display: block;
+    width: auto;
+    max-width: 92%;
+    height: calc(100% - 42px);
+    min-height: 578px;
+  }
+}
+
+.compass-v4-page .v4-community__trajectory-rails path,
+.compass-v4-page .v4-community__trajectory-flow,
+.compass-v4-page .v4-community__trajectory-rings circle {
+  fill: none;
+  stroke: url(#community-trajectory-gradient);
+  stroke-linecap: round;
+}
+
+.compass-v4-page .v4-community__trajectory-rails path {
+  stroke-width: 1.1;
+  opacity: 0.24;
+}
+
+.compass-v4-page .v4-community__trajectory-flow {
+  stroke-width: 2.2;
+  stroke-dasharray: 0.035 0.075;
+  opacity: 0.82;
+}
+
+.compass-v4-page .v4-community__trajectory-rings circle {
+  stroke-width: 1;
+  stroke-dasharray: 3 11;
+  opacity: 0.32;
+}
+
+.compass-v4-page .v4-community__trajectory-nodes circle {
+  opacity: 0.88;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
 .compass-v4-page .v4-community__cta {
   grid-column: 1 / -1;
   grid-row: 3;
@@ -652,10 +739,11 @@
 
 /* Fine-pointer affordances only; touch layouts remain stable. */
 @media (hover: hover) and (pointer: fine) {
-  .compass-v4-page .v4-experience-card:hover {
+  .compass-v4-page .v4-experience-card--technology:hover,
+  .compass-v4-page .v4-experience-card--resources:hover {
     border-color: rgba(55, 153, 174, 0.3);
     box-shadow: 0 32px 72px rgba(29, 58, 88, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.96);
-    transform: translateY(-5px);
+    transform: translateY(-2px);
   }
 
   .compass-v4-page .v4-experience-card--technology:hover {
@@ -839,6 +927,12 @@
     margin-bottom: 16px;
   }
 
+  .compass-v4-page .v4-technology__interactive-title > span,
+  .compass-v4-page .v4-resources__lead-line > span {
+    display: block;
+    white-space: nowrap;
+  }
+
   .compass-v4-page .v4-brand-field--resources {
     top: 90px;
     right: -278px;
@@ -925,6 +1019,14 @@
     transform-origin: center;
   }
 
+  .compass-v4-page .v4-community__details[open] ~ .v4-community__network .v4-community__network-trajectory {
+    animation: none;
+  }
+
+  .compass-v4-page .v4-community__details[open] ~ .v4-community__network .v4-community__trajectory-flow {
+    animation: v4-community-trajectory-flow 22s linear infinite;
+  }
+
   .compass-v4-page .v4-technology__mesh {
     animation: v4-brand-grid-drift 28s linear infinite alternate;
   }
@@ -935,6 +1037,15 @@
   .compass-v4-page .v4-community__network *,
   .compass-v4-page .v4-technology__mesh {
     animation: none !important;
+  }
+
+  .compass-v4-page .v4-experience-card,
+  .compass-v4-page .v4-experience-card .v4-button {
+    transition: none !important;
+  }
+
+  .compass-v4-page .v4-experience-card .v4-button:active {
+    transform: none;
   }
 }
 
@@ -959,4 +1070,8 @@
 @keyframes v4-brand-grid-drift {
   from { background-position: 0 0, 0 0; }
   to { background-position: 56px 28px, 28px 56px; }
+}
+
+@keyframes v4-community-trajectory-flow {
+  to { stroke-dashoffset: -1; }
 }

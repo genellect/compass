@@ -9,13 +9,13 @@ export function ManifestoSection() {
         <div className="v4-manifesto__copy">
           <p className="v4-manifesto__label">MANIFESTO</p>
           <h2 id="manifesto-title">
-            <span>観客席から見ているには、</span>
-            <span>この時代は面白すぎる。</span>
+            <span className="v4-manifesto__title-line"><span>観客席から</span><span>見ているには、</span></span>
+            <span className="v4-manifesto__title-line"><span>この時代は</span><span>面白すぎる。</span></span>
           </h2>
           <div className="v4-manifesto__declaration">
             <p>AIに仕事を奪われる？</p>
             <p>私は先に、AIを部下にしました。</p>
-            <p>AI時代の学生へ贈る、COMPASSからの招待状。</p>
+            <p className="v4-manifesto__invitation"><span>AI時代の学生へ贈る、</span><span>COMPASSからの招待状。</span></p>
           </div>
           <a className="v4-manifesto__cta" href="/messages/">
             <span>ストーリーを読む</span>

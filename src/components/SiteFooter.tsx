@@ -1,8 +1,7 @@
+import { FUTURE_STRATEGY_LIBRARY_REGISTRATION_HREF } from "../lib/futureStrategyLibrary";
 import { resolveSiteHref, type SiteRouteContext } from "./siteRouteContext";
 
 const libraryUrl = "/future-strategy-library/";
-const libraryRegistrationUrl =
-  "https://docs.google.com/forms/d/e/1FAIpQLSf8gLujuK-giYnkCnv-Cxp7qon1kY8mhnGvfkA62hOlrJgAHA/viewform";
 
 export function SiteFooter({ routeContext = "root" }: { routeContext?: SiteRouteContext }) {
   const resolveHref = (href: string) => resolveSiteHref(href, routeContext);
@@ -31,7 +30,7 @@ export function SiteFooter({ routeContext = "root" }: { routeContext?: SiteRoute
 
     <nav className="footer-cta" aria-label="Footer calls to action">
       {routeContext === "library" ? (
-        <a href={libraryRegistrationUrl} target="_blank" rel="noopener noreferrer">大学アカウントで無料登録する ↗</a>
+        <a href={FUTURE_STRATEGY_LIBRARY_REGISTRATION_HREF} target="_blank" rel="noopener noreferrer">大学アカウントで無料登録する ↗</a>
       ) : (
         <>
           <a href={resolveHref("INTRO_Interactive/")}>COMPASS Interactive紹介サイト</a>

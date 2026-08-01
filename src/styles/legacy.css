@@ -197,7 +197,7 @@ p {
   }
 }
 
-.js [data-reveal] {
+.js.reveal-ready [data-reveal] {
   opacity: 0;
   transform: translate3d(0, 26px, 0);
   transition:
@@ -205,7 +205,7 @@ p {
     transform 0.72s var(--ease-out);
 }
 
-.js [data-reveal].is-visible {
+.js.reveal-ready [data-reveal].is-visible {
   opacity: 1;
   transform: translate3d(0, 0, 0);
 }

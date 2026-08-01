@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { FUTURE_STRATEGY_LIBRARY_REGISTRATION_HREF } from "../lib/futureStrategyLibrary";
 import { resolveSiteHref, type SiteRouteContext } from "./siteRouteContext";
 
 type NavItem = {
@@ -33,8 +34,6 @@ type MobileNavGroup = {
 };
 
 const libraryUrl = "/future-strategy-library/";
-const libraryRegistrationUrl =
-  "https://docs.google.com/forms/d/e/1FAIpQLSf8gLujuK-giYnkCnv-Cxp7qon1kY8mhnGvfkA62hOlrJgAHA/viewform";
 
 const navGroups: NavGroup[] = [
   {
@@ -335,7 +334,7 @@ export function SiteHeader({ routeContext = "root" }: { routeContext?: SiteRoute
             {routeContext === "library" ? (
               <a
                 className="header-cta header-cta--interactive header-cta--registration"
-                href={libraryRegistrationUrl}
+                href={FUTURE_STRATEGY_LIBRARY_REGISTRATION_HREF}
                 target="_blank"
                 rel="noopener noreferrer"
               >
@@ -386,7 +385,7 @@ export function SiteHeader({ routeContext = "root" }: { routeContext?: SiteRoute
           {routeContext === "library" ? (
             <a
               className="mobile-menu-primary"
-              href={libraryRegistrationUrl}
+              href={FUTURE_STRATEGY_LIBRARY_REGISTRATION_HREF}
               target="_blank"
               rel="noopener noreferrer"
               onClick={() => closeMobileMenu(false)}
