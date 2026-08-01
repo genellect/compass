@@ -197,7 +197,7 @@ for (const expected of [
   "Manifesto",
   "観客席から見ているには、",
   "この時代は面白すぎる。",
-  "AI時代の学生へ贈る、COMPASSの決意。",
+  "AI時代の学生へ贈る、COMPASSからの招待状。",
   "ストーリーを読む",
   "お問い合わせフォーム",
   "Web開発・プログラミング 4年",
@@ -208,6 +208,8 @@ for (const expected of [
   "Community参加フォーム",
   parentGaMeasurementId
 ]) expectIncludes(official, expected, "Official page");
+
+expectExcludes(official, "AI時代の学生へ贈る、COMPASSの決意。", "Manifesto declaration");
 
 expectOrdered(
   official,

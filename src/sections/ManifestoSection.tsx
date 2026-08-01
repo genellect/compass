@@ -15,7 +15,7 @@ export function ManifestoSection() {
           <div className="v4-manifesto__declaration">
             <p>AIに仕事を奪われる？</p>
             <p>私は先に、AIを部下にしました。</p>
-            <p>AI時代の学生へ贈る、COMPASSの決意。</p>
+            <p>AI時代の学生へ贈る、COMPASSからの招待状。</p>
           </div>
           <a className="v4-manifesto__cta" href="/messages/">
             <span>ストーリーを読む</span>
