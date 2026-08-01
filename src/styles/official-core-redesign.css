@@ -1129,6 +1129,53 @@
 @media (min-width: 901px) {
   .compass-v4-page .v4-vision,
   .compass-v4-page .v4-technology { padding-block: clamp(78px, 6vw, 96px); }
+
+  .compass-v4-page .v4-community__cta,
+  .compass-v4-page .v4-closing--contact .contact-card > .button {
+    align-self: center;
+    justify-content: space-between;
+    gap: 24px;
+    min-height: 84px;
+    padding: 18px 20px 18px 26px;
+    border-radius: 20px;
+    text-align: left;
+  }
+
+  .compass-v4-page .v4-closing--contact .contact-card {
+    grid-template-columns: minmax(0, 1fr) minmax(320px, 0.52fr);
+  }
+
+  .compass-v4-page .v4-community__cta::before {
+    right: -38px;
+    bottom: -64px;
+    width: 124px;
+    height: 124px;
+    box-shadow: inset 0 0 0 26px rgba(7, 45, 58, 0.025), inset 0 0 0 52px rgba(7, 45, 58, 0.018);
+  }
+
+  .compass-v4-page .v4-community__cta::after,
+  .compass-v4-page .v4-closing--contact .contact-card > .button::after {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    flex: 0 0 auto;
+    place-items: center;
+    width: 36px;
+    height: 36px;
+    border: 1px solid rgba(8, 41, 54, 0.18);
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.34);
+    content: "\2192";
+    font-size: 1.05rem;
+    line-height: 1;
+    transition: transform 180ms ease, background 180ms ease;
+  }
+
+  .compass-v4-page .v4-community__cta:hover::after,
+  .compass-v4-page .v4-closing--contact .contact-card > .button:hover::after {
+    transform: translateX(3px);
+    background: rgba(255, 255, 255, 0.76);
+  }
 }
 
 @media (max-width: 1120px) {
