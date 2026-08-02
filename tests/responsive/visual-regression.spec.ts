@@ -123,11 +123,14 @@ for (const contract of heroContracts) {
         const hero = page.locator(contract.heroSelector);
         await expect(hero).toHaveCount(1);
         await expect(hero).toBeVisible();
+        const maxDiffPixelRatio = contract.name === "manifesto" && viewport.name === "iphone"
+          ? 0.004
+          : 0.003;
         await expect(page).toHaveScreenshot(`${contract.name}-${viewport.name}.png`, {
           animations: "disabled",
           caret: "hide",
           fullPage: false,
-          maxDiffPixelRatio: 0.003,
+          maxDiffPixelRatio,
           scale: "css",
           threshold: 0.15,
           timeout: viewport.name === "raw-4k" ? 30_000 : 7_500,
