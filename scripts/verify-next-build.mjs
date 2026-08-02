@@ -138,11 +138,13 @@ for (const expected of [
 ]) expectIncludes(libraryStyles, expected, "Library trust heading two-line fit");
 for (const expected of [
   "@media (min-width: 901px) and (min-height: 761px)",
-  "padding-top: clamp(62px, 7.4vh, 76px);",
-  "width: min(118%, 760px, 80vh);",
+  "padding-top: clamp(92px, 10.8vh, 112px);",
+  "width: min(138%, 900px, 96vh);",
   "@media (min-width: 901px) and (max-width: 1179px)",
+  "@media (min-width: 2400px) and (min-height: 1300px)",
+  "width: min(154%, 1850px, 92vh);",
   "animation: desktopKnowledgeFieldDrift 34s ease-in-out infinite alternate;",
-  "animation: desktopParticleDrift 26s ease-in-out infinite alternate;",
+  "animation: desktopParticleDrift 18s ease-in-out infinite alternate;",
   "radial-gradient(circle at 86% 66%, rgba(87, 90, 209, 0.13)",
   "font-size: clamp(2.5rem, 3.55vw, 3.55rem);",
   "font-size: clamp(1rem, 4.25vw, 1.12rem);"
