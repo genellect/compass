@@ -103,6 +103,10 @@ const brandSystemStyles = await readFile(
   path.join(root, "src", "styles", "official-brand-system.css"),
   "utf8"
 );
+const coreRedesignStyles = await readFile(
+  path.join(root, "src", "styles", "official-core-redesign.css"),
+  "utf8"
+);
 const fourDirectionsStyles = await readFile(
   path.join(root, "src", "styles", "official-four-directions.css"),
   "utf8"
@@ -132,6 +136,20 @@ for (const expected of [
   "white-space: nowrap;",
   "font-size: clamp(1.48rem, 7.35vw, 1.9rem);"
 ]) expectIncludes(libraryStyles, expected, "Library trust heading two-line fit");
+for (const expected of [
+  "@media (min-width: 901px) and (min-height: 761px)",
+  "padding-top: clamp(40px, 5.4vh, 52px);",
+  "font-size: clamp(2.5rem, 3.55vw, 3.55rem);",
+  "font-size: clamp(1rem, 4.25vw, 1.12rem);"
+]) expectIncludes(libraryStyles, expected, "Library Hero and thesis rhythm");
+for (const expected of [
+  ".compass-v4-page + .site-footer .footer-inner",
+  'grid-template-areas:\n      "brand"\n      "cta"\n      "note"\n      "copyright";',
+  ".compass-v4-page + .site-footer .footer-nav",
+  "display: none;",
+  ".compass-v4-page + .site-footer .footer-note",
+  "grid-template-columns: repeat(2, minmax(0, 1fr));"
+]) expectIncludes(coreRedesignStyles.replace(/\r\n/g, "\n"), expected, "Parent Footer hierarchy");
 
 for (const expected of [
   '.js.reveal-ready [data-reveal]',
