@@ -138,10 +138,15 @@ for (const expected of [
 ]) expectIncludes(libraryStyles, expected, "Library trust heading two-line fit");
 for (const expected of [
   "@media (min-width: 901px) and (min-height: 761px)",
-  "padding-top: clamp(40px, 5.4vh, 52px);",
+  "padding-top: clamp(62px, 7.4vh, 76px);",
+  "width: min(118%, 760px, 80vh);",
+  "@media (min-width: 901px) and (max-width: 1179px)",
+  "animation: desktopKnowledgeFieldDrift 34s ease-in-out infinite alternate;",
+  "animation: desktopParticleDrift 26s ease-in-out infinite alternate;",
+  "radial-gradient(circle at 86% 66%, rgba(87, 90, 209, 0.13)",
   "font-size: clamp(2.5rem, 3.55vw, 3.55rem);",
   "font-size: clamp(1rem, 4.25vw, 1.12rem);"
-]) expectIncludes(libraryStyles, expected, "Library Hero and thesis rhythm");
+]) expectIncludes(libraryStyles, expected, "Library Desktop Hero refinement and responsive rhythm");
 for (const expected of [
   ".compass-v4-page + .site-footer .footer-inner",
   'grid-template-areas:\n      "brand"\n      "cta"\n      "note"\n      "copyright";',
