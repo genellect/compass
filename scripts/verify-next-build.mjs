@@ -137,18 +137,29 @@ for (const expected of [
   "font-size: clamp(1.48rem, 7.35vw, 1.9rem);"
 ]) expectIncludes(libraryStyles, expected, "Library trust heading two-line fit");
 for (const expected of [
-  "@media (min-width: 901px) and (min-height: 761px)",
-  "padding-top: clamp(92px, 10.8vh, 112px);",
-  "width: min(138%, 900px, 96vh);",
+  "padding: clamp(28px, calc(10.9svh - 21.6px), 160px) 0 clamp(5px, 1svh, 22px);",
+  "transform: translateX(clamp(230px, 24vw, 360px));",
   "@media (min-width: 901px) and (max-width: 1179px)",
-  "@media (min-width: 2400px) and (min-height: 1300px)",
-  "width: min(154%, 1850px, 92vh);",
+  "@media (min-width: 1180px)",
+  "clamp(1200px, 87.5vw, 2400px)",
+  "min(calc(5.51vw + 19.36px), 11.3svh)",
+  "clamp(3.65rem, calc(22.74vw - 209.9px), 5rem)",
+  "calc(11.3svh + 14.53vw - 171.45px)",
+  "calc(136% + 71.6vw - 733.2px)",
+  "clamp(86svh, calc(86svh + 80vw - 944px), 98svh)",
+  "clamp(-126px, -16.5svh, -60px) -",
+  "clamp(0px, calc(16.67vw - 170.67px), 44px)",
   "animation: desktopKnowledgeFieldDrift 34s ease-in-out infinite alternate;",
   "animation: desktopParticleDrift 18s ease-in-out infinite alternate;",
   "radial-gradient(circle at 86% 66%, rgba(87, 90, 209, 0.13)",
   "font-size: clamp(2.5rem, 3.55vw, 3.55rem);",
   "font-size: clamp(1rem, 4.25vw, 1.12rem);"
 ]) expectIncludes(libraryStyles, expected, "Library Desktop Hero refinement and responsive rhythm");
+for (const unexpected of [
+  "@media (min-width: 901px) and (min-height: 761px)",
+  "@media (min-width: 901px) and (max-height: 760px)",
+  "@media (min-width: 2400px) and (min-height: 1300px)"
+]) expectExcludes(libraryStyles, unexpected, "Library continuous Desktop Hero responsiveness");
 for (const expected of [
   ".compass-v4-page + .site-footer .footer-inner",
   'grid-template-areas:\n      "brand"\n      "cta"\n      "note"\n      "copyright";',

@@ -233,7 +233,7 @@ export function MessageReader({ message }: { message: MessageDocument }) {
         </div>
         <div className={styles.coverInner}>
           <p className={styles.coverKicker}>COMPASS / MANIFESTO</p>
-          <p className={styles.coverCount}>12 CHAPTERS · A LETTER FOR THE AI ERA</p>
+          <p className={styles.coverCount}>12 CHAPTERS · A LETTER FOR THE <span>AI ERA</span></p>
           <h1 id="message-title">
             <span data-message-copy="true">
               {message.title.replace("、 ", "、\n")}

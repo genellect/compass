@@ -89,6 +89,16 @@ src/app/(official)/page.tsx
 
 `LegacyPageBody.tsx`は名称に反して現行Production経路です。未使用判断はimport graphとbuild出力で行ってください。
 
+## Responsive browser QA
+
+`npm.cmd run check`は、form tests、TypeScript、Production build、static export検証に加え、全公開routeのPlaywright responsive smokeを実行します。Windows表示倍率・browser chrome相当、意味のある改行、Mobile menu、CTA hit-test、clippingを含む完全監査は次を実行してください。
+
+```powershell
+npm.cmd run check:responsive:full
+```
+
+正本のviewport matrix、Production smoke、failure artifact、登録基盤E2Eとの分離方針は[`docs/responsive-browser-qa.md`](docs/responsive-browser-qa.md)を参照してください。
+
 ## Documentation
 
 - [`AGENTS.md`](AGENTS.md) — coding agent向け実装契約

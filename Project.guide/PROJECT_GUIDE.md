@@ -242,6 +242,10 @@ Productionと`origin/main`が食い違う場合は、一方を推測で正本化
 - UI変更ではDesktopとMobileを別々に検証し、overflow、console、focus、motion、CTA destinationを確認する。
 - local / CI passをProduction acceptanceと同一視しない。
 
+## Responsive Experience Acceptance
+
+Desktop / Mobileに加え、Windows 125%・150%表示やbrowser chromeで生じる横長・短尺CSS viewportを検証する。検証正本は`docs/responsive-browser-qa.md`とし、意味のある改行、実文字範囲、Mobile menu、展開前後、Hero初期画面を統合監査する。
+
 ## 17. Core Principle
 
 > COMPASSは、学生が知識を受け取る場所ではなく、問いを根拠と行動へ変えるためのplatformである。

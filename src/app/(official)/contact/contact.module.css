@@ -163,8 +163,18 @@
 
 .formHeading > p:not(.formKicker) + p { margin-top: 8px; }
 
-.formCard form { display: grid; gap: 34px; }
-.fieldGroup { display: grid; }
+.formCard form {
+  min-width: 0;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 34px;
+}
+
+.fieldGroup {
+  min-width: 0;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+}
 
 .fieldGroup > label,
 .codeField > label {
@@ -253,7 +263,9 @@
 .textareaMeta > span { margin: 7px 0 0 auto; color: #7b899a; font-size: 0.7rem; }
 
 .verificationPanel {
+  min-width: 0;
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   gap: 18px;
   padding: 24px;
   border: 1px solid #cfdee7;
@@ -412,6 +424,18 @@
   .codeField input { max-width: 100%; }
   .submitButton { min-height: 60px; padding-inline: 18px; }
   .footer { width: calc(100% - 32px); }
+}
+
+@media (max-width: 340px) {
+  .main { width: calc(100% - 16px); }
+  .formCard { padding: 30px 14px; }
+  .verificationPanel { padding: 14px; }
+  .turnstile {
+    width: calc(100% / 0.76);
+    margin-inline: 0;
+    transform: scale(0.76);
+    transform-origin: left top;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {

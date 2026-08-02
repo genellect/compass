@@ -1,0 +1,68 @@
+name: Production Responsive Smoke
+
+on:
+  workflow_dispatch:
+    inputs:
+      base_url:
+        description: Deployed COMPASS base URL
+        required: true
+        type: string
+        default: https://compass-official.pages.dev
+  workflow_call:
+    inputs:
+      base_url:
+        description: Deployed COMPASS base URL
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  production-smoke:
+    runs-on: windows-latest
+    timeout-minutes: 20
+    env:
+      RESPONSIVE_BASE_URL: ${{ inputs.base_url }}
+    steps:
+      - name: Validate production audit origin
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Stop"
+          $parsed = [System.Uri]$null
+          if (-not [System.Uri]::TryCreate($env:RESPONSIVE_BASE_URL, [System.UriKind]::Absolute, [ref]$parsed)) {
+            throw "RESPONSIVE_BASE_URL must be an absolute URL."
+          }
+          if ($parsed.Scheme -ne "https") {
+            throw "RESPONSIVE_BASE_URL must use HTTPS."
+          }
+          if ($parsed.Host -ne "compass-official.pages.dev") {
+            throw "RESPONSIVE_BASE_URL host is not approved."
+          }
+          if (-not $parsed.IsDefaultPort -or $parsed.UserInfo -or $parsed.AbsolutePath -ne "/" -or $parsed.Query -or $parsed.Fragment) {
+            throw "RESPONSIVE_BASE_URL must be the canonical production origin without credentials, a custom port, path, query, or fragment."
+          }
+          Write-Host "Validated responsive audit origin: $($parsed.GetLeftPart([System.UriPartial]::Authority))"
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: .node-version
+          cache: npm
+      - name: Install dependencies
+        run: npm ci
+      - name: Install Playwright Chromium
+        run: npx playwright install chromium
+      - name: Audit deployed pages
+        run: npm run test:responsive
+      - name: Upload failure evidence
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: production-responsive-failure-${{ github.run_id }}
+          path: |
+            playwright-report/
+            test-results/
+          if-no-files-found: ignore
+          retention-days: 14

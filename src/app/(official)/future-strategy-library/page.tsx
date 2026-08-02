@@ -109,7 +109,11 @@ export default function FutureStrategyLibraryPage() {
                 </p>
                 <div className={`${styles.heroActionGroup} ${styles.heroEnter}`}>
                   <RegistrationCTA placement="hero" />
-                  <p className={styles.actionMicrocopy}>北里大学薬学部生限定 · 登録・利用無料 · 大学アカウント認証</p>
+                  <p className={styles.actionMicrocopy}>
+                    <span>北里大学薬学部生限定 ·</span>{" "}
+                    <span>登録・利用無料 ·</span>{" "}
+                    <span>大学アカウント認証</span>
+                  </p>
                 </div>
               </div>
 
