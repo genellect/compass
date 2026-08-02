@@ -126,6 +126,7 @@ Founder contentは、起源、interdisciplinary expertise、accountability、人
 - H1、metadata、Open Graph、structured dataの関係を確認したか
 - navigation、footer、CTA labelとの矛盾がないか
 - Desktop / Mobileの意味ある改行とoverflowを確認したか
+- route別semantic line testと、該当するHero visual baselineの差分を確認したか
 - route-specific test・static verifierを更新したか
 - metricsとstatusに日付・scopeがあるか
 - Productionへ反映した場合、canonical URLで再確認したか

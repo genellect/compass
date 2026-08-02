@@ -58,6 +58,10 @@ runbookはsource上の契約と運用手順を記録する。Cloudflare dashboar
 - `Completed`: 完了した実装・移行の記録
 - `Historical`: 過去contextのみ。現行判断を上書きしない
 
+## Responsive Browser QA
+
+[`responsive-browser-qa.md`](responsive-browser-qa.md)は、全公開routeのCSS viewport、実改行、overflow、Mobile menu、CTA、展開状態、Playwright、GitHub Actions、Production smokeを管理するCanonical Operational Runbookです。
+
 ## Maintenance Rules
 
 - 新規文書にはStatus、Scope、Last verifiedを付ける。

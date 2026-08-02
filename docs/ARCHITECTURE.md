@@ -132,6 +132,10 @@ RepositoryからのProduction exportはCloudflare Pages project `compass-officia
 
 local / CI successとProduction acceptanceを分ける。Production確認では、少なくとも対象URL、canonical、主要copy、CTA destination、responsive overflow、console、必要なmanual integrationを確認する。
 
+## Responsive Runtime Gate
+
+Responsiveの実描画gateは`docs/responsive-browser-qa.md`を正本とする。`scripts/verify-next-build.mjs`はstatic export・copy・asset contractを検査するが、CSS cascade、実改行、clipping、height breakpointの代替にはならない。Playwright smokeを通常`check`へ、全viewport・interaction・境界監査をGitHub Actionsへ組み込む。
+
 ## 10. Known Boundary Risks
 
 - active fileに`Legacy`という名称が残るため、誤削除riskがある。

@@ -6,6 +6,8 @@ dist/
 out/
 .review/
 .wrangler/
+playwright-report/
+test-results/
 *.tsbuildinfo
 .env
 .env.*

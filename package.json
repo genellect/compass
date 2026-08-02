@@ -5,14 +5,20 @@
   "scripts": {
     "dev": "next dev --hostname 127.0.0.1",
     "dev:pages": "wrangler pages dev out --port 8788",
+    "serve:responsive": "node scripts/serve-static-export.mjs",
     "typecheck": "tsc --noEmit",
     "test:registration": "vitest run tests/community-registration-schema.test.ts tests/community-registration-function.test.ts tests/community-registration-gas.test.ts tests/contact-schema.test.ts tests/contact-function.test.ts tests/contact-gas.test.ts",
     "clean": "node scripts/clean-next-output.mjs",
     "optimize:images": "node scripts/optimize-images.mjs",
     "build": "npm run clean && npm run optimize:images && next build --webpack && node scripts/assemble-next-export.mjs",
     "verify": "node scripts/verify-next-build.mjs",
+    "test:responsive": "playwright test tests/responsive/responsive.spec.ts tests/responsive/interaction-contracts.spec.ts tests/responsive/semantic-lines.spec.ts tests/responsive/mobile-device.spec.ts",
+    "test:responsive:visual": "playwright test tests/responsive/visual-regression.spec.ts",
+    "test:responsive:update-snapshots": "playwright test tests/responsive/visual-regression.spec.ts --update-snapshots",
+    "test:responsive:full": "playwright test tests/responsive/responsive.spec.ts tests/responsive/responsive-full.spec.ts tests/responsive/breakpoint-boundaries.spec.ts tests/responsive/interaction-contracts.spec.ts tests/responsive/manifesto-chapters.spec.ts tests/responsive/semantic-lines.spec.ts tests/responsive/mobile-device.spec.ts tests/responsive/visual-regression.spec.ts",
+    "check:responsive:full": "npm run test:registration && npm run typecheck && npm run build && npm run verify && npm run test:responsive:full",
     "deploy:cloudflare": "wrangler pages deploy out --project-name compass-official",
-    "check": "npm run test:registration && npm run typecheck && npm run build && npm run verify"
+    "check": "npm run test:registration && npm run typecheck && npm run build && npm run verify && npm run test:responsive"
   },
   "dependencies": {
     "next": "^16.0.0",
@@ -21,6 +27,7 @@
     "zod": "^4.4.3"
   },
   "devDependencies": {
+    "@playwright/test": "^1.62.1",
     "@types/node": "^24.0.0",
     "@types/react": "^19.2.17",
     "@types/react-dom": "^19.2.3",

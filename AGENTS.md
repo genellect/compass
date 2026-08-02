@@ -86,11 +86,17 @@ repository-wide gateは次のコマンドである。
 npm.cmd run check
 ```
 
-これはform関連テスト、TypeScript検査、Production build、static export検証を実行する。変更範囲に応じて個別commandを使う場合も、実行したもの・省略したもの・理由を最終報告へ記載する。
+これはform関連テスト、TypeScript検査、Production build、static export検証、全公開routeのPlaywright responsive smokeを実行する。変更範囲に応じて個別commandを使う場合も、実行したもの・省略したもの・理由を最終報告へ記載する。
 
 ## Git and Deployment
 
 commit、push、PR、Cloudflare設定、GAS deployment、Production公開は、ユーザーが明示的に依頼した場合だけ行う。既存の未関連変更を保持し、破壊的なGit操作で消去しない。
+
+## Responsive Browser Gate
+
+- UI、navigation、font、breakpoint、animationを変更した場合は、`docs/responsive-browser-qa.md`に従い`npm.cmd run check:responsive:full`を実行する。
+- 物理解像度だけで合格にせず、CSS viewport、height境界、DPR、実描画行、overflow、consoleを記録する。
+- responsive testを通すためにcanonical copy、背景、layoutを無関係に変更しない。意図的なcontract変更では、差分を人間が確認してからtest expectationを更新する。
 
 ## Final Report
 
