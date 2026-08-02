@@ -498,6 +498,12 @@
   }
 }
 
+@media (min-width: 1281px) and (max-width: 1399px) {
+  .site-header .header-actions .header-cta--optional {
+    display: none;
+  }
+}
+
 @media (min-width: 901px) and (max-width: 1120px) {
   .hero-trust-note {
     color: #4c5963;

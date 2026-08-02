@@ -32,9 +32,10 @@ COMPASS Interactive本体は別deploymentである。
 ### 未来戦略ライブラリ
 
 - Primary label: `大学アカウントで無料登録する`
+- Header / Mobile menu label: `無料で資料を見る`
 - URL: <https://docs.google.com/forms/d/e/1FAIpQLSf8gLujuK-giYnkCnv-Cxp7qon1kY8mhnGvfkA62hOlrJgAHA/viewform>
-- Source owner: `src/lib/futureStrategyLibrary.ts`
-- Placement contract: FSL Landing Header / Hero / Featured Materials末尾 / Final CTA の4か所
+- Source owner: `src/lib/futureStrategyLibrary.ts` / `src/components/SiteHeader.tsx`
+- Placement contract: FSL shared Header（Mobileはhamburger内CTA）/ Hero / Featured Materials末尾 / Final CTA の4 journey
 - Navigation: external formのためnew tab
 
 ### COMPASS Essentials

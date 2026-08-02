@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
+import { SiteHeader } from "../../../components/SiteHeader";
 import styles from "./future-strategy-library.module.css";
-import { FslLandingHeader } from "./components/FslLandingHeader";
 import { KnowledgeHorizonGraphic } from "./components/KnowledgeHorizonGraphic";
 import { RegistrationCTA } from "./components/RegistrationCTA.client";
 import { fields, footerLinks, libraryMetrics, materials, trustFacts } from "./content";
@@ -87,7 +87,7 @@ export default function FutureStrategyLibraryPage() {
 
   return (
     <div className={styles.fslPage}>
-      <FslLandingHeader />
+      <SiteHeader routeContext="library" />
 
       <main id="main" className={styles.page} data-library-page="true">
         <section className={styles.hero} aria-labelledby="library-title" data-library-section="hero">
@@ -250,8 +250,8 @@ export default function FutureStrategyLibraryPage() {
             <div className={styles.trustCopy}>
               <SectionLabel>FOR KITASATO PHARMACY STUDENTS</SectionLabel>
               <h2 id="trust-title">
-                <span>誰にでも公開しない。</span>
-                <span className={`${styles.mobileSemanticContinuation} ${styles.desktopSemanticContinuation}`}><span>だから、守れる</span><span>ものがある。</span></span>
+                <span>北里薬学生のためだけに、</span>
+                <span>つくりました。</span>
               </h2>
               <div className={styles.trustBody}>
                 <p>

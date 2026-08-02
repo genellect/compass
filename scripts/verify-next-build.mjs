@@ -91,12 +91,20 @@ const contactStyles = await readFile(
   "utf8"
 );
 const siteHeaderSource = await readFile(path.join(root, "src", "components", "SiteHeader.tsx"), "utf8");
+const libraryStyles = await readFile(
+  path.join(root, "src", "app", "(official)", "future-strategy-library", "future-strategy-library.module.css"),
+  "utf8"
+);
 const livingHeroStyles = await readFile(
   path.join(root, "src", "styles", "living-intelligence-hero.css"),
   "utf8"
 );
 const brandSystemStyles = await readFile(
   path.join(root, "src", "styles", "official-brand-system.css"),
+  "utf8"
+);
+const fourDirectionsStyles = await readFile(
+  path.join(root, "src", "styles", "official-four-directions.css"),
   "utf8"
 );
 const legacyInteractions = await readFile(path.join(root, "src", "legacy-interactions.ts"), "utf8");
@@ -106,6 +114,24 @@ const legacyInteractionComponent = await readFile(
 );
 const legacyStyles = await readFile(path.join(root, "src", "styles", "legacy.css"), "utf8");
 const deploymentHeaders = await readFile(path.join(out, "_headers"), "utf8");
+
+expectIncludes(
+  fourDirectionsStyles.replace(/\r\n/g, "\n"),
+  '@media (min-width: 1281px) and (max-width: 1399px) {\n  .site-header .header-actions .header-cta--optional {\n    display: none;',
+  "Parent optional Library CTA breakpoint"
+);
+for (const expected of [
+  "@media (min-width: 901px) and (max-width: 1240px)",
+  ".hero--living-intelligence .li-intelligence-visual",
+  "inset: auto;",
+  "width: 100%;",
+  "opacity: 1;"
+]) expectIncludes(livingHeroStyles, expected, "Parent laptop Hero visual containment");
+for (const expected of [
+  ".trustCopy h2 > span",
+  "white-space: nowrap;",
+  "font-size: clamp(1.48rem, 7.35vw, 1.9rem);"
+]) expectIncludes(libraryStyles, expected, "Library trust heading two-line fit");
 
 for (const expected of [
   '.js.reveal-ready [data-reveal]',
@@ -485,7 +511,7 @@ for (const expected of [
   "疑問が届く、参加型講義システム",
   "北里薬学生への未来の羅針盤",
   "運営メンバーとして参加する",
-  "無料登録する"
+  "無料で資料を見る"
 ]) expectIncludes(siteHeaderSource, expected, "Official header source");
 expectIncludes(
   siteHeaderSource.replace(/\r\n/g, "\n"),
@@ -547,6 +573,7 @@ for (const expected of [
   '<html lang="ja"',
   'data-library-page="true"',
   'data-fsl-landing-header="true"',
+  'data-site-header="true"',
   'data-library-section="hero"',
   'data-library-section="thesis"',
   'data-library-section="materials"',
@@ -557,6 +584,7 @@ for (const expected of [
   "FSL / KNOWLEDGE HORIZON",
   "4 DOMAIN RAILS",
   'data-library-material="true"',
+  "無料で資料を見る",
   "大学アカウントで無料登録する",
   'href="https://docs.google.com/forms/d/e/1FAIpQLSf8gLujuK-giYnkCnv-Cxp7qon1kY8mhnGvfkA62hOlrJgAHA/viewform"',
   'target="_blank"',
@@ -586,7 +614,6 @@ for (const unexpected of [
   "/images/future-strategy-library/ai-guide.webp",
   'data-mobile-hero="legacy"',
   'data-mobile-hero-needs="true"',
-  "資料を見る",
   "COMPASS Interactive紹介サイト",
   "未来戦略ライブラリ紹介サイト",
   "Community参加フォーム"
@@ -644,7 +671,7 @@ expectOrdered(libraryText, [
   "研究テーマ、指導環境、大学院進学、その先の仕事まで。",
   "誰かの正解を押しつけるのではなく、自分で比較し、選ぶための判断材料を整理します。",
   "FOR KITASATO PHARMACY STUDENTS",
-  "誰にでも公開しない。だから、守れるものがある。",
+  "北里薬学生のためだけに、つくりました。",
   "このライブラリは、北里大学薬学部生だけが利用できる限定公開です。 登録・利用は無料。大学アカウントによる認証で、資料と利用者の信頼を守ります。",
   "COMPASSは、学生有志による独立した活動です。 大学・学部が運営する公式サービスではありません。",
   "個人の学習利用に限ります無断共有・転載・再配布は禁止です",
@@ -673,7 +700,10 @@ for (const action of libraryRegistrationActions) {
   expectIncludes(action, 'href="https://docs.google.com/forms/d/e/1FAIpQLSf8gLujuK-giYnkCnv-Cxp7qon1kY8mhnGvfkA62hOlrJgAHA/viewform"', "Library registration action");
   expectIncludes(action, 'target="_blank"', "Library registration action");
   const visibleLabel = normalizeText(action).replace("（新しいタブで開きます）", "").trim();
-  if (visibleLabel !== "大学アカウントで無料登録する↗") {
+  const expectedLabel = action.includes('data-placement="header"')
+    ? "無料で資料を見る"
+    : "大学アカウントで無料登録する↗";
+  if (visibleLabel !== expectedLabel) {
     throw new Error("Future Strategy Library registration CTA label changed: " + normalizeText(action));
   }
 }

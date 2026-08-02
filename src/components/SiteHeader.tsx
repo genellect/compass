@@ -135,6 +135,21 @@ const mobileNavGroups: MobileNavGroup[] = [
 
 const focusableSelector = "a[href], button:not([disabled])";
 
+function libraryViewportCategory() {
+  if (window.innerWidth <= 720) return "mobile";
+  if (window.innerWidth <= 1179) return "tablet";
+  return "desktop";
+}
+
+function trackLibraryRegistration(placement: "header" | "mobile-menu") {
+  const dataLayer = (window as Window & { dataLayer?: unknown[] }).dataLayer;
+  dataLayer?.push({
+    event: "fsl_cta_click",
+    placement,
+    viewport_category: libraryViewportCategory()
+  });
+}
+
 export function SiteHeader({ routeContext = "root" }: { routeContext?: SiteRouteContext }) {
   const headerRef = useRef<HTMLElement>(null);
   const toggleRef = useRef<HTMLButtonElement>(null);
@@ -267,11 +282,22 @@ export function SiteHeader({ routeContext = "root" }: { routeContext?: SiteRoute
   return (
     <>
       <a className="skip-link" href="#main">本文へスキップ</a>
-      <header ref={headerRef} className="site-header" data-site-header>
+      <header
+        ref={headerRef}
+        className="site-header"
+        data-site-header
+        data-fsl-landing-header={routeContext === "library" ? "true" : undefined}
+      >
         <div className="header-inner">
           <a className="site-logo" href={resolveHref("#top")} aria-label="COMPASS Home">
             <span className="logo-mark" aria-hidden="true"><span /></span>
             <span className="logo-copy"><strong>COMPASS</strong><small>Better Decisions</small></span>
+            {routeContext === "library" ? (
+              <span className="site-product-context" aria-label="Future Strategy Library">
+                <span className="site-product-context__long" aria-hidden="true">Future Strategy Library</span>
+                <span className="site-product-context__short" aria-hidden="true">Library</span>
+              </span>
+            ) : null}
           </a>
 
           <nav className="desktop-nav" aria-label="Main navigation">
@@ -337,8 +363,12 @@ export function SiteHeader({ routeContext = "root" }: { routeContext?: SiteRoute
                 href={FUTURE_STRATEGY_LIBRARY_REGISTRATION_HREF}
                 target="_blank"
                 rel="noopener noreferrer"
+                aria-label="無料で資料を見る（新しいタブで開きます）"
+                data-library-registration="true"
+                data-placement="header"
+                onClick={() => trackLibraryRegistration("header")}
               >
-                無料登録する
+                無料で資料を見る
               </a>
             ) : (
               <>
@@ -377,7 +407,10 @@ export function SiteHeader({ routeContext = "root" }: { routeContext?: SiteRoute
       >
         <div ref={mobilePanelRef} className="mobile-menu-panel">
           <div className="mobile-menu-top">
-            <div><p>学生支援団体 COMPASS</p><span>Strategic Constellation Compass</span></div>
+            <div>
+              <p>{routeContext === "library" ? "未来戦略ライブラリ" : "学生支援団体 COMPASS"}</p>
+              <span>{routeContext === "library" ? "A COMPASS Resource" : "Strategic Constellation Compass"}</span>
+            </div>
             <button className="mobile-menu-close" type="button" aria-label="メニューを閉じる" onClick={() => closeMobileMenu()}>
               <span aria-hidden="true" /><span aria-hidden="true" />
             </button>
@@ -388,9 +421,15 @@ export function SiteHeader({ routeContext = "root" }: { routeContext?: SiteRoute
               href={FUTURE_STRATEGY_LIBRARY_REGISTRATION_HREF}
               target="_blank"
               rel="noopener noreferrer"
-              onClick={() => closeMobileMenu(false)}
+              aria-label="無料で資料を見る（新しいタブで開きます）"
+              data-library-registration-mobile="true"
+              data-placement="mobile-menu"
+              onClick={() => {
+                trackLibraryRegistration("mobile-menu");
+                closeMobileMenu(false);
+              }}
             >
-              無料登録する
+              無料で資料を見る
             </a>
           ) : null}
           <nav className="mobile-nav" aria-label="Mobile menu links">

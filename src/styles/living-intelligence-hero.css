@@ -789,6 +789,14 @@
     gap: 28px;
   }
 
+  .hero--living-intelligence .li-intelligence-visual {
+    inset: auto;
+    width: 100%;
+    min-height: 0;
+    margin: 0;
+    opacity: 1;
+  }
+
   .hero--living-intelligence .li-hero-title {
     font-size: clamp(3.45rem, 5.3vw, 4.45rem);
   }

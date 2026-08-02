@@ -331,6 +331,7 @@
 .hero {
   position: relative;
   min-height: clamp(760px, 82vh, 860px);
+  padding-top: var(--header-height);
   display: grid;
   align-items: center;
   color: #f8fcff;
@@ -367,7 +368,7 @@
 .heroInner {
   width: min(calc(100% - 64px), var(--container));
   margin-inline: auto;
-  padding: clamp(66px, 8vh, 92px) 0 46px;
+  padding: clamp(24px, 4vh, 40px) 0 24px;
 }
 
 .heroTitle {
@@ -1154,11 +1155,15 @@
 .trustCopy h2 {
   margin-top: 27px !important;
   color: #ffffff;
-  font-size: clamp(2.6rem, 4.35vw, 4.35rem);
+  font-size: clamp(2.45rem, 3.35vw, 3.05rem);
   font-weight: 810;
   line-height: 1.2;
   letter-spacing: -0.035em;
   text-wrap: balance;
+}
+
+.trustCopy h2 > span {
+  white-space: nowrap;
 }
 
 .trustBody {
@@ -2004,7 +2009,7 @@
 
   .trustCopy h2 {
     margin-top: 22px !important;
-    font-size: clamp(1.85rem, 8.2vw, 2.2rem);
+    font-size: clamp(1.48rem, 7.35vw, 1.9rem);
     line-height: 1.28;
   }
 
@@ -2192,6 +2197,107 @@
   .knowledgeGraphic {
     width: 108%;
     margin-top: -20px;
+  }
+}
+
+@media (min-width: 901px) {
+  .hero {
+    min-height: 100svh;
+  }
+
+  .heroInner {
+    min-height: calc(100svh - var(--header-height));
+    display: grid;
+    grid-template-rows: auto minmax(0, 1fr) auto;
+    padding: clamp(18px, 3.2vh, 30px) 0 clamp(14px, 2vh, 22px);
+  }
+
+  .heroTitle {
+    font-size: clamp(3.9rem, min(6.35vw, 10.8vh), 5.9rem);
+  }
+
+  .heroLower {
+    min-height: 0;
+    align-self: stretch;
+    gap: clamp(20px, 3vw, 46px);
+    margin-top: clamp(8px, 1.8vh, 18px);
+  }
+
+  .heroCopy {
+    padding-bottom: 0;
+  }
+
+  .heroSubhead {
+    font-size: clamp(1.55rem, min(2.4vw, 4.4vh), 2.15rem);
+    line-height: 1.28;
+  }
+
+  .heroDescription {
+    margin-top: clamp(14px, 2vh, 22px) !important;
+    font-size: clamp(0.94rem, 1.1vw, 1.12rem);
+    line-height: 1.62;
+  }
+
+  .heroActionGroup {
+    margin-top: clamp(18px, 2.4vh, 26px);
+  }
+
+  .actionMicrocopy {
+    margin-top: 9px !important;
+    font-size: clamp(0.75rem, 0.86vw, 0.84rem);
+  }
+
+  .knowledgeGraphic {
+    width: min(100%, 620px, 63vh);
+    margin-right: 0;
+  }
+
+  .heroHorizonRule {
+    padding-top: 9px;
+  }
+}
+
+@media (min-width: 901px) and (max-height: 760px) {
+  .heroInner {
+    padding-top: 14px;
+    padding-bottom: 12px;
+  }
+
+  .heroTitle {
+    font-size: clamp(3.4rem, 9.5vh, 4.5rem);
+  }
+
+  .heroLower {
+    gap: 22px;
+    margin-top: 6px;
+  }
+
+  .heroSubhead {
+    font-size: 1.55rem;
+  }
+
+  .heroDescription {
+    margin-top: 11px !important;
+    font-size: 0.92rem;
+    line-height: 1.5;
+  }
+
+  .heroActionGroup {
+    margin-top: 14px;
+  }
+
+  .registrationAction.ctaHero {
+    min-height: 48px;
+    padding-block: 10px;
+  }
+
+  .actionMicrocopy {
+    margin-top: 7px !important;
+    font-size: 0.74rem;
+  }
+
+  .heroHorizonRule {
+    padding-top: 7px;
   }
 }
 
