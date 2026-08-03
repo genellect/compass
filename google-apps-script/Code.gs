@@ -1,5 +1,5 @@
 const CONFIG = Object.freeze({
-  ADMIN_EMAIL: "matsui.yuto@st.kitasato-u.ac.jp",
+  ADMIN_EMAIL_PROPERTY: "COMMUNITY_ADMIN_RECIPIENT_EMAIL",
   FORM_SECRET_PROPERTY: "FORM_SHARED_SECRET",
   IDEMPOTENCY_PROPERTY: "COMMUNITY_REGISTRATION_IDEMPOTENCY",
   MAX_BODY_BYTES: 16 * 1024,
@@ -49,8 +49,12 @@ function doPost(event) {
 
   const scriptProperties = PropertiesService.getScriptProperties();
   const expectedSecret = scriptProperties.getProperty(CONFIG.FORM_SECRET_PROPERTY);
-  if (!expectedSecret || expectedSecret.length < 32) {
-    console.error("Community registration secret is not configured.");
+  const adminEmail = readConfiguredEmail_(
+    scriptProperties,
+    CONFIG.ADMIN_EMAIL_PROPERTY
+  );
+  if (!expectedSecret || expectedSecret.length < 32 || !adminEmail) {
+    console.error("Community registration server configuration is incomplete.");
     return jsonResponse_({ ok: false, code: "configuration" });
   }
 
@@ -89,7 +93,7 @@ function doPost(event) {
 
     if (!state.operatorSent) {
       MailApp.sendEmail(
-        CONFIG.ADMIN_EMAIL,
+        adminEmail,
         "【COMPASS】Community登録申請",
         buildOperatorText_(payload),
         {
@@ -109,7 +113,7 @@ function doPost(event) {
         buildApplicantText_(payload),
         {
           name: CONFIG.SENDER_NAME,
-          replyTo: CONFIG.ADMIN_EMAIL
+          replyTo: adminEmail
         }
       );
       state.applicantSent = true;
@@ -124,6 +128,21 @@ function doPost(event) {
   } finally {
     lock.releaseLock();
   }
+}
+
+function readConfiguredEmail_(scriptProperties, propertyName) {
+  const raw = scriptProperties.getProperty(propertyName);
+  if (typeof raw !== "string") return "";
+
+  const email = raw.trim().toLowerCase();
+  if (
+    email.length < 3 ||
+    email.length > 254 ||
+    !/^[A-Za-z0-9.!#$%&'*+/=?^_`{|}~-]+@[A-Za-z0-9-]+(?:\.[A-Za-z0-9-]+)+$/.test(email)
+  ) {
+    return "";
+  }
+  return email;
 }
 
 function validateRegistration_(raw) {

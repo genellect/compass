@@ -1,5 +1,9 @@
 {
   "version": 1,
-  "include": ["/api/community-registration", "/api/contact"],
+  "include": [
+    "/api/community-registration",
+    "/api/contact",
+    "/library-registration/admin/api/*"
+  ],
   "exclude": []
 }

@@ -196,6 +196,28 @@ AIは学習、思考、執筆、research preparation、system operationを支援
 
 この公開repositoryは、Next.js static export、React、TypeScript、Cloudflare Pages、Pages Functions、Turnstile、Google Apps Script、analytics、automated verificationを使用する。
 
+未来戦略ライブラリ登録は、公開static UI、public/admin/workerに分離したFastAPI、PostgreSQL、
+Google OAuth、Drive permission worker、認証済み管理者画面で構成する。Production移行後の登録情報の正本は
+PostgreSQLとし、旧GoogleスプレッドシートとExcel/CSVはそれぞれ読み取り専用の移行元、
+監査済み一時出力として扱う。管理者画面では「申請・システム処理」と「登録者名簿」を分離し、
+名簿の学年表示は`1年`〜`6年`、`M1`、`M2`、`その他`へ固定する。実PII、database dump、
+credentialは公開source treeへ保存しない。
+
+repositoryはpublicであり、管理URLや実装コードを秘匿できる前提を置かない。Library管理機能は
+Cloudflare Access、同一originの最小Pages proxy、private edge secret、Google完全一致allowlist、
+server-side `sub` RBAC、serviceごとのDB loginと最小DB roleを重ねる。public serviceは管理routeを
+常時404とし、管理者・監査・export表へ到達できないため、sourceを読まれてもsecret値とProduction identity／dataなしでは
+認証・認可を突破できない構成とする。管理URLは公開導線へ掲載しないが、非掲載や`noindex`を認可とは扱わない。
+ただし、現行public DB roleには登録処理用tableのraw `SELECT`が残るため、そのDB credentialまで漏えいした場合の
+PII一括読取は未解消である。RLS、限定関数、または同等のdata-service境界と実PostgreSQL権限試験で
+credential単独のbulk readを拒否できるまで、実PII投入とProduction Cutoverを認めない。
+Drive副作用は、producerが実Drive IDを持たずversioned HMAC-SHA256 operation attestationを発行し、
+private workerだけが固定targetとOAuth credentialを持つ。DB行のtarget ID、欠損・改変・期限切れ・再利用署名を
+権限根拠にせず、検証失敗時はDrive APIを呼ばない。
+
+Libraryの公開repository前提のthreat modelと秘密情報区分は
+`docs/library-registration/public-repository-security-boundary.md`を正本とする。
+
 COMPASS Interactive本体は別repository・別deploymentで、独自のfrontend、data、authorization、AI、storage、verification architectureを持つ。保護されたLibrary content、Production user data、private credential、Production databaseは公開repositoryへ置かない。
 
 詳細は`docs/ARCHITECTURE.md`を参照する。

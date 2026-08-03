@@ -1,0 +1,3 @@
+Phase 5 database migrations.
+
+Use DATABASE_URL_UNPOOLED for Alembic and DATABASE_URL for the FastAPI runtime.

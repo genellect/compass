@@ -2,7 +2,10 @@
 
 Status: Canonical
 Scope: `my270yuto0413-cmyk/compass`公開repositoryと接続systemの境界
-Last source verification: 2026-08-01 (`origin/main`)
+Last source verification: 2026-08-03 (`origin/main` `7d65cfa230e5d20acbe4b72f971b07b8325827f1`)
+
+未来戦略ライブラリの公開リポジトリ前提の認証・PII・artifact境界は
+`docs/library-registration/public-repository-security-boundary.md` を正本とする。
 
 ## 1. System Boundary
 
@@ -11,17 +14,23 @@ Last source verification: 2026-08-01 (`origin/main`)
 | COMPASS公式site | Brand、公開情報、紹介route、公開form UI | この公開repository / `compass-official.pages.dev` |
 | COMPASS Interactive | Student、Admin、Display、Archive、lecture lifecycle、AI・realtime product | 別の非公開repository / `compass-interactive.pages.dev` |
 | 未来戦略ライブラリcontent | 登録者向け保護資料とaccess運用 | 公開source tree外 |
+| Library公開登録API | Google認証、資格判定、PostgreSQL正本への登録 | 専用FastAPI public service / Production verification pending |
+| Library管理API | 管理者Google認証、完全一致allowlist、`sub` RBAC、名簿・監査・export | 専用FastAPI admin service + 専用DB role / Production verification pending |
+| Library worker | Drive権限付与と再試行 | internal FastAPI worker + 専用DB role / Production verification pending |
 | Community delivery | Turnstile検証、schema検証、申請email | Pages Function + Community専用GAS |
 | Contact delivery | Turnstile検証、email ownership確認、問い合わせemail | Pages Function + Contact専用GAS |
 
 公開Developer routeが説明するInteractive本体の技術、metrics、directory構成を、このrepository自身の構成として合算しない。
 
-## 2. Public Routes
+## 2. Deployed Routes
 
 | Route | Source | Purpose |
 |---|---|---|
 | `/` | `src/app/(official)/page.tsx` | COMPASS公式親site |
 | `/future-strategy-library/` | `src/app/(official)/future-strategy-library/page.tsx` | Library紹介・登録導線 |
+| `/library-registration/` | `src/app/(library)/library-registration/page.tsx` | Library利用登録 |
+| `/library-registration/admin/` | `src/app/(library)/library-registration/admin/page.tsx` | 公開導線からリンクしない管理者画面（Access外部設定pending） |
+| `/library-registration/admin/api/*` | `functions/library-registration/admin/api/[[path]].ts` | Cloudflare Access配下の同一origin管理API proxy |
 | `/messages/` | `src/app/(official)/messages/page.tsx` | COMPASS Manifesto |
 | `/community/join/` | `src/app/(official)/community/join/page.tsx` | Community参加form |
 | `/contact/` | `src/app/(official)/contact/page.tsx` | Contact form |
@@ -29,6 +38,13 @@ Last source verification: 2026-08-01 (`origin/main`)
 | `/INTRO_Interactive/developers/` | `src/app/(interactive)/INTRO_Interactive/developers/page.tsx` | Interactive設計・技術紹介 |
 
 canonical URLは`CODEX_LINKS.md`を参照する。
+
+管理routeはstatic exportに存在しても、公開siteのheader、footer、navigation、CTA、sitemapからリンクしない。
+ProductionではCloudflare Access、path/method allowlist型Pages proxy、Pages/GCP間のprivate edge secret、
+管理専用OAuthの完全一致メールallowlist、server-side `sub` RBACを必須とする。Cloud Run管理routeは
+edge secretのない直接origin要求を拒否する。Pages proxyのoriginはTerraform `admin_api_url` と
+完全一致させ、公開登録serviceへは向けない。公開serviceは管理routeを常時404とし、公開DB roleは
+管理者・監査・export表へアクセスできない。`noindex`、`robots.txt`、URL非掲載は認可ではない。
 
 ## 3. Official-Site Runtime
 
@@ -117,6 +133,8 @@ secret値はGit、chat、screenshot、logへ出さない。
 - protected Library materialを`public/`やstatic exportへ置かない。
 - form本文、氏名、email、学籍番号、生IP、OTP、lecture codeをanalyticsへ送らない。
 - Production利用者datasetやdatabase dumpをこのrepositoryへ置かない。
+- Library登録情報の正本はProduction PostgreSQLとし、旧Google Sheetは読み取り専用の移行証跡、
+  CSV/XLSXは監査済み一時snapshotとする。双方向同期や複数正本を作らない。
 - architecture・metricsの主張には、どのrepository / systemを説明するか明記する。
 - automated testからProduction formや実emailを送信しない。
 

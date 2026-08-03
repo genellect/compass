@@ -1,5 +1,5 @@
 const CONFIG = Object.freeze({
-  ADMIN_EMAIL: "matsui.yuto@st.kitasato-u.ac.jp",
+  ADMIN_EMAIL_PROPERTY: "CONTACT_ADMIN_RECIPIENT_EMAIL",
   FORM_SECRET_PROPERTY: "CONTACT_FORM_SHARED_SECRET",
   OTP_PEPPER_PROPERTY: "CONTACT_OTP_PEPPER",
   CHALLENGE_PREFIX: "CONTACT_CHALLENGE_",
@@ -57,8 +57,18 @@ function doPost(event) {
   const scriptProperties = PropertiesService.getScriptProperties();
   const expectedSecret = scriptProperties.getProperty(CONFIG.FORM_SECRET_PROPERTY);
   const otpPepper = scriptProperties.getProperty(CONFIG.OTP_PEPPER_PROPERTY);
-  if (!expectedSecret || expectedSecret.length < 32 || !otpPepper || otpPepper.length < 32) {
-    console.error("Contact form secrets are not configured.");
+  const adminEmail = readConfiguredEmail_(
+    scriptProperties,
+    CONFIG.ADMIN_EMAIL_PROPERTY
+  );
+  if (
+    !expectedSecret ||
+    expectedSecret.length < 32 ||
+    !otpPepper ||
+    otpPepper.length < 32 ||
+    !adminEmail
+  ) {
+    console.error("Contact form server configuration is incomplete.");
     return jsonResponse_({ ok: false, code: "configuration" });
   }
 
@@ -95,7 +105,13 @@ function doPost(event) {
       return verifyCode_(scriptProperties, otpPepper, validated.data, now);
     }
 
-    return submitContact_(scriptProperties, otpPepper, validated.data, now);
+    return submitContact_(
+      scriptProperties,
+      otpPepper,
+      adminEmail,
+      validated.data,
+      now
+    );
   } catch (_error) {
     console.error(`Contact mail processing failed. requestId=${validated.data.requestId}`);
     return jsonResponse_({ ok: false, code: "email" });
@@ -284,7 +300,7 @@ function verifyCode_(scriptProperties, otpPepper, payload, now) {
   });
 }
 
-function submitContact_(scriptProperties, otpPepper, payload, now) {
+function submitContact_(scriptProperties, otpPepper, adminEmail, payload, now) {
   const submissionKey = `${CONFIG.SUBMISSION_PREFIX}${payload.requestId}`;
   const existingSubmission = readJsonProperty_(scriptProperties, submissionKey);
   if (existingSubmission && existingSubmission.completed) {
@@ -345,7 +361,7 @@ function submitContact_(scriptProperties, otpPepper, payload, now) {
 
   if (!state.operatorSent) {
     MailApp.sendEmail(
-      CONFIG.ADMIN_EMAIL,
+      adminEmail,
       "【COMPASS】お問い合わせ",
       buildOperatorText_(payload),
       {
@@ -365,7 +381,7 @@ function submitContact_(scriptProperties, otpPepper, payload, now) {
       buildApplicantText_(payload),
       {
         name: CONFIG.SENDER_NAME,
-        replyTo: CONFIG.ADMIN_EMAIL
+        replyTo: adminEmail
       }
     );
     state.applicantSent = true;
@@ -381,6 +397,21 @@ function submitContact_(scriptProperties, otpPepper, payload, now) {
   scriptProperties.setProperty(challengeKey, JSON.stringify(challenge));
 
   return jsonResponse_({ ok: true, requestId: payload.requestId });
+}
+
+function readConfiguredEmail_(scriptProperties, propertyName) {
+  const raw = scriptProperties.getProperty(propertyName);
+  if (typeof raw !== "string") return "";
+
+  const email = raw.trim().toLowerCase();
+  if (
+    email.length < 3 ||
+    email.length > 254 ||
+    !/^[A-Za-z0-9.!#$%&'*+/=?^_`{|}~-]+@[A-Za-z0-9-]+(?:\.[A-Za-z0-9-]+)+$/.test(email)
+  ) {
+    return "";
+  }
+  return email;
 }
 
 function recordInvalidAttempt_(scriptProperties, challengeKey, challenge, now) {

@@ -1,0 +1,80 @@
+# Registration-only Preview. This file intentionally contains no administrator
+# image, OAuth audience, database role, secret ID, or secret version.
+project_id      = "REPLACE_WITH_DEDICATED_PREVIEW_PROJECT"
+region          = "asia-southeast1"
+public_image    = "REGION-docker.pkg.dev/PROJECT/REPOSITORY/public@sha256:REPLACE"
+worker_image    = "REGION-docker.pkg.dev/PROJECT/REPOSITORY/worker@sha256:REPLACE"
+migration_image = "REGION-docker.pkg.dev/PROJECT/REPOSITORY/migration@sha256:REPLACE"
+
+frontend_origin         = "https://library-registration-preview-YYYYMMDD.compass-official.pages.dev"
+google_oauth_client_ids = "PUBLIC_WEB_OAUTH_CLIENT_ID.apps.googleusercontent.com"
+worker_oidc_audience    = "https://fsl-registration-worker.internal"
+
+api_runtime_database_role    = "fsl_api_login"
+worker_runtime_database_role = "fsl_worker_login"
+
+# Replace only after the exact Japanese documents and hashes are approved.
+terms_version          = "REPLACE_AFTER_HUMAN_APPROVAL"
+privacy_version        = "REPLACE_AFTER_HUMAN_APPROVAL"
+terms_content_sha256   = "REPLACE_WITH_LOWERCASE_SHA256"
+privacy_content_sha256 = "REPLACE_WITH_LOWERCASE_SHA256"
+
+public_registration_rpc_key_version = "v1"
+
+# Migration-only first apply. Runtime, public ingress, writes, Drive, and admin
+# all remain absent or fail-closed until their own reviewed plans.
+runtime_services_activation = {
+  enabled      = false
+  confirmation = ""
+}
+cost_guardrails_review = {
+  enabled                  = false
+  cloud_run_spend_cap_usd  = 0
+  project_alert_budget_usd = 0
+  confirmation             = ""
+}
+public_ingress_activation = {
+  enabled      = false
+  confirmation = ""
+}
+public_api_write_activation = {
+  enabled      = false
+  confirmation = ""
+}
+worker_drive_activation = {
+  enabled      = false
+  confirmation = ""
+}
+admin_api_activation = {
+  enabled      = false
+  confirmation = ""
+}
+admin_mutations_activation = {
+  enabled      = false
+  confirmation = ""
+}
+phase10a_export_activation = {
+  enabled      = false
+  confirmation = ""
+}
+
+# Five active versions are sufficient for registration-only runtime standby.
+# Add the four drive_oauth_*/drive_resource_id fields only in the separately
+# reviewed Drive activation plan. Administrator fields stay omitted.
+secret_ids = {
+  api_database_url                   = "fsl-api-database-url"
+  worker_database_url                = "fsl-worker-database-url"
+  migration_database_url             = "fsl-migration-database-url"
+  drive_operation_attestation_key    = "fsl-drive-operation-attestation-key"
+  public_registration_rpc_token      = "fsl-public-registration-rpc-token"
+}
+secret_versions = {
+  api_database_url                   = "1"
+  worker_database_url                = "1"
+  migration_database_url             = "1"
+  drive_operation_attestation_key    = "1"
+  public_registration_rpc_token      = "1"
+}
+
+# Runtime activation requires an existing channel in this exact project.
+notification_channel_names = []

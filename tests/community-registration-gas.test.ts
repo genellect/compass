@@ -5,6 +5,7 @@ import { INTEREST_OPTIONS } from "../src/lib/community-registration-schema";
 
 const gasSource = readFileSync(new URL("../google-apps-script/Code.gs", import.meta.url), "utf8");
 const sharedSecret = "a-secure-shared-secret-with-more-than-32-characters";
+const adminRecipient = "community-operator@example.invalid";
 const requestId = "1f386090-84e0-4c2f-a4d7-6f8f4f8ad141";
 const payload = {
   sharedSecret,
@@ -36,10 +37,20 @@ type GasContext = Context & {
   doPost: (event: { postData: { contents: string; type: string } }) => GasResponse;
 };
 
-function createGasRuntime(options: { quota?: number; secret?: string } = {}) {
+function createGasRuntime(options: {
+  adminEmail?: string;
+  quota?: number;
+  secret?: string;
+} = {}) {
   const properties = new Map<string, string>();
   if (options.secret !== "missing") {
     properties.set("FORM_SHARED_SECRET", options.secret ?? sharedSecret);
+  }
+  if (options.adminEmail !== "missing") {
+    properties.set(
+      "COMMUNITY_ADMIN_RECIPIENT_EMAIL",
+      options.adminEmail ?? adminRecipient
+    );
   }
   const sentEmails: SentEmail[] = [];
   const scriptProperties = {
@@ -110,7 +121,7 @@ describe("Community registration Google Apps Script", () => {
     expect(runtime.sentEmails).toHaveLength(2);
 
     const operator = runtime.sentEmails[0];
-    expect(operator.to).toBe("matsui.yuto@st.kitasato-u.ac.jp");
+    expect(operator.to).toBe(adminRecipient);
     expect(operator.subject).toBe("【COMPASS】Community登録申請");
     expect(operator.options).toEqual({
       name: "学生支援団体COMPASS",
@@ -127,7 +138,7 @@ describe("Community registration Google Apps Script", () => {
     expect(applicant.subject).toBe("【COMPASS】コミュニティ参加フォームを受け付けました");
     expect(applicant.options).toEqual({
       name: "学生支援団体COMPASS",
-      replyTo: "matsui.yuto@st.kitasato-u.ac.jp"
+      replyTo: adminRecipient
     });
     expect(applicant.body).toBe(`松井 優人 さん
 
@@ -170,6 +181,22 @@ https://compass-official.pages.dev/
     expect(unauthorized).toEqual({ ok: false, code: "unauthorized" });
     expect(invalidEmail).toEqual({ ok: false, code: "validation" });
     expect(runtime.sentEmails).toHaveLength(0);
+  });
+
+  it("fails closed when the operator recipient is missing or malformed", () => {
+    for (const adminEmail of [
+      "missing",
+      "invalid-address",
+      "operator@example.invalid\nBcc:x@example.invalid",
+      "first@example.invalid,second@example.invalid"
+    ]) {
+      const runtime = createGasRuntime({ adminEmail });
+      expect(post(runtime.context, payload)).toEqual({
+        ok: false,
+        code: "configuration"
+      });
+      expect(runtime.sentEmails).toHaveLength(0);
+    }
   });
 
   it("stops before sending when the Apps Script daily quota is insufficient", () => {

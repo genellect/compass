@@ -150,7 +150,13 @@ function trackLibraryRegistration(placement: "header" | "mobile-menu") {
   });
 }
 
-export function SiteHeader({ routeContext = "root" }: { routeContext?: SiteRouteContext }) {
+export function SiteHeader({
+  routeContext = "root",
+  hideLibraryRegistrationAction = false
+}: {
+  routeContext?: SiteRouteContext;
+  hideLibraryRegistrationAction?: boolean;
+}) {
   const headerRef = useRef<HTMLElement>(null);
   const toggleRef = useRef<HTMLButtonElement>(null);
   const mobilePanelRef = useRef<HTMLDivElement>(null);
@@ -174,6 +180,9 @@ export function SiteHeader({ routeContext = "root" }: { routeContext?: SiteRoute
         : routeContext === "community" ? "/community/join/"
           : routeContext === "contact" ? "/contact/"
             : null;
+  const showLibraryRegistrationAction =
+    routeContext === "library" && !hideLibraryRegistrationAction;
+  const showParentActions = routeContext !== "library";
 
   const closeMobileMenu = (restoreFocus = true) => {
     setMobileOpen(false);
@@ -357,7 +366,7 @@ export function SiteHeader({ routeContext = "root" }: { routeContext?: SiteRoute
           </nav>
 
           <div className="header-actions" aria-label="Primary actions">
-            {routeContext === "library" ? (
+            {showLibraryRegistrationAction ? (
               <a
                 className="header-cta header-cta--interactive header-cta--registration"
                 href={FUTURE_STRATEGY_LIBRARY_REGISTRATION_HREF}
@@ -370,7 +379,7 @@ export function SiteHeader({ routeContext = "root" }: { routeContext?: SiteRoute
               >
                 無料で資料を見る
               </a>
-            ) : (
+            ) : showParentActions ? (
               <>
                 <a className="header-cta header-cta--interactive" href={resolveHref("INTRO_Interactive/")}>
                   講義を体験する
@@ -379,7 +388,7 @@ export function SiteHeader({ routeContext = "root" }: { routeContext?: SiteRoute
                   ライブラリを見る
                 </a>
               </>
-            )}
+            ) : null}
           </div>
 
           <button
@@ -415,7 +424,7 @@ export function SiteHeader({ routeContext = "root" }: { routeContext?: SiteRoute
               <span aria-hidden="true" /><span aria-hidden="true" />
             </button>
           </div>
-          {routeContext === "library" ? (
+          {showLibraryRegistrationAction ? (
             <a
               className="mobile-menu-primary"
               href={FUTURE_STRATEGY_LIBRARY_REGISTRATION_HREF}

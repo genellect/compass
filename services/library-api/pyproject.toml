@@ -1,0 +1,28 @@
+[project]
+name = "compass-library-api"
+version = "0.1.0"
+description = "Phase 5 local persistence foundation for the Future Strategy Library"
+requires-python = ">=3.12,<3.14"
+dependencies = [
+  "alembic>=1.18.5,<2",
+  "cachecontrol>=0.14,<1",
+  "fastapi>=0.116,<1",
+  "google-auth>=2.38,<3",
+  "pydantic>=2.11,<3",
+  "pydantic-settings>=2,<3",
+  "psycopg[binary,pool]>=3.3.4,<4",
+  "requests>=2.32,<3",
+  "sqlalchemy>=2.0.51,<2.1",
+  "uvicorn>=0.35,<1",
+]
+
+[dependency-groups]
+dev = [
+  "httpx2>=2.5,<3",
+  "pytest>=8.4,<10",
+]
+
+[tool.pytest.ini_options]
+addopts = "-q"
+pythonpath = ["."]
+testpaths = ["tests"]

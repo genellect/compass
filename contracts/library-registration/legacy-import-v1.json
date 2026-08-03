@@ -1,0 +1,129 @@
+{
+  "contractVersion": "legacy-import-v1",
+  "normalizationRuleVersion": "phase9-v1",
+  "allowedWorkspaceEmailDomain": "st.kitasato-u.ac.jp",
+  "emailDomainMatch": "exact-after-at-sign",
+  "facultyMapping": {
+    "薬学部": "pharmacy",
+    "match": "exact-after-nfkc-and-trim"
+  },
+  "csvHeaderPolicy": {
+    "requiredNamesAreExact": true,
+    "missingRequiredHeaderRejected": true,
+    "duplicateHeaderRejected": true,
+    "wrongAliasRejected": true
+  },
+  "sourceSystems": {
+    "google_form": {
+      "requiredSnapshotFields": [
+        "氏名",
+        "学年",
+        "学籍番号",
+        "自動収集メール",
+        "入力大学メール",
+        "利用規約",
+        "個人情報"
+      ]
+    },
+    "management_sheet": {
+      "sheetName": "管理記録",
+      "orderedFields": [
+        "処理日時",
+        "氏名",
+        "学年",
+        "学籍番号",
+        "自動収集メール",
+        "入力メール",
+        "招待対象メール",
+        "判定結果",
+        "判定理由",
+        "共有ドライブ処理",
+        "申請者メール",
+        "管理者メール",
+        "エラー詳細",
+        "申請種別",
+        "連絡先メール",
+        "問い合わせ内容",
+        "利用規約回答",
+        "個人情報回答"
+      ]
+    },
+    "drive_permission": {
+      "requiredSnapshotFields": ["id", "emailAddress", "role", "type"]
+    }
+  },
+  "mustNotInfer": {
+    "facultyWhenMissing": true,
+    "ambiguousAcademicRoleValues": [
+      "5年 / 修士1年",
+      "6年 / 修士2年",
+      "教員 / 大学担当者 / 博士課程"
+    ],
+    "googleSubject": true,
+    "consentTimestamp": true,
+    "consentVersion": true
+  },
+  "batchStatuses": [
+    "staged",
+    "validated",
+    "approved",
+    "applied",
+    "rolled_back",
+    "rejected"
+  ],
+  "rowClassifications": ["ready", "manual_resolution", "excluded"],
+  "rowApplyStatuses": ["pending", "applied", "skipped", "rolled_back"],
+  "integrity": {
+    "artifactDigest": "sha256-exact-source-bytes",
+    "rowFingerprint": "hmac-sha256-versioned-key",
+    "normalizedRowDigest": "hmac-sha256-versioned-key-at-stage",
+    "approvalPinsRawAndNormalizedHashes": true,
+    "approvalPinsTargetDriveResourceFingerprint": true,
+    "applyRejectsDifferentTargetBeforeReplay": true,
+    "rawDriveResourceIdInManifestOrReport": false
+  },
+  "sideEffectBoundary": {
+    "beforeApproval": ["no-member-write", "no-drive", "no-email"],
+    "existingDrivePermission": {
+      "status": "already_granted",
+      "managedBySystem": false,
+      "enqueueOperation": false
+    }
+  },
+  "reconciliation": {
+    "categories": ["drive_only", "sheet_only", "both", "mismatch"],
+    "unkeyedRowsReportedSeparately": true,
+    "applyStatusCountMustEqualSourceRowCount": true,
+    "protectedRowArtifact": {
+      "filename": "phase9-row-reconciliation.json",
+      "containsDirectPii": false,
+      "refusesOverwrite": true
+    }
+  },
+  "executionBoundary": {
+    "publicUploadEndpoint": false,
+    "publicApiRawTableAccess": false,
+    "workerRawTableAccess": false,
+    "privateMigrationJobOnly": true,
+    "stateChangesAppendAdminAudit": true,
+    "databaseErrorsExposeStableCodeOnly": true
+  },
+  "rawSnapshotRetention": {
+    "defaultDays": 90,
+    "minimumDays": 1,
+    "maximumDays": 3650,
+    "pinnedInManifestAndBatchHash": true,
+    "productionApprovalRequired": true,
+    "legalHoldSupported": true,
+    "holdAndUnholdRequireActiveAdminReasonAndIdempotencyKey": true,
+    "purgeRequiresActiveAdminReasonAndIdempotencyKey": true,
+    "purgeAppendsAdminAudit": true
+  },
+  "durableLegacyConsentProvenance": {
+    "survivesRawSnapshotPurge": true,
+    "rosterVersionProvenance": "legacy_unknown",
+    "rosterTimestampProvenance": "legacy_unknown",
+    "drivePermissionProvenance": "not_applicable",
+    "createsLibraryApplication": false
+  }
+}
