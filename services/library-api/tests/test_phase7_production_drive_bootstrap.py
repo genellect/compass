@@ -493,3 +493,7 @@ def test_powershell_launcher_uses_module_entrypoint() -> None:
 
     assert "& $python -m scripts.phase7_production_drive_bootstrap_server" in launcher
     assert "& $python $serverScript" not in launcher
+    assert "[string] $PresetProjectId = ''" in launcher
+    assert "[string] $PresetClientId = ''" in launcher
+    assert "[string] $PresetPickerAppId = ''" in launcher
+    assert "The Google Cloud project number / Picker App ID format is invalid." in launcher

@@ -1,6 +1,9 @@
 [CmdletBinding()]
 param(
-    [switch] $FingerprintReview
+    [switch] $FingerprintReview,
+    [string] $PresetProjectId = '',
+    [string] $PresetClientId = '',
+    [string] $PresetPickerAppId = ''
 )
 
 Set-StrictMode -Version Latest
@@ -88,11 +91,38 @@ if ($null -ne $listener) {
     throw 'TCP port 8769 is already in use. Stop the existing listener first.'
 }
 
-$projectId = Read-RequiredValue 'Dedicated Google Cloud project ID (hidden)' -Secret
-$clientId = Read-RequiredValue 'Production Web OAuth Client ID (hidden)' -Secret
+$projectId = if ([string]::IsNullOrWhiteSpace($PresetProjectId)) {
+    Read-RequiredValue 'Dedicated Google Cloud project ID (hidden)' -Secret
+}
+else {
+    $PresetProjectId.Trim()
+}
+if ($projectId -notmatch '^[a-z][a-z0-9-]{4,28}[a-z0-9]$') {
+    throw 'The dedicated Google Cloud project ID format is invalid.'
+}
+
+$clientId = if ([string]::IsNullOrWhiteSpace($PresetClientId)) {
+    Read-RequiredValue 'Production Web OAuth Client ID (hidden)' -Secret
+}
+else {
+    $PresetClientId.Trim()
+}
+if ($clientId -notmatch '^\d+-[A-Za-z0-9_-]+\.apps\.googleusercontent\.com$') {
+    throw 'The production Web OAuth Client ID format is invalid.'
+}
+
 $clientSecret = Read-RequiredValue 'Production Web OAuth Client Secret' -Secret
 $pickerApiKey = Read-RequiredValue 'Restricted Google Picker API key' -Secret
-$pickerAppId = Read-RequiredValue 'Google Cloud project number / Picker App ID (hidden)' -Secret
+$pickerAppId = if ([string]::IsNullOrWhiteSpace($PresetPickerAppId)) {
+    Read-RequiredValue 'Google Cloud project number / Picker App ID (hidden)' -Secret
+}
+else {
+    $PresetPickerAppId.Trim()
+}
+if ($pickerAppId -notmatch '^\d{6,20}$') {
+    throw 'The Google Cloud project number / Picker App ID format is invalid.'
+}
+
 $approvedFingerprint = Read-RequiredValue 'Human-approved production folder SHA-256 (64 lowercase hex)'
 if ($approvedFingerprint -notmatch '^[0-9a-f]{64}$') {
     throw 'Human-approved folder fingerprint must be 64 lowercase hexadecimal characters.'
