@@ -1,7 +1,9 @@
 from http.server import HTTPServer
 import json
+import os
 from pathlib import Path
 import subprocess
+import sys
 import threading
 from urllib.parse import parse_qs, urlparse
 
@@ -459,3 +461,35 @@ def test_helper_source_has_no_drive_permission_mutation_endpoint() -> None:
     assert "permissions.delete" not in source
     assert '"POST", f"files/' not in source
     assert '"DELETE", f"files/' not in source
+
+
+def test_module_entrypoint_resolves_application_package() -> None:
+    environment = os.environ.copy()
+    for name in tuple(environment):
+        if name.startswith("PHASE7_PRODUCTION_"):
+            environment.pop(name)
+
+    completed = subprocess.run(
+        [sys.executable, "-m", "scripts.phase7_production_drive_bootstrap_server"],
+        cwd=Path(helper.__file__).resolve().parents[1],
+        env=environment,
+        capture_output=True,
+        text=True,
+        timeout=10,
+        check=False,
+    )
+
+    assert completed.returncode == 2
+    assert "Missing required process values" in completed.stdout
+    assert "ModuleNotFoundError" not in completed.stderr
+
+
+def test_powershell_launcher_uses_module_entrypoint() -> None:
+    launcher = (
+        Path(helper.__file__).resolve().parents[3]
+        / "scripts"
+        / "start-phase7b-production-drive-bootstrap.ps1"
+    ).read_text(encoding="utf-8-sig")
+
+    assert "& $python -m scripts.phase7_production_drive_bootstrap_server" in launcher
+    assert "& $python $serverScript" not in launcher

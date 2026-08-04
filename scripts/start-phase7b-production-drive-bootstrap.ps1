@@ -8,7 +8,6 @@ $ErrorActionPreference = 'Stop'
 
 $root = Split-Path -Parent $PSScriptRoot
 $apiDirectory = Join-Path $root 'services\library-api'
-$serverScript = Join-Path $apiDirectory 'scripts\phase7_production_drive_bootstrap_server.py'
 
 function Read-RequiredValue {
     param(
@@ -124,7 +123,7 @@ Write-Host 'It cannot create/delete Drive permissions or activate the production
 $python = Resolve-PythonCommand
 Push-Location $apiDirectory
 try {
-    & $python $serverScript
+    & $python -m scripts.phase7_production_drive_bootstrap_server
     if ($LASTEXITCODE -ne 0) {
         throw "Production Drive bootstrap stopped with exit code $LASTEXITCODE."
     }
