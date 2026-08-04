@@ -56,10 +56,15 @@ test("PowerShell rehearsal is local-only, restores mock output, and guards COMPA
     "Restore-EnvironmentSnapshot",
     "Read-Utf8TextFile",
     "[IO.File]::ReadAllText",
+    "Get-FileSha256",
+    "[Security.Cryptography.SHA256]::Create()",
+    "[IO.File]::OpenRead",
+    "Get-SanitizedFailureMessage",
     "production_normal_verify",
     "production_dedicated_verify",
     '"production_evidence"',
     "admin_preview_marker_occurrences",
+    "empty_text_artifact_count",
     "mock_restore_normal_verify",
     "mock_restore_dedicated_verify",
     '"mock_restore_evidence"',
@@ -84,6 +89,31 @@ test("PowerShell rehearsal is local-only, restores mock output, and guards COMPA
     script,
     /Get-Content -LiteralPath \$artifact\.FullName -Raw/,
     "artifact evidence scans must preserve empty files as empty strings"
+  );
+  assert.doesNotMatch(
+    script,
+    /Get-FileHash/,
+    "rehearsal evidence must not depend on an optional PowerShell hashing cmdlet"
+  );
+  assert.match(
+    script,
+    /\$textArtifacts\s*=\s*@\(/,
+    "artifact evidence scans must remain an array under strict mode"
+  );
+  assert.match(
+    script,
+    /\$artifact\.Length\s+-eq\s+0[\s\S]*?\$contents\s*=\s*\[string\]::Empty/,
+    "zero-byte generated chunks must be handled without reopening them"
+  );
+  assert.match(
+    script,
+    /\$contents\s*=\s*\[string\]\(Read-Utf8TextFile/,
+    "non-empty generated text must be normalized to a string"
+  );
+  assert.match(
+    script,
+    /failure_message\s*=\s*if \(\$mockRestorationFailure\)/,
+    "mock restoration evidence must retain a sanitized failure message"
   );
 
   for (const forbidden of [
