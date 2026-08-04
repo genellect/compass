@@ -40,6 +40,20 @@ const PAYLOAD_KEYS = Object.freeze([
   "registrationId"
 ]);
 
+function authorizeNotificationGateway() {
+  const configured = readConfiguration_(
+    PropertiesService.getScriptProperties()
+  );
+  if (!configured.ok) {
+    throw new Error("Notification gateway configuration is incomplete.");
+  }
+  const remainingQuota = MailApp.getRemainingDailyQuota();
+  if (remainingQuota < 2) {
+    throw new Error("MailApp recipient quota is insufficient.");
+  }
+  return "notification_gateway_authorized";
+}
+
 function doGet() {
   return jsonResponse_({ ok: false, code: "method_not_allowed" });
 }
