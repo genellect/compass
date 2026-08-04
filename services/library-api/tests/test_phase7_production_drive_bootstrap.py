@@ -16,8 +16,14 @@ APPROVED_FINGERPRINT = helper._fingerprint(APPROVED_FOLDER_ID)
 
 
 class FakeSecretSink:
-    def __init__(self, *, fail_preflight: bool = False) -> None:
+    def __init__(
+        self,
+        *,
+        fail_preflight: bool = False,
+        fail_on_add: int | None = None,
+    ) -> None:
         self.fail_preflight = fail_preflight
+        self.fail_on_add = fail_on_add
         self.preflight_calls: list[tuple[str, ...]] = []
         self.add_calls: list[tuple[str, str]] = []
 
@@ -27,6 +33,8 @@ class FakeSecretSink:
             raise helper.SecretSinkError("fake preflight failure")
 
     def add_version(self, secret_id: str, value: str) -> int:
+        if self.fail_on_add == len(self.add_calls) + 1:
+            raise helper.SecretSinkError("fake version write failure")
         self.add_calls.append((secret_id, value))
         return 40 + len(self.add_calls)
 
@@ -150,6 +158,57 @@ def test_missing_secret_container_prevents_every_version_write() -> None:
     assert sink.add_calls == []
 
 
+@pytest.mark.parametrize(
+    ("status", "expected"),
+    (("pass", 0), ("blocked", 4), ("incomplete", 4)),
+)
+def test_bootstrap_exit_code_requires_complete_pass(
+    status: str,
+    expected: int,
+) -> None:
+    assert helper.BootstrapOutcome(status=status).exit_code == expected
+
+
+@pytest.mark.parametrize(
+    ("status", "expected"),
+    (("pass", 0), ("blocked", 4), ("incomplete", 4)),
+)
+def test_main_returns_nonzero_unless_bootstrap_passes(
+    monkeypatch,
+    status: str,
+    expected: int,
+) -> None:
+    outcome = helper.BootstrapOutcome(status=status)
+    sink = FakeSecretSink()
+
+    class FakeServer:
+        def __init__(self, _address, handler) -> None:
+            self.RequestHandlerClass = handler
+
+        def serve_forever(self) -> None:
+            return
+
+        def server_close(self) -> None:
+            return
+
+    required = {
+        "PHASE7_PRODUCTION_GCP_PROJECT_ID": "safe-project",
+        "PHASE7_PRODUCTION_OAUTH_CLIENT_ID": "safe-client-id",
+        "PHASE7_PRODUCTION_OAUTH_CLIENT_SECRET": "safe-client-secret",
+        "PHASE7_PRODUCTION_PICKER_API_KEY": "safe-picker-key",
+        "PHASE7_PRODUCTION_PICKER_APP_ID": "123456789",
+        "PHASE7_PRODUCTION_APPROVED_FOLDER_SHA256": APPROVED_FINGERPRINT,
+        "PHASE7_PRODUCTION_GCLOUD_EXECUTABLE": "fake-gcloud",
+    }
+    for name, value in required.items():
+        monkeypatch.setenv(name, value)
+    monkeypatch.setattr(helper, "BootstrapOutcome", lambda: outcome)
+    monkeypatch.setattr(helper, "GcloudSecretManagerSink", lambda *_args, **_kwargs: sink)
+    monkeypatch.setattr(helper, "HTTPServer", FakeServer)
+
+    assert helper.main() == expected
+
+
 def test_sanitized_result_rejects_nonfingerprint_identity() -> None:
     with pytest.raises(ValueError, match="Sanitized"):
         helper.build_sanitized_result(
@@ -218,6 +277,7 @@ def test_http_flow_requires_exact_phrase_and_uses_only_fake_sink(
     capsys,
 ) -> None:
     sink = FakeSecretSink()
+    outcome = helper.BootstrapOutcome()
     monkeypatch.setattr(
         helper,
         "_exchange_code",
@@ -236,6 +296,7 @@ def test_http_flow_requires_exact_phrase_and_uses_only_fake_sink(
         picker_app_id="123456789",
         approved_folder_fingerprint=APPROVED_FINGERPRINT,
         secret_sink=sink,
+        outcome=outcome,
     )
     server = HTTPServer(("127.0.0.1", 0), handler)
     thread = threading.Thread(target=server.serve_forever, daemon=True)
@@ -288,6 +349,8 @@ def test_http_flow_requires_exact_phrase_and_uses_only_fake_sink(
         )
         assert accepted.status_code == 200
         assert len(sink.add_calls) == 4
+        assert outcome.status == "pass"
+        assert outcome.exit_code == 0
         for raw_value in (
             "raw-client-id",
             "raw-client-secret",
@@ -306,6 +369,87 @@ def test_http_flow_requires_exact_phrase_and_uses_only_fake_sink(
     assert "raw-client-secret" not in output
     assert "raw-refresh-token" not in output
     assert APPROVED_FOLDER_ID not in output
+
+
+def test_http_partial_secret_write_is_blocked_and_nonzero(
+    monkeypatch,
+    capsys,
+) -> None:
+    sink = FakeSecretSink(fail_on_add=3)
+    outcome = helper.BootstrapOutcome()
+    monkeypatch.setattr(
+        helper,
+        "_exchange_code",
+        lambda *_args, **_kwargs: {
+            "access_token": "raw-access-token",
+            "refresh_token": "raw-refresh-token",
+            "id_token": "raw-id-token",
+        },
+    )
+    monkeypatch.setattr(helper, "_verify_id_token", lambda *_args: "b" * 16)
+    monkeypatch.setattr(helper, "_drive_get", lambda *_args, **_kwargs: _folder_metadata())
+    handler = helper.create_handler(
+        client_id="raw-client-id",
+        client_secret="raw-client-secret",
+        picker_api_key="raw-picker-key",
+        picker_app_id="123456789",
+        approved_folder_fingerprint=APPROVED_FINGERPRINT,
+        secret_sink=sink,
+        outcome=outcome,
+    )
+    server = HTTPServer(("127.0.0.1", 0), handler)
+    thread = threading.Thread(target=server.serve_forever, daemon=True)
+    thread.start()
+    base_url = f"http://127.0.0.1:{server.server_port}"
+    headers = {"Host": "localhost:8769"}
+    post_headers = {**headers, "Origin": "http://localhost:8769"}
+    try:
+        authorize = requests.get(
+            base_url + "/authorize",
+            headers=headers,
+            allow_redirects=False,
+            timeout=5,
+        )
+        state = parse_qs(urlparse(authorize.headers["Location"]).query)["state"][0]
+        callback = requests.get(
+            base_url + f"/oauth2/callback?code=fake-code&state={state}",
+            headers=headers,
+            allow_redirects=False,
+            timeout=5,
+        )
+        assert callback.status_code == 303
+        selected = requests.post(
+            base_url + "/select",
+            headers=post_headers,
+            data={"folder": APPROVED_FOLDER_ID},
+            timeout=5,
+        )
+        assert selected.status_code == 200
+        accepted = requests.post(
+            base_url + "/commit",
+            headers=post_headers,
+            data={"confirmation": helper.EXACT_CONFIRMATION},
+            timeout=5,
+        )
+        assert accepted.status_code == 200
+        assert "BLOCKED" in accepted.text
+        assert len(sink.add_calls) == 2
+        assert outcome.status == "blocked"
+        assert outcome.exit_code == 4
+    finally:
+        server.shutdown()
+        thread.join(timeout=5)
+        server.RequestHandlerClass.shutdown_cleanup()
+        server.server_close()
+
+    output = capsys.readouterr().out
+    for raw_value in (
+        "raw-client-id",
+        "raw-client-secret",
+        "raw-refresh-token",
+        APPROVED_FOLDER_ID,
+    ):
+        assert raw_value not in output
 
 
 def test_helper_source_has_no_drive_permission_mutation_endpoint() -> None:
