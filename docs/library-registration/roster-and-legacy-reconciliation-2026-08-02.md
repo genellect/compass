@@ -1,8 +1,8 @@
 # 未来戦略ライブラリ 名簿正本・旧データ照合記録
 
-Status: `READ-ONLY INVENTORY PASS / LOCAL ROSTER IMPLEMENTED / REAL IMPORT PENDING`  
-Scope: 旧Googleフォーム、管理記録、ドライブ利用者名簿、対象Drive folder権限  
-Observed at: 2026-08-02  
+Status: `READ-ONLY INVENTORY PASS / LOCAL ROSTER IMPLEMENTED / REAL IMPORT PENDING`<br>
+Scope: 旧Googleフォーム、管理記録、ドライブ利用者名簿、対象Drive folder権限<br>
+Observed at: 2026-08-02<br>
 PII handling: 実値をrepository、文書、log、test fixtureへ保存していない
 
 ## 1. 正本と二段構成

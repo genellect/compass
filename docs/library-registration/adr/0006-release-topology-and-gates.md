@@ -1,6 +1,6 @@
 # ADR-0006: リリース基線・本番topology・公開ゲート
 
-日付: 2026-08-01  
+日付: 2026-08-01<br>
 状態: Accepted for implementation; production deployment pending
 
 ## Context

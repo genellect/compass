@@ -1,7 +1,7 @@
 # Phase 8B 管理者運用 Runbook
 
-作成日: 2026-08-01  
-適用範囲: 未来戦略ライブラリ登録基盤の最小管理者機能  
+作成日: 2026-08-01<br>
+適用範囲: 未来戦略ライブラリ登録基盤の最小管理者機能<br>
 現状態: `LOCAL IMPLEMENTATION / EXTERNAL AUTH AND HUMAN ACCEPTANCE PENDING / PRODUCTION BLOCKED`
 
 ## 1. 不変の認証・承認境界

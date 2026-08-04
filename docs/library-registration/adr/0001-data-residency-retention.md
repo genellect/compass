@@ -1,6 +1,6 @@
 # ADR-0001: データ保存地域と保存期間
 
-Status: Accepted for Phase 5 / Production confirmation required  
+Status: Accepted for Phase 5 / Production confirmation required<br>
 Date: 2026-07-16
 
 ## Decision

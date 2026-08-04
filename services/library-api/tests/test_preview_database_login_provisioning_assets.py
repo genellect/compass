@@ -5,10 +5,15 @@ import re
 
 
 SERVICE_ROOT = Path(__file__).resolve().parents[1]
+REPOSITORY_ROOT = SERVICE_ROOT.parents[1]
 
 
 def _read(relative_path: str) -> str:
     return (SERVICE_ROOT / relative_path).read_text(encoding="utf-8")
+
+
+def _read_repository(relative_path: str) -> str:
+    return (REPOSITORY_ROOT / relative_path).read_text(encoding="utf-8")
 
 
 def test_preview_login_provisioner_has_a_fixed_least_privilege_role_set() -> None:
@@ -29,6 +34,17 @@ def test_preview_login_provisioner_has_a_fixed_least_privilege_role_set() -> Non
     assert "superuser provisioning is refused" in script
     assert "fixed preview role has unexpected membership" in script
     assert "fixed preview role owns database objects" in script
+
+
+def test_registration_preview_tfvars_uses_the_fixed_preview_login_roles() -> None:
+    tfvars = _read_repository(
+        "infra/library-registration/terraform/terraform.registration-preview.tfvars.example"
+    )
+
+    assert 'api_runtime_database_role    = "fsl_preview_api_login"' in tfvars
+    assert 'worker_runtime_database_role = "fsl_preview_worker_login"' in tfvars
+    assert 'api_runtime_database_role    = "fsl_api_login"' not in tfvars
+    assert 'worker_runtime_database_role = "fsl_worker_login"' not in tfvars
 
 
 def test_preview_login_provisioner_requires_neon_direct_tls_channel_binding() -> None:

@@ -1,7 +1,7 @@
 # Phase 9 旧名簿移行 実装報告
 
 Status: Four-source local implementation complete; PostgreSQL rerun pending
-Scope: Phase 9 private legacy migration  
+Scope: Phase 9 private legacy migration<br>
 Last verified: 2026-08-02
 正式判定: `LOCAL HOST PASS / FOUR-SOURCE POSTGRES AND REAL SNAPSHOT GATES PENDING / PRODUCTION BLOCKED`
 

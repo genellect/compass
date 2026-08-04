@@ -120,6 +120,7 @@ $env:LIBRARY_RELEASE_APPROVED_FRONTEND_ORIGIN = $previewOrigin
 $env:NEXT_PUBLIC_LIBRARY_REGISTRATION_MODE = 'google'
 $env:NEXT_PUBLIC_LIBRARY_ADMIN_MODE = 'mock'
 $env:NEXT_PUBLIC_LIBRARY_GOOGLE_HOSTED_DOMAIN = 'st.kitasato-u.ac.jp'
+$env:NEXT_PUBLIC_FSL_REGISTRATION_URL = 'https://docs.google.com/forms/d/e/1FAIpQLSf8gLujuK-giYnkCnv-Cxp7qon1kY8mhnGvfkA62hOlrJgAHA/viewform'
 foreach ($name in @(
   'NEXT_PUBLIC_LIBRARY_UI_REVIEW',
   'NEXT_PUBLIC_LIBRARY_ADMIN_API_BASE_URL',

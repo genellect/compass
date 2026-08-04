@@ -1,6 +1,6 @@
 # ADR-0007: 準0円運用と課金制御を前提とするProduction runtime
 
-日付: 2026-08-02  
+日付: 2026-08-02<br>
 状態: Cost principle accepted; billing, external resources, and Production deployment pending
 
 ## Context

@@ -1,7 +1,7 @@
 # Local pre-Production-Gate Runbook
 
-Status: Synthetic-only integrated gate  
-Scope: Phase 8A/8B/9/10A local implementation  
+Status: Synthetic-only integrated gate<br>
+Scope: Phase 8A/8B/9/10A local implementation<br>
 Last verified: 2026-08-01
 
 ## 1. Purpose

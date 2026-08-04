@@ -5,9 +5,9 @@
 > `phase-roadmap-v3.md`を使用する。
 > 本文中の第二管理者要件はADR-0003で廃止済みであり、現行Gateには適用しない。
 
-最終更新: 2026-07-17  
-文書状態: 実装前再定義版  
-対象: 登録導線、利用者名簿、管理画面、旧GAS/Sheet移行、Excel・Excel VBA連携、本番移行  
+最終更新: 2026-07-17<br>
+文書状態: 実装前再定義版<br>
+対象: 登録導線、利用者名簿、管理画面、旧GAS/Sheet移行、Excel・Excel VBA連携、本番移行<br>
 実装境界: 本文書は計画・ゲートの再定義だけを行い、新しい外部接続や本番変更を許可しない。
 
 ## 1. 結論
@@ -117,7 +117,7 @@
 - 管理者権限: `viewer`、`operator`、`admin`の最小3段階を採用し、Drive削除・利用停止・一括更新は`admin`または明示承認を必要とする。
 - URLの非公開性や`noindex`は補助策であり、認証・認可の代わりにしない。
 
-Googleは、IDトークンをサーバーで検証し、組織制限にはメールドメインだけでなく`hd`を確認し、ユーザーの主識別子には変更可能なメールではなく`sub`を使うよう案内している。  
+Googleは、IDトークンをサーバーで検証し、組織制限にはメールドメインだけでなく`hd`を確認し、ユーザーの主識別子には変更可能なメールではなく`sub`を使うよう案内している。<br>
 参考: [Google OpenID Connect](https://developers.google.com/identity/openid-connect/openid-connect)、[IDトークンのサーバー検証](https://developers.google.com/identity/gsi/web/guides/verify-google-id-token)
 
 ### 4.4 Drive通知を最小構成の第一候補にする
@@ -129,7 +129,7 @@ Googleは、IDトークンをサーバーで検証し、組織制限にはメー
 3. 独自HTMLメールはDrive付与が安定した後の任意拡張とする。
 4. 現運営者本人が所有するMy Driveフォルダでは、所有者OAuthを初期自動化主体とし、退任・失効時の再認可手順をProduction条件にする。
 
-Drive APIの`reader`はViewerに対応する。対象はMy Driveフォルダであるため、フォルダへのユーザーpermissionとして実装する。既存のcommenter/writerを登録処理で自動降格しない。`permissions.create`の同一対象への並行操作は避け、DBロックまたは処理直列化で二重付与を防ぐ。  
+Drive APIの`reader`はViewerに対応する。対象はMy Driveフォルダであるため、フォルダへのユーザーpermissionとして実装する。既存のcommenter/writerを登録処理で自動降格しない。`permissions.create`の同一対象への並行操作は避け、DBロックまたは処理直列化で二重付与を防ぐ。<br>
 参考: [Shared drives overview](https://developers.google.com/workspace/drive/api/guides/about-shareddrives)、[Drive roles](https://developers.google.com/workspace/drive/api/guides/ref-roles)、[permissions.create](https://developers.google.com/workspace/drive/api/reference/rest/v3/permissions/create)
 
 ### 4.5 Excel/VBAは出力・照合から始める
@@ -141,7 +141,7 @@ Drive APIの`reader`はViewerに対応する。対象はMy Driveフォルダで�
 - マクロブックにDB接続情報や長期APIキーを保存しない。
 - マクロ配布時はコード署名と版番号を必須とする。
 
-ExcelのPower Query Web connectorはCSV/XLSX/JSON等のWeb取り込みに対応するが、認証方式と利用環境の差がある。このため、初期段階では認証済み管理画面からのダウンロードを標準とし、Power QueryやVBAによるリモート更新は後続の任意ゲートとする。  
+ExcelのPower Query Web connectorはCSV/XLSX/JSON等のWeb取り込みに対応するが、認証方式と利用環境の差がある。このため、初期段階では認証済み管理画面からのダウンロードを標準とし、Power QueryやVBAによるリモート更新は後続の任意ゲートとする。<br>
 参考: [Power Query Web connector](https://learn.microsoft.com/en-us/power-query/connectors/web/web)、[Office trusted publishers](https://learn.microsoft.com/en-us/microsoft-365-apps/security/trusted-publisher)
 
 ## 5. PASS GATEの共通定義
@@ -546,7 +546,7 @@ Production GateはPhase別PASSの単純な合計ではない。次の全領域�
 | 定期ジョブ | 1ジョブ |
 | 一括再試行 | 1回100件以下、手動承認 |
 
-現在の公式情報では、Neon Freeはプロジェクトごとに月100 CU-hoursと0.5GB storage、Cloudflare Pages Freeは月500 buildsと20,000 files、Cloud Schedulerは請求先アカウントあたり3 jobs、Secret Managerはactive version 6個と月10,000 access operationsまで無料枠がある。Cloud Run request-basedはTier 1基準で月180,000 vCPU-seconds、360,000 GiB-seconds、200万requests相当の無料creditがある。SingaporeはTier 2のため実効compute無料量は小さく、最小インスタンス0を固定する。  
+現在の公式情報では、Neon Freeはプロジェクトごとに月100 CU-hoursと0.5GB storage、Cloudflare Pages Freeは月500 buildsと20,000 files、Cloud Schedulerは請求先アカウントあたり3 jobs、Secret Managerはactive version 6個と月10,000 access operationsまで無料枠がある。Cloud Run request-basedはTier 1基準で月180,000 vCPU-seconds、360,000 GiB-seconds、200万requests相当の無料creditがある。SingaporeはTier 2のため実効compute無料量は小さく、最小インスタンス0を固定する。<br>
 参考: [Neon pricing](https://neon.com/pricing)、[Cloudflare Pages limits](https://developers.cloudflare.com/pages/platform/limits/)、[Cloud Run pricing](https://cloud.google.com/run/pricing)、[Cloud Run min instances](https://docs.cloud.google.com/run/docs/configuring/min-instances)、[Cloud Scheduler pricing](https://cloud.google.com/scheduler/pricing)、[Secret Manager pricing](https://cloud.google.com/secret-manager/pricing)
 
 イベント日200件は無料枠内に十分収まる。200件/日を30日続けてもCloud Runは

@@ -43,7 +43,7 @@ export function RegistrationCTA({ placement }: { placement: Placement }) {
   const content = (
     <>
       <span>大学アカウントで無料登録する</span>
-      <span className={styles.ctaArrow} aria-hidden="true">↗</span>
+      <span className={styles.ctaArrow} aria-hidden="true">{isExternal ? "↗" : "→"}</span>
       {isExternal ? <span className={styles.srOnly}>（新しいタブで開きます）</span> : null}
     </>
   );

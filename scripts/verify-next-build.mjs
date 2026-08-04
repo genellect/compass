@@ -11,8 +11,26 @@ const root = process.cwd();
 const out = path.join(root, "out");
 const {
   productionRelease,
+  registrationOnlyProductionRelease,
   config: libraryBuildConfig
 } = resolveLibraryReleaseConfig(process.env);
+const legacyLibraryRegistrationHref =
+  "https://docs.google.com/forms/d/e/1FAIpQLSf8gLujuK-giYnkCnv-Cxp7qon1kY8mhnGvfkA62hOlrJgAHA/viewform";
+const requestedLibraryRegistrationHref = String(
+  process.env.NEXT_PUBLIC_FSL_REGISTRATION_URL ?? ""
+).trim();
+if (
+  requestedLibraryRegistrationHref
+  && requestedLibraryRegistrationHref !== legacyLibraryRegistrationHref
+) {
+  throw new Error(
+    "NEXT_PUBLIC_FSL_REGISTRATION_URL may only select the approved legacy Google Form rollback."
+  );
+}
+const expectedLibraryRegistrationHref =
+  requestedLibraryRegistrationHref || "/library-registration/";
+const libraryRegistrationUsesLegacyForm =
+  expectedLibraryRegistrationHref === legacyLibraryRegistrationHref;
 
 function expectIncludes(html, expected, label) {
   if (!html.includes(expected)) throw new Error(`${label} is missing: ${expected}`);
@@ -664,8 +682,7 @@ for (const expected of [
   'data-library-material="true"',
   "無料で資料を見る",
   "大学アカウントで無料登録する",
-  'href="https://docs.google.com/forms/d/e/1FAIpQLSf8gLujuK-giYnkCnv-Cxp7qon1kY8mhnGvfkA62hOlrJgAHA/viewform"',
-  'target="_blank"',
+  `href="${expectedLibraryRegistrationHref}"`,
   'rel="canonical" href="https://compass-official.pages.dev/future-strategy-library/"',
   '/images/future-strategy-library/why-english.webp',
   '/images/future-strategy-library/ai-guide-sanitized.webp',
@@ -984,12 +1001,20 @@ if (libraryRegistrationCount !== 4) {
 
 const libraryRegistrationActions = library.match(/<a\b[^>]*data-library-registration="true"[^>]*>[\s\S]*?<\/a>/g) ?? [];
 for (const action of libraryRegistrationActions) {
-  expectIncludes(action, 'href="https://docs.google.com/forms/d/e/1FAIpQLSf8gLujuK-giYnkCnv-Cxp7qon1kY8mhnGvfkA62hOlrJgAHA/viewform"', "Library registration action");
-  expectIncludes(action, 'target="_blank"', "Library registration action");
+  expectIncludes(
+    action,
+    `href="${expectedLibraryRegistrationHref}"`,
+    "Library registration action"
+  );
+  if (libraryRegistrationUsesLegacyForm) {
+    expectIncludes(action, 'target="_blank"', "Library registration rollback action");
+  } else {
+    expectExcludes(action, 'target="_blank"', "Library registration internal action");
+  }
   const visibleLabel = normalizeText(action).replace("（新しいタブで開きます）", "").trim();
   const expectedLabel = action.includes('data-placement="header"')
     ? "無料で資料を見る"
-    : "大学アカウントで無料登録する↗";
+    : `大学アカウントで無料登録する${libraryRegistrationUsesLegacyForm ? "↗" : "→"}`;
   if (visibleLabel !== expectedLabel) {
     throw new Error("Future Strategy Library registration CTA label changed: " + normalizeText(action));
   }
@@ -1099,7 +1124,7 @@ expectExcludes(
   "Library registration deployment boundary"
 );
 verifyLibraryHeaderBoundary(deploymentHeaders, libraryBuildConfig);
-if (productionRelease) {
+if (productionRelease && !registrationOnlyProductionRelease) {
   verifyLibraryProductionArtifacts({
     registrationHtml: libraryRegistration,
     adminHtml: libraryAdmin,

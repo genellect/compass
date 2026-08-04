@@ -1,7 +1,7 @@
 # Phase 10A CSV/XLSX名簿出力 実装報告
 
-Status: Local implementation and PostgreSQL/API/browser verification complete  
-Scope: Phase 10A admin roster export  
+Status: Local implementation and PostgreSQL/API/browser verification complete<br>
+Scope: Phase 10A admin roster export<br>
 Last verified: 2026-08-02
 正式判定: `LOCAL IMPLEMENTATION PASS / DATA-HANDLING AND PRODUCTION AUTH GATES PENDING / PRODUCTION BLOCKED`
 

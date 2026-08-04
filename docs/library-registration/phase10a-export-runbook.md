@@ -1,7 +1,7 @@
 # Phase 10A CSV/XLSX名簿出力 Runbook
 
-Status: Operational Runbook  
-Scope: Phase 10A admin-only one-way roster download  
+Status: Operational Runbook<br>
+Scope: Phase 10A admin-only one-way roster download<br>
 Last verified: 2026-08-03
 現在状態: local実装済み・production機能flag OFF
 

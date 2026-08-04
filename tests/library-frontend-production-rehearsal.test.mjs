@@ -70,7 +70,10 @@ test("PowerShell rehearsal is local-only, restores mock output, and guards COMPA
     "rehearsal_registration_client_text_occurrences",
     "rehearsal_admin_client_text_occurrences"
   ]) {
-    assert.match(script, new RegExp(required.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")));
+    assert.ok(
+      script.includes(required),
+      `Production rehearsal script is missing required marker: ${required}`
+    );
   }
 
   for (const forbidden of [

@@ -1,7 +1,7 @@
 # Phase 7B 本番Drive OAuth / Secret Manager bootstrap手順
 
-対象: 本番Drive所有者OAuth、Google Picker、本番folder fingerprint照合、既存Secret Managerへのversion追加  
-redirect URI: `http://localhost:8769/oauth2/callback`  
+対象: 本番Drive所有者OAuth、Google Picker、本番folder fingerprint照合、既存Secret Managerへのversion追加<br>
+redirect URI: `http://localhost:8769/oauth2/callback`<br>
 local開始URL: `http://localhost:8769/`
 
 ## 1. 安全境界

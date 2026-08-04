@@ -2,7 +2,7 @@
 
 > **履歴文書:** 実装証跡は保持するが、第二管理者を未完了条件とする記述はADR-0003と`phase-roadmap-v3.md`で廃止済みである。
 
-実施日: 2026-07-28（Phase 7B helper hardening: 2026-08-01）  
+実施日: 2026-07-28（Phase 7B helper hardening: 2026-08-01）<br>
 判定: `LOCAL PASS / REAL DRIVE E2E PENDING`
 
 ## 1. 固定した責務境界

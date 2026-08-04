@@ -1,7 +1,7 @@
 # GCP read-only preflight 実行手順
 
-対象: 未来戦略ライブラリ登録基盤のProduction GCP Gate事前確認  
-対象script: `infra/library-registration/scripts/gcp-readonly-preflight.ps1`  
+対象: 未来戦略ライブラリ登録基盤のProduction GCP Gate事前確認<br>
+対象script: `infra/library-registration/scripts/gcp-readonly-preflight.ps1`<br>
 固定region: Singapore (`asia-southeast1`)
 
 ## 1. 目的と安全境界

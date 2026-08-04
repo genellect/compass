@@ -1,7 +1,7 @@
 # 未来戦略ライブラリ登録基盤 Production Gate 引継書
 
 作成日: 2026-08-02／最終整合日: 2026-08-03（Asia/Tokyo）
-対象: 未来戦略ライブラリの独自登録UI、API、管理画面、Drive権限処理、名簿移行・出力  
+対象: 未来戦略ライブラリの独自登録UI、API、管理画面、Drive権限処理、名簿移行・出力<br>
 基準main: `origin/main` / `7d65cfa230e5d20acbe4b72f971b07b8325827f1`
 統合branch: `codex/library-registration-production-prep-20260803`
 移植済み履歴HEAD: `280c8cc722e1b23e3a57fc2e45b8f4d55d039357`

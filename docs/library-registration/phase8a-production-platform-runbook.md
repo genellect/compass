@@ -1,7 +1,7 @@
 # Phase 8A Production Platform Hardening Runbook
 
-作成日: 2026-08-01  
-適用範囲: 未来戦略ライブラリ登録基盤のみ  
+作成日: 2026-08-01<br>
+適用範囲: 未来戦略ライブラリ登録基盤のみ<br>
 現状態: `LOCAL IMPLEMENTATION COMPLETE / CLOUD AND MANUAL GATES PENDING / PRODUCTION BLOCKED`
 
 ## 1. 不変の境界

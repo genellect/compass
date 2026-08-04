@@ -161,9 +161,8 @@ if (invokedAsScript) {
   console.log(
     `Verified fail-closed library production build for ${config.approvedApiOrigin}; `
       + `inspected ${config.inspectedArtifactCount} deployable text artifacts; `
-      + `found ${config.registrationOAuthClientOccurrences} registration and `
-      + `${config.adminOAuthClientOccurrences} administrator OAuth client references; `
-      + `found ${config.adminApiBaseOccurrences} administrator proxy-base references; `
+      + "verified registration and administrator OAuth client references; "
+      + "verified the administrator proxy-base reference; "
       + "found 0 administrator preview markers."
   );
 }

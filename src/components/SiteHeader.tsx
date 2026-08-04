@@ -1,7 +1,10 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { FUTURE_STRATEGY_LIBRARY_REGISTRATION_HREF } from "../lib/futureStrategyLibrary";
+import {
+  FUTURE_STRATEGY_LIBRARY_REGISTRATION_HREF,
+  isExternalCompassHref
+} from "../lib/futureStrategyLibrary";
 import { resolveSiteHref, type SiteRouteContext } from "./siteRouteContext";
 
 type NavItem = {
@@ -183,6 +186,9 @@ export function SiteHeader({
   const showLibraryRegistrationAction =
     routeContext === "library" && !hideLibraryRegistrationAction;
   const showParentActions = routeContext !== "library";
+  const libraryRegistrationIsExternal = isExternalCompassHref(
+    FUTURE_STRATEGY_LIBRARY_REGISTRATION_HREF
+  );
 
   const closeMobileMenu = (restoreFocus = true) => {
     setMobileOpen(false);
@@ -370,9 +376,13 @@ export function SiteHeader({
               <a
                 className="header-cta header-cta--interactive header-cta--registration"
                 href={FUTURE_STRATEGY_LIBRARY_REGISTRATION_HREF}
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label="無料で資料を見る（新しいタブで開きます）"
+                target={libraryRegistrationIsExternal ? "_blank" : undefined}
+                rel={libraryRegistrationIsExternal ? "noopener noreferrer" : undefined}
+                aria-label={
+                  libraryRegistrationIsExternal
+                    ? "無料で資料を見る（新しいタブで開きます）"
+                    : "無料で資料を見る"
+                }
                 data-library-registration="true"
                 data-placement="header"
                 onClick={() => trackLibraryRegistration("header")}
@@ -428,9 +438,13 @@ export function SiteHeader({
             <a
               className="mobile-menu-primary"
               href={FUTURE_STRATEGY_LIBRARY_REGISTRATION_HREF}
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label="無料で資料を見る（新しいタブで開きます）"
+              target={libraryRegistrationIsExternal ? "_blank" : undefined}
+              rel={libraryRegistrationIsExternal ? "noopener noreferrer" : undefined}
+              aria-label={
+                libraryRegistrationIsExternal
+                  ? "無料で資料を見る（新しいタブで開きます）"
+                  : "無料で資料を見る"
+              }
               data-library-registration-mobile="true"
               data-placement="mobile-menu"
               onClick={() => {

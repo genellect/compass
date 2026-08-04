@@ -1,8 +1,8 @@
 # 未来戦略ライブラリ 登録基盤 Phaseロードマップ v3
 
-策定日: 2026-08-01  
+策定日: 2026-08-01<br>
 最終整合日: 2026-08-03
-状態: 現行・未公開  
+状態: 現行・未公開<br>
 適用基線: `origin/main` `7d65cfa230e5d20acbe4b72f971b07b8325827f1`から作成した
 `codex/library-registration-production-prep-20260803`。current HEADはmatching machine evidenceで固定する。
 

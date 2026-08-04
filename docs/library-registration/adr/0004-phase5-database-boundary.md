@@ -1,6 +1,6 @@
 # ADR-0004: Phase 5データベース境界
 
-Status: Accepted  
+Status: Accepted<br>
 Date: 2026-07-16
 
 ## Decision

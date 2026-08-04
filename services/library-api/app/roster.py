@@ -56,4 +56,3 @@ def roster_grade_rank_expression():
         ),
         else_=9,
     )
-

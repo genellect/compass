@@ -2,9 +2,9 @@
 
 > **履歴文書:** 当時の証跡は保持するが、第二管理者をProductionブロッカーとする判定はADR-0003と`phase-roadmap-v3.md`で置き換えられた。現行Gateには適用しない。
 
-実施日: 2026-07-16  
-対象: 未来戦略ライブラリ登録・名簿管理基盤  
-初回実施方式: 読み取り専用。Drive権限、Sheet、OAuth、本番導線は変更していない。  
+実施日: 2026-07-16<br>
+対象: 未来戦略ライブラリ登録・名簿管理基盤<br>
+初回実施方式: 読み取り専用。Drive権限、Sheet、OAuth、本番導線は変更していない。<br>
 介助更新: 2026-07-17。Phase 4解除専用のローカル証跡ツールと記録票を追加し、Google認証とフォーム資格判定の責務を分離した。
 実測更新: 2026-07-18。同一Workspace組織の代表アカウントでGoogle OIDCを
 検証し、P4-B01を`PASS`とした。
@@ -98,7 +98,7 @@ Drive connectorのprofileでは`hd` claimを取得できなかったため、
 | `iss` | 有効 |
 | `exp` | 有効 |
 | `email_verified` | `true` |
-| `sub` fingerprint | `11bcf0f2393d2eb5` |
+| `sub` fingerprint | 非公開証跡に保管（公開文書には記載しない） |
 | 証跡ファイル | `outputs/phase4-oidc-evidence/phase4-oidc-workspace-member-20260718T092725Z.json` |
 
 初回計測時は許可値の発見が目的だったため、証跡の`expected_hd_match`は

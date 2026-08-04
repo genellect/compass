@@ -10,8 +10,8 @@ frontend_origin         = "https://library-registration-preview-YYYYMMDD.compass
 google_oauth_client_ids = "PUBLIC_WEB_OAUTH_CLIENT_ID.apps.googleusercontent.com"
 worker_oidc_audience    = "https://fsl-registration-worker.internal"
 
-api_runtime_database_role    = "fsl_api_login"
-worker_runtime_database_role = "fsl_worker_login"
+api_runtime_database_role    = "fsl_preview_api_login"
+worker_runtime_database_role = "fsl_preview_worker_login"
 
 # Replace only after the exact Japanese documents and hashes are approved.
 terms_version          = "REPLACE_AFTER_HUMAN_APPROVAL"

@@ -2,7 +2,7 @@
 
 > **履歴上の注意:** 第二管理者に関する決定はADR-0003と`phase-roadmap-v3.md`で置き換えられた。第二管理者は現行のPASS/Production Gate要件ではない。本書は当時の設計経緯としてのみ参照する。
 
-Status: Accepted for design / Production blocked by succession test  
+Status: Accepted for design / Production blocked by succession test<br>
 Date: 2026-07-16
 
 ## Evidence

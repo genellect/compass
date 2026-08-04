@@ -4,6 +4,13 @@ const LIBRARY_API_ORIGIN_MARKER =
 export const LIBRARY_ADMIN_API_BASE_PATH =
   "/library-registration/admin/api";
 export const LIBRARY_REGISTRATION_HOSTED_DOMAIN = "st.kitasato-u.ac.jp";
+export const LIBRARY_REGISTRATION_PRODUCTION_SCOPE = "registration_only";
+export const LIBRARY_REGISTRATION_PRODUCTION_CONFIRMATION =
+  "I_APPROVED_LIBRARY_REGISTRATION_ONLY_PRODUCTION_V1";
+export const LIBRARY_REGISTRATION_PRODUCTION_FRONTEND_ORIGIN =
+  "https://compass-official.pages.dev";
+export const LIBRARY_REGISTRATION_PRODUCTION_API_ORIGIN =
+  "https://fsl-registration-public-eq64wn4f4a-as.a.run.app";
 
 const SYNTHETIC_MARKER_PATTERN =
   /(?:mock|synthetic|example(?:\.(?:com|invalid|org|net))?|placeholder|change[-_]?me|dummy|fake)/i;
@@ -220,6 +227,101 @@ export function requireLibraryProductionReleaseConfig(environment = process.env)
   return { ...config, approvedApiOrigin };
 }
 
+export function requireLibraryRegistrationProductionReleaseConfig(
+  environment = process.env
+) {
+  if (environmentValue(environment, "LIBRARY_RELEASE_TARGET") !== "production") {
+    throw new Error("LIBRARY_RELEASE_TARGET must explicitly be production.");
+  }
+  if (
+    environmentValue(environment, "LIBRARY_RELEASE_SCOPE")
+    !== LIBRARY_REGISTRATION_PRODUCTION_SCOPE
+  ) {
+    throw new Error(
+      `LIBRARY_RELEASE_SCOPE must explicitly be ${LIBRARY_REGISTRATION_PRODUCTION_SCOPE}.`
+    );
+  }
+  if (
+    environmentValue(environment, "LIBRARY_RELEASE_CONFIRMATION")
+    !== LIBRARY_REGISTRATION_PRODUCTION_CONFIRMATION
+  ) {
+    throw new Error(
+      "LIBRARY_RELEASE_CONFIRMATION must contain the exact registration-only production approval."
+    );
+  }
+  if (environmentValue(environment, "NEXT_PUBLIC_LIBRARY_UI_REVIEW") !== "") {
+    throw new Error("Production must not enable the UI review build flag.");
+  }
+  if (environmentValue(environment, "NEXT_PUBLIC_FSL_REGISTRATION_URL") !== "") {
+    throw new Error(
+      "Registration-only production must not receive a legacy CTA override."
+    );
+  }
+
+  const config = resolveLibraryBuildConfig(environment);
+  if (config.registrationMode !== "google" || config.adminMode !== "mock") {
+    throw new Error(
+      "Registration-only production requires google registration and fail-closed mock administrator mode."
+    );
+  }
+
+  const forbiddenAdminConfiguration = [
+    "NEXT_PUBLIC_LIBRARY_ADMIN_API_BASE_URL",
+    "NEXT_PUBLIC_LIBRARY_ADMIN_GOOGLE_OAUTH_CLIENT_ID"
+  ];
+  const configuredAdminValues = forbiddenAdminConfiguration.filter(
+    (name) => environmentValue(environment, name) !== ""
+  );
+  if (configuredAdminValues.length > 0) {
+    throw new Error(
+      `Registration-only production must not receive administrator frontend configuration: ${configuredAdminValues.join(", ")}.`
+    );
+  }
+
+  const approvedApiOrigin = requireExactHttpsApiOrigin(
+    environmentValue(environment, "LIBRARY_RELEASE_APPROVED_API_ORIGIN"),
+    "approved library API origin"
+  );
+  if (
+    approvedApiOrigin !== LIBRARY_REGISTRATION_PRODUCTION_API_ORIGIN
+    || config.apiOrigin !== LIBRARY_REGISTRATION_PRODUCTION_API_ORIGIN
+  ) {
+    throw new Error(
+      `Registration-only production API origin must be exactly ${LIBRARY_REGISTRATION_PRODUCTION_API_ORIGIN}.`
+    );
+  }
+
+  const approvedFrontendOrigin = requireExactHttpsApiOrigin(
+    environmentValue(environment, "LIBRARY_RELEASE_APPROVED_FRONTEND_ORIGIN"),
+    "approved library frontend origin"
+  );
+  if (approvedFrontendOrigin !== LIBRARY_REGISTRATION_PRODUCTION_FRONTEND_ORIGIN) {
+    throw new Error(
+      `Registration-only production frontend origin must be exactly ${LIBRARY_REGISTRATION_PRODUCTION_FRONTEND_ORIGIN}.`
+    );
+  }
+
+  const configuredHostedDomain = (
+    environmentValue(
+      environment,
+      "NEXT_PUBLIC_LIBRARY_GOOGLE_HOSTED_DOMAIN"
+    ) || LIBRARY_REGISTRATION_HOSTED_DOMAIN
+  ).toLowerCase();
+  if (configuredHostedDomain !== LIBRARY_REGISTRATION_HOSTED_DOMAIN) {
+    throw new Error(
+      `Registration-only production hosted domain must be exactly ${LIBRARY_REGISTRATION_HOSTED_DOMAIN}.`
+    );
+  }
+
+  return {
+    ...config,
+    approvedApiOrigin,
+    approvedFrontendOrigin,
+    approvedHostedDomain: LIBRARY_REGISTRATION_HOSTED_DOMAIN,
+    releaseScope: LIBRARY_REGISTRATION_PRODUCTION_SCOPE
+  };
+}
+
 export function requireLibraryUiReviewReleaseConfig(environment = process.env) {
   if (environmentValue(environment, "LIBRARY_RELEASE_TARGET") !== "ui_review") {
     throw new Error("LIBRARY_RELEASE_TARGET must explicitly be ui_review.");
@@ -362,8 +464,13 @@ export function resolveLibraryReleaseConfig(environment = process.env) {
   const target = environmentValue(environment, "LIBRARY_RELEASE_TARGET");
   const uiReviewRelease = target === "ui_review";
   const registrationPreviewRelease = target === "registration_preview";
-  const config = productionRelease
-    ? requireLibraryProductionReleaseConfig(environment)
+  const registrationOnlyProductionRelease = productionRelease
+    && environmentValue(environment, "LIBRARY_RELEASE_SCOPE")
+      === LIBRARY_REGISTRATION_PRODUCTION_SCOPE;
+  const config = registrationOnlyProductionRelease
+    ? requireLibraryRegistrationProductionReleaseConfig(environment)
+    : productionRelease
+      ? requireLibraryProductionReleaseConfig(environment)
     : uiReviewRelease
       ? requireLibraryUiReviewReleaseConfig(environment)
       : registrationPreviewRelease
@@ -371,6 +478,7 @@ export function resolveLibraryReleaseConfig(environment = process.env) {
         : resolveLibraryBuildConfig(environment);
   return {
     productionRelease,
+    registrationOnlyProductionRelease,
     uiReviewRelease,
     registrationPreviewRelease,
     config

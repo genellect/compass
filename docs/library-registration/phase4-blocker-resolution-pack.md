@@ -2,7 +2,7 @@
 
 > **履歴文書・実行非推奨:** 第二管理者をブロッカーとする記述はADR-0003と`phase-roadmap-v3.md`で廃止された。現行Gateの判断や作業指示には使用しない。
 
-最終更新: 2026-07-19  
+最終更新: 2026-07-19<br>
 状態: `P4-B01 PASS / P4-B02-P4-B04 READY FOR HUMAN ACTION`
 
 ## 1. 固定境界
@@ -26,7 +26,7 @@ Google OAuthは`st.kitasato-u.ac.jp`のWorkspaceアカウントを本人が操�
 | P4-B04 国外保存 | `READY` | region/DPA/security/sub-processor/削除調査 | 内容確認、記名、日付、承認 |
 
 P4-B01証跡は`phase4-hd-evidence-record.md`を正本とする。代表実測で得た`hd`は
-`st.kitasato-u.ac.jp`、fingerprintは`11bcf0f2393d2eb5`である。学生用・教員用
+`st.kitasato-u.ac.jp`であり、fingerprintの一致結果は非公開証跡に保管する。学生用・教員用
 に分けた追加実測は不要である。
 
 ## 3. P4-B02: 第二管理者の指名と証跡

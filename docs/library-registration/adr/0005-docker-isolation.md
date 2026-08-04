@@ -1,6 +1,6 @@
 # ADR-0005: Docker開発環境の独立境界
 
-Status: Accepted  
+Status: Accepted<br>
 Date: 2026-07-19
 
 ## Decision

@@ -2,7 +2,7 @@
 
 > **履歴文書・実行非推奨:** 本書の第二管理者要件はADR-0003と`phase-roadmap-v3.md`で廃止された。第二管理者は現行のPASS/Production Gate要件ではなく、この記録を運用手順として使用しない。
 
-最終更新: 2026-07-19  
+最終更新: 2026-07-19<br>
 状態: `TOOLS READY / HUMAN NOMINATION AND DRILL REQUIRED`
 
 個人メール、Google `sub`実値、OAuth Client Secret、token、認可codeは本記録へ
@@ -15,7 +15,7 @@
 | 指名 | 現Drive所有者を候補とする。正式確認待ち | 未指定 |
 | 大学管理Googleアカウント | 代表実測済み。管理者用再測定待ち | 本人ログイン待ち |
 | `hd` | `st.kitasato-u.ac.jp`実測済み | 未実測 |
-| `sub` fingerprint | 候補証跡 `11bcf0f2393d2eb5` | 未実測 |
+| `sub` fingerprint | 非公開証跡に保管（公開文書には記載しない） | 未実測 |
 | MFA | 本人確認待ち | 本人確認待ち |
 | 想定role | `admin` | `admin` |
 | 緊急連絡可否 | 本人確認待ち | 本人確認待ち |
@@ -67,7 +67,7 @@
 | Primary/Secondaryが別人物 | fingerprint比較 | 未実施 |
 | token非永続化 | 固定安全境界 | 実装済み |
 
-証跡server: `services/library-api/scripts/phase4_oauth_handoff_server.py`  
+証跡server: `services/library-api/scripts/phase4_oauth_handoff_server.py`<br>
 証跡保存先: `outputs/phase4-oauth-handoff/`（Git対象外）
 
 ## 5. PASS条件

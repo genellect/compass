@@ -2,7 +2,7 @@
 
 > **履歴文書:** `hd`実測証跡は有効だが、本文中の第二管理者要件はADR-0003と`phase-roadmap-v3.md`で廃止済みであり、現行Gateには適用しない。
 
-最終更新: 2026-07-18  
+最終更新: 2026-07-18<br>
 状態: `PASS`
 
 IDトークン、メール全文、Google `sub`実値は本記録へ記載しない。
@@ -12,7 +12,7 @@ IDトークン、メール全文、Google `sub`実値は本記録へ記載しな
 
 | 対象 | 実測日時UTC | `hd` | メールドメイン | `sub` fingerprint | `aud` | `iss` | `exp` | `email_verified` | 判定 |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| 同一Workspace組織の代表ユーザー | 2026-07-18T09:27:25.017215+00:00 | `st.kitasato-u.ac.jp` | `st.kitasato-u.ac.jp` | `11bcf0f2393d2eb5` | 一致 | 有効 | 有効 | `true` | `PASS` |
+| 同一Workspace組織の代表ユーザー | 非公開証跡に保管 | `st.kitasato-u.ac.jp` | `st.kitasato-u.ac.jp` | 非公開証跡で一致確認 | 一致 | 有効 | 有効 | `true` | `PASS` |
 
 初回実測は許可`hd`を発見するための計測だったため、証跡JSONの
 `expected_hd_match`は`null`である。`hd`実測後、ローカルのWindows User

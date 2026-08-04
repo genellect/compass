@@ -707,6 +707,32 @@ test("registration UI keeps the approved public copy and accessibility contract"
   assert.ok(siteHeaderSource.includes("routeContext === \"library\" && !hideLibraryRegistrationAction"));
 });
 
+test("public library registration CTA defaults to the internal route with an exact legacy rollback", async () => {
+  const [libraryConfigSource, registrationCtaSource, siteHeaderSource] = await Promise.all([
+    readFile(new URL("../src/lib/futureStrategyLibrary.ts", import.meta.url), "utf8"),
+    readFile(
+      new URL(
+        "../src/app/(official)/future-strategy-library/components/RegistrationCTA.client.tsx",
+        import.meta.url
+      ),
+      "utf8"
+    ),
+    readFile(new URL("../src/components/SiteHeader.tsx", import.meta.url), "utf8")
+  ]);
+
+  assert.match(libraryConfigSource, /: "\/library-registration\/"/);
+  assert.match(
+    libraryConfigSource,
+    /process\.env\.NEXT_PUBLIC_FSL_REGISTRATION_URL ===\s*FUTURE_STRATEGY_LIBRARY_LEGACY_FORM_HREF/
+  );
+  assert.match(registrationCtaSource, /isExternal \? "↗" : "→"/);
+  assert.match(siteHeaderSource, /libraryRegistrationIsExternal/);
+  assert.match(
+    siteHeaderSource,
+    /target=\{libraryRegistrationIsExternal \? "_blank" : undefined\}/
+  );
+});
+
 test("registration responsive CSS preserves narrow-screen and readable-color contracts", async () => {
   const css = await readFile(
     new URL("../src/library-registration/registration.css", import.meta.url),

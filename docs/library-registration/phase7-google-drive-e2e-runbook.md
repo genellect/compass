@@ -2,8 +2,8 @@
 
 > **現行補足:** Drive E2E手順自体は利用できるが、第二管理者の準備・承認を前提とする記述はADR-0003と`phase-roadmap-v3.md`で廃止済みであり、現行Gateには適用しない。
 
-対象: 所有者OAuth、Google Picker、空のMy Driveテストフォルダ  
-redirect URI: `http://localhost:8767/oauth2/callback`  
+対象: 所有者OAuth、Google Picker、空のMy Driveテストフォルダ<br>
+redirect URI: `http://localhost:8767/oauth2/callback`<br>
 ローカル開始URL: `http://localhost:8767/`
 
 ## 1. この試験で行うこと

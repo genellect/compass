@@ -2,8 +2,8 @@
 
 ## Historical R0（2026-08-01）
 
-作成日: 2026-08-01  
-source baseline: `origin/main` `8a3cccedb5ea642b08c15bc8acd9424528ee078b`  
+作成日: 2026-08-01<br>
+source baseline: `origin/main` `8a3cccedb5ea642b08c15bc8acd9424528ee078b`<br>
 release branch: `codex/library-registration-release-baseline-20260801`
 
 ## 移植した範囲

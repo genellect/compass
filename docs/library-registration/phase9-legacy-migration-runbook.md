@@ -1,7 +1,7 @@
 # Phase 9 旧名簿移行 Runbook
 
-Status: Operational Runbook  
-Scope: Phase 9 private migration job  
+Status: Operational Runbook<br>
+Scope: Phase 9 private migration job<br>
 Last verified: 2026-08-02
 現在状態: 実snapshot未取得・本番実行禁止
 
