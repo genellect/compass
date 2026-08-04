@@ -1,7 +1,7 @@
 # COMPASS Documentation Index
 
 Status: Canonical Index
-Last verified: 2026-08-01
+Last verified: 2026-08-02
 
 ## 文書の優先順位
 
@@ -33,8 +33,35 @@ Productionと`origin/main`が食い違う場合は差分を報告し、どちら
 | [`analytics-monitoring-operations.md`](analytics-monitoring-operations.md) | 公式Pages projectのGA4 / Cloudflare Web Analytics |
 | [`community-registration-operations.md`](community-registration-operations.md) | Community form、Pages Function、Turnstile、GAS |
 | [`contact-form-operations.md`](contact-form-operations.md) | Contact form、email verification、Pages Function、Turnstile、GAS |
+| [`library-registration/phase9-legacy-migration-runbook.md`](library-registration/phase9-legacy-migration-runbook.md) | 旧Form/Sheet/Drive snapshotのprivate移行、承認、rollback、purge |
+| [`library-registration/phase10a-export-runbook.md`](library-registration/phase10a-export-runbook.md) | admin限定CSV/XLSX出力、保管、監査、削除、緊急停止 |
+| [`library-registration/frontend-production-rehearsal.md`](library-registration/frontend-production-rehearsal.md) | Google/APIへ接続しないProduction-shaped frontend buildと最終mock復元 |
+| [`library-registration/local-preproduction-gate-runbook.md`](library-registration/local-preproduction-gate-runbook.md) | Phase 8A/8B/9/10Aの合成データ専用統合ゲート、証跡、停止条件 |
+| [`library-registration/cloudflare-preview-deployment-runbook.md`](library-registration/cloudflare-preview-deployment-runbook.md) | Production branchとCTAを保護するLibrary専用Cloudflare Preview手順 |
+| [`library-registration/gcp-readonly-preflight-runbook.md`](library-registration/gcp-readonly-preflight-runbook.md) | near-zero GCP本命profileのsecret非閲覧read-only事前確認。billing・外部変更は直前承認後のみ |
+| [`library-registration/production-gate-handoff-2026-08-02.md`](library-registration/production-gate-handoff-2026-08-02.md) | matching-HEAD local証跡から外部認証・Preview・Pilot・Cutoverまでの引継ぎ |
+| [`library-registration/admin-access-security-boundary.md`](library-registration/admin-access-security-boundary.md) | 管理専用OAuth、server-side RBAC、mutation停止、DB実効権限、edge/manual gate |
 
 runbookはsource上の契約と運用手順を記録する。Cloudflare dashboard、GAS deployment、secret、実メール疎通等の外部状態は、文書の日付だけで現在有効と判断せずoperatorが確認する。
+
+## Future Strategy Library Registration
+
+| Document | Status / responsibility |
+|---|---|
+| [`../project.guide.md`](../project.guide.md) | 固定仕様、保護境界、現状、次の作業順の入口 |
+| [`phase-roadmap-v3.md`](library-registration/phase-roadmap-v3.md) | Phase、PASS Gate、Preview/Pilot/Production Gateの正本 |
+| [`release-baseline-manifest.md`](library-registration/release-baseline-manifest.md) | historical R0と現行release候補のbase/head・検証境界 |
+| [`adr/0007-near-zero-cost-production-runtime.md`](library-registration/adr/0007-near-zero-cost-production-runtime.md) | FastAPI/Neon/Cloud Runを維持する準0円運用、spend cap、残余riskの決定 |
+| [`cost-capacity-and-docker-plan.md`](library-registration/cost-capacity-and-docker-plan.md) | 2026-08-02料金基準、容量、Docker隔離、課金停止線 |
+| [`phase9-implementation-report.md`](library-registration/phase9-implementation-report.md) | Phase 9 local実装証跡と未完了の実snapshot・本番gate |
+| [`phase10a-implementation-report.md`](library-registration/phase10a-implementation-report.md) | Phase 10A local実装証跡と未完了のデータ取扱・認証gate |
+| [`roster-and-legacy-reconciliation-2026-08-02.md`](library-registration/roster-and-legacy-reconciliation-2026-08-02.md) | 旧Sheet/Driveのread-only件数照合、名簿正規化、未解決22行、PostgreSQL正本方針 |
+| [`admin-access-security-boundary.md`](library-registration/admin-access-security-boundary.md) | 管理画面をURLやclient表示だけで守らない多層認可とProduction手動ゲート |
+
+Phase 9/10Aの対象gateは`LOCAL IMPLEMENTATION PASS`だが、現行候補のcanonical統合判定には
+現在HEADと一致するmachine evidenceが必要である。billingは意図的に未登録、外部認証・実PII・
+公開は未実施である。正式判定は常に
+`phase-roadmap-v3.md`と最新machine evidenceで確認する。
 
 ## Completed Implementation Record
 

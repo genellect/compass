@@ -4,10 +4,15 @@ import { extname, join, normalize, resolve, sep } from "node:path";
 
 const host = "127.0.0.1";
 const port = Number.parseInt(process.env.RESPONSIVE_PORT ?? "8798", 10);
-const exportRoot = resolve(process.cwd(), "out");
+const exportRoot = resolve(
+  process.cwd(),
+  process.env.STATIC_EXPORT_ROOT ?? "out"
+);
 
 if (!existsSync(exportRoot)) {
-  throw new Error("Missing out/. Run `npm run build` before the responsive browser audit.");
+  throw new Error(
+    `Missing static export directory: ${exportRoot}. Run the appropriate build first.`
+  );
 }
 
 const contentTypes = new Map([

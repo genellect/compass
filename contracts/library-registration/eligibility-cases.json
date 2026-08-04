@@ -1,0 +1,352 @@
+[
+  {
+    "name": "未入力フォームは入力継続",
+    "account": {
+      "verified": true,
+      "tokenValid": true,
+      "emailVerified": true,
+      "email": "student@st.kitasato-u.ac.jp",
+      "hostedDomain": "kitasato-u.ac.jp",
+      "allowedHostedDomains": ["kitasato-u.ac.jp"]
+    },
+    "registration": {
+      "fullName": "",
+      "academicRole": "",
+      "faculty": "",
+      "grade": "",
+      "studentNumber": "",
+      "termsAccepted": false,
+      "privacyAccepted": false,
+      "question": ""
+    },
+    "existingRegistration": "none",
+    "expectedStatus": "not_ready",
+    "expectedReasons": ["full_name_required", "academic_role_required", "faculty_required", "privacy_required"],
+    "expectedStudentNumber": ""
+  },
+  {
+    "name": "薬学部学部生PPは自動承認",
+    "account": {
+      "verified": true,
+      "tokenValid": true,
+      "emailVerified": true,
+      "email": "student@st.kitasato-u.ac.jp",
+      "hostedDomain": "kitasato-u.ac.jp",
+      "allowedHostedDomains": ["kitasato-u.ac.jp"]
+    },
+    "registration": {
+      "fullName": "北里 花子",
+      "academicRole": "undergraduate",
+      "faculty": "pharmacy",
+      "grade": "2",
+      "studentNumber": "PP23000",
+      "termsAccepted": true,
+      "privacyAccepted": true,
+      "question": ""
+    },
+    "existingRegistration": "none",
+    "expectedStatus": "approved",
+    "expectedReasons": ["eligible"],
+    "expectedStudentNumber": "PP23000"
+  },
+  {
+    "name": "全角小文字PLを正規化して自動承認",
+    "account": {
+      "verified": true,
+      "tokenValid": true,
+      "emailVerified": true,
+      "email": "student@st.kitasato-u.ac.jp",
+      "hostedDomain": "kitasato-u.ac.jp",
+      "allowedHostedDomains": ["kitasato-u.ac.jp"]
+    },
+    "registration": {
+      "fullName": "北里 太郎",
+      "academicRole": "master",
+      "faculty": "pharmacy",
+      "grade": "1",
+      "studentNumber": "ｐｌ２３０００",
+      "termsAccepted": true,
+      "privacyAccepted": true,
+      "question": ""
+    },
+    "existingRegistration": "none",
+    "expectedStatus": "approved",
+    "expectedReasons": ["eligible"],
+    "expectedStudentNumber": "PL23000"
+  },
+  {
+    "name": "薬学部以外は個別確認",
+    "account": {
+      "verified": true,
+      "tokenValid": true,
+      "emailVerified": true,
+      "email": "student@st.kitasato-u.ac.jp",
+      "hostedDomain": "kitasato-u.ac.jp",
+      "allowedHostedDomains": ["kitasato-u.ac.jp"]
+    },
+    "registration": {
+      "fullName": "北里 花子",
+      "academicRole": "undergraduate",
+      "faculty": "other",
+      "grade": "3",
+      "studentNumber": "MP12345",
+      "termsAccepted": true,
+      "privacyAccepted": true,
+      "question": ""
+    },
+    "existingRegistration": "none",
+    "expectedStatus": "manual_review",
+    "expectedReasons": ["faculty_requires_manual_review"],
+    "expectedStudentNumber": "MP12345"
+  },
+  {
+    "name": "博士課程は学籍番号なしで個別確認",
+    "account": {
+      "verified": true,
+      "tokenValid": true,
+      "emailVerified": true,
+      "email": "student@st.kitasato-u.ac.jp",
+      "hostedDomain": "kitasato-u.ac.jp",
+      "allowedHostedDomains": ["kitasato-u.ac.jp"]
+    },
+    "registration": {
+      "fullName": "北里 次郎",
+      "academicRole": "doctoral",
+      "faculty": "pharmacy",
+      "grade": "",
+      "studentNumber": "",
+      "termsAccepted": false,
+      "privacyAccepted": true,
+      "question": ""
+    },
+    "existingRegistration": "none",
+    "expectedStatus": "manual_review",
+    "expectedReasons": ["role_requires_manual_review"],
+    "expectedStudentNumber": ""
+  },
+  {
+    "name": "大学教職員メールは個別確認",
+    "account": {
+      "verified": true,
+      "tokenValid": true,
+      "emailVerified": true,
+      "email": "teacher@pharm.kitasato-u.ac.jp",
+      "hostedDomain": "kitasato-u.ac.jp",
+      "allowedHostedDomains": ["kitasato-u.ac.jp"]
+    },
+    "registration": {
+      "fullName": "北里 教員",
+      "academicRole": "staff",
+      "faculty": "pharmacy",
+      "grade": "",
+      "studentNumber": "",
+      "termsAccepted": false,
+      "privacyAccepted": true,
+      "question": "利用について相談します"
+    },
+    "existingRegistration": "none",
+    "expectedStatus": "manual_review",
+    "expectedReasons": ["role_requires_manual_review", "non_student_email_requires_manual_review"],
+    "expectedStudentNumber": ""
+  },
+  {
+    "name": "不正な学籍番号は対象外",
+    "account": {
+      "verified": true,
+      "tokenValid": true,
+      "emailVerified": true,
+      "email": "student@st.kitasato-u.ac.jp",
+      "hostedDomain": "kitasato-u.ac.jp",
+      "allowedHostedDomains": ["kitasato-u.ac.jp"]
+    },
+    "registration": {
+      "fullName": "北里 花子",
+      "academicRole": "undergraduate",
+      "faculty": "pharmacy",
+      "grade": "2",
+      "studentNumber": "PX23000",
+      "termsAccepted": true,
+      "privacyAccepted": true,
+      "question": ""
+    },
+    "existingRegistration": "none",
+    "expectedStatus": "ineligible",
+    "expectedReasons": ["student_number_invalid"],
+    "expectedStudentNumber": "PX23000"
+  },
+  {
+    "name": "PP00000は学生登録で使用不可",
+    "account": {
+      "verified": true,
+      "tokenValid": true,
+      "emailVerified": true,
+      "email": "student@st.kitasato-u.ac.jp",
+      "hostedDomain": "kitasato-u.ac.jp",
+      "allowedHostedDomains": ["kitasato-u.ac.jp"]
+    },
+    "registration": {
+      "fullName": "北里 花子",
+      "academicRole": "undergraduate",
+      "faculty": "pharmacy",
+      "grade": "2",
+      "studentNumber": "PP00000",
+      "termsAccepted": true,
+      "privacyAccepted": true,
+      "question": ""
+    },
+    "existingRegistration": "none",
+    "expectedStatus": "ineligible",
+    "expectedReasons": ["student_number_invalid"],
+    "expectedStudentNumber": "PP00000"
+  },
+  {
+    "name": "個人Gmailは対象外",
+    "account": {
+      "verified": true,
+      "tokenValid": true,
+      "emailVerified": true,
+      "email": "personal@gmail.com",
+      "hostedDomain": "",
+      "allowedHostedDomains": ["kitasato-u.ac.jp"]
+    },
+    "registration": {
+      "fullName": "個人 利用者",
+      "academicRole": "undergraduate",
+      "faculty": "pharmacy",
+      "grade": "1",
+      "studentNumber": "PP23000",
+      "termsAccepted": true,
+      "privacyAccepted": true,
+      "question": ""
+    },
+    "existingRegistration": "none",
+    "expectedStatus": "ineligible",
+    "expectedReasons": ["hosted_domain_not_allowed", "email_domain_not_allowed"],
+    "expectedStudentNumber": "PP23000"
+  },
+  {
+    "name": "利用条件未同意は入力未完了",
+    "account": {
+      "verified": true,
+      "tokenValid": true,
+      "emailVerified": true,
+      "email": "student@st.kitasato-u.ac.jp",
+      "hostedDomain": "kitasato-u.ac.jp",
+      "allowedHostedDomains": ["kitasato-u.ac.jp"]
+    },
+    "registration": {
+      "fullName": "北里 花子",
+      "academicRole": "undergraduate",
+      "faculty": "pharmacy",
+      "grade": "2",
+      "studentNumber": "PP23000",
+      "termsAccepted": false,
+      "privacyAccepted": true,
+      "question": ""
+    },
+    "existingRegistration": "none",
+    "expectedStatus": "not_ready",
+    "expectedReasons": ["terms_required"],
+    "expectedStudentNumber": "PP23000"
+  },
+  {
+    "name": "同一内容の再送は登録済み",
+    "account": {
+      "verified": true,
+      "tokenValid": true,
+      "emailVerified": true,
+      "email": "student@st.kitasato-u.ac.jp",
+      "hostedDomain": "kitasato-u.ac.jp",
+      "allowedHostedDomains": ["kitasato-u.ac.jp"]
+    },
+    "registration": {
+      "fullName": "北里 花子",
+      "academicRole": "undergraduate",
+      "faculty": "pharmacy",
+      "grade": "2",
+      "studentNumber": "PP23000",
+      "termsAccepted": true,
+      "privacyAccepted": true,
+      "question": ""
+    },
+    "existingRegistration": "matching",
+    "expectedStatus": "already_registered",
+    "expectedReasons": ["existing_registration_found"],
+    "expectedStudentNumber": "PP23000"
+  },
+  {
+    "name": "既存情報との競合は個別確認",
+    "account": {
+      "verified": true,
+      "tokenValid": true,
+      "emailVerified": true,
+      "email": "student@st.kitasato-u.ac.jp",
+      "hostedDomain": "kitasato-u.ac.jp",
+      "allowedHostedDomains": ["kitasato-u.ac.jp"]
+    },
+    "registration": {
+      "fullName": "北里 花子",
+      "academicRole": "undergraduate",
+      "faculty": "pharmacy",
+      "grade": "2",
+      "studentNumber": "PP23000",
+      "termsAccepted": true,
+      "privacyAccepted": true,
+      "question": ""
+    },
+    "existingRegistration": "conflict",
+    "expectedStatus": "manual_review",
+    "expectedReasons": ["existing_registration_conflict"],
+    "expectedStudentNumber": "PP23000"
+  },
+  {
+    "name": "学部生の範囲外学年は拒否",
+    "account": {
+      "verified": true,
+      "tokenValid": true,
+      "emailVerified": true,
+      "email": "student@st.kitasato-u.ac.jp",
+      "hostedDomain": "kitasato-u.ac.jp",
+      "allowedHostedDomains": ["kitasato-u.ac.jp"]
+    },
+    "registration": {
+      "fullName": "北里 花子",
+      "academicRole": "undergraduate",
+      "faculty": "pharmacy",
+      "grade": "999",
+      "studentNumber": "PP23000",
+      "termsAccepted": true,
+      "privacyAccepted": true,
+      "question": ""
+    },
+    "existingRegistration": "none",
+    "expectedStatus": "ineligible",
+    "expectedReasons": ["grade_invalid"],
+    "expectedStudentNumber": "PP23000"
+  },
+  {
+    "name": "修士の範囲外学年は拒否",
+    "account": {
+      "verified": true,
+      "tokenValid": true,
+      "emailVerified": true,
+      "email": "student@st.kitasato-u.ac.jp",
+      "hostedDomain": "kitasato-u.ac.jp",
+      "allowedHostedDomains": ["kitasato-u.ac.jp"]
+    },
+    "registration": {
+      "fullName": "北里 花子",
+      "academicRole": "master",
+      "faculty": "pharmacy",
+      "grade": "6",
+      "studentNumber": "MP23000",
+      "termsAccepted": true,
+      "privacyAccepted": true,
+      "question": ""
+    },
+    "existingRegistration": "none",
+    "expectedStatus": "ineligible",
+    "expectedReasons": ["grade_invalid"],
+    "expectedStudentNumber": "MP23000"
+  }
+]

@@ -86,6 +86,8 @@ full URLとsource ownerは`CODEX_LINKS.md`を参照する。一般的な`Join`�
 - 外部formと別productは既存contractに従いnew tabを使用できる。
 - external linkには必要に応じ`rel="noopener noreferrer"`を付ける。
 - protected materialへの直接URLをpublic sourceへ置かない。
+- `/library-registration/admin/`を公開siteのheader、footer、navigation、CTA、sitemapへ置かない。
+  `noindex`やリンク非掲載は認可の代替ではなく、Productionではedge accessとserver-side認可を使う。
 - CTA labelは遷移後の結果を予測できる表現にする。
 - DesktopとMobileでlabelを変える場合も、journeyとdestinationは一致させる。
 

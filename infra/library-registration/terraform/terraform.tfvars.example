@@ -1,0 +1,117 @@
+project_id                    = "REPLACE_WITH_DEDICATED_PROJECT"
+region                        = "asia-southeast1"
+public_image                  = "REGION-docker.pkg.dev/PROJECT/REPOSITORY/public@sha256:REPLACE"
+admin_image                   = "REGION-docker.pkg.dev/PROJECT/REPOSITORY/admin@sha256:REPLACE"
+worker_image                  = "REGION-docker.pkg.dev/PROJECT/REPOSITORY/worker@sha256:REPLACE"
+migration_image               = "REGION-docker.pkg.dev/PROJECT/REPOSITORY/migration@sha256:REPLACE"
+frontend_origin               = "https://compass-official.pages.dev"
+google_oauth_client_ids       = "PUBLIC_WEB_OAUTH_CLIENT_ID.apps.googleusercontent.com"
+# Keep empty until the separate administrator Web OAuth client is created.
+google_admin_oauth_client_ids = ""
+# Tiny two-account administrator surface. This is a per-instance in-memory
+# guardrail and assumes the admin Cloud Run max_instance_count remains one.
+admin_preauth_rate_limit_per_minute = 30
+# These are LOGIN roles embedded in the respective runtime DATABASE_URLs,
+# not the NOLOGIN capability roles granted to them.
+api_runtime_database_role    = "fsl_api_login"
+admin_runtime_database_role  = "fsl_console_login"
+worker_runtime_database_role = "fsl_worker_login"
+worker_oidc_audience          = "https://fsl-registration-worker.internal"
+
+# First apply is migration-only: runtime services remain absent so startup
+# probes cannot race a fresh, unmigrated database. Enable only after the
+# migration job completes and its Alembic head/role audit passes.
+runtime_services_activation = {
+  enabled      = false
+  confirmation = ""
+}
+
+# Runtime activation is also blocked until the target project has a reviewed
+# Cloud Run spend-cap budget and a separate project-wide alerts-only budget.
+# Keep this disabled during migration-only bootstrap. Set the dollar amounts
+# only after the console accepts them and the operator has recorded sanitized
+# evidence. Spend-cap enforcement is Preview and is not instantaneous.
+cost_guardrails_review = {
+  enabled                  = false
+  cloud_run_spend_cap_usd  = 0
+  project_alert_budget_usd = 0
+  confirmation             = ""
+}
+
+# Keep the unauthenticated Cloud Run invoker absent during migration and
+# runtime-standby stages. Enable only for the approved Preview/Pilot host. Set
+# it back to disabled as the first public-compute cost-stop action.
+public_ingress_activation = {
+  enabled      = false
+  confirmation = ""
+}
+
+# Keep capability objects fail-closed until the named human gates pass.
+# Enabling requires the exact confirmation documented in the runbooks.
+worker_drive_activation = {
+  enabled      = false
+  confirmation = ""
+}
+admin_api_activation = {
+  enabled      = false
+  confirmation = ""
+}
+admin_mutations_activation = {
+  enabled      = false
+  confirmation = ""
+}
+public_api_write_activation = {
+  enabled      = false
+  confirmation = ""
+}
+phase10a_export_activation = {
+  enabled      = false
+  confirmation = ""
+}
+
+# Replace only after the exact Japanese documents and hashes are approved.
+# These placeholders intentionally fail variable validation.
+terms_version         = "REPLACE_AFTER_HUMAN_APPROVAL"
+privacy_version       = "REPLACE_AFTER_HUMAN_APPROVAL"
+terms_content_sha256  = "REPLACE_WITH_LOWERCASE_SHA256"
+privacy_content_sha256 = "REPLACE_WITH_LOWERCASE_SHA256"
+public_registration_rpc_key_version = "v1"
+
+# This full-platform example lists all optional capabilities. In a
+# registration-only Preview, omit the three admin fields and (until Drive E2E)
+# the four Drive OAuth/resource fields; see the dedicated Preview example.
+secret_ids = {
+  api_database_url            = "fsl-api-database-url"
+  admin_database_url          = "fsl-admin-database-url"
+  admin_allowed_emails        = "fsl-admin-allowed-emails"
+  admin_edge_shared_secret    = "fsl-admin-edge-shared-secret"
+  worker_database_url         = "fsl-worker-database-url"
+  migration_database_url      = "fsl-migration-database-url"
+  drive_oauth_client_id       = "fsl-drive-oauth-client-id"
+  drive_oauth_client_secret   = "fsl-drive-oauth-client-secret"
+  drive_oauth_refresh_token   = "fsl-drive-oauth-refresh-token"
+  drive_resource_id           = "fsl-drive-resource-id"
+  drive_operation_attestation_key = "fsl-drive-operation-attestation-key"
+  public_registration_rpc_token   = "fsl-public-registration-rpc-token"
+}
+
+# Every configured version must be numeric. Never use "latest" in a revision.
+secret_versions = {
+  api_database_url            = "1"
+  admin_database_url          = "1"
+  admin_allowed_emails        = "1"
+  admin_edge_shared_secret    = "1"
+  worker_database_url         = "1"
+  migration_database_url      = "1"
+  drive_oauth_client_id       = "1"
+  drive_oauth_client_secret   = "1"
+  drive_oauth_refresh_token   = "1"
+  drive_resource_id           = "1"
+  drive_operation_attestation_key = "1"
+  public_registration_rpc_token   = "1"
+}
+
+# Runtime activation requires at least one existing channel whose recipients
+# have been confirmed. Spend-cap and project budget controls are configured
+# separately in the Billing console and recorded by cost_guardrails_review.
+notification_channel_names = []

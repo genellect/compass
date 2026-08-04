@@ -15,6 +15,8 @@ Data classification: Public-safe procedure; no secret values or applicant data
 2. Apps Scriptの「プロジェクトの設定」→「スクリプト プロパティ」に次を追加する。
    - プロパティ: `FORM_SHARED_SECRET`
    - 値: パスワード生成機能などで作った32文字以上のランダム文字列
+   - プロパティ: `COMMUNITY_ADMIN_RECIPIENT_EMAIL`
+   - 値: 運営者が承認した受信先メールアドレス。チャット、Git、ソースコード、スクリーンショットには載せず、この画面へ直接入力する
 3. 「デプロイ」→「新しいデプロイ」→「ウェブアプリ」を選び、次の内容で公開する。
    - 次のユーザーとして実行: `自分`
    - アクセスできるユーザー: `全員`
@@ -32,7 +34,7 @@ Data classification: Public-safe procedure; no secret values or applicant data
    - `GOOGLE_APPS_SCRIPT_URL`: GASが発行した末尾 `/exec` のURL
    - `GOOGLE_APPS_SCRIPT_SECRET`: GASの `FORM_SHARED_SECRET` と同一の値
 
-運営者の受信先は要件に従い `matsui.yuto@st.kitasato-u.ac.jp` にサーバー側で固定しています。ブラウザーから変更できません。
+運営者の受信先はGASのScript Property `COMMUNITY_ADMIN_RECIPIENT_EMAIL` だけから読み取ります。ブラウザーから変更できません。未設定またはメール形式が不正な場合、GASは `configuration` を返し、運営者・申請者のどちらにもメールを送りません。
 
 ## GASコード更新時の再デプロイ
 
@@ -62,6 +64,7 @@ npm.cmd run dev:pages
 - Turnstileの許可ホストと本番の `action=community_registration` を確認する。
 - GASのウェブアプリが「自分として実行」「全員がアクセス可能」で、URLが `/exec` で終わることを確認する。
 - GASの `FORM_SHARED_SECRET` とCloudflareの `GOOGLE_APPS_SCRIPT_SECRET` が一致することを確認する。
+- GASの `COMMUNITY_ADMIN_RECIPIENT_EMAIL` が承認済み受信先に設定され、値がGit差分や操作記録へ含まれていないことを確認する。
 - 運営者メールと申請者メールの2通が、本文・返信先を含めて届くことをテスト申請で確認する。
 - Cloudflare Pages上の `/community/join/` と `/api/community-registration` を実機確認する。
 - 秘密値、登録内容、メール本文がログやGit差分に含まれていないことを確認する。

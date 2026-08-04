@@ -5,3 +5,9 @@ CONTACT_TURNSTILE_SECRET_KEY=
 CONTACT_GOOGLE_APPS_SCRIPT_URL=
 CONTACT_GOOGLE_APPS_SCRIPT_SECRET=
 CONTACT_RATE_LIMIT_SECRET=
+# Exact canonical HTTPS origin for the public site. Production only.
+LIBRARY_ADMIN_CANONICAL_ORIGIN=
+# Exact HTTPS origin from Terraform output admin_api_url. Never point this at
+# the public registration service; the Pages Function is the only browser path.
+LIBRARY_ADMIN_API_ORIGIN=
+LIBRARY_ADMIN_EDGE_SHARED_SECRET=

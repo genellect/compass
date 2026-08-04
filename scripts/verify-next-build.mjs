@@ -1,8 +1,36 @@
 import { access, readFile } from "node:fs/promises";
 import path from "node:path";
+import {
+  resolveLibraryReleaseConfig,
+  verifyLibraryHeaderBoundary
+} from "./library-release-config.mjs";
+import { verifyLibraryProductionArtifacts } from
+  "./verify-library-production-build.mjs";
 
 const root = process.cwd();
 const out = path.join(root, "out");
+const {
+  productionRelease,
+  registrationOnlyProductionRelease,
+  config: libraryBuildConfig
+} = resolveLibraryReleaseConfig(process.env);
+const legacyLibraryRegistrationHref =
+  "https://docs.google.com/forms/d/e/1FAIpQLSf8gLujuK-giYnkCnv-Cxp7qon1kY8mhnGvfkA62hOlrJgAHA/viewform";
+const requestedLibraryRegistrationHref = String(
+  process.env.NEXT_PUBLIC_FSL_REGISTRATION_URL ?? ""
+).trim();
+if (
+  requestedLibraryRegistrationHref
+  && requestedLibraryRegistrationHref !== legacyLibraryRegistrationHref
+) {
+  throw new Error(
+    "NEXT_PUBLIC_FSL_REGISTRATION_URL may only select the approved legacy Google Form rollback."
+  );
+}
+const expectedLibraryRegistrationHref =
+  requestedLibraryRegistrationHref || "/library-registration/";
+const libraryRegistrationUsesLegacyForm =
+  expectedLibraryRegistrationHref === legacyLibraryRegistrationHref;
 
 function expectIncludes(html, expected, label) {
   if (!html.includes(expected)) throw new Error(`${label} is missing: ${expected}`);
@@ -74,6 +102,15 @@ const communityJoin = await readFile(path.join(out, "community", "join", "index.
 const contact = await readFile(path.join(out, "contact", "index.html"), "utf8");
 const messages = await readFile(path.join(out, "messages", "index.html"), "utf8");
 const library = await readFile(path.join(out, "future-strategy-library", "index.html"), "utf8");
+const libraryRegistration = await readFile(
+  path.join(out, "library-registration", "index.html"),
+  "utf8"
+);
+const libraryAdmin = await readFile(
+  path.join(out, "library-registration", "admin", "index.html"),
+  "utf8"
+);
+const deploymentRoutes = JSON.parse(await readFile(path.join(out, "_routes.json"), "utf8"));
 const messageSource = await readFile(
   path.join(root, "src", "app", "(official)", "messages", "message.md"),
   "utf8"
@@ -118,6 +155,29 @@ const legacyInteractionComponent = await readFile(
 );
 const legacyStyles = await readFile(path.join(root, "src", "styles", "legacy.css"), "utf8");
 const deploymentHeaders = await readFile(path.join(out, "_headers"), "utf8");
+const libraryEligibilitySource = await readFile(
+  path.join(root, "src", "library-registration", "eligibility.ts"),
+  "utf8"
+);
+const libraryApiEligibilitySource = await readFile(
+  path.join(root, "services", "library-api", "app", "eligibility.py"),
+  "utf8"
+);
+const libraryAdminClientSource = await readFile(
+  path.join(root, "src", "library-registration", "admin", "adminClient.ts"),
+  "utf8"
+);
+const libraryAdminProxyFunctionSource = await readFile(
+  path.join(
+    root,
+    "functions",
+    "library-registration",
+    "admin",
+    "api",
+    "[[path]].ts"
+  ),
+  "utf8"
+);
 
 expectIncludes(
   fourDirectionsStyles.replace(/\r\n/g, "\n"),
@@ -622,8 +682,7 @@ for (const expected of [
   'data-library-material="true"',
   "無料で資料を見る",
   "大学アカウントで無料登録する",
-  'href="https://docs.google.com/forms/d/e/1FAIpQLSf8gLujuK-giYnkCnv-Cxp7qon1kY8mhnGvfkA62hOlrJgAHA/viewform"',
-  'target="_blank"',
+  `href="${expectedLibraryRegistrationHref}"`,
   'rel="canonical" href="https://compass-official.pages.dev/future-strategy-library/"',
   '/images/future-strategy-library/why-english.webp',
   '/images/future-strategy-library/ai-guide-sanitized.webp',
@@ -656,6 +715,215 @@ for (const unexpected of [
 ]) expectExcludes(library, unexpected, "Future Strategy Library page");
 
 expectOneH1(library, "Future Strategy Library page");
+
+for (const expected of [
+  '<html lang="ja"',
+  "Future Strategy Library",
+  "ようこそ、",
+  "未来戦略ライブラリへ。",
+  "必要事項を入力してください。現在は北里大学薬学部生の方を対象としており、登録は3分ほどで完了します。",
+  "大学アカウント認証",
+  "登録内容を確認する",
+  "noindex",
+  "nofollow"
+]) expectIncludes(libraryRegistration, expected, "Library registration preview");
+
+for (const removedProgressUi of [
+  "入力状況",
+  "必要項目の入力状況を確認できます。",
+  'class="decision-card"'
+]) expectExcludes(
+  libraryRegistration,
+  removedProgressUi,
+  "Library registration removed progress panel"
+);
+
+expectIncludes(
+  libraryRegistration,
+  libraryBuildConfig.registrationMode === "google"
+    ? "GOOGLE API"
+    : "REGISTRATION DISABLED",
+  "Library registration runtime mode"
+);
+expectExcludes(
+  libraryRegistration,
+  libraryBuildConfig.registrationMode === "google" ? "LOCAL MOCK" : "GOOGLE API",
+  "Library registration runtime mode"
+);
+if (libraryBuildConfig.registrationMode !== "google") {
+  expectExcludes(
+    libraryRegistration,
+    "LOCAL MOCK",
+    "Library registration fail-closed static HTML"
+  );
+  expectExcludes(
+    libraryRegistration,
+    'class="mock-account-select"',
+    "Library registration fail-closed static HTML"
+  );
+  expectIncludes(
+    libraryRegistration,
+    "現在、利用登録を受け付けていません。時間をおいて再度お試しください。",
+    "Library registration fail-closed static HTML"
+  );
+}
+
+for (const unexpected of [
+  "G-EHKJ8B8N0Y",
+  "G-7VT6Z59NE0",
+  "G-6M7JL9VCWK",
+  "forms.gle",
+  "docs.google.com/forms",
+  "LIBRARY REGISTRATION / PHASE 7",
+  "SERVER-SIDE DECISION CONTRACT",
+  "判定条件プレビュー",
+  "認証済み登録APIテスト",
+  "PREVIEW STATUS",
+  "Future Strategy Library Registration / Phase 7",
+  "LOCAL PREVIEW",
+  "ローカル検証版",
+  "検証用アカウント",
+  "モックアカウント",
+  "個人Googleアカウント",
+  "personal@gmail.com",
+  "IDトークン",
+  "phase3-draft",
+  "必要事項を入力し、大学アカウントを確認してください。",
+  "所要時間は約3分です。",
+  "必要事項が揃うと、登録内容を確認できます。",
+  "残り:",
+  "registration-hero",
+  "共有ドライブ"
+]) expectExcludes(libraryRegistration, unexpected, "Library registration preview");
+
+expectOneH1(libraryRegistration, "Library registration preview");
+
+const libraryAdminExpected = [
+  '<html lang="ja"',
+  "未来戦略ライブラリ",
+  "管理者画面",
+  "利用者情報管理",
+  "このページを開くだけでは利用できません。",
+  "管理者として認証",
+  "noindex",
+  "nofollow"
+];
+for (const expected of libraryAdminExpected) {
+  expectIncludes(libraryAdmin, expected, "Library administrator page");
+}
+if (libraryBuildConfig.adminMode === "mock") {
+  expectIncludes(
+    libraryAdmin,
+    "管理画面の認証設定が完了していません。",
+    "Library administrator static fail-closed state"
+  );
+  expectExcludes(
+    libraryAdmin,
+    'class="admin-mock-login"',
+    "Library administrator server-rendered preview isolation"
+  );
+  expectExcludes(
+    libraryAdmin,
+    'id="mock-admin-role"',
+    "Library administrator owner-only preview"
+  );
+} else {
+  expectExcludes(
+    libraryAdmin,
+    'id="mock-admin-role"',
+    "Library administrator production login"
+  );
+}
+
+for (const unexpected of [
+  "RESTRICTED OPERATIONS",
+  "SYNTHETIC MOCK",
+  "ADMIN API",
+  "合成管理者として開始"
+]) expectExcludes(libraryAdmin, unexpected, "Library administrator page");
+
+for (const unexpected of [
+  "G-EHKJ8B8N0Y",
+  "G-7VT6Z59NE0",
+  "G-6M7JL9VCWK",
+  "forms.gle",
+  "docs.google.com/forms"
+]) expectExcludes(libraryAdmin, unexpected, "Library administrator page");
+
+expectExcludes(
+  library,
+  '/library-registration/admin/',
+  "Future Strategy Library public page"
+);
+expectExcludes(
+  libraryRegistration,
+  '/library-registration/admin/',
+  "Library registration public page"
+);
+expectOneH1(libraryAdmin, "Library administrator page");
+
+for (const expected of [
+  '"/admin/v1/applications/search"',
+  "drivePermissionManaged",
+  '"Idempotency-Key"',
+  '}/deactivate`',
+  "NEXT_PUBLIC_LIBRARY_ADMIN_API_BASE_URL",
+  'credentials: "same-origin"',
+  "adminProxyUrl",
+  "isTrustedAdminPreviewLocation"
+]) expectIncludes(libraryAdminClientSource, expected, "Library administrator client contract");
+expectExcludes(
+  libraryAdminClientSource,
+  '"/admin/v1/applications?',
+  "Library administrator PII search URL"
+);
+expectExcludes(
+  libraryAdminClientSource,
+  "NEXT_PUBLIC_LIBRARY_API_BASE_URL",
+  "Library administrator same-origin proxy boundary"
+);
+
+for (const expected of [
+  'const ADMIN_PROXY_PREFIX = "/library-registration/admin/api"',
+  'const UPSTREAM_ADMIN_PREFIX = "/admin/v1"',
+  "LIBRARY_ADMIN_CANONICAL_ORIGIN",
+  "LIBRARY_ADMIN_API_ORIGIN",
+  "LIBRARY_ADMIN_EDGE_SHARED_SECRET",
+  '"X-Library-Admin-Edge-Secret"',
+  '"Idempotency-Key"',
+  "MAX_REQUEST_BODY_BYTES",
+  "MAX_RESPONSE_BODY_BYTES",
+  'redirect: "manual"',
+  '"Cache-Control": "private, no-store, max-age=0"'
+]) expectIncludes(
+  libraryAdminProxyFunctionSource,
+  expected,
+  "Library administrator Pages Function boundary"
+);
+for (const unexpected of [
+  "Access-Control-Allow-Origin",
+  "CF-Access-Jwt-Assertion",
+  'headers.set("Cookie"',
+  'headers.set("Set-Cookie"'
+]) expectExcludes(
+  libraryAdminProxyFunctionSource,
+  unexpected,
+  "Library administrator Pages Function boundary"
+);
+
+for (const expected of [
+  "/^(PP|PL|MP)[0-9]{5}$/",
+  'registration.faculty !== "pharmacy"',
+  'registration.academicRole === "doctoral" || registration.academicRole === "staff"',
+  "allowedHostedDomains"
+]) expectIncludes(libraryEligibilitySource, expected, "Library registration browser decision contract");
+
+for (const expected of [
+  "STUDENT_NUMBER_PATTERN",
+  "allowed_hosted_domains",
+  "ReasonCode.FACULTY_REQUIRES_MANUAL_REVIEW",
+  "ReasonCode.ROLE_REQUIRES_MANUAL_REVIEW"
+]) expectIncludes(libraryApiEligibilitySource, expected, "Library registration server decision contract");
 
 const libraryMain = library.match(/<main\b[\s\S]*?<\/main>/)?.[0];
 if (!libraryMain) throw new Error("Future Strategy Library main content was not found.");
@@ -733,12 +1001,20 @@ if (libraryRegistrationCount !== 4) {
 
 const libraryRegistrationActions = library.match(/<a\b[^>]*data-library-registration="true"[^>]*>[\s\S]*?<\/a>/g) ?? [];
 for (const action of libraryRegistrationActions) {
-  expectIncludes(action, 'href="https://docs.google.com/forms/d/e/1FAIpQLSf8gLujuK-giYnkCnv-Cxp7qon1kY8mhnGvfkA62hOlrJgAHA/viewform"', "Library registration action");
-  expectIncludes(action, 'target="_blank"', "Library registration action");
+  expectIncludes(
+    action,
+    `href="${expectedLibraryRegistrationHref}"`,
+    "Library registration action"
+  );
+  if (libraryRegistrationUsesLegacyForm) {
+    expectIncludes(action, 'target="_blank"', "Library registration rollback action");
+  } else {
+    expectExcludes(action, 'target="_blank"', "Library registration internal action");
+  }
   const visibleLabel = normalizeText(action).replace("（新しいタブで開きます）", "").trim();
   const expectedLabel = action.includes('data-placement="header"')
     ? "無料で資料を見る"
-    : "大学アカウントで無料登録する↗";
+    : `大学アカウントで無料登録する${libraryRegistrationUsesLegacyForm ? "↗" : "→"}`;
   if (visibleLabel !== expectedLabel) {
     throw new Error("Future Strategy Library registration CTA label changed: " + normalizeText(action));
   }
@@ -763,16 +1039,22 @@ for (const expected of [
 ]) expectIncludes(registrationFunction, expected, "Community registration Pages Function");
 
 for (const expected of [
-  'ADMIN_EMAIL: "matsui.yuto@st.kitasato-u.ac.jp"',
+  'ADMIN_EMAIL_PROPERTY: "COMMUNITY_ADMIN_RECIPIENT_EMAIL"',
   'FORM_SECRET_PROPERTY: "FORM_SHARED_SECRET"',
   "COMPASS Communityの登録申請がありました。",
   "コミュニティ参加フォームへのご登録を受け付けました。",
   "MailApp.sendEmail",
   "validateRegistration_",
-  "constantTimeEquals_"
+  "constantTimeEquals_",
+  "readConfiguredEmail_"
 ]) expectIncludes(gasCode, expected, "Community registration GAS code");
 
-for (const unexpected of ["RESEND_API_KEY", "REGISTRATION_FROM_EMAIL", "api.resend.com"]) {
+for (const unexpected of [
+  'ADMIN_EMAIL:',
+  "RESEND_API_KEY",
+  "REGISTRATION_FROM_EMAIL",
+  "api.resend.com"
+]) {
   expectExcludes(registrationFunction, unexpected, "Community registration Pages Function");
   expectExcludes(gasCode, unexpected, "Community registration GAS code");
 }
@@ -791,6 +1073,7 @@ for (const expected of [
 ]) expectIncludes(contactFunction, expected, "Contact Pages Function");
 
 for (const expected of [
+  'ADMIN_EMAIL_PROPERTY: "CONTACT_ADMIN_RECIPIENT_EMAIL"',
   'FORM_SECRET_PROPERTY: "CONTACT_FORM_SHARED_SECRET"',
   'OTP_PEPPER_PROPERTY: "CONTACT_OTP_PEPPER"',
   "MAX_CODE_ATTEMPTS: 5",
@@ -803,10 +1086,16 @@ for (const expected of [
   "MailApp.sendEmail",
   "COMPASSへのお問い合わせがありました。",
   "お問い合わせを受け付けました",
-  "※本メールはGoogle Apps Scriptにより自動送信されています。"
+  "※本メールはGoogle Apps Scriptにより自動送信されています。",
+  "readConfiguredEmail_"
 ]) expectIncludes(contactGasCode, expected, "Contact GAS code");
 
-for (const unexpected of ['FORM_SECRET_PROPERTY: "FORM_SHARED_SECRET"', "COMMUNITY_REGISTRATION_IDEMPOTENCY", "@st.kitasato-u.ac.jp$"]) {
+for (const unexpected of [
+  'ADMIN_EMAIL:',
+  'FORM_SECRET_PROPERTY: "FORM_SHARED_SECRET"',
+  "COMMUNITY_REGISTRATION_IDEMPOTENCY",
+  "@st.kitasato-u.ac.jp$"
+]) {
   expectExcludes(contactFunction, unexpected, "Contact Pages Function");
   expectExcludes(contactGasCode, unexpected, "Contact GAS code");
 }
@@ -819,9 +1108,36 @@ if (beaconCspOccurrences !== 2) {
   );
 }
 
+for (const expected of [
+  "/library-registration/*",
+  "/library-registration/admin/*",
+  "https://accounts.google.com",
+  "Cache-Control: private, no-store, max-age=0",
+  "Referrer-Policy: no-referrer",
+  "Cross-Origin-Opener-Policy: same-origin-allow-popups",
+  "Cross-Origin-Resource-Policy: same-origin",
+  "X-Robots-Tag: noindex, nofollow"
+]) expectIncludes(deploymentHeaders, expected, "Library registration deployment boundary");
+expectExcludes(
+  deploymentHeaders,
+  "https://*.run.app",
+  "Library registration deployment boundary"
+);
+verifyLibraryHeaderBoundary(deploymentHeaders, libraryBuildConfig);
+if (productionRelease && !registrationOnlyProductionRelease) {
+  verifyLibraryProductionArtifacts({
+    registrationHtml: libraryRegistration,
+    adminHtml: libraryAdmin,
+    deploymentHeaders,
+    config: libraryBuildConfig
+  });
+}
+
 for (const relative of [
   "messages/index.html",
   "future-strategy-library/index.html",
+  "library-registration/index.html",
+  "library-registration/admin/index.html",
   "images/compass-mark.svg",
   "images/future-strategy-library/knowledge-horizon-og.png",
   "images/future-strategy-library/why-english.webp",
@@ -835,4 +1151,17 @@ for (const relative of [
 ]) await access(path.join(out, relative));
 
 await access(path.join(out, "_next", "static"));
-console.log("Verified Next routes, exact messages copy, the library gateway, and deployment assets.");
+const expectedFunctionRoutes = [
+  "/api/community-registration",
+  "/api/contact",
+  "/library-registration/admin/api/*"
+];
+if (
+  deploymentRoutes.version !== 1
+  || JSON.stringify(deploymentRoutes.include) !== JSON.stringify(expectedFunctionRoutes)
+  || !Array.isArray(deploymentRoutes.exclude)
+  || deploymentRoutes.exclude.length !== 0
+) {
+  throw new Error("Cloudflare _routes.json does not match the reviewed exact Function boundary.");
+}
+console.log("Verified Next routes, the library gateway, registration and administrator previews, and deployment assets.");

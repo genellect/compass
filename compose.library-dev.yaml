@@ -1,0 +1,173 @@
+name: compass-library-registration-dev
+
+x-library-environment: &library-environment
+  APP_ENV: docker-development
+  SERVICE_SURFACE: local-composite
+  DATABASE_URL: postgresql+psycopg://compass_library_dev:${FSL_LOCAL_POSTGRES_PASSWORD:-fsl-local-synthetic-only}@db:5432/compass_library_dev
+  DATABASE_URL_UNPOOLED: postgresql+psycopg://compass_library_dev:${FSL_LOCAL_POSTGRES_PASSWORD:-fsl-local-synthetic-only}@db:5432/compass_library_dev
+  DB_POOL_SIZE: "2"
+  DB_MAX_OVERFLOW: "0"
+  DB_POOL_TIMEOUT_SECONDS: "5"
+  DB_POOL_RECYCLE_SECONDS: "240"
+  DB_STATEMENT_TIMEOUT_SECONDS: "10"
+  PII_LOGGING_ENABLED: "false"
+  STRUCTURED_LOGGING_ENABLED: "true"
+  PUBLIC_DATABASE_ACCESS_MODE: orm
+  PUBLIC_REGISTRATION_RPC_KEY_VERSION: v1
+  PUBLIC_REGISTRATION_RPC_TOKEN: ${PUBLIC_REGISTRATION_RPC_TOKEN:-local-synthetic-public-rpc-token-v1-000000}
+  API_READ_ONLY_MODE: "false"
+  EXTERNAL_SIDE_EFFECTS_ENABLED: "false"
+  FSL_DATA_CLASSIFICATION: synthetic-only
+  PHASE5_LOCAL_API_ENABLED: "true"
+  PHASE6_AUTH_API_ENABLED: ${PHASE6_AUTH_API_ENABLED:-false}
+  GOOGLE_OAUTH_CLIENT_IDS: ${GOOGLE_OAUTH_CLIENT_IDS:-}
+  GOOGLE_OAUTH_CLIENT_ID: ${GOOGLE_OAUTH_CLIENT_ID:-}
+  GOOGLE_ADMIN_OAUTH_CLIENT_IDS: ${GOOGLE_ADMIN_OAUTH_CLIENT_IDS:-}
+  GOOGLE_ADMIN_ALLOWED_EMAILS: ${GOOGLE_ADMIN_ALLOWED_EMAILS:-}
+  LIBRARY_ADMIN_EDGE_SHARED_SECRET: ${LIBRARY_ADMIN_EDGE_SHARED_SECRET:-}
+  ALLOWED_GOOGLE_HOSTED_DOMAINS: st.kitasato-u.ac.jp
+  CORS_ALLOWED_ORIGINS: ${CORS_ALLOWED_ORIGINS:-http://127.0.0.1:3000,http://localhost:3000}
+  GOOGLE_ID_TOKEN_MAX_CHARS: "8192"
+  MAX_REQUEST_BODY_BYTES: "16384"
+  PREAUTH_RATE_LIMIT_PER_MINUTE: "300"
+  ADMIN_PREAUTH_RATE_LIMIT_PER_MINUTE: "30"
+  SUBMIT_RATE_LIMIT_PER_HOUR: "5"
+  RATE_LIMITS_ENABLED: "false"
+  DRIVE_RESOURCE_ID: synthetic-local-drive
+  DRIVE_OPERATION_ATTESTATION_KEY: ${DRIVE_OPERATION_ATTESTATION_KEY:-local-synthetic-drive-operation-attestation-key-v1}
+  DRIVE_OPERATION_ATTESTATION_TTL_SECONDS: "3600"
+  PHASE7_WORKER_API_ENABLED: ${PHASE7_WORKER_API_ENABLED:-false}
+  PHASE7_DRIVE_API_ENABLED: ${PHASE7_DRIVE_API_ENABLED:-false}
+  PHASE7_DRIVE_KILL_SWITCH: ${PHASE7_DRIVE_KILL_SWITCH:-true}
+  PHASE7_WORKER_SECRET: ${PHASE7_WORKER_SECRET:-}
+  WORKER_AUTH_MODE: shared_secret
+  WORKER_OIDC_AUDIENCE: ""
+  WORKER_INVOKER_SERVICE_ACCOUNT: ""
+  PHASE8_ADMIN_API_ENABLED: ${PHASE8_ADMIN_API_ENABLED:-false}
+  PHASE10A_EXPORT_API_ENABLED: ${PHASE10A_EXPORT_API_ENABLED:-false}
+  PHASE10A_EXPORT_MAX_ROWS: "5000"
+  PHASE10A_EXPORT_MAX_BYTES: "10485760"
+  PHASE10A_EXPORT_RATE_LIMIT_PER_HOUR: "12"
+  PHASE10A_DOWNLOAD_RETENTION_DAYS: "30"
+  PHASE7_OPERATION_LEASE_SECONDS: "60"
+  PHASE7_RESOURCE_LEASE_SECONDS: "60"
+  PHASE7_RETRY_BASE_SECONDS: "1"
+  DRIVE_REQUEST_TIMEOUT_SECONDS: "20"
+  GOOGLE_DRIVE_OAUTH_CLIENT_ID: ${GOOGLE_DRIVE_OAUTH_CLIENT_ID:-}
+  GOOGLE_DRIVE_OAUTH_CLIENT_SECRET: ${GOOGLE_DRIVE_OAUTH_CLIENT_SECRET:-}
+  GOOGLE_DRIVE_OAUTH_REFRESH_TOKEN: ${GOOGLE_DRIVE_OAUTH_REFRESH_TOKEN:-}
+
+x-library-service: &library-service
+  build:
+    context: .
+    dockerfile: services/library-api/Dockerfile
+    target: development
+  image: compass-library-registration-api:dev
+  environment: *library-environment
+  labels:
+    com.compass.project: future-strategy-library-registration
+    com.compass.environment: local-synthetic-only
+  restart: "no"
+  mem_limit: 512m
+  cpus: 1.0
+  stop_grace_period: 15s
+  networks:
+    - library-dev
+
+services:
+  db:
+    image: postgres:17-bookworm
+    environment:
+      POSTGRES_DB: compass_library_dev
+      POSTGRES_USER: compass_library_dev
+      POSTGRES_PASSWORD: ${FSL_LOCAL_POSTGRES_PASSWORD:-fsl-local-synthetic-only}
+    labels:
+      com.compass.project: future-strategy-library-registration
+      com.compass.environment: local-synthetic-only
+    ports:
+      - "127.0.0.1:55432:5432"
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - pg_isready -h 127.0.0.1 -U compass_library_dev -d compass_library_dev
+      interval: 2s
+      timeout: 3s
+      retries: 30
+    restart: "no"
+    mem_limit: 1g
+    cpus: 1.0
+    stop_grace_period: 30s
+    volumes:
+      - library-postgres-data:/var/lib/postgresql/data
+    networks:
+      - library-dev
+
+  roles-bootstrap:
+    <<: *library-service
+    command:
+      - python
+      - -m
+      - scripts.local_database_roles
+      - bootstrap-bind
+    depends_on:
+      db:
+        condition: service_healthy
+
+  migrate:
+    <<: *library-service
+    command:
+      - python
+      - -m
+      - alembic
+      - upgrade
+      - head
+    depends_on:
+      db:
+        condition: service_healthy
+      roles-bootstrap:
+        condition: service_completed_successfully
+
+  roles-finalize:
+    <<: *library-service
+    command:
+      - python
+      - -m
+      - scripts.local_database_roles
+      - grant-audit
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+
+  api:
+    <<: *library-service
+    ports:
+      - "127.0.0.1:58000:8000"
+    depends_on:
+      db:
+        condition: service_healthy
+      roles-finalize:
+        condition: service_completed_successfully
+    healthcheck:
+      test:
+        - CMD
+        - python
+        - -c
+        - import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/health', timeout=2).read()
+      interval: 3s
+      timeout: 3s
+      retries: 30
+
+volumes:
+  library-postgres-data:
+    name: fsl-registration-dev-postgres-data
+    labels:
+      com.compass.project: future-strategy-library-registration
+      com.compass.environment: local-synthetic-only
+
+networks:
+  library-dev:
+    name: fsl-registration-dev-network
+    internal: true
+    labels:
+      com.compass.project: future-strategy-library-registration
+      com.compass.environment: local-synthetic-only

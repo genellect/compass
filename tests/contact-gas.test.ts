@@ -6,6 +6,7 @@ import { describe, expect, it } from "vitest";
 const gasSource = readFileSync(new URL("../google-apps-script/contact/Code.gs", import.meta.url), "utf8");
 const sharedSecret = "contact-shared-secret-with-more-than-32-characters";
 const otpPepper = "contact-otp-pepper-with-more-than-32-characters";
+const adminRecipient = "contact-operator@example.invalid";
 const issueRequestId = "1f386090-84e0-4c2f-a4d7-6f8f4f8ad141";
 const submitRequestId = "8ab3959a-7184-40ca-8208-b4cb481ede35";
 const verifyRequestId = "4cf7ccfe-6142-4541-b6fe-2e8cb996db63";
@@ -63,7 +64,12 @@ type GasContext = Context & {
   doPost: (event: { postData: { contents: string; type: string } }) => GasResponse;
 };
 
-function createGasRuntime(options: { quota?: number; secret?: string; pepper?: string } = {}) {
+function createGasRuntime(options: {
+  adminEmail?: string;
+  pepper?: string;
+  quota?: number;
+  secret?: string;
+} = {}) {
   let now = Date.parse("2026-07-29T01:30:00.000Z");
   let failAtEmail = 0;
   const properties = new Map<string, string>();
@@ -72,6 +78,12 @@ function createGasRuntime(options: { quota?: number; secret?: string; pepper?: s
   }
   if (options.pepper !== "missing") {
     properties.set("CONTACT_OTP_PEPPER", options.pepper ?? otpPepper);
+  }
+  if (options.adminEmail !== "missing") {
+    properties.set(
+      "CONTACT_ADMIN_RECIPIENT_EMAIL",
+      options.adminEmail ?? adminRecipient
+    );
   }
   const sentEmails: SentEmail[] = [];
   const scriptProperties = {
@@ -193,7 +205,11 @@ describe("Contact Google Apps Script", () => {
     expect(runtime.sentEmails[0]?.body).toContain("※本メールはGoogle Apps Scriptにより自動送信されています。");
 
     const stored = [...runtime.properties.entries()]
-      .filter(([key]) => !["CONTACT_FORM_SHARED_SECRET", "CONTACT_OTP_PEPPER"].includes(key))
+      .filter(([key]) => ![
+        "CONTACT_ADMIN_RECIPIENT_EMAIL",
+        "CONTACT_FORM_SHARED_SECRET",
+        "CONTACT_OTP_PEPPER"
+      ].includes(key))
       .map(([key, value]) => `${key}:${value}`)
       .join("\n");
     expect(stored).not.toContain(identity.email);
@@ -278,7 +294,7 @@ describe("Contact Google Apps Script", () => {
 
     const operator = runtime.sentEmails[1];
     expect(operator).toMatchObject({
-      to: "matsui.yuto@st.kitasato-u.ac.jp",
+      to: adminRecipient,
       subject: "【COMPASS】お問い合わせ",
       options: { name: "学生支援団体COMPASS", replyTo: identity.email }
     });
@@ -291,7 +307,7 @@ describe("Contact Google Apps Script", () => {
     expect(applicant).toMatchObject({
       to: identity.email,
       subject: "【COMPASS】お問い合わせを受け付けました",
-      options: { name: "学生支援団体COMPASS", replyTo: "matsui.yuto@st.kitasato-u.ac.jp" }
+      options: { name: "学生支援団体COMPASS", replyTo: adminRecipient }
     });
     expect(applicant?.body).toContain(submitPayload.details);
     expect(applicant?.body).toContain("※本メールはGoogle Apps Scriptにより自動送信されています。");
@@ -341,7 +357,7 @@ describe("Contact Google Apps Script", () => {
     runtime.setFailAtEmail(0);
     expect(post(runtime.context, submitPayload)).toEqual({ ok: true, requestId: submitRequestId });
     expect(runtime.sentEmails).toHaveLength(3);
-    expect(runtime.sentEmails.filter((email) => email.to === "matsui.yuto@st.kitasato-u.ac.jp")).toHaveLength(1);
+    expect(runtime.sentEmails.filter((email) => email.to === adminRecipient)).toHaveLength(1);
   });
 
   it("rejects missing secrets and insufficient mail quota", () => {
@@ -351,5 +367,21 @@ describe("Contact Google Apps Script", () => {
     const quota = createGasRuntime({ quota: 0 });
     expect(post(quota.context, issuePayload)).toEqual({ ok: false, code: "quota" });
     expect(quota.sentEmails).toHaveLength(0);
+  });
+
+  it("fails closed when the operator recipient is missing or malformed", () => {
+    for (const adminEmail of [
+      "missing",
+      "invalid-address",
+      "operator@example.invalid\r\nBcc:x@example.invalid",
+      "first@example.invalid,second@example.invalid"
+    ]) {
+      const runtime = createGasRuntime({ adminEmail });
+      expect(post(runtime.context, issuePayload)).toEqual({
+        ok: false,
+        code: "configuration"
+      });
+      expect(runtime.sentEmails).toHaveLength(0);
+    }
   });
 });

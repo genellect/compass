@@ -167,3 +167,98 @@ for (const path of ["/", "/INTRO_Interactive/", "/INTRO_Interactive/developers/"
     expect(runtimeErrors, `runtime errors while checking GitHub Portfolio on ${path}`).toEqual([]);
   });
 }
+
+for (const viewport of [
+  { name: "library-admin-mobile", width: 390, height: 844 },
+  { name: "library-admin-desktop", width: 1440, height: 900 },
+] satisfies ResponsiveViewport[]) {
+  test(`Library administrator roster preserves COMPASS layout: ${viewport.name}`, async ({ page }) => {
+    const runtimeErrors = collectRuntimeErrors(page);
+    await page.setViewportSize(viewport);
+    await page.emulateMedia({ reducedMotion: "reduce" });
+    const response = await page.goto("/library-registration/admin/", { waitUntil: "domcontentloaded" });
+    expect(response?.status()).toBe(200);
+
+    const openButton = page.getByRole("button", { name: "管理画面を開く" });
+    await expect(openButton).toBeEnabled();
+    await expect(page.locator("#mock-admin-role")).toHaveCount(0);
+    await openButton.click();
+    await expect(page.getByRole("heading", { name: "登録者名簿", exact: true })).toBeVisible();
+    await expect(page.getByRole("button", { name: "名簿出力", exact: true })).toBeVisible();
+
+    const report = await page.evaluate(() => {
+      const root = getComputedStyle(document.documentElement);
+      const header = document.querySelector<HTMLElement>(".admin-header");
+      const workspace = document.querySelector<HTMLElement>(".admin-workspace");
+      const tableWrap = document.querySelector<HTMLElement>(".admin-roster-table-wrap");
+      const tableHeader = document.querySelector<HTMLElement>(".admin-roster-table thead th");
+      return {
+        tokens: {
+          night: root.getPropertyValue("--admin-night-950").trim(),
+          cyan: root.getPropertyValue("--admin-cyan").trim(),
+          gold: root.getPropertyValue("--admin-gold").trim(),
+        },
+        headerBackground: header ? getComputedStyle(header).backgroundColor : "",
+        workspaceBackground: workspace ? getComputedStyle(workspace).backgroundImage : "",
+        tableHeaderPosition: tableHeader ? getComputedStyle(tableHeader).position : "",
+        tableClientWidth: tableWrap?.clientWidth ?? 0,
+        tableScrollWidth: tableWrap?.scrollWidth ?? 0,
+        pageOverflow: document.documentElement.scrollWidth - window.innerWidth,
+        visibleText: document.body.innerText,
+      };
+    });
+
+    expect(report.tokens).toEqual({ night: "#020812", cyan: "#66e6ef", gold: "#e7bc5d" });
+    expect(report.headerBackground).toBe("rgba(2, 8, 18, 0.97)");
+    expect(report.workspaceBackground).toContain("linear-gradient");
+    expect(report.tableHeaderPosition).toBe("sticky");
+    expect(report.pageOverflow).toBeLessThanOrEqual(1);
+    if (viewport.width === 390) {
+      expect(report.tableScrollWidth).toBeGreaterThan(report.tableClientWidth);
+    }
+    expect(report.visibleText).not.toMatch(/PHASE|SYNTHETIC|MOCK|ADMIN API|生成AI|開発版/i);
+    await expect(page.locator(".site-header, .desktop-nav, #mobile-menu")).toHaveCount(0);
+    expect(runtimeErrors).toEqual([]);
+  });
+}
+
+for (const viewport of [
+  { name: "library-registration-mobile", width: 390, height: 844 },
+  { name: "library-registration-desktop", width: 1440, height: 900 },
+] satisfies ResponsiveViewport[]) {
+  test(`Library registration keeps the approved single-column flow: ${viewport.name}`, async ({ page }) => {
+    const runtimeErrors = await openRoute(page, "/library-registration/", viewport);
+    const title = page.getByRole("heading", {
+      name: "ようこそ、 未来戦略ライブラリへ。",
+      exact: true,
+    });
+    await expect(title).toBeVisible();
+    await expect(page.getByRole("heading", { name: "大学アカウント認証" })).toBeVisible();
+    await expect(page.getByRole("button", { name: "登録内容を確認する" })).toHaveCount(1);
+    await expect(page.getByRole("heading", { name: "入力状況" })).toHaveCount(0);
+
+    const termsCheckbox = page.getByRole("checkbox", {
+      name: /上記の利用規約を確認し、同意します。/,
+    });
+    await expect(termsCheckbox).toBeDisabled();
+    await page.getByRole("button", { name: /利用規約 全5項目/ }).click();
+    await expect(termsCheckbox).toBeEnabled();
+
+    const report = await page.evaluate(() => {
+      const heading = document.querySelector<HTMLElement>("#registration-title");
+      const headingBounds = heading?.getBoundingClientRect();
+      const visibleText = document.body.innerText;
+      return {
+        pageOverflow: document.documentElement.scrollWidth - window.innerWidth,
+        headingLeft: headingBounds?.left ?? -1,
+        headingRight: headingBounds?.right ?? window.innerWidth + 1,
+        visibleText,
+      };
+    });
+    expect(report.pageOverflow).toBeLessThanOrEqual(1);
+    expect(report.headingLeft).toBeGreaterThanOrEqual(0);
+    expect(report.headingRight).toBeLessThanOrEqual(viewport.width + 1);
+    expect(report.visibleText).not.toMatch(/入力状況|検証|モック|PHASE|SYNTHETIC/i);
+    expect(runtimeErrors).toEqual([]);
+  });
+}

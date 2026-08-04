@@ -3,25 +3,35 @@
   "private": true,
   "version": "3.0.0",
   "scripts": {
-    "dev": "next dev --hostname 127.0.0.1",
+    "dev": "next dev --webpack --hostname 127.0.0.1",
     "dev:pages": "wrangler pages dev out --port 8788",
     "serve:responsive": "node scripts/serve-static-export.mjs",
     "typecheck": "tsc --noEmit",
     "test:registration": "vitest run tests/community-registration-schema.test.ts tests/community-registration-function.test.ts tests/community-registration-gas.test.ts tests/contact-schema.test.ts tests/contact-function.test.ts tests/contact-gas.test.ts",
+    "test:library-registration": "vitest run src/library-registration/eligibility.test.ts src/library-registration/GoogleSignInButton.test.ts src/library-registration/phase6Client.test.ts src/library-registration/admin/adminClient.test.ts src/library-registration/admin/adminMock.test.ts src/library-registration/admin/adminSessionGuard.test.ts tests/library-admin-api-proxy-function.test.ts",
+    "test:library-release-gate": "node --test tests/library-release-gate.test.mjs tests/library-frontend-production-rehearsal.test.mjs tests/library-cloudflare-preview.test.mjs tests/library-cloudflare-production.test.mjs tests/public-source-boundary.test.mjs tests/git-history-secret-scan.test.mjs",
+    "verify:public-source": "node scripts/verify-public-source-boundary.mjs",
+    "verify:git-history-secrets": "node scripts/scan-git-history-secrets.mjs --summary-only",
+    "verify:library-mock": "node scripts/verify-library-mock-build.mjs",
+    "rehearse:library-production": "powershell.exe -NoProfile -ExecutionPolicy Bypass -File scripts/library-frontend-production-rehearsal.ps1 -Action Run",
+    "test": "npm run test:registration && npm run test:library-registration && npm run test:library-release-gate",
     "clean": "node scripts/clean-next-output.mjs",
     "optimize:images": "node scripts/optimize-images.mjs",
-    "build": "npm run clean && npm run optimize:images && next build --webpack && node scripts/assemble-next-export.mjs",
+    "build": "node scripts/assert-library-build-target.mjs && npm run clean && npm run optimize:images && next build --webpack && node scripts/assemble-next-export.mjs",
     "verify": "node scripts/verify-next-build.mjs",
     "test:responsive": "playwright test tests/responsive/responsive.spec.ts tests/responsive/interaction-contracts.spec.ts tests/responsive/semantic-lines.spec.ts tests/responsive/mobile-device.spec.ts",
     "test:responsive:visual": "playwright test tests/responsive/visual-regression.spec.ts",
     "test:responsive:update-snapshots": "playwright test tests/responsive/visual-regression.spec.ts --update-snapshots",
     "test:responsive:full": "playwright test tests/responsive/responsive.spec.ts tests/responsive/responsive-full.spec.ts tests/responsive/breakpoint-boundaries.spec.ts tests/responsive/interaction-contracts.spec.ts tests/responsive/manifesto-chapters.spec.ts tests/responsive/semantic-lines.spec.ts tests/responsive/mobile-device.spec.ts tests/responsive/visual-regression.spec.ts",
     "check:responsive:full": "npm run test:registration && npm run typecheck && npm run build && npm run verify && npm run test:responsive:full",
-    "deploy:cloudflare": "wrangler pages deploy out --project-name compass-official",
-    "check": "npm run test:registration && npm run typecheck && npm run build && npm run verify && npm run test:responsive"
+    "deploy:cloudflare": "node scripts/refuse-cloudflare-production-deploy.mjs",
+    "deploy:cloudflare:library-preview": "powershell.exe -NoProfile -ExecutionPolicy Bypass -File scripts/deploy-library-cloudflare-preview.ps1",
+    "deploy:cloudflare:library-ui-review": "powershell.exe -NoProfile -ExecutionPolicy Bypass -File scripts/deploy-library-cloudflare-ui-review.ps1",
+    "deploy:cloudflare:library-production": "powershell.exe -NoProfile -ExecutionPolicy Bypass -File scripts/deploy-library-cloudflare-registration-production.ps1",
+    "check": "npm run verify:public-source && npm run test && npm run typecheck && npm run build && npm run verify && npm run test:responsive"
   },
   "dependencies": {
-    "next": "^16.0.0",
+    "next": "16.2.11",
     "react": "^19.2.7",
     "react-dom": "^19.2.7",
     "zod": "^4.4.3"
@@ -31,9 +41,14 @@
     "@types/node": "^24.0.0",
     "@types/react": "^19.2.17",
     "@types/react-dom": "^19.2.3",
-    "sharp": "0.34.5",
+    "sharp": "0.35.3",
     "typescript": "5.9.3",
     "vitest": "^4.1.10",
     "wrangler": "^4.114.0"
+  },
+  "overrides": {
+    "postcss": "8.5.25",
+    "undici": "7.29.0",
+    "sharp": "0.35.3"
   }
 }

@@ -1,4 +1,5 @@
-﻿User-agent: *
+User-agent: *
 Allow: /
+Disallow: /library-registration/admin/
 
 Sitemap: https://compass-official.pages.dev/sitemap.xml
