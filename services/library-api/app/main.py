@@ -49,6 +49,8 @@ from app.drive_operations import (
     requeue_drive_operation,
 )
 from app.eligibility import evaluate_eligibility
+from app.notification_client import GasNotificationWebhookClient
+from app.notification_outbox import process_due_notification_outbox
 from app.observability import emit_event
 from app.registration_service import (
     PersistenceConflictError,
@@ -1095,6 +1097,16 @@ def phase7_process_operations(
         settings,
         limit=request.limit,
     )
+    if settings.phase7_notification_delivery_enabled:
+        # Drive commits before notification dispatch. A webhook failure can
+        # only update its isolated outbox row and never roll back access.
+        notification_client = GasNotificationWebhookClient(settings)
+        process_due_notification_outbox(
+            session,
+            notification_client,
+            settings,
+            limit=request.limit,
+        )
     response_results = [
         Phase7OperationResult(
             operation_id=result.operation_id,

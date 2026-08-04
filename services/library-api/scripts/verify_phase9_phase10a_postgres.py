@@ -187,7 +187,7 @@ def main() -> None:
             )
             assert connection.scalar(
                 text("SELECT version_num FROM alembic_version")
-            ) == "e9f0a1b2c3d4"
+            ) == "fa1b2c3d4e5f"
 
         _cleanup_stale_synthetic_batches(factory)
         if os.environ.get("FSL_PHASE9_10A_CLEANUP_ONLY") == "confirmed":
@@ -399,7 +399,7 @@ def main() -> None:
                 {
                     "status": "pass",
                     "classification": "synthetic-only",
-                    "schema_head": "e9f0a1b2c3d4",
+                    "schema_head": "fa1b2c3d4e5f",
                     "phase9_rows": 3,
                     "concurrent_apply_workers": 2,
                     "duplicate_members": 0,

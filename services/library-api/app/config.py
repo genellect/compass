@@ -1,4 +1,6 @@
 from functools import lru_cache
+from hashlib import sha256
+import hmac
 import re
 import unicodedata
 from urllib.parse import parse_qs, urlparse
@@ -9,6 +11,9 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 PRODUCTION_DRIVE_ACTIVATION_CONFIRMATION = (
     "I_APPROVED_PRODUCTION_DRIVE_SIDE_EFFECTS_V1"
+)
+PRODUCTION_NOTIFICATION_ACTIVATION_CONFIRMATION = (
+    "I_APPROVED_PRODUCTION_GAS_EMAIL_NOTIFICATIONS_V1"
 )
 PRODUCTION_ADMIN_ACTIVATION_CONFIRMATION = (
     "I_APPROVED_PRODUCTION_ADMIN_API_AFTER_MFA_BOOTSTRAP_V1"
@@ -22,6 +27,16 @@ PRODUCTION_API_WRITES_ACTIVATION_CONFIRMATION = (
 PRODUCTION_EXPORT_ACTIVATION_CONFIRMATION = (
     "I_APPROVED_PRODUCTION_PHASE10A_EXPORT_AFTER_DATA_HANDLING_REVIEW_V1"
 )
+NOTIFICATION_HMAC_CONTEXT = b"fsl-mailapp-notification-v1"
+
+
+def derive_notification_hmac_key(root_key: str) -> bytes:
+    """Derive a notification-only key without exposing the attestation root."""
+    return hmac.new(
+        root_key.encode("utf-8"),
+        NOTIFICATION_HMAC_CONTEXT,
+        sha256,
+    ).digest()
 
 
 class Settings(BaseSettings):
@@ -108,6 +123,10 @@ class Settings(BaseSettings):
     phase7_drive_api_enabled: bool = False
     phase7_drive_kill_switch: bool = True
     phase7_drive_activation_confirmation: str = ""
+    phase7_notification_delivery_enabled: bool = False
+    phase7_notification_kill_switch: bool = True
+    phase7_notification_activation_confirmation: str = ""
+    gas_notification_webhook_url: str = ""
     phase7_worker_secret: str = ""
     worker_auth_mode: str = "shared_secret"
     worker_oidc_audience: str = ""
@@ -133,6 +152,26 @@ class Settings(BaseSettings):
     phase7_operation_lease_seconds: int = Field(default=60, ge=15, le=600)
     phase7_resource_lease_seconds: int = Field(default=60, ge=15, le=600)
     phase7_retry_base_seconds: int = Field(default=30, ge=1, le=3600)
+    notification_operation_lease_seconds: int = Field(
+        default=60,
+        ge=15,
+        le=600,
+    )
+    notification_retry_base_seconds: int = Field(
+        default=30,
+        ge=1,
+        le=3600,
+    )
+    notification_request_timeout_seconds: int = Field(
+        default=8,
+        ge=2,
+        le=15,
+    )
+    notification_worker_time_budget_seconds: int = Field(
+        default=20,
+        ge=5,
+        le=60,
+    )
     worker_batch_size: int = Field(default=20, ge=1, le=20)
     worker_time_budget_seconds: int = Field(default=45, ge=5, le=110)
     drive_request_timeout_seconds: int = Field(default=20, ge=3, le=120)
@@ -230,6 +269,18 @@ class Settings(BaseSettings):
                 "configuration."
             )
 
+    def validate_no_notification_configuration(self, *, surface: str) -> None:
+        if (
+            self.phase7_notification_delivery_enabled
+            or not self.phase7_notification_kill_switch
+            or self.phase7_notification_activation_confirmation.strip()
+            or self.gas_notification_webhook_url.strip()
+        ):
+            raise ValueError(
+                f"Production {surface} surface must not receive notification "
+                "configuration."
+            )
+
     def validate_phase7_worker_boundary(self) -> None:
         if not self.phase7_worker_api_enabled:
             raise ValueError("Phase 7 worker API is disabled.")
@@ -262,6 +313,54 @@ class Settings(BaseSettings):
         )
         if not all(value.strip() for value in required):
             raise ValueError("Google Drive OAuth is not configured.")
+
+    def validate_phase7_notification_configuration(self) -> None:
+        parsed = urlparse(self.gas_notification_webhook_url)
+        if (
+            parsed.scheme != "https"
+            or not parsed.netloc
+            or parsed.username is not None
+            or parsed.password is not None
+            or parsed.query
+            or parsed.fragment
+        ):
+            raise ValueError("GAS notification webhook URL is invalid.")
+        if self.app_env.lower() == "production" and (
+            parsed.hostname != "script.google.com"
+            or not parsed.path.startswith("/macros/s/")
+            or not parsed.path.endswith("/exec")
+        ):
+            raise ValueError("Production GAS notification webhook is invalid.")
+        root_key = self.drive_operation_attestation_key
+        if len(root_key.encode("utf-8")) < 32:
+            raise ValueError("Notification signing root is not configured.")
+        derived_key = derive_notification_hmac_key(root_key)
+        if len(derived_key) != 32 or hmac.compare_digest(
+            derived_key,
+            root_key.encode("utf-8"),
+        ):
+            raise ValueError("Notification signing key separation failed.")
+
+    def validate_phase7_notification_boundary(self) -> None:
+        if not self.phase7_notification_delivery_enabled:
+            raise ValueError("Notification delivery is disabled.")
+        if self.phase7_notification_kill_switch:
+            raise ValueError("Notification delivery kill switch is active.")
+        if not self.external_side_effects_enabled:
+            raise ValueError("External side effects are disabled.")
+        if not self.phase7_worker_api_enabled or not self.phase7_drive_api_enabled:
+            raise ValueError("Drive worker must be active before notification delivery.")
+        if self.phase7_drive_kill_switch:
+            raise ValueError("Drive worker kill switch is active.")
+        if (
+            self.app_env.lower() == "production"
+            and self.phase7_notification_activation_confirmation
+            != PRODUCTION_NOTIFICATION_ACTIVATION_CONFIRMATION
+        ):
+            raise ValueError(
+                "Production notification activation confirmation is missing."
+            )
+        self.validate_phase7_notification_configuration()
 
     def validate_drive_operation_attestation_configuration(self) -> None:
         key = self.drive_operation_attestation_key
@@ -386,6 +485,7 @@ class Settings(BaseSettings):
 
         if active_surface == "public":
             self.validate_no_admin_configuration(surface="public")
+            self.validate_no_notification_configuration(surface="public")
             if self.public_database_access_mode != "rpc_v1":
                 raise ValueError(
                     "Production public database access mode must be rpc_v1."
@@ -490,6 +590,7 @@ class Settings(BaseSettings):
                 raise ValueError("Public API must not receive the Drive resource ID.")
 
         if active_surface == "admin":
+            self.validate_no_notification_configuration(surface="admin")
             if self.phase5_local_api_enabled:
                 raise ValueError("Local API must be disabled in production.")
             if self.phase6_auth_api_enabled:
@@ -597,6 +698,20 @@ class Settings(BaseSettings):
                 raise ValueError(
                     "Production worker activation flags are inconsistent."
                 )
+            notification_standby = (
+                not self.phase7_notification_delivery_enabled
+                and self.phase7_notification_kill_switch
+                and not self.phase7_notification_activation_confirmation.strip()
+                and not self.gas_notification_webhook_url.strip()
+            )
+            notification_active = (
+                self.phase7_notification_delivery_enabled
+                and not self.phase7_notification_kill_switch
+            )
+            if not notification_standby and not notification_active:
+                raise ValueError(
+                    "Production notification activation flags are inconsistent."
+                )
             if (
                 standby_flags
                 and self.phase7_drive_activation_confirmation.strip()
@@ -618,6 +733,8 @@ class Settings(BaseSettings):
                     "https://www.googleapis.com/drive/v3"
                 ):
                     raise ValueError("Production Drive API endpoint is invalid.")
+            if notification_active:
+                self.validate_phase7_notification_boundary()
 
 
 @lru_cache

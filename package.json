@@ -7,7 +7,7 @@
     "dev:pages": "wrangler pages dev out --port 8788",
     "serve:responsive": "node scripts/serve-static-export.mjs",
     "typecheck": "tsc --noEmit",
-    "test:registration": "vitest run tests/community-registration-schema.test.ts tests/community-registration-function.test.ts tests/community-registration-gas.test.ts tests/contact-schema.test.ts tests/contact-function.test.ts tests/contact-gas.test.ts",
+    "test:registration": "vitest run tests/community-registration-schema.test.ts tests/community-registration-function.test.ts tests/community-registration-gas.test.ts tests/contact-schema.test.ts tests/contact-function.test.ts tests/contact-gas.test.ts tests/library-registration-notification-gas.test.ts",
     "test:library-registration": "vitest run src/library-registration/eligibility.test.ts src/library-registration/GoogleSignInButton.test.ts src/library-registration/phase6Client.test.ts src/library-registration/admin/adminClient.test.ts src/library-registration/admin/adminMock.test.ts src/library-registration/admin/adminSessionGuard.test.ts tests/library-admin-api-proxy-function.test.ts",
     "test:library-release-gate": "node --test tests/library-release-gate.test.mjs tests/library-frontend-production-rehearsal.test.mjs tests/library-cloudflare-preview.test.mjs tests/library-cloudflare-production.test.mjs tests/public-source-boundary.test.mjs tests/git-history-secret-scan.test.mjs",
     "verify:public-source": "node scripts/verify-public-source-boundary.mjs",

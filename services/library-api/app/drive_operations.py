@@ -25,6 +25,7 @@ from app.drive_attestation import (
     verify_drive_operation_attestation,
 )
 from app.drive_client import DriveClientError, DrivePermissionClient
+from app.notification_outbox import enqueue_drive_success_notifications
 from app.observability import emit_event
 
 
@@ -350,6 +351,8 @@ def _finish_success(
     operation.lease_owner = None
     operation.locked_until = None
     operation.completed_at = _now()
+    if operation.operation_type == "drive_grant":
+        enqueue_drive_success_notifications(session, operation)
     session.commit()
     return DriveOperationResult(operation.id, operation.status)
 

@@ -5,7 +5,11 @@ from typing import Any
 import pytest
 
 from app.config import Settings
-from app.drive_client import DriveClientError, GoogleDrivePermissionClient
+from app.drive_client import (
+    DRIVE_PERMISSION_EMAIL_MESSAGE,
+    DriveClientError,
+    GoogleDrivePermissionClient,
+)
 
 
 SETTINGS = Settings(
@@ -105,6 +109,11 @@ def test_permission_create_forces_reader_and_standard_notification(
     assert permission.permission_id == "new-permission"
     assert request["method"] == "POST"
     assert request["params"]["sendNotificationEmail"] == "true"
+    assert request["params"]["emailMessage"] == (
+        "未来戦略ライブラリの利用登録が完了しました。"
+        "この通知内のリンクから共有フォルダをご利用ください。"
+    )
+    assert request["params"]["emailMessage"] == DRIVE_PERMISSION_EMAIL_MESSAGE
     assert request["json"] == {
         "type": "user",
         "role": "reader",

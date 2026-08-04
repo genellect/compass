@@ -45,6 +45,11 @@ worker_drive_activation = {
   enabled      = false
   confirmation = ""
 }
+worker_notification_activation = {
+  enabled      = false
+  confirmation = ""
+}
+gas_notification_webhook_url = ""
 admin_api_activation = {
   enabled      = false
   confirmation = ""

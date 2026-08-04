@@ -1,0 +1,18 @@
+{
+  "syntheticOnly": true,
+  "derivedKeyHex": "0000000000000000000000000000000000000000000000000000000000000000",
+  "request": {
+    "version": "fsl-notification-v1",
+    "issuedAt": "2026-08-04T10:00:00.000Z",
+    "messageId": "8ab3959a-7184-40ca-8208-b4cb481ede35",
+    "payload": {
+      "registrationId": "1f386090-84e0-4c2f-a4d7-6f8f4f8ad141",
+      "fullName": "北里 花子",
+      "email": "student@st.kitasato-u.ac.jp",
+      "eligibilityStatus": "approved",
+      "driveAccessStatus": "granted",
+      "processedAt": "2026-08-04T09:59:30.000Z"
+    },
+    "signature": "dc3d2383df4a00c9511d6410adc9709edad0b5a48653c6723174798b4fd847d7"
+  }
+}

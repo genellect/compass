@@ -25,6 +25,7 @@ EXPECTED_TABLES = {
     "library_import_batches",
     "library_import_rows",
     "library_members",
+    "library_notification_outbox",
     "library_operations",
     "library_resource_leases",
 }
@@ -96,7 +97,7 @@ def test_initial_migration_upgrade_and_downgrade(
     with Session(engine) as session:
         assert session.execute(
             text("SELECT version_num FROM alembic_version")
-        ).scalar_one() == "e9f0a1b2c3d4"
+        ).scalar_one() == "fa1b2c3d4e5f"
     command.check(config)
 
     engine.dispose()
@@ -247,7 +248,7 @@ def test_phase9_hardening_upgrades_an_existing_empty_e0_database(
     }.issubset(after_row_columns)
     with engine.connect() as connection:
         assert connection.scalar(text("SELECT version_num FROM alembic_version")) == (
-            "e9f0a1b2c3d4"
+            "fa1b2c3d4e5f"
         )
     engine.dispose()
     get_settings.cache_clear()

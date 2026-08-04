@@ -422,6 +422,9 @@ FROM (VALUES
     ('public.library_access_grants', 'UPDATE'),
     ('public.library_operations', 'SELECT'),
     ('public.library_operations', 'UPDATE'),
+    ('public.library_notification_outbox', 'SELECT'),
+    ('public.library_notification_outbox', 'INSERT'),
+    ('public.library_notification_outbox', 'UPDATE'),
     ('public.library_resource_leases', 'SELECT'),
     ('public.library_resource_leases', 'INSERT'),
     ('public.library_resource_leases', 'UPDATE'),
@@ -457,11 +460,15 @@ SELECT NOT has_table_privilege('fsl_api_runtime', 'public.library_admins', 'SELE
    AND NOT has_table_privilege('fsl_admin_runtime', 'public.library_import_batches', 'SELECT')
    AND NOT has_table_privilege('fsl_admin_runtime', 'public.library_import_rows', 'SELECT')
    AND NOT has_table_privilege('fsl_admin_runtime', 'public.library_resource_leases', 'SELECT')
+   AND NOT has_table_privilege('fsl_admin_runtime', 'public.library_notification_outbox', 'SELECT')
+   AND NOT has_table_privilege('fsl_admin_runtime', 'public.library_notification_outbox', 'INSERT')
+   AND NOT has_table_privilege('fsl_admin_runtime', 'public.library_notification_outbox', 'UPDATE')
    AND NOT has_table_privilege('fsl_worker_runtime', 'public.library_admins', 'SELECT')
    AND NOT has_table_privilege('fsl_worker_runtime', 'public.library_admin_audit', 'SELECT')
    AND NOT has_table_privilege('fsl_worker_runtime', 'public.library_export_runs', 'SELECT')
    AND NOT has_table_privilege('fsl_worker_runtime', 'public.library_operations', 'INSERT')
    AND NOT has_table_privilege('fsl_worker_runtime', 'public.library_access_grants', 'INSERT')
+   AND NOT has_table_privilege('fsl_worker_runtime', 'public.library_notification_outbox', 'DELETE')
    AND NOT has_table_privilege('fsl_api_runtime', 'public.alembic_version', 'UPDATE')
    AND NOT has_table_privilege('fsl_worker_runtime', 'public.alembic_version', 'UPDATE')
    AND NOT has_table_privilege('fsl_backup_restore', 'public.library_members', 'INSERT')

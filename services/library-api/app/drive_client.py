@@ -14,6 +14,10 @@ from app.eligibility import normalize_email
 
 
 DRIVE_FILE_SCOPE = "https://www.googleapis.com/auth/drive.file"
+DRIVE_PERMISSION_EMAIL_MESSAGE = (
+    "未来戦略ライブラリの利用登録が完了しました。"
+    "この通知内のリンクから共有フォルダをご利用ください。"
+)
 RETRYABLE_HTTP_STATUSES = {408, 409, 425, 429, 500, 502, 503, 504}
 
 
@@ -227,6 +231,7 @@ class GoogleDrivePermissionClient:
             f"files/{encoded_resource}/permissions",
             params={
                 "sendNotificationEmail": "true",
+                "emailMessage": DRIVE_PERMISSION_EMAIL_MESSAGE,
                 "supportsAllDrives": "true",
                 "fields": "id,role,emailAddress",
             },

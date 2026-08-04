@@ -474,6 +474,121 @@ class LibraryOperation(Base):
     __mapper_args__ = {"version_id_col": record_version}
 
 
+class LibraryNotificationOutbox(Base):
+    __tablename__ = "library_notification_outbox"
+    __table_args__ = (
+        CheckConstraint(
+            (
+                "notification_type IN "
+                "('registration_drive_granted')"
+            ),
+            name="ck_library_notification_outbox_type",
+        ),
+        CheckConstraint(
+            "status IN ('pending', 'running', 'succeeded', 'failed', 'dead')",
+            name="ck_library_notification_outbox_status",
+        ),
+        UniqueConstraint(
+            "drive_operation_id",
+            "notification_type",
+            name="uq_library_notification_outbox_operation_type",
+        ),
+        Index(
+            "ix_library_notification_outbox_due",
+            "status",
+            "next_attempt_at",
+            "created_at",
+        ),
+    )
+
+    # The outbox ID is also the stable webhook messageId. No rendered message,
+    # recipient address, student number, question, or other duplicate PII is
+    # persisted here; the worker derives the minimum payload from canonical
+    # registration rows only while dispatching.
+    id: Mapped[UUID] = mapped_column(
+        Uuid(as_uuid=True),
+        primary_key=True,
+        default=uuid4,
+    )
+    member_id: Mapped[UUID] = mapped_column(
+        ForeignKey("library_members.id", ondelete="CASCADE"),
+        nullable=False,
+        index=True,
+    )
+    application_id: Mapped[UUID] = mapped_column(
+        ForeignKey("library_applications.id", ondelete="CASCADE"),
+        nullable=False,
+        index=True,
+    )
+    access_grant_id: Mapped[UUID] = mapped_column(
+        ForeignKey("library_access_grants.id", ondelete="CASCADE"),
+        nullable=False,
+        index=True,
+    )
+    drive_operation_id: Mapped[UUID] = mapped_column(
+        ForeignKey("library_operations.id", ondelete="CASCADE"),
+        nullable=False,
+        index=True,
+    )
+    notification_key: Mapped[str] = mapped_column(
+        String(255),
+        unique=True,
+        nullable=False,
+    )
+    notification_type: Mapped[str] = mapped_column(
+        String(64),
+        nullable=False,
+    )
+    status: Mapped[str] = mapped_column(
+        String(32),
+        default="pending",
+        nullable=False,
+    )
+    attempt_count: Mapped[int] = mapped_column(
+        Integer,
+        default=0,
+        nullable=False,
+    )
+    max_attempts: Mapped[int] = mapped_column(
+        Integer,
+        default=5,
+        nullable=False,
+    )
+    error_code: Mapped[str | None] = mapped_column(String(128))
+    error_summary: Mapped[str | None] = mapped_column(String(500))
+    next_attempt_at: Mapped[datetime | None] = mapped_column(
+        DateTime(timezone=True)
+    )
+    lease_owner: Mapped[str | None] = mapped_column(String(64))
+    locked_until: Mapped[datetime | None] = mapped_column(
+        DateTime(timezone=True)
+    )
+    external_action_started_at: Mapped[datetime | None] = mapped_column(
+        DateTime(timezone=True)
+    )
+    completed_at: Mapped[datetime | None] = mapped_column(
+        DateTime(timezone=True)
+    )
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True),
+        server_default=func.now(),
+        nullable=False,
+    )
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True),
+        server_default=func.now(),
+        onupdate=func.now(),
+        nullable=False,
+    )
+    record_version: Mapped[int] = mapped_column(
+        BigInteger,
+        default=1,
+        nullable=False,
+    )
+
+    __mapper_args__ = {"version_id_col": record_version}
+
+
 class LibraryResourceLease(Base):
     __tablename__ = "library_resource_leases"
 
