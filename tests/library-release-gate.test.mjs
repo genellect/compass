@@ -726,6 +726,10 @@ test("public library registration CTA defaults to the internal route with an exa
     /process\.env\.NEXT_PUBLIC_FSL_REGISTRATION_URL ===\s*FUTURE_STRATEGY_LIBRARY_LEGACY_FORM_HREF/
   );
   assert.match(registrationCtaSource, /isExternal \? "↗" : "→"/);
+  assert.match(
+    registrationCtaSource,
+    /<Link[\s\S]*?href=\{FUTURE_STRATEGY_LIBRARY_REGISTRATION_HREF\}[\s\S]*?prefetch=\{false\}/
+  );
   assert.match(siteHeaderSource, /libraryRegistrationIsExternal/);
   assert.match(
     siteHeaderSource,

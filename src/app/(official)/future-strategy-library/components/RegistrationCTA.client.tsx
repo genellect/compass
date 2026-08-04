@@ -57,7 +57,11 @@ export function RegistrationCTA({ placement }: { placement: Placement }) {
 
   if (!isExternal) {
     return (
-      <Link href={FUTURE_STRATEGY_LIBRARY_REGISTRATION_HREF} {...sharedProps}>
+      <Link
+        href={FUTURE_STRATEGY_LIBRARY_REGISTRATION_HREF}
+        prefetch={false}
+        {...sharedProps}
+      >
         {content}
       </Link>
     );

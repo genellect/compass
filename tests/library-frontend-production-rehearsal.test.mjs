@@ -54,11 +54,15 @@ test("PowerShell rehearsal is local-only, restores mock output, and guards COMPA
     "Set-ProductionRehearsalEnvironment",
     "Set-ExplicitMockEnvironment",
     "Restore-EnvironmentSnapshot",
+    "Read-Utf8TextFile",
+    "[IO.File]::ReadAllText",
     "production_normal_verify",
     "production_dedicated_verify",
+    '"production_evidence"',
     "admin_preview_marker_occurrences",
     "mock_restore_normal_verify",
     "mock_restore_dedicated_verify",
+    '"mock_restore_evidence"',
     "finally",
     "google_or_library_api_request_invoked = $false",
     "deployment_invoked = $false",
@@ -75,6 +79,12 @@ test("PowerShell rehearsal is local-only, restores mock output, and guards COMPA
       `Production rehearsal script is missing required marker: ${required}`
     );
   }
+
+  assert.doesNotMatch(
+    script,
+    /Get-Content -LiteralPath \$artifact\.FullName -Raw/,
+    "artifact evidence scans must preserve empty files as empty strings"
+  );
 
   for (const forbidden of [
     /deploy:cloudflare/i,

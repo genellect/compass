@@ -164,15 +164,24 @@ function Invoke-ExternalStep {
     }
 }
 
+function Read-Utf8TextFile {
+    param([Parameter(Mandatory = $true)][string]$Path)
+
+    # Get-Content -Raw returns $null for an empty file in Windows PowerShell 5.1.
+    # Next.js can emit an empty, tree-shaken JavaScript chunk, so always return
+    # a string before running marker scans over the exported artifact set.
+    return [IO.File]::ReadAllText($Path, [Text.Encoding]::UTF8)
+}
+
 function Get-OutputEvidence {
     param([Parameter(Mandatory = $true)][ValidateSet("production", "mock")][string]$Mode)
 
     $registrationPath = Join-Path $RepoRoot "out\library-registration\index.html"
     $adminPath = Join-Path $RepoRoot "out\library-registration\admin\index.html"
     $headersPath = Join-Path $RepoRoot "out\_headers"
-    $registration = Get-Content -LiteralPath $registrationPath -Raw
-    $admin = Get-Content -LiteralPath $adminPath -Raw
-    $headers = Get-Content -LiteralPath $headersPath -Raw
+    $registration = Read-Utf8TextFile -Path $registrationPath
+    $admin = Read-Utf8TextFile -Path $adminPath
+    $headers = Read-Utf8TextFile -Path $headersPath
     $textArtifacts = Get-ChildItem -LiteralPath (Join-Path $RepoRoot "out") -Recurse -File |
         Where-Object {
             $_.Extension -eq ".html" -or
@@ -184,7 +193,7 @@ function Get-OutputEvidence {
     $rehearsalAdminClientOccurrences = 0
     $adminPreviewMarkerOccurrences = 0
     foreach ($artifact in $textArtifacts) {
-        $contents = Get-Content -LiteralPath $artifact.FullName -Raw
+        $contents = Read-Utf8TextFile -Path $artifact.FullName
         $rehearsalApiOriginOccurrences += [regex]::Matches(
             $contents,
             [regex]::Escape($RehearsalApiOrigin)
@@ -279,6 +288,7 @@ try {
         Invoke-ExternalStep "production_build" "npm.cmd" @("run", "build")
         Invoke-ExternalStep "production_normal_verify" "npm.cmd" @("run", "verify")
         Invoke-ExternalStep "production_dedicated_verify" "node.exe" @("scripts/verify-library-production-build.mjs")
+        $script:CurrentStage = "production_evidence"
         $productionOutput = Get-OutputEvidence -Mode "production"
         $productionStatus = "pass"
     } catch {
@@ -291,6 +301,7 @@ try {
             Invoke-ExternalStep "mock_restore_build" "npm.cmd" @("run", "build")
             Invoke-ExternalStep "mock_restore_normal_verify" "npm.cmd" @("run", "verify")
             Invoke-ExternalStep "mock_restore_dedicated_verify" "node.exe" @("scripts/verify-library-mock-build.mjs")
+            $script:CurrentStage = "mock_restore_evidence"
             $mockOutput = Get-OutputEvidence -Mode "mock"
             $mockRestorationStatus = "pass"
         } catch {
@@ -366,7 +377,7 @@ try {
 }
 
 if ($mockRestorationFailure) {
-    throw "Final out/ mock restoration failed. Evidence: $evidencePath"
+    throw "Final out/ mock restoration failed at $mockRestorationFailureStage. Evidence: $evidencePath"
 }
 if ($environmentRestoreFailure) {
     throw "Caller environment restoration failed. Evidence: $evidencePath"
