@@ -332,6 +332,8 @@ def test_http_flow_requires_exact_phrase_and_uses_only_fake_sink(
             timeout=5,
         )
         assert selected.status_code == 200
+        assert selected.headers["Referrer-Policy"] == "no-referrer"
+        assert '<meta name="referrer" content="no-referrer">' in selected.text
         assert APPROVED_FOLDER_ID not in selected.text
 
         wrong = requests.post(
@@ -412,6 +414,7 @@ def test_http_partial_secret_write_is_blocked_and_nonzero(
             allow_redirects=False,
             timeout=5,
         )
+        assert authorize.headers["Referrer-Policy"] == "no-referrer"
         state = parse_qs(urlparse(authorize.headers["Location"]).query)["state"][0]
         callback = requests.get(
             base_url + f"/oauth2/callback?code=fake-code&state={state}",
@@ -420,6 +423,16 @@ def test_http_partial_secret_write_is_blocked_and_nonzero(
             timeout=5,
         )
         assert callback.status_code == 303
+        assert callback.headers["Referrer-Policy"] == "no-referrer"
+
+        picker = requests.get(
+            base_url + "/picker",
+            headers=headers,
+            timeout=5,
+        )
+        assert picker.status_code == 200
+        assert picker.headers["Referrer-Policy"] == "origin"
+        assert '<meta name="referrer" content="origin">' in picker.text
         selected = requests.post(
             base_url + "/select",
             headers=post_headers,
