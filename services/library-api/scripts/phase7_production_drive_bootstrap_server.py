@@ -188,6 +188,17 @@ class PartialSecretWriteError(SecretSinkError):
         self.records = tuple(records)
 
 
+@dataclass
+class BootstrapOutcome:
+    """Carries the terminal result without exposing any bootstrap values."""
+
+    status: str = "incomplete"
+
+    @property
+    def exit_code(self) -> int:
+        return 0 if self.status == "pass" else 4
+
+
 def _fingerprint(value: str) -> str:
     return hashlib.sha256(value.encode("utf-8")).hexdigest()
 
@@ -523,7 +534,9 @@ def create_handler(
     picker_app_id: str,
     approved_folder_fingerprint: str,
     secret_sink: SecretVersionSink,
+    outcome: BootstrapOutcome | None = None,
 ):
+    outcome = outcome or BootstrapOutcome()
     flow: dict[str, Any] = {
         "stage": "start",
         "oauth_state": "",
@@ -765,6 +778,7 @@ def create_handler(
                     folder_fingerprint=current_fingerprint,
                     records=records,
                 )
+                outcome.status = status
                 clear_sensitive_flow()
                 flow["stage"] = "finished"
                 self._send(_result_page(result))
@@ -811,6 +825,7 @@ def main() -> int:
         print("BLOCKED: required existing Secret Manager containers are unavailable.")
         return 3
 
+    outcome = BootstrapOutcome()
     server = HTTPServer(
         (HOST, PORT),
         create_handler(
@@ -820,6 +835,7 @@ def main() -> int:
             picker_app_id=required["picker_app_id"],
             approved_folder_fingerprint=required["approved_folder_fingerprint"],
             secret_sink=sink,
+            outcome=outcome,
         ),
     )
     print(f"Open http://localhost:{PORT}/")
@@ -831,7 +847,7 @@ def main() -> int:
     finally:
         server.RequestHandlerClass.shutdown_cleanup()
         server.server_close()
-    return 0
+    return outcome.exit_code
 
 
 if __name__ == "__main__":
