@@ -173,6 +173,31 @@ function Read-Utf8TextFile {
     return [IO.File]::ReadAllText($Path, [Text.Encoding]::UTF8)
 }
 
+function Get-FileSha256 {
+    param([Parameter(Mandatory = $true)][string]$Path)
+
+    $stream = [IO.File]::OpenRead($Path)
+    $sha256 = [Security.Cryptography.SHA256]::Create()
+    try {
+        $hash = $sha256.ComputeHash($stream)
+        return ([BitConverter]::ToString($hash) -replace '-', '').ToLowerInvariant()
+    }
+    finally {
+        $stream.Dispose()
+        $sha256.Dispose()
+    }
+}
+
+function Get-SanitizedFailureMessage {
+    param([Parameter(Mandatory = $true)][Exception]$Exception)
+
+    $message = [string]$Exception.Message
+    if ([string]::IsNullOrWhiteSpace($message)) {
+        return "No exception message was provided."
+    }
+    return $message.Replace($RepoRoot, "<repo>") -replace '[\r\n]+', ' '
+}
+
 function Get-OutputEvidence {
     param([Parameter(Mandatory = $true)][ValidateSet("production", "mock")][string]$Mode)
 
@@ -182,18 +207,26 @@ function Get-OutputEvidence {
     $registration = Read-Utf8TextFile -Path $registrationPath
     $admin = Read-Utf8TextFile -Path $adminPath
     $headers = Read-Utf8TextFile -Path $headersPath
-    $textArtifacts = Get-ChildItem -LiteralPath (Join-Path $RepoRoot "out") -Recurse -File |
-        Where-Object {
-            $_.Extension -eq ".html" -or
-            $_.Extension -eq ".js" -or
-            $_.Name -eq "_headers"
-        }
+    $textArtifacts = @(
+        Get-ChildItem -LiteralPath (Join-Path $RepoRoot "out") -Recurse -File |
+            Where-Object {
+                $_.Extension -eq ".html" -or
+                $_.Extension -eq ".js" -or
+                $_.Name -eq "_headers"
+            }
+    )
     $rehearsalApiOriginOccurrences = 0
     $rehearsalRegistrationClientOccurrences = 0
     $rehearsalAdminClientOccurrences = 0
     $adminPreviewMarkerOccurrences = 0
+    $emptyTextArtifactCount = 0
     foreach ($artifact in $textArtifacts) {
-        $contents = Read-Utf8TextFile -Path $artifact.FullName
+        if ($artifact.Length -eq 0) {
+            $emptyTextArtifactCount += 1
+            $contents = [string]::Empty
+        } else {
+            $contents = [string](Read-Utf8TextFile -Path $artifact.FullName)
+        }
         $rehearsalApiOriginOccurrences += [regex]::Matches(
             $contents,
             [regex]::Escape($RehearsalApiOrigin)
@@ -221,13 +254,14 @@ function Get-OutputEvidence {
         admin_authentication = $admin.Contains("管理者として認証")
         admin_static_fail_closed = $admin.Contains('class="admin-alert is-error"') -and -not $admin.Contains('class="admin-mock-login"')
         inspected_text_artifact_count = $textArtifacts.Count
+        empty_text_artifact_count = $emptyTextArtifactCount
         admin_preview_marker_occurrences = $adminPreviewMarkerOccurrences
         rehearsal_api_origin_text_occurrences = $rehearsalApiOriginOccurrences
         rehearsal_registration_client_text_occurrences = $rehearsalRegistrationClientOccurrences
         rehearsal_admin_client_text_occurrences = $rehearsalAdminClientOccurrences
-        registration_sha256 = (Get-FileHash -LiteralPath $registrationPath -Algorithm SHA256).Hash.ToLowerInvariant()
-        admin_sha256 = (Get-FileHash -LiteralPath $adminPath -Algorithm SHA256).Hash.ToLowerInvariant()
-        headers_sha256 = (Get-FileHash -LiteralPath $headersPath -Algorithm SHA256).Hash.ToLowerInvariant()
+        registration_sha256 = Get-FileSha256 -Path $registrationPath
+        admin_sha256 = Get-FileSha256 -Path $adminPath
+        headers_sha256 = Get-FileSha256 -Path $headersPath
     }
 }
 
@@ -349,12 +383,18 @@ try {
             status = $productionStatus
             failure_stage = $productionFailureStage
             failure_type = if ($productionFailure) { $productionFailure.GetType().FullName } else { $null }
+            failure_message = if ($productionFailure) {
+                Get-SanitizedFailureMessage -Exception $productionFailure
+            } else { $null }
             output = $productionOutput
         }
         final_mock_restoration = [ordered]@{
             status = $mockRestorationStatus
             failure_stage = $mockRestorationFailureStage
             failure_type = if ($mockRestorationFailure) { $mockRestorationFailure.GetType().FullName } else { $null }
+            failure_message = if ($mockRestorationFailure) {
+                Get-SanitizedFailureMessage -Exception $mockRestorationFailure
+            } else { $null }
             output = $mockOutput
         }
         caller_environment = [ordered]@{
@@ -363,6 +403,9 @@ try {
             restored = $environmentRestored
             restore_failure_type = if ($environmentRestoreFailure) {
                 $environmentRestoreFailure.GetType().FullName
+            } else { $null }
+            restore_failure_message = if ($environmentRestoreFailure) {
+                Get-SanitizedFailureMessage -Exception $environmentRestoreFailure
             } else { $null }
         }
         production_acceptance = $false
@@ -377,16 +420,24 @@ try {
 }
 
 if ($mockRestorationFailure) {
-    throw "Final out/ mock restoration failed at $mockRestorationFailureStage. Evidence: $evidencePath"
+    $failureType = $mockRestorationFailure.GetType().FullName
+    $failureMessage = Get-SanitizedFailureMessage -Exception $mockRestorationFailure
+    throw "Final out/ mock restoration failed at $mockRestorationFailureStage [$failureType]: $failureMessage Evidence: $evidencePath"
 }
 if ($environmentRestoreFailure) {
-    throw "Caller environment restoration failed. Evidence: $evidencePath"
+    $failureType = $environmentRestoreFailure.GetType().FullName
+    $failureMessage = Get-SanitizedFailureMessage -Exception $environmentRestoreFailure
+    throw "Caller environment restoration failed [$failureType]: $failureMessage Evidence: $evidencePath"
 }
 if ($evidenceWriteFailure) {
-    throw "Sanitized evidence could not be written."
+    $failureType = $evidenceWriteFailure.GetType().FullName
+    $failureMessage = Get-SanitizedFailureMessage -Exception $evidenceWriteFailure
+    throw "Sanitized evidence could not be written [$failureType]: $failureMessage"
 }
 if ($productionFailure) {
-    throw "Production-shaped rehearsal failed; final out/ was restored to mock. Evidence: $evidencePath"
+    $failureType = $productionFailure.GetType().FullName
+    $failureMessage = Get-SanitizedFailureMessage -Exception $productionFailure
+    throw "Production-shaped rehearsal failed at $productionFailureStage [$failureType]: $failureMessage Final out/ was restored to mock. Evidence: $evidencePath"
 }
 
 Write-Output "PASS: production-shaped frontend rehearsal completed locally."
