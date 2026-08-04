@@ -248,6 +248,134 @@ run "drive_activation_requires_drive_only_secrets" {
   expect_failures = [google_cloud_run_v2_job.migration]
 }
 
+run "notification_activation_requires_drive_worker" {
+  command = plan
+
+  variables {
+    runtime_services_activation = {
+      enabled      = true
+      confirmation = "I_APPROVED_PRODUCTION_RUNTIME_SERVICES_AFTER_MIGRATION_V1"
+    }
+    cost_guardrails_review = {
+      enabled                  = true
+      cloud_run_spend_cap_usd  = 0.20
+      project_alert_budget_usd = 1
+      confirmation             = "I_VERIFIED_CLOUD_RUN_SPEND_CAP_AND_NEAR_ZERO_COST_GUARDRAILS_V1"
+    }
+    notification_channel_names = ["projects/fsl-production-gate/notificationChannels/1"]
+    worker_notification_activation = {
+      enabled      = true
+      confirmation = "I_APPROVED_PRODUCTION_GAS_EMAIL_NOTIFICATIONS_V1"
+    }
+    gas_notification_webhook_url = "https://script.google.com/macros/s/synthetic-notification/exec"
+  }
+
+  expect_failures = [google_cloud_run_v2_job.migration]
+}
+
+run "notification_activation_requires_private_webhook_url" {
+  command = plan
+
+  variables {
+    runtime_services_activation = {
+      enabled      = true
+      confirmation = "I_APPROVED_PRODUCTION_RUNTIME_SERVICES_AFTER_MIGRATION_V1"
+    }
+    cost_guardrails_review = {
+      enabled                  = true
+      cloud_run_spend_cap_usd  = 0.20
+      project_alert_budget_usd = 1
+      confirmation             = "I_VERIFIED_CLOUD_RUN_SPEND_CAP_AND_NEAR_ZERO_COST_GUARDRAILS_V1"
+    }
+    notification_channel_names = ["projects/fsl-production-gate/notificationChannels/1"]
+    worker_drive_activation = {
+      enabled      = true
+      confirmation = "I_APPROVED_PRODUCTION_DRIVE_SIDE_EFFECTS_V1"
+    }
+    worker_notification_activation = {
+      enabled      = true
+      confirmation = "I_APPROVED_PRODUCTION_GAS_EMAIL_NOTIFICATIONS_V1"
+    }
+  }
+
+  expect_failures = [google_cloud_run_v2_job.migration]
+}
+
+run "notification_activation_reuses_attestation_secret_without_new_binding" {
+  command = plan
+
+  variables {
+    runtime_services_activation = {
+      enabled      = true
+      confirmation = "I_APPROVED_PRODUCTION_RUNTIME_SERVICES_AFTER_MIGRATION_V1"
+    }
+    cost_guardrails_review = {
+      enabled                  = true
+      cloud_run_spend_cap_usd  = 0.20
+      project_alert_budget_usd = 1
+      confirmation             = "I_VERIFIED_CLOUD_RUN_SPEND_CAP_AND_NEAR_ZERO_COST_GUARDRAILS_V1"
+    }
+    notification_channel_names = ["projects/fsl-production-gate/notificationChannels/1"]
+    worker_drive_activation = {
+      enabled      = true
+      confirmation = "I_APPROVED_PRODUCTION_DRIVE_SIDE_EFFECTS_V1"
+    }
+    worker_notification_activation = {
+      enabled      = true
+      confirmation = "I_APPROVED_PRODUCTION_GAS_EMAIL_NOTIFICATIONS_V1"
+    }
+    gas_notification_webhook_url = "https://script.google.com/macros/s/synthetic-notification/exec"
+    secret_ids = {
+      api_database_url                = "fsl-api-database-url"
+      worker_database_url             = "fsl-worker-database-url"
+      migration_database_url          = "fsl-migration-database-url"
+      drive_oauth_client_id           = "fsl-drive-oauth-client-id"
+      drive_oauth_client_secret       = "fsl-drive-oauth-client-secret"
+      drive_oauth_refresh_token       = "fsl-drive-oauth-refresh-token"
+      drive_resource_id               = "fsl-drive-resource-id"
+      drive_operation_attestation_key = "fsl-drive-operation-attestation-key"
+      public_registration_rpc_token   = "fsl-public-registration-rpc-token"
+    }
+    secret_versions = {
+      api_database_url                = "1"
+      worker_database_url             = "1"
+      migration_database_url          = "1"
+      drive_oauth_client_id           = "1"
+      drive_oauth_client_secret       = "1"
+      drive_oauth_refresh_token       = "1"
+      drive_resource_id               = "1"
+      drive_operation_attestation_key = "1"
+      public_registration_rpc_token   = "1"
+    }
+  }
+
+  assert {
+    condition = one([
+      for env in google_cloud_run_v2_service.worker[0].template[0].containers[0].env : env.value
+      if env.name == "PHASE7_NOTIFICATION_DELIVERY_ENABLED"
+    ]) == "true"
+    error_message = "The worker must receive the independently approved notification enable flag."
+  }
+  assert {
+    condition = one([
+      for env in google_cloud_run_v2_service.worker[0].template[0].containers[0].env : env.value
+      if env.name == "PHASE7_NOTIFICATION_KILL_SWITCH"
+    ]) == "false"
+    error_message = "The notification kill switch must be off only after the exact gate."
+  }
+  assert {
+    condition     = length(google_secret_manager_secret_iam_member.access) == 11
+    error_message = "Notification delivery must reuse the existing attestation secret and add no Secret Manager binding."
+  }
+  assert {
+    condition = alltrue([
+      for binding_key in keys(google_secret_manager_secret_iam_member.access) :
+      !strcontains(binding_key, "notification") && !strcontains(binding_key, "mail")
+    ])
+    error_message = "No notification-specific Secret Manager capability may be created."
+  }
+}
+
 run "public_ingress_after_cost_review_is_allowed" {
   command = plan
 

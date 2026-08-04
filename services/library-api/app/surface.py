@@ -23,7 +23,7 @@ REQUEST_ID_PATTERN = re.compile(
     r"^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-"
     r"[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$"
 )
-EXPECTED_ALEMBIC_HEAD = "e9f0a1b2c3d4"
+EXPECTED_ALEMBIC_HEAD = "fa1b2c3d4e5f"
 
 
 class MaxBodyMiddleware:

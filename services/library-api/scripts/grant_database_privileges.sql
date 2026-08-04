@@ -88,6 +88,9 @@ GRANT SELECT, UPDATE ON TABLE
     public.library_access_grants,
     public.library_operations
 TO fsl_worker_runtime;
+GRANT SELECT, INSERT, UPDATE ON TABLE
+    public.library_notification_outbox
+TO fsl_worker_runtime;
 GRANT SELECT, INSERT, UPDATE ON TABLE public.library_resource_leases TO fsl_worker_runtime;
 GRANT SELECT ON TABLE public.alembic_version TO fsl_worker_runtime;
 

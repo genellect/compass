@@ -239,6 +239,41 @@ variable "worker_drive_activation" {
   }
 }
 
+variable "worker_notification_activation" {
+  description = "Independent fail-closed GAS MailApp notification gate. It may be enabled only after the Drive worker is active."
+  type = object({
+    enabled      = bool
+    confirmation = string
+  })
+  default = {
+    enabled      = false
+    confirmation = ""
+  }
+
+  validation {
+    condition = (
+      (!var.worker_notification_activation.enabled && trimspace(var.worker_notification_activation.confirmation) == "") ||
+      (var.worker_notification_activation.enabled && var.worker_notification_activation.confirmation == "I_APPROVED_PRODUCTION_GAS_EMAIL_NOTIFICATIONS_V1")
+    )
+    error_message = "GAS notification activation requires the exact reviewed confirmation; disabled state requires an empty confirmation."
+  }
+}
+
+variable "gas_notification_webhook_url" {
+  description = "Private GAS notification-only web-app URL. Keep it in an uncommitted sensitive tfvars file; this is not a Secret Manager payload."
+  type        = string
+  default     = ""
+  sensitive   = true
+
+  validation {
+    condition = (
+      trimspace(var.gas_notification_webhook_url) == "" ||
+      can(regex("^https://script\\.google\\.com/macros/s/[^/?#[:space:]]+/exec$", var.gas_notification_webhook_url))
+    )
+    error_message = "The GAS notification webhook must be blank or one exact script.google.com /macros/s/.../exec HTTPS URL."
+  }
+}
+
 variable "admin_api_activation" {
   description = "Fail-closed production admin API activation after bootstrap, MFA, and host review."
   type = object({

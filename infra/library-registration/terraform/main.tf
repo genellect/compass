@@ -399,31 +399,43 @@ resource "google_cloud_run_v2_service" "worker" {
 
       dynamic "env" {
         for_each = {
-          APP_ENV                              = "production"
-          SERVICE_SURFACE                      = "worker"
-          PHASE5_LOCAL_API_ENABLED             = "false"
-          PHASE6_AUTH_API_ENABLED              = "false"
-          PHASE7_WORKER_API_ENABLED            = tostring(var.worker_drive_activation.enabled)
-          PHASE7_DRIVE_API_ENABLED             = tostring(var.worker_drive_activation.enabled)
-          PHASE7_DRIVE_KILL_SWITCH             = tostring(!var.worker_drive_activation.enabled)
-          PHASE7_DRIVE_ACTIVATION_CONFIRMATION = var.worker_drive_activation.confirmation
-          EXTERNAL_SIDE_EFFECTS_ENABLED        = tostring(var.worker_drive_activation.enabled)
-          PII_LOGGING_ENABLED                  = "false"
-          RATE_LIMITS_ENABLED                  = "true"
-          STRUCTURED_LOGGING_ENABLED           = "true"
-          API_READ_ONLY_MODE                   = "false"
-          WORKER_AUTH_MODE                     = "cloud_run_oidc"
-          WORKER_OIDC_AUDIENCE                 = var.worker_oidc_audience
-          WORKER_INVOKER_SERVICE_ACCOUNT       = google_service_account.scheduler.email
-          RUNTIME_DATABASE_ROLE                = var.worker_runtime_database_role
-          WORKER_BATCH_SIZE                    = "20"
-          DB_POOL_SIZE                         = "1"
-          DB_MAX_OVERFLOW                      = "0"
+          APP_ENV                                     = "production"
+          SERVICE_SURFACE                             = "worker"
+          PHASE5_LOCAL_API_ENABLED                    = "false"
+          PHASE6_AUTH_API_ENABLED                     = "false"
+          PHASE7_WORKER_API_ENABLED                   = tostring(var.worker_drive_activation.enabled)
+          PHASE7_DRIVE_API_ENABLED                    = tostring(var.worker_drive_activation.enabled)
+          PHASE7_DRIVE_KILL_SWITCH                    = tostring(!var.worker_drive_activation.enabled)
+          PHASE7_DRIVE_ACTIVATION_CONFIRMATION        = var.worker_drive_activation.confirmation
+          PHASE7_NOTIFICATION_DELIVERY_ENABLED        = tostring(var.worker_notification_activation.enabled)
+          PHASE7_NOTIFICATION_KILL_SWITCH             = tostring(!var.worker_notification_activation.enabled)
+          PHASE7_NOTIFICATION_ACTIVATION_CONFIRMATION = var.worker_notification_activation.confirmation
+          EXTERNAL_SIDE_EFFECTS_ENABLED               = tostring(var.worker_drive_activation.enabled)
+          PII_LOGGING_ENABLED                         = "false"
+          RATE_LIMITS_ENABLED                         = "true"
+          STRUCTURED_LOGGING_ENABLED                  = "true"
+          API_READ_ONLY_MODE                          = "false"
+          WORKER_AUTH_MODE                            = "cloud_run_oidc"
+          WORKER_OIDC_AUDIENCE                        = var.worker_oidc_audience
+          WORKER_INVOKER_SERVICE_ACCOUNT              = google_service_account.scheduler.email
+          RUNTIME_DATABASE_ROLE                       = var.worker_runtime_database_role
+          WORKER_BATCH_SIZE                           = "20"
+          DB_POOL_SIZE                                = "1"
+          DB_MAX_OVERFLOW                             = "0"
         }
         content {
           name  = env.key
           value = env.value
         }
+      }
+
+      env {
+        name = "GAS_NOTIFICATION_WEBHOOK_URL"
+        value = (
+          var.worker_notification_activation.enabled
+          ? var.gas_notification_webhook_url
+          : ""
+        )
       }
 
       dynamic "env" {
@@ -670,6 +682,7 @@ resource "google_cloud_run_v2_job" "migration" {
       condition = var.runtime_services_activation.enabled || (
         !var.public_ingress_activation.enabled &&
         !var.worker_drive_activation.enabled &&
+        !var.worker_notification_activation.enabled &&
         !var.admin_api_activation.enabled &&
         !var.admin_mutations_activation.enabled &&
         !var.public_api_write_activation.enabled &&
@@ -712,6 +725,19 @@ resource "google_cloud_run_v2_job" "migration" {
         trimspace(var.secret_versions.drive_resource_id) != "",
       ])
       error_message = "Drive activation requires pinned OAuth client, refresh-token, and resource-ID secret IDs and versions."
+    }
+    precondition {
+      condition = !var.worker_notification_activation.enabled || (
+        var.worker_drive_activation.enabled &&
+        trimspace(var.gas_notification_webhook_url) != ""
+      )
+      error_message = "GAS notifications require the active Drive worker and one private reviewed webhook URL."
+    }
+    precondition {
+      condition = var.worker_notification_activation.enabled || (
+        trimspace(var.gas_notification_webhook_url) == ""
+      )
+      error_message = "The GAS webhook URL must remain absent while notification delivery is disabled."
     }
     precondition {
       condition     = !var.admin_mutations_activation.enabled || var.admin_api_activation.enabled
