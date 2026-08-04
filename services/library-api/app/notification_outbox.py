@@ -23,6 +23,7 @@ from app.notification_client import (
     NotificationWebhookError,
 )
 from app.observability import emit_event
+from app.roster import roster_grade_label
 
 
 NOTIFICATION_TYPES = (
@@ -259,6 +260,11 @@ def _build_payload(
         "registrationId": str(application.id),
         "fullName": member.full_name,
         "email": member.normalized_email,
+        "grade": roster_grade_label(
+            application.academic_role,
+            application.grade,
+        ),
+        "question": application.question or "",
         "eligibilityStatus": "approved",
         "driveAccessStatus": grant.status,
         "processedAt": _iso_utc(operation.completed_at),
