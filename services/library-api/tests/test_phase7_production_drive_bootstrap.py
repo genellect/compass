@@ -332,8 +332,8 @@ def test_http_flow_requires_exact_phrase_and_uses_only_fake_sink(
             timeout=5,
         )
         assert selected.status_code == 200
-        assert selected.headers["Referrer-Policy"] == "no-referrer"
-        assert '<meta name="referrer" content="no-referrer">' in selected.text
+        assert selected.headers["Referrer-Policy"] == "origin"
+        assert '<meta name="referrer" content="origin">' in selected.text
         assert APPROVED_FOLDER_ID not in selected.text
 
         wrong = requests.post(
@@ -343,6 +343,8 @@ def test_http_flow_requires_exact_phrase_and_uses_only_fake_sink(
             timeout=5,
         )
         assert wrong.status_code == 400
+        assert wrong.headers["Referrer-Policy"] == "origin"
+        assert '<meta name="referrer" content="origin">' in wrong.text
         assert sink.add_calls == []
 
         accepted = requests.post(

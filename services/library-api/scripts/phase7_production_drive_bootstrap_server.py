@@ -511,6 +511,7 @@ def _confirmation_page(folder_fingerprint: str) -> bytes:
 <input name="confirmation" autocomplete="off" spellcheck="false" style="width:100%;padding:10px" required></label>
 <p><code>{EXACT_CONFIRMATION}</code></p>
 <button class="danger" type="submit">既存Secret Managerへ直接streamする</button></form>""",
+        referrer_policy="origin",
     )
 
 
@@ -745,7 +746,10 @@ def create_handler(
                     folder_id=folder_id,
                     folder_fingerprint=folder_fingerprint,
                 )
-                self._send(_confirmation_page(folder_fingerprint))
+                self._send(
+                    _confirmation_page(folder_fingerprint),
+                    referrer_policy="origin",
+                )
                 return
             if path == "/commit":
                 if flow.get("stage") != "confirmation":
@@ -756,6 +760,7 @@ def create_handler(
                     self._send(
                         _confirmation_page(str(flow["folder_fingerprint"])),
                         HTTPStatus.BAD_REQUEST,
+                        referrer_policy="origin",
                     )
                     return
                 if not _transition(flow, "confirmation", "streaming"):
