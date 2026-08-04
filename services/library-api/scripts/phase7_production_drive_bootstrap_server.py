@@ -420,10 +420,18 @@ def build_sanitized_result(
     }
 
 
-def _layout(title: str, body: str) -> bytes:
+def _layout(
+    title: str,
+    body: str,
+    *,
+    referrer_policy: str = "no-referrer",
+) -> bytes:
+    if referrer_policy not in {"no-referrer", "origin"}:
+        raise ValueError("Unsupported referrer policy.")
+    escaped_referrer_policy = html.escape(referrer_policy, quote=True)
     return f"""<!doctype html><html lang="ja"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="referrer" content="no-referrer"><title>{html.escape(title)}</title>
+<meta name="referrer" content="{escaped_referrer_policy}"><title>{html.escape(title)}</title>
 <style>body{{margin:0;background:#f2f5f0;color:#142133;font-family:system-ui,sans-serif}}
 main{{max-width:760px;margin:40px auto;padding:32px;background:#fff;border-radius:18px}}
 .button,button{{display:inline-block;border:0;border-radius:9px;padding:12px 18px;background:#174c3c;color:#fff;text-decoration:none;font:inherit;cursor:pointer}}
@@ -483,6 +491,7 @@ document.getElementById('picker').addEventListener('click',()=>{{
   }}}});
 }});
 </script>""",
+        referrer_policy="origin",
     )
 
 
@@ -502,6 +511,7 @@ def _confirmation_page(folder_fingerprint: str) -> bytes:
 <input name="confirmation" autocomplete="off" spellcheck="false" style="width:100%;padding:10px" required></label>
 <p><code>{EXACT_CONFIRMATION}</code></p>
 <button class="danger" type="submit">既存Secret Managerへ直接streamする</button></form>""",
+        referrer_policy="origin",
     )
 
 
@@ -562,7 +572,10 @@ def create_handler(
             status: HTTPStatus = HTTPStatus.OK,
             *,
             location: str | None = None,
+            referrer_policy: str = "no-referrer",
         ) -> None:
+            if referrer_policy not in {"no-referrer", "origin"}:
+                raise ValueError("Unsupported referrer policy.")
             self.send_response(status)
             if location is not None:
                 self.send_header("Location", location)
@@ -571,7 +584,7 @@ def create_handler(
             self.send_header("Cache-Control", "no-store, max-age=0")
             self.send_header("Pragma", "no-cache")
             self.send_header("Content-Security-Policy", CONTENT_SECURITY_POLICY)
-            self.send_header("Referrer-Policy", "no-referrer")
+            self.send_header("Referrer-Policy", referrer_policy)
             self.send_header("X-Content-Type-Options", "nosniff")
             self.send_header("X-Frame-Options", "DENY")
             self.end_headers()
@@ -689,7 +702,8 @@ def create_handler(
                         api_key=picker_api_key,
                         app_id=picker_app_id,
                         access_token=str(flow["access_token"]),
-                    )
+                    ),
+                    referrer_policy="origin",
                 )
                 return
             self._send(_layout("Not found", "<h1>Not found</h1>"), HTTPStatus.NOT_FOUND)
@@ -724,6 +738,7 @@ def create_handler(
                             ),
                         ),
                         HTTPStatus.BAD_REQUEST,
+                        referrer_policy="origin",
                     )
                     return
                 flow.update(
@@ -731,7 +746,10 @@ def create_handler(
                     folder_id=folder_id,
                     folder_fingerprint=folder_fingerprint,
                 )
-                self._send(_confirmation_page(folder_fingerprint))
+                self._send(
+                    _confirmation_page(folder_fingerprint),
+                    referrer_policy="origin",
+                )
                 return
             if path == "/commit":
                 if flow.get("stage") != "confirmation":
@@ -742,6 +760,7 @@ def create_handler(
                     self._send(
                         _confirmation_page(str(flow["folder_fingerprint"])),
                         HTTPStatus.BAD_REQUEST,
+                        referrer_policy="origin",
                     )
                     return
                 if not _transition(flow, "confirmation", "streaming"):

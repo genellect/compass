@@ -1,7 +1,9 @@
 from http.server import HTTPServer
 import json
+import os
 from pathlib import Path
 import subprocess
+import sys
 import threading
 from urllib.parse import parse_qs, urlparse
 
@@ -330,6 +332,8 @@ def test_http_flow_requires_exact_phrase_and_uses_only_fake_sink(
             timeout=5,
         )
         assert selected.status_code == 200
+        assert selected.headers["Referrer-Policy"] == "origin"
+        assert '<meta name="referrer" content="origin">' in selected.text
         assert APPROVED_FOLDER_ID not in selected.text
 
         wrong = requests.post(
@@ -339,6 +343,8 @@ def test_http_flow_requires_exact_phrase_and_uses_only_fake_sink(
             timeout=5,
         )
         assert wrong.status_code == 400
+        assert wrong.headers["Referrer-Policy"] == "origin"
+        assert '<meta name="referrer" content="origin">' in wrong.text
         assert sink.add_calls == []
 
         accepted = requests.post(
@@ -410,6 +416,7 @@ def test_http_partial_secret_write_is_blocked_and_nonzero(
             allow_redirects=False,
             timeout=5,
         )
+        assert authorize.headers["Referrer-Policy"] == "no-referrer"
         state = parse_qs(urlparse(authorize.headers["Location"]).query)["state"][0]
         callback = requests.get(
             base_url + f"/oauth2/callback?code=fake-code&state={state}",
@@ -418,6 +425,16 @@ def test_http_partial_secret_write_is_blocked_and_nonzero(
             timeout=5,
         )
         assert callback.status_code == 303
+        assert callback.headers["Referrer-Policy"] == "no-referrer"
+
+        picker = requests.get(
+            base_url + "/picker",
+            headers=headers,
+            timeout=5,
+        )
+        assert picker.status_code == 200
+        assert picker.headers["Referrer-Policy"] == "origin"
+        assert '<meta name="referrer" content="origin">' in picker.text
         selected = requests.post(
             base_url + "/select",
             headers=post_headers,
@@ -459,3 +476,39 @@ def test_helper_source_has_no_drive_permission_mutation_endpoint() -> None:
     assert "permissions.delete" not in source
     assert '"POST", f"files/' not in source
     assert '"DELETE", f"files/' not in source
+
+
+def test_module_entrypoint_resolves_application_package() -> None:
+    environment = os.environ.copy()
+    for name in tuple(environment):
+        if name.startswith("PHASE7_PRODUCTION_"):
+            environment.pop(name)
+
+    completed = subprocess.run(
+        [sys.executable, "-m", "scripts.phase7_production_drive_bootstrap_server"],
+        cwd=Path(helper.__file__).resolve().parents[1],
+        env=environment,
+        capture_output=True,
+        text=True,
+        timeout=10,
+        check=False,
+    )
+
+    assert completed.returncode == 2
+    assert "Missing required process values" in completed.stdout
+    assert "ModuleNotFoundError" not in completed.stderr
+
+
+def test_powershell_launcher_uses_module_entrypoint() -> None:
+    launcher = (
+        Path(helper.__file__).resolve().parents[3]
+        / "scripts"
+        / "start-phase7b-production-drive-bootstrap.ps1"
+    ).read_text(encoding="utf-8-sig")
+
+    assert "& $python -m scripts.phase7_production_drive_bootstrap_server" in launcher
+    assert "& $python $serverScript" not in launcher
+    assert "[string] $PresetProjectId = ''" in launcher
+    assert "[string] $PresetClientId = ''" in launcher
+    assert "[string] $PresetPickerAppId = ''" in launcher
+    assert "The Google Cloud project number / Picker App ID format is invalid." in launcher
