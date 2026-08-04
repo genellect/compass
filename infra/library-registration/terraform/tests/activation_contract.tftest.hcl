@@ -145,12 +145,18 @@ run "runtime_standby_with_cost_controls_has_no_public_invoker" {
   }
   assert {
     condition = (
+      coalesce(try(google_cloud_run_v2_service.public[0].scaling[0].manual_instance_count, null), 0) == 0 &&
+      coalesce(try(google_cloud_run_v2_service.public[0].scaling[0].min_instance_count, null), 0) == 0 &&
+      coalesce(try(google_cloud_run_v2_service.public[0].scaling[0].scaling_mode, null), "AUTOMATIC") == "AUTOMATIC" &&
       google_cloud_run_v2_service.public[0].template[0].scaling[0].min_instance_count == 0 &&
       google_cloud_run_v2_service.public[0].template[0].scaling[0].max_instance_count == 1 &&
+      coalesce(try(google_cloud_run_v2_service.worker[0].scaling[0].manual_instance_count, null), 0) == 0 &&
+      coalesce(try(google_cloud_run_v2_service.worker[0].scaling[0].min_instance_count, null), 0) == 0 &&
+      coalesce(try(google_cloud_run_v2_service.worker[0].scaling[0].scaling_mode, null), "AUTOMATIC") == "AUTOMATIC" &&
       google_cloud_run_v2_service.worker[0].template[0].scaling[0].min_instance_count == 0 &&
       google_cloud_run_v2_service.worker[0].template[0].scaling[0].max_instance_count == 1
     )
-    error_message = "Registration-only runtime services must scale from zero and never above one instance."
+    error_message = "Registration-only runtime services must use automatic scaling, scale from zero, and never exceed one instance."
   }
   assert {
     condition = one([

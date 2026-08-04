@@ -87,6 +87,10 @@ resource "google_cloud_run_v2_service" "public" {
   ingress             = "INGRESS_TRAFFIC_ALL"
   deletion_protection = true
 
+  # Keep the provider's optional service-scaling block addressable without
+  # sending an explicit value that Cloud Run normalizes back to null.
+  scaling {}
+
   template {
     service_account                  = google_service_account.public.email
     timeout                          = "15s"
@@ -198,6 +202,25 @@ resource "google_cloud_run_v2_service" "public" {
 
   lifecycle {
     prevent_destroy = true
+
+    # Cloud Run reports the unset automatic-scaling values as explicit zeroes.
+    # Ignore only that zero/null normalization; the postconditions still fail
+    # closed if either value is changed to a billable non-zero setting.
+    ignore_changes = [
+      scaling[0].manual_instance_count,
+      scaling[0].min_instance_count,
+    ]
+
+    postcondition {
+      condition = (
+        coalesce(try(self.scaling[0].manual_instance_count, null), 0) == 0 &&
+        coalesce(try(self.scaling[0].min_instance_count, null), 0) == 0 &&
+        coalesce(try(self.scaling[0].scaling_mode, null), "AUTOMATIC") == "AUTOMATIC" &&
+        self.template[0].scaling[0].min_instance_count == 0 &&
+        self.template[0].scaling[0].max_instance_count == 1
+      )
+      error_message = "The public service must use automatic scale-to-zero with a one-instance maximum."
+    }
   }
 
   depends_on = [google_secret_manager_secret_iam_member.access]
@@ -347,6 +370,10 @@ resource "google_cloud_run_v2_service" "worker" {
   custom_audiences    = [var.worker_oidc_audience]
   deletion_protection = true
 
+  # Keep the provider's optional service-scaling block addressable without
+  # sending an explicit value that Cloud Run normalizes back to null.
+  scaling {}
+
   template {
     service_account                  = google_service_account.worker.email
     timeout                          = "120s"
@@ -457,6 +484,24 @@ resource "google_cloud_run_v2_service" "worker" {
 
   lifecycle {
     prevent_destroy = true
+
+    # See the public service lifecycle: these are provider/API zero defaults,
+    # not permission to ignore a real non-zero scaling or cost change.
+    ignore_changes = [
+      scaling[0].manual_instance_count,
+      scaling[0].min_instance_count,
+    ]
+
+    postcondition {
+      condition = (
+        coalesce(try(self.scaling[0].manual_instance_count, null), 0) == 0 &&
+        coalesce(try(self.scaling[0].min_instance_count, null), 0) == 0 &&
+        coalesce(try(self.scaling[0].scaling_mode, null), "AUTOMATIC") == "AUTOMATIC" &&
+        self.template[0].scaling[0].min_instance_count == 0 &&
+        self.template[0].scaling[0].max_instance_count == 1
+      )
+      error_message = "The worker service must use automatic scale-to-zero with a one-instance maximum."
+    }
   }
 
   depends_on = [google_secret_manager_secret_iam_member.access]
