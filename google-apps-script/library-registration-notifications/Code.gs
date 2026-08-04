@@ -36,9 +36,34 @@ const PAYLOAD_KEYS = Object.freeze([
   "email",
   "eligibilityStatus",
   "fullName",
+  "grade",
+  "processedAt",
+  "question",
+  "registrationId"
+]);
+
+const REQUIRED_PAYLOAD_KEYS = Object.freeze([
+  "driveAccessStatus",
+  "email",
+  "eligibilityStatus",
+  "fullName",
   "processedAt",
   "registrationId"
 ]);
+
+function authorizeNotificationGateway() {
+  const configured = readConfiguration_(
+    PropertiesService.getScriptProperties()
+  );
+  if (!configured.ok) {
+    throw new Error("Notification gateway configuration is incomplete.");
+  }
+  const remainingQuota = MailApp.getRemainingDailyQuota();
+  if (remainingQuota < 2) {
+    throw new Error("MailApp recipient quota is insufficient.");
+  }
+  return "notification_gateway_authorized";
+}
 
 function doGet() {
   return jsonResponse_({ ok: false, code: "method_not_allowed" });
@@ -212,7 +237,10 @@ function validateEnvelope_(raw) {
 }
 
 function validatePayload_(raw) {
-  if (!isPlainObject_(raw) || !hasOnlyKeys_(raw, PAYLOAD_KEYS)) {
+  if (
+    !isPlainObject_(raw) ||
+    !hasRequiredAndOnlyKeys_(raw, REQUIRED_PAYLOAD_KEYS, PAYLOAD_KEYS)
+  ) {
     return { ok: false };
   }
   if (
@@ -229,7 +257,10 @@ function validatePayload_(raw) {
 
   const fullName = raw.fullName.trim();
   const email = raw.email.trim().toLowerCase();
+  const grade = typeof raw.grade === "string" ? raw.grade.trim() : "その他";
+  const question = typeof raw.question === "string" ? raw.question.trim() : "";
   const driveStatuses = ["granted", "already_granted"];
+  const grades = ["1年", "2年", "3年", "4年", "5年", "6年", "M1", "M2", "その他"];
 
   if (
     fullName.length < 1 ||
@@ -239,6 +270,11 @@ function validatePayload_(raw) {
     email.length > 254 ||
     raw.email !== email ||
     !isAllowedRecipient_(email) ||
+    grades.indexOf(grade) === -1 ||
+    (raw.grade !== undefined && raw.grade !== grade) ||
+    question.length > 1000 ||
+    (raw.question !== undefined && raw.question !== question) ||
+    /[\u0000-\u0008\u000b\u000c\u000e-\u001f\u007f]/.test(question) ||
     raw.eligibilityStatus !== "approved" ||
     driveStatuses.indexOf(raw.driveAccessStatus) === -1 ||
     !isUtcTimestamp_(raw.processedAt)
@@ -246,17 +282,17 @@ function validatePayload_(raw) {
     return { ok: false };
   }
 
-  return {
-    ok: true,
-    data: {
-      registrationId: raw.registrationId.toLowerCase(),
-      fullName: fullName,
-      email: email,
-      eligibilityStatus: raw.eligibilityStatus,
-      driveAccessStatus: raw.driveAccessStatus,
-      processedAt: raw.processedAt
-    }
+  const data = {
+    registrationId: raw.registrationId.toLowerCase(),
+    fullName: fullName,
+    email: email,
+    eligibilityStatus: raw.eligibilityStatus,
+    driveAccessStatus: raw.driveAccessStatus,
+    processedAt: raw.processedAt
   };
+  if (raw.grade !== undefined) data.grade = grade;
+  if (raw.question !== undefined) data.question = question;
+  return { ok: true, data: data };
 }
 
 function readConfiguration_(scriptProperties) {
@@ -369,6 +405,15 @@ function hasOnlyKeys_(value, expectedKeys) {
   });
 }
 
+function hasRequiredAndOnlyKeys_(value, requiredKeys, allowedKeys) {
+  const keys = Object.keys(value);
+  return requiredKeys.every(function(key) {
+    return Object.prototype.hasOwnProperty.call(value, key);
+  }) && keys.every(function(key) {
+    return allowedKeys.indexOf(key) !== -1;
+  });
+}
+
 function normalizeEmail_(value) {
   return typeof value === "string" ? value.trim().toLowerCase() : "";
 }
@@ -434,21 +479,18 @@ function pruneLedger_(scriptProperties) {
 }
 
 function buildAdminText_(payload) {
-  const processedAt = Utilities.formatDate(
-    new Date(payload.processedAt),
-    CONFIG.TIME_ZONE,
-    "yyyy-MM-dd HH:mm:ss"
-  );
-  return `未来戦略ライブラリの登録処理が完了しました。
-
-【判定結果】承認
-【Google Drive処理】${driveStatusLabel_(payload.driveAccessStatus)}
-【処理日時】${processedAt}（日本時間）
-【登録ID】${payload.registrationId}
-
-氏名、メールアドレス、申請内容の詳細は、認証済みの登録者管理画面でご確認ください。
-
-※本メールはGoogle Apps Scriptにより自動送信されています。`;
+  const lines = [
+    "未来戦略ライブラリの登録処理が完了しました。",
+    "",
+    `【氏名】${payload.fullName}`,
+    `【学年】${payload.grade || "その他"}`,
+    "【判定結果】承認"
+  ];
+  if (payload.question) {
+    lines.push(`【連絡事項】${payload.question}`);
+  }
+  lines.push("", "※本メールはGoogle Apps Scriptにより自動送信されています。");
+  return lines.join("\n");
 }
 
 function buildApplicantText_(payload, configured) {
@@ -496,10 +538,6 @@ Yuto Matsui（松井 優知）
 ――――――――――
 
 ※本メールはGoogle Apps Scriptにより自動送信されています。`;
-}
-
-function driveStatusLabel_(status) {
-  return status === "granted" ? "閲覧権限付与済み" : "既存の閲覧権限を確認";
 }
 
 function jsonResponse_(body) {

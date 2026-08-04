@@ -11,6 +11,7 @@ from app.auth import VerifiedGoogleIdentity
 from app.config import Settings
 from app.db.models import (
     LibraryAccessGrant,
+    LibraryApplication,
     LibraryNotificationOutbox,
     LibraryOperation,
 )
@@ -177,7 +178,7 @@ def test_drive_success_creates_one_idempotent_pii_minimal_outbox_row(
     )
 
 
-def test_notification_payload_is_exact_six_field_contract(
+def test_notification_payload_is_exact_eight_field_contract(
     session: Session,
 ) -> None:
     queued_registration(session, key="notification-payload-0001")
@@ -198,17 +199,40 @@ def test_notification_payload_is_exact_six_field_contract(
         "registrationId",
         "fullName",
         "email",
+        "grade",
+        "question",
         "eligibilityStatus",
         "driveAccessStatus",
         "processedAt",
     }
+    assert payload["grade"] == "3年"
+    assert payload["question"] == ""
     assert payload["eligibilityStatus"] == "approved"
     assert payload["driveAccessStatus"] == "granted"
     serialized = str(payload)
     assert "PP23000" not in serialized
-    assert "question" not in serialized
-    assert "grade" not in serialized
     assert "consent" not in serialized
+
+
+def test_notification_payload_includes_application_question(
+    session: Session,
+) -> None:
+    queued_registration(session, key="notification-question-0001")
+    application = session.scalar(select(LibraryApplication))
+    assert application is not None
+    application.question = "図書館の利用方法を確認したいです。"
+    session.commit()
+    process_due_drive_operations(session, FakeDriveClient(), SETTINGS, limit=1)
+    webhook = FakeWebhookClient()
+
+    process_due_notification_outbox(
+        session,
+        webhook,
+        SETTINGS,
+        limit=1,
+    )
+
+    assert webhook.calls[0][1]["question"] == "図書館の利用方法を確認したいです。"
 
 
 def test_existing_permission_enqueues_already_granted_notification(

@@ -223,9 +223,14 @@ describe("Future Strategy Library notification GAS", () => {
     expect(signedEnvelope()).toEqual(testVector.request);
   });
 
-  it("sends a minimized admin notice and a legacy-equivalent applicant acceptance", () => {
+  it("sends the requested admin summary and a legacy-equivalent applicant acceptance", () => {
     const runtime = createGasRuntime();
-    const result = post(runtime.context, signedEnvelope());
+    const enrichedPayload = {
+      ...payload,
+      grade: "3年",
+      question: "利用開始時期について確認したいです。"
+    };
+    const result = post(runtime.context, signedEnvelope({ payload: enrichedPayload }));
 
     expect(result).toEqual({ ok: true, messageId });
     expect(runtime.sentEmails).toHaveLength(2);
@@ -236,10 +241,11 @@ describe("Future Strategy Library notification GAS", () => {
       subject: "【新規承認】未来戦略ライブラリ 登録処理完了",
       options: { name: "未来戦略ライブラリ" }
     });
-    expect(admin?.body).toContain(`【登録ID】${registrationId}`);
+    expect(admin?.body).toContain(`【氏名】${payload.fullName}`);
+    expect(admin?.body).toContain("【学年】3年");
     expect(admin?.body).toContain("【判定結果】承認");
-    expect(admin?.body).toContain("認証済みの登録者管理画面");
-    expect(admin?.body).not.toContain(payload.fullName);
+    expect(admin?.body).toContain("【連絡事項】利用開始時期について確認したいです。");
+    expect(admin?.body).not.toContain(registrationId);
     expect(admin?.body).not.toContain(payload.email);
 
     const applicant = runtime.sentEmails[1];
