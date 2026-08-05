@@ -1,5 +1,8 @@
 import { resolveLibraryReleaseConfig } from "./library-release-config.mjs";
+import { resolveCloudflareGitBuildEnvironment } from
+  "./cloudflare-git-build-environment.mjs";
 
-// Fail before image optimization or Next.js compilation when Cloudflare's
-// Git-connected builder has no reviewed Library release classification.
-resolveLibraryReleaseConfig(process.env);
+// Cloudflare Git builds derive a code-owned profile from immutable build
+// metadata. Other builds retain the existing explicit release gate.
+const { environment } = resolveCloudflareGitBuildEnvironment(process.env);
+resolveLibraryReleaseConfig(environment);

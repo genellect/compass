@@ -17,7 +17,7 @@
     "test": "npm run test:registration && npm run test:library-registration && npm run test:library-release-gate",
     "clean": "node scripts/clean-next-output.mjs",
     "optimize:images": "node scripts/optimize-images.mjs",
-    "build": "node scripts/assert-library-build-target.mjs && npm run clean && npm run optimize:images && next build --webpack && node scripts/assemble-next-export.mjs",
+    "build": "node scripts/assert-library-build-target.mjs && node scripts/run-next-build.mjs",
     "verify": "node scripts/verify-next-build.mjs",
     "test:responsive": "playwright test tests/responsive/responsive.spec.ts tests/responsive/interaction-contracts.spec.ts tests/responsive/interactive-hero.spec.ts tests/responsive/semantic-lines.spec.ts tests/responsive/mobile-device.spec.ts",
     "test:responsive:visual": "playwright test tests/responsive/visual-regression.spec.ts",
