@@ -368,6 +368,10 @@ for (const expected of [
   "COMPASS Interactive紹介サイト",
   "未来戦略ライブラリ紹介サイト",
   "Community参加フォーム",
+  "https://github.com/my270yuto0413-cmyk/compass",
+  'aria-label="COMPASS source code on GitHub"',
+  'class="footer-source-link"',
+  "<span>Source</span>",
   parentGaMeasurementId
 ]) expectIncludes(official, expected, "Official page");
 
