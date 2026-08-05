@@ -235,6 +235,46 @@ def test_notification_payload_includes_application_question(
     assert webhook.calls[0][1]["question"] == "図書館の利用方法を確認したいです。"
 
 
+def test_manual_review_queues_admin_only_notification(
+    session: Session,
+) -> None:
+    persisted = persist_registration(
+        session,
+        student_account(),
+        student_registration(faculty="other"),
+        "notification-manual-review-0001",
+        settings=SETTINGS,
+        identity=IDENTITY,
+    )
+    notification = session.scalar(select(LibraryNotificationOutbox))
+    assert persisted.eligibility.status.value == "manual_review"
+    assert notification is not None
+    assert notification.notification_type == "manual_review_requested"
+    assert notification.access_grant_id is None
+    assert notification.drive_operation_id is None
+
+    webhook = FakeWebhookClient()
+    result = process_due_notification_outbox(
+        session,
+        webhook,
+        SETTINGS,
+        limit=1,
+    )[0]
+
+    assert result.status == "succeeded"
+    payload = webhook.calls[0][1]
+    assert set(payload) == {
+        "registrationId",
+        "fullName",
+        "grade",
+        "question",
+        "eligibilityStatus",
+        "processedAt",
+    }
+    assert payload["eligibilityStatus"] == "manual_review"
+    assert "email" not in payload
+    assert "driveAccessStatus" not in payload
+
 def test_existing_permission_enqueues_already_granted_notification(
     session: Session,
 ) -> None:

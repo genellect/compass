@@ -91,6 +91,28 @@ SELECT n.nspowner = migration.oid
        SELECT 1
        FROM aclexplode(COALESCE(n.nspacl, acldefault('n', n.nspowner))) AS acl
        WHERE acl.grantee = 0
+   )
+   AND has_schema_privilege('fsl_worker_runtime', 'fsl_worker_api', 'USAGE')
+   AND NOT has_schema_privilege('fsl_worker_runtime', 'fsl_worker_api', 'CREATE')
+   AND NOT has_schema_privilege('fsl_api_runtime', 'fsl_worker_api', 'USAGE')
+   AND NOT has_schema_privilege('fsl_admin_runtime', 'fsl_worker_api', 'USAGE')
+   AND NOT has_schema_privilege('fsl_backup_restore', 'fsl_worker_api', 'USAGE')
+   AS worker_api_schema_boundary_valid
+FROM pg_namespace AS n
+JOIN pg_roles AS migration ON migration.rolname = 'fsl_migration'
+WHERE n.nspname = 'fsl_worker_api'
+\gset
+\if :worker_api_schema_boundary_valid
+\else
+  \echo 'FAIL: worker capability schema boundary is invalid'
+  SELECT 1 / 0 AS database_role_audit_failed;
+\endif
+
+SELECT n.nspowner = migration.oid
+   AND NOT EXISTS (
+       SELECT 1
+       FROM aclexplode(COALESCE(n.nspacl, acldefault('n', n.nspowner))) AS acl
+       WHERE acl.grantee = 0
           OR acl.grantee IN (
               SELECT oid
               FROM pg_roles
@@ -223,7 +245,7 @@ SELECT NOT EXISTS (
   SELECT 1 / 0 AS database_role_audit_failed;
 \endif
 
-SELECT count(*) = 2
+SELECT count(*) = 3
    AND bool_and(
        p.prosecdef
        AND NOT p.proleakproof
@@ -247,6 +269,10 @@ SELECT count(*) = 2
            AND p.provolatile = 's'
            AND pg_get_function_identity_arguments(p.oid) =
                'p_application_id uuid, p_authentication_subject_hash text, p_rpc_key_version text, p_rpc_token text'
+           OR p.proname = 'enqueue_manual_review_notification_v1'
+           AND p.provolatile = 'v'
+           AND pg_get_function_identity_arguments(p.oid) =
+               'p_application_id uuid, p_authentication_subject_hash text, p_candidate_notification_id uuid, p_rpc_key_version text, p_rpc_token text'
        )
    ) AS public_api_functions_hardened
 FROM pg_proc AS p
@@ -270,6 +296,11 @@ SELECT has_function_privilege(
            'fsl_public_api.registration_status_v1(uuid,text,text,text)',
            'EXECUTE'
        )
+   AND has_function_privilege(
+           'fsl_api_runtime',
+           'fsl_public_api.enqueue_manual_review_notification_v1(uuid,text,uuid,text,text)',
+           'EXECUTE'
+       )
    AND NOT has_function_privilege(
            'fsl_admin_runtime',
            'fsl_public_api.submit_registration_v1(jsonb,text)',
@@ -278,6 +309,11 @@ SELECT has_function_privilege(
    AND NOT has_function_privilege(
            'fsl_admin_runtime',
            'fsl_public_api.registration_status_v1(uuid,text,text,text)',
+           'EXECUTE'
+       )
+   AND NOT has_function_privilege(
+           'fsl_admin_runtime',
+           'fsl_public_api.enqueue_manual_review_notification_v1(uuid,text,uuid,text,text)',
            'EXECUTE'
        )
    AND NOT has_function_privilege(
@@ -291,6 +327,11 @@ SELECT has_function_privilege(
            'EXECUTE'
        )
    AND NOT has_function_privilege(
+           'fsl_worker_runtime',
+           'fsl_public_api.enqueue_manual_review_notification_v1(uuid,text,uuid,text,text)',
+           'EXECUTE'
+       )
+   AND NOT has_function_privilege(
            'fsl_backup_restore',
            'fsl_public_api.submit_registration_v1(jsonb,text)',
            'EXECUTE'
@@ -298,12 +339,44 @@ SELECT has_function_privilege(
    AND NOT has_function_privilege(
            'fsl_backup_restore',
            'fsl_public_api.registration_status_v1(uuid,text,text,text)',
+           'EXECUTE'
+       )
+   AND NOT has_function_privilege(
+           'fsl_backup_restore',
+           'fsl_public_api.enqueue_manual_review_notification_v1(uuid,text,uuid,text,text)',
            'EXECUTE'
        ) AS public_api_exact_execute_boundary
 \gset
 \if :public_api_exact_execute_boundary
 \else
   \echo 'FAIL: public API function EXECUTE boundary is invalid'
+  SELECT 1 / 0 AS database_role_audit_failed;
+\endif
+
+SELECT has_function_privilege(
+           'fsl_worker_runtime',
+           'fsl_worker_api.lock_member_v1(uuid)',
+           'EXECUTE'
+       )
+   AND NOT has_function_privilege(
+           'fsl_api_runtime',
+           'fsl_worker_api.lock_member_v1(uuid)',
+           'EXECUTE'
+       )
+   AND NOT has_function_privilege(
+           'fsl_admin_runtime',
+           'fsl_worker_api.lock_member_v1(uuid)',
+           'EXECUTE'
+       )
+   AND NOT has_function_privilege(
+           'fsl_backup_restore',
+           'fsl_worker_api.lock_member_v1(uuid)',
+           'EXECUTE'
+       ) AS worker_api_exact_execute_boundary
+\gset
+\if :worker_api_exact_execute_boundary
+\else
+  \echo 'FAIL: worker lock function EXECUTE boundary is invalid'
   SELECT 1 / 0 AS database_role_audit_failed;
 \endif
 
@@ -467,6 +540,7 @@ SELECT NOT has_table_privilege('fsl_api_runtime', 'public.library_admins', 'SELE
    AND NOT has_table_privilege('fsl_worker_runtime', 'public.library_admin_audit', 'SELECT')
    AND NOT has_table_privilege('fsl_worker_runtime', 'public.library_export_runs', 'SELECT')
    AND NOT has_table_privilege('fsl_worker_runtime', 'public.library_operations', 'INSERT')
+   AND NOT has_table_privilege('fsl_worker_runtime', 'public.library_members', 'UPDATE')
    AND NOT has_table_privilege('fsl_worker_runtime', 'public.library_access_grants', 'INSERT')
    AND NOT has_table_privilege('fsl_worker_runtime', 'public.library_notification_outbox', 'DELETE')
    AND NOT has_table_privilege('fsl_api_runtime', 'public.alembic_version', 'UPDATE')

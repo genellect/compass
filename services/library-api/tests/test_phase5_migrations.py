@@ -94,10 +94,24 @@ def test_initial_migration_upgrade_and_downgrade(
         for column in inspector.get_columns("library_access_grants")
     }
     assert "target_alias" in grant_columns
+    notification_columns = {
+        column["name"]: column
+        for column in inspector.get_columns("library_notification_outbox")
+    }
+    assert notification_columns["member_id"]["nullable"] is True
+    assert notification_columns["access_grant_id"]["nullable"] is True
+    assert notification_columns["drive_operation_id"]["nullable"] is True
+    notification_checks = {
+        constraint["name"]
+        for constraint in inspector.get_check_constraints(
+            "library_notification_outbox"
+        )
+    }
+    assert "ck_library_notification_outbox_source" in notification_checks
     with Session(engine) as session:
         assert session.execute(
             text("SELECT version_num FROM alembic_version")
-        ).scalar_one() == "fa1b2c3d4e5f"
+        ).scalar_one() == "0b1c2d3e4f5a"
     command.check(config)
 
     engine.dispose()
@@ -248,7 +262,7 @@ def test_phase9_hardening_upgrades_an_existing_empty_e0_database(
     }.issubset(after_row_columns)
     with engine.connect() as connection:
         assert connection.scalar(text("SELECT version_num FROM alembic_version")) == (
-            "fa1b2c3d4e5f"
+                "0b1c2d3e4f5a"
         )
     engine.dispose()
     get_settings.cache_clear()

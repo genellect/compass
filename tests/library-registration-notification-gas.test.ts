@@ -268,6 +268,42 @@ describe("Future Strategy Library notification GAS", () => {
     expect(ledger).not.toContain(hmacKey);
   });
 
+  it("sends a manual-review summary only to the administrator", () => {
+    const runtime = createGasRuntime();
+    const manualPayload = {
+      registrationId,
+      fullName: "北里 教員",
+      grade: "その他",
+      question: "所属確認をお願いします。",
+      eligibilityStatus: "manual_review",
+      processedAt: "2026-08-04T09:59:30.000Z"
+    };
+
+    expect(post(runtime.context, signedEnvelope({ payload: manualPayload }))).toEqual({
+      ok: true,
+      messageId
+    });
+    expect(runtime.sentEmails).toHaveLength(1);
+    expect(runtime.sentEmails[0]).toMatchObject({
+      to: adminEmail,
+      subject: "【個別確認】未来戦略ライブラリ 登録申請",
+      options: { name: "未来戦略ライブラリ" }
+    });
+    expect(runtime.sentEmails[0]?.body).toBe([
+      "【氏名】北里 教員",
+      "【学年】その他",
+      "【判定結果】個別確認",
+      "【連絡事項】所属確認をお願いします。"
+    ].join("\n"));
+
+    runtime.advance(60 * 1000);
+    expect(post(runtime.context, signedEnvelope({
+      issuedAt: "2026-08-04T10:01:00.000Z",
+      payload: manualPayload
+    }))).toEqual({ ok: true, duplicate: true, messageId });
+    expect(runtime.sentEmails).toHaveLength(1);
+  });
+
   it("authenticates canonical JSON independent of payload insertion order", () => {
     const runtime = createGasRuntime();
     const reordered = Object.fromEntries(Object.entries(payload).reverse());

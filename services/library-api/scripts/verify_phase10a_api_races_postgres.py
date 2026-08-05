@@ -63,7 +63,7 @@ from scripts.local_database_roles import (
 )
 
 
-EXPECTED_ALEMBIC_HEAD = "fa1b2c3d4e5f"
+EXPECTED_ALEMBIC_HEAD = "0b1c2d3e4f5a"
 PRIMARY_DATABASE = "compass_library_dev"
 PRIMARY_USERNAME = "compass_library_dev"
 PRIMARY_HOST = "db"

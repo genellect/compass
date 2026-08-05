@@ -719,6 +719,30 @@ function ResultPanel({
       ? result.driveNotificationStatus
       : null
   );
+
+  if (result.status === "approved") {
+    return (
+      <div
+        className="mock-result result-approved"
+        role="status"
+        aria-live="polite"
+        tabIndex={-1}
+        ref={resultRef}
+      >
+        <p>受付完了</p>
+        <h2>お申し込みを受け付けました。</h2>
+        <div className="result-guidance">
+          <p>
+            通常は数分から15分程度で処理が完了しますが、システム上の不具合等により正常に送信されない場合があります。
+            24時間以上経過しても招待メールが届かない場合は、お手数ですが
+            <a href="/contact/">問い合わせフォーム</a>よりご連絡ください。
+          </p>
+          <p>今後とも、未来戦略ライブラリをよろしくお願いいたします。</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div
       className={`mock-result result-${result.status}`}

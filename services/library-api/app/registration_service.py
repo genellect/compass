@@ -30,6 +30,7 @@ from app.eligibility import (
     normalize_email,
     normalize_student_number,
 )
+from app.notification_outbox import enqueue_manual_review_notification
 from app.public_registration_rpc import (
     PublicRegistrationRpcBoundaryError,
     PublicRegistrationRpcConflictError,
@@ -563,6 +564,10 @@ def persist_registration(
                     key=active_settings.drive_operation_attestation_key,
                 )
             session.add(operation)
+
+    if eligibility.status == EligibilityStatus.MANUAL_REVIEW:
+        session.flush()
+        enqueue_manual_review_notification(session, application)
 
     try:
         session.commit()

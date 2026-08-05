@@ -67,6 +67,9 @@ class FakeResult:
     def one_or_none(self):
         return self.row
 
+    def scalar_one(self):
+        return self.row
+
 
 class FakeSession:
     def __init__(self, rows):
@@ -130,6 +133,46 @@ def test_production_public_registration_uses_only_bound_rpc() -> None:
     assert request["rpc_key_version"] == "v1"
     assert request["authentication_subject_hash"] == IDENTITY.subject_hash
     assert request["attestation_signature"] is not None
+
+
+def test_manual_review_uses_bounded_notification_rpc_before_commit() -> None:
+    application_id = uuid4()
+    notification_id = uuid4()
+    row = submit_row(application_id)
+    row.update(
+        {
+            "eligibility_status": "manual_review",
+            "reason_codes": ["faculty_requires_manual_review"],
+            "drive_access_status": "not_enqueued",
+            "drive_notification_status": "not_applicable",
+        }
+    )
+    session = FakeSession([row, notification_id])
+
+    result = persist_registration(
+        session,  # type: ignore[arg-type]
+        IDENTITY.to_account_facts(SETTINGS),
+        student_registration(faculty="other"),
+        "production-rpc-manual-review-0001",
+        settings=SETTINGS,
+        identity=IDENTITY,
+        source="phase6_authenticated",
+    )
+
+    assert result.eligibility.status == EligibilityStatus.MANUAL_REVIEW
+    assert session.commits == 1
+    assert session.rollbacks == 0
+    assert len(session.calls) == 2
+    statement, parameters = session.calls[1]
+    assert statement == (
+        "SELECT fsl_public_api.enqueue_manual_review_notification_v1("
+        ":application_id, :authentication_subject_hash, "
+        ":candidate_notification_id, :rpc_key_version, :rpc_token)"
+    )
+    assert parameters["application_id"] == application_id
+    assert parameters["authentication_subject_hash"] == IDENTITY.subject_hash
+    assert parameters["rpc_key_version"] == "v1"
+    assert parameters["rpc_token"] == RPC_TOKEN
 
 
 def test_production_public_never_falls_back_to_orm() -> None:
