@@ -10,6 +10,7 @@ import "../../interactive/styles/sections.css";
 import "../../interactive/styles/animations.css";
 import "../../interactive/styles/experience.css";
 import "../../interactive/styles/redesign.css";
+import "../../interactive/styles/signal-hero.css";
 import "../../styles/github-profile-link.css";
 
 export const metadata: Metadata = {
@@ -25,14 +26,14 @@ export const metadata: Metadata = {
     locale: "ja_JP",
     type: "website",
     siteName: "COMPASS Interactive",
-    title: "COMPASS Interactive | わからないが、動き出す。",
+    title: "COMPASS Interactive | LET EVERYTHING MOVE.",
     description: "学生の疑問が届き、教員の次の説明が変わる。講義の一瞬を次の理解へつなぐ参加型講義システム。",
     url: "/INTRO_Interactive/",
     images: ["/images/hero.desktop.highlight.png"]
   },
   twitter: {
     card: "summary_large_image",
-    title: "COMPASS Interactive | わからないが、動き出す。",
+    title: "COMPASS Interactive | LET EVERYTHING MOVE.",
     description: "学生の疑問が届き、教員の次の説明が変わる。講義の一瞬を次の理解へつなぐ参加型講義システム。",
     images: ["/images/hero.desktop.highlight.png"]
   },

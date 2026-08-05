@@ -6,7 +6,7 @@ export const links = {
 
 export const hero = {
   eyebrow: "NEXT LECTURE EXPERIENCE",
-  title: "わからないが、動き出す。",
+  title: "LET EVERYTHING MOVE.",
   lead: "質問、投票、字幕、AI。講義の一瞬が、次の理解へつながっていく。",
   chips: ["資料と同期", "匿名で質問", "ライブ投票", "リアルタイム字幕", "5分ハイライト"]
 };

@@ -12,7 +12,7 @@ Last verified: 2026-08-01
 | COMPASS Vision | `学びを、意思決定の力へ。` |
 | COMPASS origin | `北里大学薬学部から、学び・研究・未来をつなぐ。` |
 | COMPASS transition | `学生の「知る」を、「選ぶ」「動く」へ変える。` |
-| Interactive | `わからないが、動き出す。` |
+| Interactive | `LET EVERYTHING MOVE.` |
 | Library Hero H1 | `BEYOND THE SYLLABUS.` |
 | Library Hero Sub Hero | `未来は、知っている人から動き出す。` |
 | Library Hero description | `北里大学薬学部生のための、学生目線の資料ライブラリ。` |
