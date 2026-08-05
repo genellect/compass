@@ -457,8 +457,12 @@ resource "google_cloud_run_v2_service" "worker" {
           ]))
           RUNTIME_DATABASE_ROLE = var.worker_runtime_database_role
           WORKER_BATCH_SIZE     = "20"
-          DB_POOL_SIZE          = "1"
-          DB_MAX_OVERFLOW       = "0"
+          # Apps Script cold starts plus two MailApp deliveries can exceed the
+          # eight-second application default. Keep this within the validated
+          # 15-second maximum so retryable timeouts do not mask a completed send.
+          NOTIFICATION_REQUEST_TIMEOUT_SECONDS = "15"
+          DB_POOL_SIZE                         = "1"
+          DB_MAX_OVERFLOW                      = "0"
         }
         content {
           name  = env.key

@@ -81,6 +81,55 @@ def _read_secret(executable: str, project_id: str, secret_id: str) -> str:
     return value
 
 
+def _refresh_gcloud_adc_access_token(executable: str) -> str:
+    """Return a fresh ADC token without reusing the gcloud token override."""
+
+    environment = os.environ.copy()
+    environment.pop("CLOUDSDK_AUTH_ACCESS_TOKEN", None)
+    try:
+        result = subprocess.run(
+            [
+                executable,
+                "auth",
+                "application-default",
+                "print-access-token",
+            ],
+            capture_output=True,
+            text=True,
+            timeout=45,
+            check=False,
+            env=environment,
+        )
+    except (OSError, subprocess.SubprocessError) as error:
+        raise RuntimeError("ADC token refresh failed.") from error
+    access_token = result.stdout.strip()
+    if result.returncode != 0 or not access_token or any(
+        character.isspace() for character in access_token
+    ):
+        raise RuntimeError("ADC token refresh failed.")
+    return access_token
+
+
+def _add_refresh_token_version_with_fresh_adc(
+    sink: GcloudSecretManagerSink,
+    executable: str,
+    refresh_token: str,
+) -> int:
+    """Refresh gcloud authorization immediately before the secret write."""
+
+    adc_access_token = _refresh_gcloud_adc_access_token(executable)
+    previous_access_token = os.environ.get("CLOUDSDK_AUTH_ACCESS_TOKEN")
+    os.environ["CLOUDSDK_AUTH_ACCESS_TOKEN"] = adc_access_token
+    try:
+        return sink.add_version(REFRESH_TOKEN_SECRET, refresh_token)
+    finally:
+        if previous_access_token is None:
+            os.environ.pop("CLOUDSDK_AUTH_ACCESS_TOKEN", None)
+        else:
+            os.environ["CLOUDSDK_AUTH_ACCESS_TOKEN"] = previous_access_token
+        adc_access_token = ""
+
+
 def _authorization_url(client_id: str, state: str) -> str:
     return f"{AUTHORIZATION_ENDPOINT}?{urlencode({
         'client_id': client_id,
@@ -220,6 +269,7 @@ def main() -> int:
             if not code or not hmac.compare_digest(returned_state, state):
                 self.send_page(_page("Blocked", "<h1>認証を確認できませんでした。</h1>"), HTTPStatus.BAD_REQUEST)
                 return
+            stage = "oauth_code_exchange"
             try:
                 tokens = _exchange_code(code, client_id, client_secret)
                 access_token = str(tokens.get("access_token") or "")
@@ -227,16 +277,35 @@ def main() -> int:
                 id_token = str(tokens.get("id_token") or "")
                 if not access_token or not refresh_token or not id_token:
                     raise RuntimeError("Offline OAuth credentials are incomplete.")
+                stage = "owner_identity_verification"
                 owner_fingerprint = _verify_id_token(id_token, client_id)
+                stage = "drive_scope_verification"
                 _verify_drive_scope(access_token)
                 folder_fingerprint = _fingerprint(folder_id)
+                stage = "pinned_folder_verification"
                 _verify_selected_production_folder(
                     access_token,
                     folder_id,
                     folder_fingerprint,
                 )
-                version = sink.add_version(REFRESH_TOKEN_SECRET, refresh_token)
+                stage = "secret_version_write"
+                version = _add_refresh_token_version_with_fresh_adc(
+                    sink,
+                    executable,
+                    refresh_token,
+                )
             except (RuntimeError, SecretSinkError):
+                print(
+                    json.dumps(
+                        {
+                            "status": "blocked",
+                            "purpose": "production_drive_scope_reauthorization",
+                            "failed_stage": stage,
+                        },
+                        ensure_ascii=True,
+                        sort_keys=True,
+                    )
+                )
                 self.send_page(
                     _page("Blocked", "<h1>本番Drive認証を更新できませんでした。</h1>"),
                     HTTPStatus.BAD_REQUEST,
