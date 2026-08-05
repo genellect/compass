@@ -65,6 +65,11 @@ SELECT
         'fsl_public_api.registration_status_v1(uuid,text,text,text)',
         'EXECUTE'
     ) AS registration_status_rpc_execute,
+    has_function_privilege(
+        current_user,
+        'fsl_public_api.enqueue_manual_review_notification_v1(uuid,text,uuid,text,text)',
+        'EXECUTE'
+    ) AS enqueue_manual_review_notification_rpc_execute,
     NOT EXISTS (
         SELECT 1
         FROM pg_proc AS function
@@ -79,10 +84,13 @@ SELECT
               OR function.proname = 'registration_status_v1'
               AND pg_get_function_identity_arguments(function.oid) =
                   'p_application_id uuid, p_authentication_subject_hash text, p_rpc_key_version text, p_rpc_token text'
+              OR function.proname = 'enqueue_manual_review_notification_v1'
+              AND pg_get_function_identity_arguments(function.oid) =
+                  'p_application_id uuid, p_authentication_subject_hash text, p_candidate_notification_id uuid, p_rpc_key_version text, p_rpc_token text'
           )
     ) AS no_unknown_public_api_execute,
     (
-        SELECT count(*) = 2
+        SELECT count(*) = 3
            AND bool_and(
                function.prosecdef
                AND NOT function.proleakproof
@@ -98,6 +106,10 @@ SELECT
                    AND function.provolatile = 's'
                    AND pg_get_function_identity_arguments(function.oid) =
                        'p_application_id uuid, p_authentication_subject_hash text, p_rpc_key_version text, p_rpc_token text'
+                   OR function.proname = 'enqueue_manual_review_notification_v1'
+                   AND function.provolatile = 'v'
+                   AND pg_get_function_identity_arguments(function.oid) =
+                       'p_application_id uuid, p_authentication_subject_hash text, p_candidate_notification_id uuid, p_rpc_key_version text, p_rpc_token text'
                )
            )
         FROM pg_proc AS function
@@ -305,6 +317,7 @@ _REQUIRED_BY_SURFACE = {
         "public_api_schema_usage",
         "submit_registration_rpc_execute",
         "registration_status_rpc_execute",
+        "enqueue_manual_review_notification_rpc_execute",
         "no_unknown_public_api_execute",
         "public_api_functions_hardened",
         "raw_library_table_acl_absent",
@@ -392,6 +405,7 @@ _EXTRA_FORBIDDEN_BY_SURFACE = {
         "public_api_schema_usage",
         "submit_registration_rpc_execute",
         "registration_status_rpc_execute",
+        "enqueue_manual_review_notification_rpc_execute",
     },
     "worker": {
         "is_api_runtime_member",
@@ -412,6 +426,7 @@ _EXTRA_FORBIDDEN_BY_SURFACE = {
         "public_api_schema_usage",
         "submit_registration_rpc_execute",
         "registration_status_rpc_execute",
+        "enqueue_manual_review_notification_rpc_execute",
     },
 }
 
