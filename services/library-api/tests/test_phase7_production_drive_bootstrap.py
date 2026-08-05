@@ -47,6 +47,7 @@ def _folder_metadata(folder_id: str = APPROVED_FOLDER_ID) -> dict[str, object]:
         "mimeType": helper.FOLDER_MIME_TYPE,
         "trashed": False,
         "ownedByMe": True,
+        "isAppAuthorized": True,
         "capabilities": {"canShare": True},
     }
 
@@ -83,6 +84,7 @@ def test_production_folder_requires_owner_folder_shareable_and_fingerprint(
         ({"mimeType": "text/plain"}, "owned, shareable"),
         ({"trashed": True}, "owned, shareable"),
         ({"ownedByMe": False}, "owned, shareable"),
+        ({"isAppAuthorized": False}, "owned, shareable"),
         ({"capabilities": {"canShare": False}}, "owned, shareable"),
     ),
 )

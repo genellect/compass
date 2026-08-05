@@ -273,6 +273,90 @@ run "notification_activation_requires_drive_worker" {
   expect_failures = [google_cloud_run_v2_job.migration]
 }
 
+run "event_dispatch_requires_active_drive_worker" {
+  command = plan
+
+  variables {
+    registration_event_dispatch_activation = {
+      enabled      = true
+      confirmation = "I_APPROVED_PRODUCTION_REGISTRATION_EVENT_DISPATCH_V1"
+    }
+  }
+
+  expect_failures = [google_cloud_run_v2_job.migration]
+}
+
+run "event_dispatch_creates_one_pii_free_wakeup_capability" {
+  command = plan
+
+  variables {
+    runtime_services_activation = {
+      enabled      = true
+      confirmation = "I_APPROVED_PRODUCTION_RUNTIME_SERVICES_AFTER_MIGRATION_V1"
+    }
+    cost_guardrails_review = {
+      enabled                  = true
+      cloud_run_spend_cap_usd  = 0.20
+      project_alert_budget_usd = 1
+      confirmation             = "I_VERIFIED_CLOUD_RUN_SPEND_CAP_AND_NEAR_ZERO_COST_GUARDRAILS_V1"
+    }
+    notification_channel_names   = ["projects/fsl-production-gate/notificationChannels/1"]
+    api_runtime_database_role    = "fsl_api_login"
+    worker_runtime_database_role = "fsl_worker_login"
+    worker_drive_activation = {
+      enabled      = true
+      confirmation = "I_APPROVED_PRODUCTION_DRIVE_SIDE_EFFECTS_V1"
+    }
+    registration_event_dispatch_activation = {
+      enabled      = true
+      confirmation = "I_APPROVED_PRODUCTION_REGISTRATION_EVENT_DISPATCH_V1"
+    }
+    secret_ids = {
+      api_database_url                = "fsl-api-database-url"
+      worker_database_url             = "fsl-worker-database-url"
+      migration_database_url          = "fsl-migration-database-url"
+      drive_oauth_client_id           = "fsl-drive-oauth-client-id"
+      drive_oauth_client_secret       = "fsl-drive-oauth-client-secret"
+      drive_oauth_refresh_token       = "fsl-drive-oauth-refresh-token"
+      drive_resource_id               = "fsl-drive-resource-id"
+      drive_operation_attestation_key = "fsl-drive-operation-attestation-key"
+      public_registration_rpc_token   = "fsl-public-registration-rpc-token"
+    }
+    secret_versions = {
+      api_database_url                = "1"
+      worker_database_url             = "1"
+      migration_database_url          = "1"
+      drive_oauth_client_id           = "1"
+      drive_oauth_client_secret       = "1"
+      drive_oauth_refresh_token       = "1"
+      drive_resource_id               = "1"
+      drive_operation_attestation_key = "1"
+      public_registration_rpc_token   = "1"
+    }
+  }
+
+  assert {
+    condition     = length(google_cloud_tasks_queue.registration_events) == 1
+    error_message = "Event dispatch must create exactly one bounded queue."
+  }
+  assert {
+    condition     = google_cloud_tasks_queue.registration_events[0].rate_limits[0].max_concurrent_dispatches == 1
+    error_message = "The event queue must serialize worker wake-ups."
+  }
+  assert {
+    condition     = length(google_cloud_tasks_queue_iam_member.public_event_enqueuer) == 1
+    error_message = "Only the public API identity receives queue enqueue capability."
+  }
+  assert {
+    condition     = length(google_cloud_run_v2_service_iam_member.task_worker_invoker) == 1
+    error_message = "The dedicated task identity must be the worker invoker."
+  }
+  assert {
+    condition     = google_cloud_scheduler_job.worker[0].schedule == "*/15 * * * *"
+    error_message = "The 15-minute reconciliation fallback must remain active."
+  }
+}
+
 run "notification_activation_requires_private_webhook_url" {
   command = plan
 

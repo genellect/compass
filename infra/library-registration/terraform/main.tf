@@ -31,6 +31,13 @@ resource "google_service_account" "scheduler" {
   depends_on   = [google_project_service.required]
 }
 
+resource "google_service_account" "task_invoker" {
+  count        = var.runtime_services_activation.enabled && var.worker_drive_activation.enabled && var.registration_event_dispatch_activation.enabled ? 1 : 0
+  account_id   = "fsl-registration-task-invoker"
+  display_name = "Future Strategy Library Cloud Tasks worker invoker"
+  depends_on   = [google_project_service.required]
+}
+
 locals {
   registration_oauth_client_ids = toset(compact([
     for value in split(",", var.google_oauth_client_ids) : trimspace(value)
@@ -119,34 +126,61 @@ resource "google_cloud_run_v2_service" "public" {
 
       dynamic "env" {
         for_each = {
-          APP_ENV                             = "production"
-          SERVICE_SURFACE                     = "public"
-          PUBLIC_DATABASE_ACCESS_MODE         = "rpc_v1"
-          PUBLIC_REGISTRATION_RPC_KEY_VERSION = var.public_registration_rpc_key_version
-          PHASE5_LOCAL_API_ENABLED            = "false"
-          PHASE6_AUTH_API_ENABLED             = "true"
-          PHASE7_WORKER_API_ENABLED           = "false"
-          PHASE7_DRIVE_API_ENABLED            = "false"
-          PHASE7_DRIVE_KILL_SWITCH            = "true"
-          EXTERNAL_SIDE_EFFECTS_ENABLED       = "false"
-          PII_LOGGING_ENABLED                 = "false"
-          RATE_LIMITS_ENABLED                 = "true"
-          STRUCTURED_LOGGING_ENABLED          = "true"
-          API_READ_ONLY_MODE                  = tostring(!var.public_api_write_activation.enabled)
-          API_WRITES_ACTIVATION_CONFIRMATION  = var.public_api_write_activation.confirmation
-          GOOGLE_OAUTH_CLIENT_IDS             = var.google_oauth_client_ids
-          ALLOWED_GOOGLE_HOSTED_DOMAINS       = var.allowed_google_hosted_domains
-          RUNTIME_DATABASE_ROLE               = var.api_runtime_database_role
-          TERMS_VERSION                       = var.terms_version
-          PRIVACY_VERSION                     = var.privacy_version
-          TERMS_CONTENT_SHA256                = var.terms_content_sha256
-          PRIVACY_CONTENT_SHA256              = var.privacy_content_sha256
-          CORS_ALLOWED_ORIGINS                = var.frontend_origin
-          MAX_REQUEST_BODY_BYTES              = "16384"
-          PREAUTH_RATE_LIMIT_PER_MINUTE       = "300"
-          SUBMIT_RATE_LIMIT_PER_HOUR          = "5"
-          DB_POOL_SIZE                        = "2"
-          DB_MAX_OVERFLOW                     = "0"
+          APP_ENV                                             = "production"
+          SERVICE_SURFACE                                     = "public"
+          PUBLIC_DATABASE_ACCESS_MODE                         = "rpc_v1"
+          PUBLIC_REGISTRATION_RPC_KEY_VERSION                 = var.public_registration_rpc_key_version
+          PHASE5_LOCAL_API_ENABLED                            = "false"
+          PHASE6_AUTH_API_ENABLED                             = "true"
+          PHASE7_WORKER_API_ENABLED                           = "false"
+          PHASE7_DRIVE_API_ENABLED                            = "false"
+          PHASE7_DRIVE_KILL_SWITCH                            = "true"
+          EXTERNAL_SIDE_EFFECTS_ENABLED                       = "false"
+          PII_LOGGING_ENABLED                                 = "false"
+          RATE_LIMITS_ENABLED                                 = "true"
+          STRUCTURED_LOGGING_ENABLED                          = "true"
+          API_READ_ONLY_MODE                                  = tostring(!var.public_api_write_activation.enabled)
+          API_WRITES_ACTIVATION_CONFIRMATION                  = var.public_api_write_activation.confirmation
+          GOOGLE_OAUTH_CLIENT_IDS                             = var.google_oauth_client_ids
+          ALLOWED_GOOGLE_HOSTED_DOMAINS                       = var.allowed_google_hosted_domains
+          RUNTIME_DATABASE_ROLE                               = var.api_runtime_database_role
+          TERMS_VERSION                                       = var.terms_version
+          PRIVACY_VERSION                                     = var.privacy_version
+          TERMS_CONTENT_SHA256                                = var.terms_content_sha256
+          PRIVACY_CONTENT_SHA256                              = var.privacy_content_sha256
+          CORS_ALLOWED_ORIGINS                                = var.frontend_origin
+          MAX_REQUEST_BODY_BYTES                              = "16384"
+          PREAUTH_RATE_LIMIT_PER_MINUTE                       = "300"
+          SUBMIT_RATE_LIMIT_PER_HOUR                          = "5"
+          DB_POOL_SIZE                                        = "2"
+          DB_MAX_OVERFLOW                                     = "0"
+          REGISTRATION_EVENT_DISPATCH_ENABLED                 = tostring(var.registration_event_dispatch_activation.enabled)
+          REGISTRATION_EVENT_DISPATCH_ACTIVATION_CONFIRMATION = var.registration_event_dispatch_activation.confirmation
+          CLOUD_TASKS_PROJECT_ID = (
+            var.registration_event_dispatch_activation.enabled ? var.project_id : ""
+          )
+          CLOUD_TASKS_LOCATION = (
+            var.registration_event_dispatch_activation.enabled ? var.region : ""
+          )
+          CLOUD_TASKS_QUEUE_ID = (
+            var.registration_event_dispatch_activation.enabled ? "fsl-registration-events" : ""
+          )
+          CLOUD_TASKS_WORKER_URL = (
+            var.registration_event_dispatch_activation.enabled
+            ? "${google_cloud_run_v2_service.worker[0].uri}/phase7/internal/operations/process"
+            : ""
+          )
+          CLOUD_TASKS_OIDC_SERVICE_ACCOUNT = (
+            var.registration_event_dispatch_activation.enabled
+            ? google_service_account.task_invoker[0].email
+            : ""
+          )
+          CLOUD_TASKS_OIDC_AUDIENCE = (
+            var.registration_event_dispatch_activation.enabled
+            ? var.worker_oidc_audience
+            : ""
+          )
+          CLOUD_TASKS_REQUEST_TIMEOUT_SECONDS = "3"
         }
         content {
           name  = env.key
@@ -417,11 +451,14 @@ resource "google_cloud_run_v2_service" "worker" {
           API_READ_ONLY_MODE                          = "false"
           WORKER_AUTH_MODE                            = "cloud_run_oidc"
           WORKER_OIDC_AUDIENCE                        = var.worker_oidc_audience
-          WORKER_INVOKER_SERVICE_ACCOUNT              = google_service_account.scheduler.email
-          RUNTIME_DATABASE_ROLE                       = var.worker_runtime_database_role
-          WORKER_BATCH_SIZE                           = "20"
-          DB_POOL_SIZE                                = "1"
-          DB_MAX_OVERFLOW                             = "0"
+          WORKER_INVOKER_SERVICE_ACCOUNT = join(",", compact([
+            google_service_account.scheduler.email,
+            var.registration_event_dispatch_activation.enabled ? google_service_account.task_invoker[0].email : "",
+          ]))
+          RUNTIME_DATABASE_ROLE = var.worker_runtime_database_role
+          WORKER_BATCH_SIZE     = "20"
+          DB_POOL_SIZE          = "1"
+          DB_MAX_OVERFLOW       = "0"
         }
         content {
           name  = env.key
@@ -525,6 +562,51 @@ resource "google_cloud_run_v2_service_iam_member" "scheduler_worker_invoker" {
   location = google_cloud_run_v2_service.worker[0].location
   role     = "roles/run.invoker"
   member   = google_service_account.scheduler.member
+}
+
+resource "google_cloud_run_v2_service_iam_member" "task_worker_invoker" {
+  count    = var.runtime_services_activation.enabled && var.worker_drive_activation.enabled && var.registration_event_dispatch_activation.enabled ? 1 : 0
+  name     = google_cloud_run_v2_service.worker[0].name
+  location = google_cloud_run_v2_service.worker[0].location
+  role     = "roles/run.invoker"
+  member   = google_service_account.task_invoker[0].member
+}
+
+resource "google_service_account_iam_member" "public_task_invoker_user" {
+  count              = var.runtime_services_activation.enabled && var.worker_drive_activation.enabled && var.registration_event_dispatch_activation.enabled ? 1 : 0
+  service_account_id = google_service_account.task_invoker[0].name
+  role               = "roles/iam.serviceAccountUser"
+  member             = google_service_account.public.member
+}
+
+resource "google_cloud_tasks_queue" "registration_events" {
+  count    = var.runtime_services_activation.enabled && var.worker_drive_activation.enabled && var.registration_event_dispatch_activation.enabled ? 1 : 0
+  name     = "fsl-registration-events"
+  location = var.region
+
+  rate_limits {
+    max_concurrent_dispatches = 1
+    max_dispatches_per_second = 1
+  }
+
+  retry_config {
+    max_attempts       = 8
+    max_retry_duration = "3600s"
+    min_backoff        = "5s"
+    max_backoff        = "300s"
+    max_doublings      = 5
+  }
+
+  depends_on = [google_project_service.required]
+}
+
+resource "google_cloud_tasks_queue_iam_member" "public_event_enqueuer" {
+  count    = var.runtime_services_activation.enabled && var.worker_drive_activation.enabled && var.registration_event_dispatch_activation.enabled ? 1 : 0
+  project  = var.project_id
+  location = google_cloud_tasks_queue.registration_events[0].location
+  name     = google_cloud_tasks_queue.registration_events[0].name
+  role     = "roles/cloudtasks.enqueuer"
+  member   = google_service_account.public.member
 }
 
 resource "google_service_account_iam_member" "scheduler_oidc_minter" {
@@ -683,12 +765,20 @@ resource "google_cloud_run_v2_job" "migration" {
         !var.public_ingress_activation.enabled &&
         !var.worker_drive_activation.enabled &&
         !var.worker_notification_activation.enabled &&
+        !var.registration_event_dispatch_activation.enabled &&
         !var.admin_api_activation.enabled &&
         !var.admin_mutations_activation.enabled &&
         !var.public_api_write_activation.enabled &&
         !var.phase10a_export_activation.enabled
       )
       error_message = "Runtime-dependent capabilities must remain disabled during migration-only bootstrap."
+    }
+    precondition {
+      condition = !var.registration_event_dispatch_activation.enabled || (
+        var.runtime_services_activation.enabled &&
+        var.worker_drive_activation.enabled
+      )
+      error_message = "Registration event dispatch requires the active runtime and Drive worker."
     }
     precondition {
       condition = !var.admin_api_activation.enabled || (

@@ -12,6 +12,9 @@ locals {
       "drive.googleapis.com",
       "iamcredentials.googleapis.com",
     ] : [],
+    var.registration_event_dispatch_activation.enabled ? [
+      "cloudtasks.googleapis.com",
+    ] : [],
   ))
 }
 

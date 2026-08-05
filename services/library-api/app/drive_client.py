@@ -126,7 +126,7 @@ class GoogleDrivePermissionClient:
         if allow_not_found and response.status_code == 404:
             return {}
         if not 200 <= response.status_code < 300:
-            raise self._http_error(response.status_code)
+            raise self._http_error(response)
         if response.status_code == 204 or not response.content:
             return {}
         try:
@@ -144,7 +144,44 @@ class GoogleDrivePermissionClient:
         return payload
 
     @staticmethod
-    def _http_error(status_code: int) -> DriveClientError:
+    def _google_error_reason(response: requests.Response) -> str:
+        """Extract only Google's stable reason code; never retain its message.
+
+        Drive error messages may contain a user's email address or the target
+        file name. The reason field is an enum-like value and is safe to map to
+        one of our fixed internal codes.
+        """
+
+        try:
+            payload = response.json()
+        except ValueError:
+            return ""
+        if not isinstance(payload, dict):
+            return ""
+        error = payload.get("error")
+        if not isinstance(error, dict):
+            return ""
+        errors = error.get("errors")
+        if not isinstance(errors, list):
+            return ""
+        for item in errors:
+            if not isinstance(item, dict):
+                continue
+            reason = item.get("reason")
+            if isinstance(reason, str) and reason:
+                return reason
+        return ""
+
+    @classmethod
+    def _http_error(cls, response: requests.Response) -> DriveClientError:
+        status_code = response.status_code
+        reason = cls._google_error_reason(response)
+        if reason in {
+            "rateLimitExceeded",
+            "sharingRateLimitExceeded",
+            "userRateLimitExceeded",
+        }:
+            return DriveClientError("drive_sharing_rate_limited", retryable=True)
         if status_code in RETRYABLE_HTTP_STATUSES:
             return DriveClientError("drive_api_retryable_error", retryable=True)
         if status_code == 401:
@@ -152,8 +189,22 @@ class GoogleDrivePermissionClient:
                 "drive_authentication_failed",
                 retryable=False,
             )
+        if reason == "appNotAuthorizedToFile":
+            return DriveClientError("drive_app_not_authorized", retryable=False)
+        if reason == "accessNotConfigured":
+            return DriveClientError("drive_api_not_configured", retryable=False)
+        if reason == "insufficientFilePermissions":
+            return DriveClientError(
+                "drive_insufficient_file_permissions",
+                retryable=False,
+            )
+        if reason in {"domainPolicy", "cannotShareAcrossDomains"}:
+            return DriveClientError("drive_sharing_policy_denied", retryable=False)
         if status_code == 403:
-            return DriveClientError("drive_permission_denied", retryable=False)
+            # Google occasionally introduces new 403 reason values. Do not
+            # permanently discard an otherwise eligible grant on an unknown
+            # value; the bounded operation retry limit still prevents loops.
+            return DriveClientError("drive_permission_denied", retryable=True)
         if status_code == 404:
             return DriveClientError("drive_resource_not_found", retryable=False)
         return DriveClientError("drive_request_rejected", retryable=False)

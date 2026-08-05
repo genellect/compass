@@ -56,6 +56,10 @@ from app.registration_service import (
     PersistenceConflictError,
     persist_registration,
 )
+from app.registration_event_dispatch import (
+    RegistrationEventDispatchError,
+    enqueue_registration_worker_wakeup,
+)
 from app.public_registration_rpc import (
     PublicRegistrationRpcBoundaryError,
     fetch_public_registration_status_v1,
@@ -446,6 +450,30 @@ def phase6_register(
             status_code=503,
             detail="registration_service_unavailable",
         ) from error
+
+    should_wake_worker = (
+        result.persisted
+        and result.application_id is not None
+        and (
+            result.drive_access_status in {"pending", "failed"}
+            or result.eligibility.status == "manual_review"
+        )
+    )
+    if should_wake_worker:
+        try:
+            dispatch = enqueue_registration_worker_wakeup(settings)
+        except RegistrationEventDispatchError:
+            if settings.structured_logging_enabled:
+                emit_event(
+                    "registration_event_dispatch_failed",
+                    recovery="scheduler",
+                )
+        else:
+            if dispatch.enqueued and settings.structured_logging_enabled:
+                emit_event(
+                    "registration_event_dispatch_enqueued",
+                    recovery="scheduler",
+                )
 
     return Phase6RegistrationResponse(
         **result.eligibility.model_dump(),

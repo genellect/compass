@@ -329,7 +329,10 @@ def _verify_selected_production_folder(
         access_token,
         f"files/{folder_id}",
         {
-            "fields": "id,mimeType,trashed,ownedByMe,capabilities(canShare)",
+            "fields": (
+                "id,mimeType,trashed,ownedByMe,isAppAuthorized,"
+                "capabilities(canShare)"
+            ),
             "supportsAllDrives": "true",
         },
     )
@@ -342,6 +345,7 @@ def _verify_selected_production_folder(
             metadata.get("mimeType") == FOLDER_MIME_TYPE,
             metadata.get("trashed") is not True,
             metadata.get("ownedByMe") is True,
+            metadata.get("isAppAuthorized") is True,
             capabilities.get("canShare") is True,
         )
     ):

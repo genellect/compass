@@ -27,6 +27,9 @@ PRODUCTION_API_WRITES_ACTIVATION_CONFIRMATION = (
 PRODUCTION_EXPORT_ACTIVATION_CONFIRMATION = (
     "I_APPROVED_PRODUCTION_PHASE10A_EXPORT_AFTER_DATA_HANDLING_REVIEW_V1"
 )
+PRODUCTION_EVENT_DISPATCH_ACTIVATION_CONFIRMATION = (
+    "I_APPROVED_PRODUCTION_REGISTRATION_EVENT_DISPATCH_V1"
+)
 NOTIFICATION_HMAC_CONTEXT = b"fsl-mailapp-notification-v1"
 
 
@@ -131,6 +134,19 @@ class Settings(BaseSettings):
     worker_auth_mode: str = "shared_secret"
     worker_oidc_audience: str = ""
     worker_invoker_service_account: str = ""
+    registration_event_dispatch_enabled: bool = False
+    registration_event_dispatch_activation_confirmation: str = ""
+    cloud_tasks_project_id: str = ""
+    cloud_tasks_location: str = ""
+    cloud_tasks_queue_id: str = ""
+    cloud_tasks_worker_url: str = ""
+    cloud_tasks_oidc_service_account: str = ""
+    cloud_tasks_oidc_audience: str = ""
+    cloud_tasks_request_timeout_seconds: int = Field(
+        default=3,
+        ge=1,
+        le=10,
+    )
     phase8_admin_api_enabled: bool = False
     phase8_admin_activation_confirmation: str = ""
     admin_mutations_enabled: bool = False
@@ -362,6 +378,80 @@ class Settings(BaseSettings):
             )
         self.validate_phase7_notification_configuration()
 
+    def validate_registration_event_dispatch_configuration(self) -> None:
+        values = (
+            self.cloud_tasks_project_id,
+            self.cloud_tasks_location,
+            self.cloud_tasks_queue_id,
+            self.cloud_tasks_worker_url,
+            self.cloud_tasks_oidc_service_account,
+            self.cloud_tasks_oidc_audience,
+        )
+        if not self.registration_event_dispatch_enabled:
+            if (
+                self.registration_event_dispatch_activation_confirmation.strip()
+                or any(value.strip() for value in values)
+            ):
+                raise ValueError(
+                    "Disabled registration event dispatch must receive no "
+                    "Cloud Tasks configuration."
+                )
+            return
+        if (
+            self.registration_event_dispatch_activation_confirmation
+            != PRODUCTION_EVENT_DISPATCH_ACTIVATION_CONFIRMATION
+        ):
+            raise ValueError(
+                "Production registration event dispatch confirmation is "
+                "missing."
+            )
+        if re.fullmatch(
+            r"[a-z][a-z0-9-]{4,28}[a-z0-9]",
+            self.cloud_tasks_project_id,
+        ) is None:
+            raise ValueError("Cloud Tasks project ID is invalid.")
+        if re.fullmatch(
+            r"[a-z]+(?:-[a-z0-9]+)+",
+            self.cloud_tasks_location,
+        ) is None:
+            raise ValueError("Cloud Tasks location is invalid.")
+        if re.fullmatch(
+            r"[a-z][a-z0-9-]{0,98}[a-z0-9]",
+            self.cloud_tasks_queue_id,
+        ) is None:
+            raise ValueError("Cloud Tasks queue ID is invalid.")
+        worker_url = urlparse(self.cloud_tasks_worker_url)
+        if (
+            worker_url.scheme != "https"
+            or worker_url.username is not None
+            or worker_url.password is not None
+            or worker_url.query
+            or worker_url.fragment
+            or not worker_url.hostname
+            or not worker_url.hostname.endswith(".run.app")
+            or worker_url.path
+            != "/phase7/internal/operations/process"
+        ):
+            raise ValueError("Cloud Tasks worker URL is invalid.")
+        if not self.cloud_tasks_oidc_service_account.endswith(
+            ".gserviceaccount.com"
+        ):
+            raise ValueError("Cloud Tasks OIDC service account is invalid.")
+        audience = urlparse(self.cloud_tasks_oidc_audience)
+        if (
+            audience.scheme != "https"
+            or not audience.netloc
+            or audience.path not in {"", "/"}
+            or audience.query
+            or audience.fragment
+            or "*" in self.cloud_tasks_oidc_audience
+        ):
+            raise ValueError("Cloud Tasks OIDC audience is invalid.")
+
+    @property
+    def worker_invoker_service_account_list(self) -> tuple[str, ...]:
+        return self._csv_values(self.worker_invoker_service_account)
+
     def validate_drive_operation_attestation_configuration(self) -> None:
         key = self.drive_operation_attestation_key
         if (
@@ -520,6 +610,7 @@ class Settings(BaseSettings):
                     "Production public RPC token must be an independent secret."
                 )
             self.validate_phase6_configuration()
+            self.validate_registration_event_dispatch_configuration()
             if self.allowed_google_hosted_domain_list != (
                 "st.kitasato-u.ac.jp",
             ):
@@ -590,6 +681,7 @@ class Settings(BaseSettings):
                 raise ValueError("Public API must not receive the Drive resource ID.")
 
         if active_surface == "admin":
+            self.validate_registration_event_dispatch_configuration()
             self.validate_no_notification_configuration(surface="admin")
             if self.phase5_local_api_enabled:
                 raise ValueError("Local API must be disabled in production.")
@@ -671,6 +763,7 @@ class Settings(BaseSettings):
                 raise ValueError("Admin API must not receive the Drive resource ID.")
 
         if active_surface == "worker":
+            self.validate_registration_event_dispatch_configuration()
             self.validate_no_admin_configuration(surface="worker")
             if self.phase5_local_api_enabled or self.phase6_auth_api_enabled:
                 raise ValueError("Worker must not expose public/local authentication APIs.")
@@ -678,8 +771,10 @@ class Settings(BaseSettings):
                 raise ValueError("Production worker requires Cloud Run IAM/OIDC.")
             if not self.worker_oidc_audience.startswith("https://"):
                 raise ValueError("Worker OIDC audience is not configured.")
-            if not self.worker_invoker_service_account.endswith(
-                ".gserviceaccount.com"
+            worker_invokers = self.worker_invoker_service_account_list
+            if not worker_invokers or any(
+                not value.endswith(".gserviceaccount.com")
+                for value in worker_invokers
             ):
                 raise ValueError("Worker invoker service account is not configured.")
             standby_flags = (
