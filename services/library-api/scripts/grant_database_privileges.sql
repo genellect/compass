@@ -24,6 +24,8 @@ ALTER DEFAULT PRIVILEGES IN SCHEMA fsl_public_api
     REVOKE EXECUTE ON FUNCTIONS FROM PUBLIC;
 ALTER DEFAULT PRIVILEGES IN SCHEMA fsl_private
     REVOKE ALL ON TABLES FROM PUBLIC;
+ALTER DEFAULT PRIVILEGES IN SCHEMA fsl_worker_api
+    REVOKE EXECUTE ON FUNCTIONS FROM PUBLIC;
 
 -- New runtime tables are omitted by default and require an explicit review
 -- before this list is extended.
@@ -35,7 +37,13 @@ REVOKE ALL ON ALL SEQUENCES IN SCHEMA public FROM fsl_api_runtime, fsl_admin_run
 GRANT SELECT ON TABLE public.alembic_version TO fsl_api_runtime;
 REVOKE ALL ON SCHEMA fsl_public_api FROM PUBLIC;
 REVOKE ALL ON SCHEMA fsl_private FROM PUBLIC;
+REVOKE ALL ON SCHEMA fsl_worker_api FROM PUBLIC;
 REVOKE CREATE ON SCHEMA fsl_public_api FROM
+    fsl_api_runtime,
+    fsl_admin_runtime,
+    fsl_worker_runtime,
+    fsl_backup_restore;
+REVOKE CREATE ON SCHEMA fsl_worker_api FROM
     fsl_api_runtime,
     fsl_admin_runtime,
     fsl_worker_runtime,
@@ -57,6 +65,12 @@ REVOKE ALL ON ALL FUNCTIONS IN SCHEMA fsl_public_api FROM
     fsl_admin_runtime,
     fsl_worker_runtime,
     fsl_backup_restore;
+REVOKE ALL ON ALL FUNCTIONS IN SCHEMA fsl_worker_api FROM
+    PUBLIC,
+    fsl_api_runtime,
+    fsl_admin_runtime,
+    fsl_worker_runtime,
+    fsl_backup_restore;
 GRANT USAGE ON SCHEMA fsl_public_api TO fsl_api_runtime;
 GRANT EXECUTE ON FUNCTION
     fsl_public_api.submit_registration_v1(jsonb, text)
@@ -64,6 +78,18 @@ TO fsl_api_runtime;
 GRANT EXECUTE ON FUNCTION
     fsl_public_api.registration_status_v1(uuid, text, text, text)
 TO fsl_api_runtime;
+GRANT EXECUTE ON FUNCTION
+    fsl_public_api.enqueue_manual_review_notification_v1(
+        uuid,
+        text,
+        uuid,
+        text,
+        text
+    )
+TO fsl_api_runtime;
+GRANT USAGE ON SCHEMA fsl_worker_api TO fsl_worker_runtime;
+GRANT EXECUTE ON FUNCTION fsl_worker_api.lock_member_v1(uuid)
+TO fsl_worker_runtime;
 
 GRANT SELECT, UPDATE ON TABLE public.library_members TO fsl_admin_runtime;
 GRANT SELECT ON TABLE public.library_identities TO fsl_admin_runtime;

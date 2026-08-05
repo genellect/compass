@@ -1,7 +1,7 @@
 # 未来戦略ライブラリ MailApp通知ゲートウェイ
 
-Status: implemented locally; manual Apps Script deployment and production E2E pending
-Scope: Drive権限付与完了後の申請者メール1通と、個人情報を含まない管理者通知1通
+Status: release candidate validated; production deployment pending
+Scope: Drive権限付与完了後の申請者メール1通・管理者通知1通、および個別確認案件の管理者通知1通
 
 ## 1. 境界
 
@@ -10,10 +10,10 @@ Scope: Drive権限付与完了後の申請者メール1通と、個人情報を�
 Gmail APIを呼ばない。Driveの標準共有案内は既存workerの
 `sendNotificationEmail=true`で別に送信される。
 
-バックエンドは次の両方を確認した後だけ、このWeb Appを呼ぶ。
+バックエンドは次のいずれかを確認した後だけ、このWeb Appを呼ぶ。
 
-1. server側で有効な申請が最終承認されている。
-2. 対象メールへのDrive閲覧権限が`granted`または`already_granted`になった。
+1. server側で承認され、対象メールへのDrive閲覧権限が`granted`または`already_granted`になった。
+2. server側で`manual_review`かつ管理者判断が`pending`となった。この場合は管理者だけに通知し、申請者メールとDrive操作は行わない。
 
 通知失敗を理由にDrive権限を再作成しない。GASはDrive権限を作成、削除、確認できない。
 
@@ -42,9 +42,10 @@ Request bodyは次の5項目だけを持つ。未知の項目は拒否される�
 - `issuedAt`と`processedAt`はUTCのISO 8601。副作用を伴う初回・部分再送は`issuedAt`の前後5分以内だけ。
 - `fullName`は前後空白なし、制御文字なし、200文字以内。
 - `email`はlowercaseの`@st.kitasato-u.ac.jp`完全一致だけ。
-- `eligibilityStatus`は`approved`だけ。
-- `driveAccessStatus`は`granted`または`already_granted`だけ。
-- 学籍番号、学年、在籍区分、質問、規約回答、Drive resource ID、permission IDは送らない。
+- `eligibilityStatus`は`approved`または`manual_review`。
+- `approved`では`email`と`driveAccessStatus`が必須で、`driveAccessStatus`は`granted`または`already_granted`だけ。
+- `manual_review`では`email`と`driveAccessStatus`を送らず、申請者へのメールも送らない。
+- `grade`と`question`は管理者向け要約のために送信できる。学籍番号、在籍区分、規約回答、Drive resource ID、permission IDは送らない。
 
 署名対象は次の4要素をLFで連結する。
 
@@ -116,7 +117,7 @@ Drive URLは`https://drive.google.com/drive/folders/...`形式だけが許可さ
   `duplicate: true`で成功し、メールを再送しない。
 - 片方だけ成功した場合、同じmessage ID・payloadをfresh `issuedAt`で再署名すると未送信側だけを送る。
 - 同じmessage IDに異なるpayloadを使うと`conflict`で拒否する。
-- 初回はMailApp残quotaが2未満なら何も送らない。部分再送は残り1通分を確認する。
+- 承認時は残quota 2通分、個別確認時は1通分を確認する。部分再送は未送信分だけを数える。
 - ledgerは8日超または250件超を削除する。期限切れrequestは新しいmessage IDとissuedAtで作り直す。
 
 MailApp送信成功とledger書込の間で実行環境が強制終了した場合だけ、重複の狭い可能性が残る。
@@ -136,9 +137,10 @@ MailApp送信成功とledger書込の間で実行環境が強制終了した場�
 2. 管理者本人が管理する`@st.kitasato-u.ac.jp` canary 1件で、登録からDrive付与まで完了させる。
 3. Google標準Drive共有案内、申請者向け受付メール、管理者向け完了通知の計3通を区別して確認する。
 4. 申請者メールのDrive URLで閲覧でき、編集できないことを確認する。
-5. 管理者メール本文に氏名、メール、学籍番号、質問、Drive identifierがないことを確認する。
+5. 管理者メール本文が氏名、学年、判定結果、入力されている場合の連絡事項だけで、メール、学籍番号、Drive identifierを含まないことを確認する。
 6. 同じmessage IDを再送し、追加メール0通と`duplicate:true`を確認する。
 7. signature改変、個人Gmail、5分超のrequestでメール0通を確認する。
+8. 個別確認案件で管理者メールが1通だけ届き、申請者メールとDrive操作が0件であることを確認する。
 
 この人間E2Eが完了するまでは`Implemented, verification pending`であり、本番通知PASSとはしない。
 

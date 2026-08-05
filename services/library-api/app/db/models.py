@@ -480,9 +480,21 @@ class LibraryNotificationOutbox(Base):
         CheckConstraint(
             (
                 "notification_type IN "
-                "('registration_drive_granted')"
+                "('registration_drive_granted', 'manual_review_requested')"
             ),
             name="ck_library_notification_outbox_type",
+        ),
+        CheckConstraint(
+            (
+                "(notification_type = 'registration_drive_granted' "
+                "AND member_id IS NOT NULL "
+                "AND access_grant_id IS NOT NULL "
+                "AND drive_operation_id IS NOT NULL) OR "
+                "(notification_type = 'manual_review_requested' "
+                "AND access_grant_id IS NULL "
+                "AND drive_operation_id IS NULL)"
+            ),
+            name="ck_library_notification_outbox_source",
         ),
         CheckConstraint(
             "status IN ('pending', 'running', 'succeeded', 'failed', 'dead')",
@@ -510,9 +522,9 @@ class LibraryNotificationOutbox(Base):
         primary_key=True,
         default=uuid4,
     )
-    member_id: Mapped[UUID] = mapped_column(
+    member_id: Mapped[UUID | None] = mapped_column(
         ForeignKey("library_members.id", ondelete="CASCADE"),
-        nullable=False,
+        nullable=True,
         index=True,
     )
     application_id: Mapped[UUID] = mapped_column(
@@ -520,14 +532,14 @@ class LibraryNotificationOutbox(Base):
         nullable=False,
         index=True,
     )
-    access_grant_id: Mapped[UUID] = mapped_column(
+    access_grant_id: Mapped[UUID | None] = mapped_column(
         ForeignKey("library_access_grants.id", ondelete="CASCADE"),
-        nullable=False,
+        nullable=True,
         index=True,
     )
-    drive_operation_id: Mapped[UUID] = mapped_column(
+    drive_operation_id: Mapped[UUID | None] = mapped_column(
         ForeignKey("library_operations.id", ondelete="CASCADE"),
-        nullable=False,
+        nullable=True,
         index=True,
     )
     notification_key: Mapped[str] = mapped_column(

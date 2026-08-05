@@ -26,8 +26,11 @@ from app.observability import emit_event
 from app.roster import roster_grade_label
 
 
+DRIVE_NOTIFICATION_TYPE = "registration_drive_granted"
+MANUAL_REVIEW_NOTIFICATION_TYPE = "manual_review_requested"
 NOTIFICATION_TYPES = (
-    "registration_drive_granted",
+    DRIVE_NOTIFICATION_TYPE,
+    MANUAL_REVIEW_NOTIFICATION_TYPE,
 )
 SAFE_ERROR_SUMMARIES = {
     "notification_webhook_unavailable": (
@@ -108,7 +111,7 @@ def enqueue_drive_success_notifications(
         return []
 
     queued: list[LibraryNotificationOutbox] = []
-    for notification_type in NOTIFICATION_TYPES:
+    for notification_type in (DRIVE_NOTIFICATION_TYPE,):
         notification_key = (
             f"drive_grant:{operation.id}:{notification_type}:v1"
         )
@@ -150,6 +153,50 @@ def enqueue_drive_success_notifications(
         else:
             queued.append(candidate)
     return queued
+
+
+def enqueue_manual_review_notification(
+    session: Session,
+    application: LibraryApplication,
+) -> LibraryNotificationOutbox | None:
+    """Queue one admin-only notification for a pending manual review."""
+    if (
+        application.eligibility_status != "manual_review"
+        or application.admin_decision != "pending"
+    ):
+        return None
+    notification_key = f"manual_review:{application.id}:v1"
+    existing = session.scalar(
+        select(LibraryNotificationOutbox).where(
+            LibraryNotificationOutbox.notification_key == notification_key
+        )
+    )
+    if existing is not None:
+        return existing
+    candidate = LibraryNotificationOutbox(
+        id=uuid4(),
+        member_id=application.member_id,
+        application_id=application.id,
+        access_grant_id=None,
+        drive_operation_id=None,
+        notification_key=notification_key,
+        notification_type=MANUAL_REVIEW_NOTIFICATION_TYPE,
+        status="pending",
+        attempt_count=0,
+        max_attempts=5,
+    )
+    try:
+        with session.begin_nested():
+            session.add(candidate)
+            session.flush()
+    except IntegrityError:
+        return session.scalar(
+            select(LibraryNotificationOutbox).where(
+                LibraryNotificationOutbox.notification_key
+                == notification_key
+            )
+        )
+    return candidate
 
 
 def _claim_next_notification(
@@ -206,10 +253,62 @@ def _build_payload(
     session: Session,
     notification: LibraryNotificationOutbox,
 ) -> dict[str, Any]:
-    member = session.get(LibraryMember, notification.member_id)
     application = session.get(
         LibraryApplication,
         notification.application_id,
+    )
+    if notification.notification_type == MANUAL_REVIEW_NOTIFICATION_TYPE:
+        member = (
+            session.get(LibraryMember, notification.member_id)
+            if notification.member_id is not None
+            else None
+        )
+        valid_member_link = (
+            application is not None
+            and application.member_id == notification.member_id
+            and (
+                notification.member_id is None
+                or (
+                    member is not None
+                    and member.member_status in {"active", "pending_review"}
+                )
+            )
+        )
+        valid = (
+            application is not None
+            and application.eligibility_status == "manual_review"
+            and application.admin_decision == "pending"
+            and notification.access_grant_id is None
+            and notification.drive_operation_id is None
+            and valid_member_link
+        )
+        if not valid or application is None:
+            raise NotificationWebhookError(
+                "notification_state_invalid",
+                retryable=False,
+            )
+        full_name = application.full_name.strip()
+        if not full_name:
+            raise NotificationWebhookError(
+                "notification_state_invalid",
+                retryable=False,
+            )
+        return {
+            "registrationId": str(application.id),
+            "fullName": full_name,
+            "grade": roster_grade_label(
+                application.academic_role,
+                application.grade,
+            ),
+            "question": application.question or "",
+            "eligibilityStatus": "manual_review",
+            "processedAt": _iso_utc(application.created_at),
+        }
+
+    member = (
+        session.get(LibraryMember, notification.member_id)
+        if notification.member_id is not None
+        else None
     )
     grant = session.get(LibraryAccessGrant, notification.access_grant_id)
     operation = session.get(
@@ -236,7 +335,7 @@ def _build_payload(
         and operation.operation_type == "drive_grant"
         and operation.status == "succeeded"
         and operation.completed_at is not None
-        and notification.notification_type in NOTIFICATION_TYPES
+        and notification.notification_type == DRIVE_NOTIFICATION_TYPE
     )
     if not valid:
         raise NotificationWebhookError(

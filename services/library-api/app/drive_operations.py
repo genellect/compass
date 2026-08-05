@@ -5,7 +5,7 @@ from datetime import UTC, datetime, timedelta
 from uuid import UUID, uuid4
 from time import monotonic
 
-from sqlalchemy import and_, or_, select, update
+from sqlalchemy import and_, or_, select, text, update
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
@@ -30,6 +30,9 @@ from app.observability import emit_event
 
 
 DRIVE_OPERATION_TYPES = {"drive_grant", "drive_revoke"}
+WORKER_LOCK_MEMBER_V1_SQL = text(
+    "SELECT fsl_worker_api.lock_member_v1(:member_id)"
+)
 SAFE_ERROR_SUMMARIES = {
     "drive_api_unavailable": "Drive API is temporarily unavailable.",
     "drive_api_retryable_error": "Drive API requested a retry.",
@@ -66,6 +69,36 @@ class DriveOperationResult:
 
 def _now() -> datetime:
     return datetime.now(UTC)
+
+
+def _lock_member_for_update(
+    session: Session,
+    member_id: UUID,
+    settings: Settings,
+) -> LibraryMember | None:
+    """Lock a member without granting the worker arbitrary member updates."""
+    bind = session.get_bind()
+    if (
+        bind.dialect.name == "postgresql"
+        and settings.service_surface == "worker"
+    ):
+        locked = session.scalar(
+            WORKER_LOCK_MEMBER_V1_SQL,
+            {"member_id": member_id},
+        )
+        if locked is not True:
+            return None
+        return session.scalar(
+            select(LibraryMember)
+            .where(LibraryMember.id == member_id)
+            .execution_options(populate_existing=True)
+        )
+    return session.scalar(
+        select(LibraryMember)
+        .where(LibraryMember.id == member_id)
+        .with_for_update()
+        .execution_options(populate_existing=True)
+    )
 
 
 def drive_access_status_for_application(
@@ -463,12 +496,7 @@ def _process_grant(
     settings: Settings,
     target_resource_id: str,
 ) -> DriveOperationResult:
-    locked_member = session.scalar(
-        select(LibraryMember)
-        .where(LibraryMember.id == member.id)
-        .with_for_update()
-        .execution_options(populate_existing=True)
-    )
+    locked_member = _lock_member_for_update(session, member.id, settings)
     locked_grant = session.scalar(
         select(LibraryAccessGrant)
         .where(LibraryAccessGrant.id == grant.id)
@@ -538,11 +566,10 @@ def _process_grant(
     # The worker and admin mutation paths lock the same member row. This makes
     # a pending grant and a concurrent deactivate/revoke action linearizable:
     # whichever obtains the lock first completes its decision first.
-    locked_member_after_marker = session.scalar(
-        select(LibraryMember)
-        .where(LibraryMember.id == member.id)
-        .with_for_update()
-        .execution_options(populate_existing=True)
+    locked_member_after_marker = _lock_member_for_update(
+        session,
+        member.id,
+        settings,
     )
     locked_grant_after_marker = session.scalar(
         select(LibraryAccessGrant)
@@ -604,12 +631,7 @@ def _process_revoke(
     settings: Settings,
     target_resource_id: str,
 ) -> DriveOperationResult:
-    locked_member = session.scalar(
-        select(LibraryMember)
-        .where(LibraryMember.id == member.id)
-        .with_for_update()
-        .execution_options(populate_existing=True)
-    )
+    locked_member = _lock_member_for_update(session, member.id, settings)
     locked_grant = session.scalar(
         select(LibraryAccessGrant)
         .where(LibraryAccessGrant.id == grant.id)

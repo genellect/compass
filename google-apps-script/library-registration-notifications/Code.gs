@@ -3,9 +3,8 @@
  *
  * This web app is deliberately limited to MailApp. It does not read or mutate
  * Google Drive, Forms, Sheets, or the registration database. The caller must
- * first complete the server-side eligibility decision and Drive operation,
- * then submit the minimized HMAC-signed completion payload documented in the
- * deployment runbook.
+ * submit only a minimized HMAC-signed payload after either a Drive grant or a
+ * server-side manual-review decision.
  */
 
 const CONFIG = Object.freeze({
@@ -43,8 +42,6 @@ const PAYLOAD_KEYS = Object.freeze([
 ]);
 
 const REQUIRED_PAYLOAD_KEYS = Object.freeze([
-  "driveAccessStatus",
-  "email",
   "eligibilityStatus",
   "fullName",
   "processedAt",
@@ -135,10 +132,11 @@ function handlePost_(event) {
     if (existingState && existingState.payloadTag !== payloadTag) {
       return jsonResponse_({ ok: false, code: "conflict" });
     }
+    const sendApplicant = request.payload.eligibilityStatus === "approved";
     if (
       existingState &&
       existingState.adminSent === true &&
-      existingState.applicantSent === true
+      (!sendApplicant || existingState.applicantSent === true)
     ) {
       return jsonResponse_({
         ok: true,
@@ -157,7 +155,8 @@ function handlePost_(event) {
       payloadTag: payloadTag,
       updatedAt: new Date().toISOString()
     };
-    const pendingRecipients = Number(!state.adminSent) + Number(!state.applicantSent);
+    const pendingRecipients = Number(!state.adminSent) +
+      Number(sendApplicant && !state.applicantSent);
     if (MailApp.getRemainingDailyQuota() < pendingRecipients) {
       return jsonResponse_({ ok: false, code: "quota" });
     }
@@ -165,7 +164,9 @@ function handlePost_(event) {
     if (!state.adminSent) {
       MailApp.sendEmail(
         configured.adminEmail,
-        "【新規承認】未来戦略ライブラリ 登録処理完了",
+        sendApplicant
+          ? "【新規承認】未来戦略ライブラリ 登録処理完了"
+          : "【個別確認】未来戦略ライブラリ 登録申請",
         buildAdminText_(request.payload),
         {
           name: CONFIG.SENDER_NAME
@@ -176,7 +177,7 @@ function handlePost_(event) {
       writeLedgerState_(scriptProperties, ledgerKey, state);
     }
 
-    if (!state.applicantSent) {
+    if (sendApplicant && !state.applicantSent) {
       MailApp.sendEmail(
         request.payload.email,
         "【未来戦略ライブラリ】登録申請を受け付けました",
@@ -247,16 +248,16 @@ function validatePayload_(raw) {
     !isUuid_(raw.registrationId) ||
     raw.registrationId !== raw.registrationId.toLowerCase() ||
     typeof raw.fullName !== "string" ||
-    typeof raw.email !== "string" ||
     typeof raw.eligibilityStatus !== "string" ||
-    typeof raw.driveAccessStatus !== "string" ||
     typeof raw.processedAt !== "string"
   ) {
     return { ok: false };
   }
 
   const fullName = raw.fullName.trim();
-  const email = raw.email.trim().toLowerCase();
+  const email = typeof raw.email === "string"
+    ? raw.email.trim().toLowerCase()
+    : "";
   const grade = typeof raw.grade === "string" ? raw.grade.trim() : "その他";
   const question = typeof raw.question === "string" ? raw.question.trim() : "";
   const driveStatuses = ["granted", "already_granted"];
@@ -267,17 +268,35 @@ function validatePayload_(raw) {
     fullName.length > 200 ||
     raw.fullName !== fullName ||
     /[\u0000-\u001f\u007f]/.test(fullName) ||
-    email.length > 254 ||
-    raw.email !== email ||
-    !isAllowedRecipient_(email) ||
     grades.indexOf(grade) === -1 ||
     (raw.grade !== undefined && raw.grade !== grade) ||
     question.length > 1000 ||
     (raw.question !== undefined && raw.question !== question) ||
     /[\u0000-\u0008\u000b\u000c\u000e-\u001f\u007f]/.test(question) ||
-    raw.eligibilityStatus !== "approved" ||
-    driveStatuses.indexOf(raw.driveAccessStatus) === -1 ||
+    ["approved", "manual_review"].indexOf(raw.eligibilityStatus) === -1 ||
     !isUtcTimestamp_(raw.processedAt)
+  ) {
+    return { ok: false };
+  }
+
+  const approved = raw.eligibilityStatus === "approved";
+  if (
+    approved && (
+      typeof raw.email !== "string" ||
+      email.length > 254 ||
+      raw.email !== email ||
+      !isAllowedRecipient_(email) ||
+      typeof raw.driveAccessStatus !== "string" ||
+      driveStatuses.indexOf(raw.driveAccessStatus) === -1
+    )
+  ) {
+    return { ok: false };
+  }
+  if (
+    !approved && (
+      raw.email !== undefined ||
+      raw.driveAccessStatus !== undefined
+    )
   ) {
     return { ok: false };
   }
@@ -285,12 +304,14 @@ function validatePayload_(raw) {
   const data = {
     registrationId: raw.registrationId.toLowerCase(),
     fullName: fullName,
-    email: email,
     eligibilityStatus: raw.eligibilityStatus,
-    driveAccessStatus: raw.driveAccessStatus,
     processedAt: raw.processedAt
   };
   if (raw.grade !== undefined) data.grade = grade;
+  if (approved) {
+    data.email = email;
+    data.driveAccessStatus = raw.driveAccessStatus;
+  }
   if (raw.question !== undefined) data.question = question;
   return { ok: true, data: data };
 }
@@ -480,16 +501,15 @@ function pruneLedger_(scriptProperties) {
 
 function buildAdminText_(payload) {
   const lines = [
-    "未来戦略ライブラリの登録処理が完了しました。",
-    "",
     `【氏名】${payload.fullName}`,
     `【学年】${payload.grade || "その他"}`,
-    "【判定結果】承認"
+    payload.eligibilityStatus === "approved"
+      ? "【判定結果】承認"
+      : "【判定結果】個別確認"
   ];
   if (payload.question) {
     lines.push(`【連絡事項】${payload.question}`);
   }
-  lines.push("", "※本メールはGoogle Apps Scriptにより自動送信されています。");
   return lines.join("\n");
 }
 

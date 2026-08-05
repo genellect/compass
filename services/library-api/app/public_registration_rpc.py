@@ -35,6 +35,11 @@ REGISTRATION_STATUS_V1_SQL = text(
     ":application_id, :authentication_subject_hash, "
     ":rpc_key_version, :rpc_token)"
 )
+ENQUEUE_MANUAL_REVIEW_NOTIFICATION_V1_SQL = text(
+    "SELECT fsl_public_api.enqueue_manual_review_notification_v1("
+    ":application_id, :authentication_subject_hash, "
+    ":candidate_notification_id, :rpc_key_version, :rpc_token)"
+)
 
 
 class PublicRegistrationRpcBoundaryError(RuntimeError):
@@ -137,6 +142,32 @@ def _execute_submit(
             "rpc_token": rpc_token,
         },
     ).mappings().one()
+
+
+def _enqueue_manual_review_notification(
+    session: Session,
+    *,
+    application_id: UUID,
+    authentication_subject_hash: str,
+    settings: Settings,
+) -> None:
+    notification_id = session.execute(
+        ENQUEUE_MANUAL_REVIEW_NOTIFICATION_V1_SQL,
+        {
+            "application_id": application_id,
+            "authentication_subject_hash": authentication_subject_hash,
+            "candidate_notification_id": uuid4(),
+            "rpc_key_version": settings.public_registration_rpc_key_version,
+            "rpc_token": settings.public_registration_rpc_token,
+        },
+    ).scalar_one()
+    if not isinstance(notification_id, UUID):
+        try:
+            UUID(str(notification_id))
+        except (TypeError, ValueError) as error:
+            raise PublicRegistrationRpcBoundaryError(
+                "public_registration_rpc_invalid_response"
+            ) from error
 
 
 def persist_public_registration_v1(
@@ -283,6 +314,16 @@ def persist_public_registration_v1(
                 base_eligibility.requires_student_details
             ),
         )
+        if (
+            mapped.eligibility.status == EligibilityStatus.MANUAL_REVIEW
+            and mapped.application_id is not None
+        ):
+            _enqueue_manual_review_notification(
+                session,
+                application_id=mapped.application_id,
+                authentication_subject_hash=identity.subject_hash,
+                settings=settings,
+            )
         session.commit()
     except PublicRegistrationRpcBoundaryError:
         session.rollback()
