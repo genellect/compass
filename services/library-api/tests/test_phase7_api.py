@@ -198,6 +198,42 @@ def test_phase7_registration_grant_status_and_revoke_e2e(
     assert revoked_status.json()["driveAccessStatus"] == "revoked"
 
 
+def test_registration_wakes_worker_without_exposing_registration_data(
+    engine,
+    monkeypatch,
+) -> None:
+    dispatched: list[bool] = []
+
+    def fake_dispatch(_settings: Settings):
+        from app.registration_event_dispatch import RegistrationEventDispatchResult
+
+        dispatched.append(True)
+        return RegistrationEventDispatchResult(enqueued=True, task_id="random-task")
+
+    monkeypatch.setattr("app.main.get_settings", lambda: SETTINGS)
+    monkeypatch.setattr(
+        "app.main.enqueue_registration_worker_wakeup",
+        fake_dispatch,
+    )
+    drive = FakeDriveClient()
+    configure_dependencies(engine, drive)
+    response = TestClient(app).post(
+        "/phase6/registrations",
+        headers={
+            **auth_headers(),
+            "Idempotency-Key": "phase7-event-dispatch-registration-0001",
+        },
+        json={
+            "registration": student_registration().model_dump(by_alias=True)
+        },
+    )
+    app.dependency_overrides.clear()
+
+    assert response.status_code == 200
+    assert response.json()["driveAccessStatus"] == "pending"
+    assert dispatched == [True]
+
+
 def test_phase7_worker_kill_switch_leaves_operation_pending(
     engine,
     monkeypatch,

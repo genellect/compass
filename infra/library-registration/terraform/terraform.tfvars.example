@@ -56,6 +56,10 @@ worker_notification_activation = {
   enabled      = false
   confirmation = ""
 }
+registration_event_dispatch_activation = {
+  enabled      = false
+  confirmation = ""
+}
 # Keep the real deployment URL only in the uncommitted private tfvars file.
 gas_notification_webhook_url = ""
 admin_api_activation = {

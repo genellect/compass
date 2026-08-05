@@ -259,6 +259,26 @@ variable "worker_notification_activation" {
   }
 }
 
+variable "registration_event_dispatch_activation" {
+  description = "Fail-closed Cloud Tasks wake-up path. Scheduler remains the reconciliation fallback."
+  type = object({
+    enabled      = bool
+    confirmation = string
+  })
+  default = {
+    enabled      = false
+    confirmation = ""
+  }
+
+  validation {
+    condition = (
+      (!var.registration_event_dispatch_activation.enabled && trimspace(var.registration_event_dispatch_activation.confirmation) == "") ||
+      (var.registration_event_dispatch_activation.enabled && var.registration_event_dispatch_activation.confirmation == "I_APPROVED_PRODUCTION_REGISTRATION_EVENT_DISPATCH_V1")
+    )
+    error_message = "Registration event dispatch requires the exact reviewed confirmation; disabled state requires an empty confirmation."
+  }
+}
+
 variable "gas_notification_webhook_url" {
   description = "Private GAS notification-only web-app URL. Keep it in an uncommitted sensitive tfvars file; this is not a Secret Manager payload."
   type        = string

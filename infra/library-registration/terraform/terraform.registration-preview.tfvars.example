@@ -49,6 +49,10 @@ worker_notification_activation = {
   enabled      = false
   confirmation = ""
 }
+registration_event_dispatch_activation = {
+  enabled      = false
+  confirmation = ""
+}
 gas_notification_webhook_url = ""
 admin_api_activation = {
   enabled      = false
