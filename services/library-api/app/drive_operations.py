@@ -40,6 +40,9 @@ SAFE_ERROR_SUMMARIES = {
     "drive_authentication_failed": "Drive OAuth requires operator action.",
     "drive_api_not_configured": "Drive API is not enabled for the OAuth project.",
     "drive_app_not_authorized": "The OAuth app is not authorized for the target folder.",
+    "drive_app_not_authorized_to_children": (
+        "The OAuth app is not authorized for all children of the target folder."
+    ),
     "drive_insufficient_file_permissions": "The Drive account cannot share the target folder.",
     "drive_permission_denied": "Drive rejected the permission operation.",
     "drive_sharing_policy_denied": "Drive sharing policy rejected the recipient.",

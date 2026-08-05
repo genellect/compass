@@ -27,7 +27,7 @@ from urllib.parse import parse_qs, urlencode, urlparse
 
 import requests
 
-from app.drive_client import DRIVE_FILE_SCOPE
+from app.drive_client import DRIVE_SCOPE
 
 
 HOST = "127.0.0.1"
@@ -40,7 +40,7 @@ VALID_ISSUERS = {"accounts.google.com", "https://accounts.google.com"}
 FOLDER_MIME_TYPE = "application/vnd.google-apps.folder"
 MAX_REQUEST_BYTES = 20_000
 EXACT_CONFIRMATION = "I_APPROVED_PRODUCTION_DRIVE_CREDENTIAL_BOOTSTRAP_V1"
-SCOPES = ("openid", "email", DRIVE_FILE_SCOPE)
+SCOPES = ("openid", "email", DRIVE_SCOPE)
 SECRET_VALUE_BINDINGS = (
     ("fsl-drive-oauth-client-id", "client_id"),
     ("fsl-drive-oauth-client-secret", "client_secret"),

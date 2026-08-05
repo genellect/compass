@@ -52,7 +52,7 @@ def _folder_metadata(folder_id: str = APPROVED_FOLDER_ID) -> dict[str, object]:
     }
 
 
-def test_authorization_is_loopback_offline_drive_file_only() -> None:
+def test_authorization_is_loopback_offline_drive_scope() -> None:
     query = parse_qs(urlparse(helper._authorization_url("client", "state")).query)
 
     assert query["redirect_uri"] == ["http://localhost:8769/oauth2/callback"]
@@ -60,7 +60,7 @@ def test_authorization_is_loopback_offline_drive_file_only() -> None:
     assert query["prompt"] == ["consent select_account"]
     assert query["include_granted_scopes"] == ["false"]
     assert query["scope"] == [
-        "openid email https://www.googleapis.com/auth/drive.file"
+        "openid email https://www.googleapis.com/auth/drive"
     ]
 
 

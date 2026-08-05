@@ -185,9 +185,13 @@ so emergency stop remains possible.
 
 ## Phase 7 real Drive E2E
 
-The owner OAuth design uses the non-sensitive `drive.file` scope. Existing
-folders must be explicitly selected through Google Picker; entering a folder
-ID alone does not grant per-file access to the OAuth app. Configure a Web OAuth
+The owner OAuth design uses the `drive` scope because granting a permission on
+an established folder propagates to its existing children. The narrower
+`drive.file` scope can authorize the selected folder while Google still rejects
+that propagation with `appNotAuthorizedToChild`. The worker remains pinned to
+the human-approved production folder ID and runs with private IAM, but the OAuth
+scope itself is restricted and must be handled as a production credential.
+Configure a Web OAuth
 redirect `http://localhost:8767/oauth2/callback`, enable Drive and Picker APIs,
 and use a referrer/API-restricted Picker key. Then run from the repository root:
 
