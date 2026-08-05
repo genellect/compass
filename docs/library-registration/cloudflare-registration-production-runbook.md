@@ -1,6 +1,7 @@
 # Cloudflare registration-only Production Runbook
 
-Status: approved release path; execution requires an exact reviewed `origin/main` commit
+Status: approved release path; Git-connected deployment is automatic and the manual
+wrapper remains the controlled fallback
 
 This workflow publishes the Future Strategy Library registration UI to the existing
 `compass-official` Cloudflare Pages production branch. It does not publish the Library
@@ -24,6 +25,26 @@ does not read or print their values. The registration Google OAuth client ID mus
 be present in the operator's local environment; it is a public OAuth audience identifier,
 not a client secret.
 
+## Git-connected automatic deployment
+
+Cloudflare Pages automatic deployments remain enabled. The repository build derives a
+code-owned release profile only when all of Cloudflare's build metadata is present and
+valid (`CF_PAGES=1`, branch, 40-character commit SHA, and an exact
+`compass-official.pages.dev` deployment origin).
+
+- `main` builds use the exact registration-only Production configuration above. After
+  Next.js export, the build removes the administrator route, administrator/synthetic
+  assets, and administrator Function. Only the Community and Contact Functions remain.
+- Non-`main` builds are fail-closed UI review Previews. They use mock registration and
+  administrator modes, retain the legacy registration CTA, remove all Pages Functions,
+  and contain no API origin or Google OAuth client ID.
+- Builds outside Cloudflare do not infer a release. Existing explicit local, Preview,
+  rehearsal, and manual Production gates remain unchanged.
+
+Malformed Cloudflare provenance or a conflicting release variable stops the build before
+publication. This preserves automatic deployment while preventing a permissive default
+from publishing an unintended registration or administrator surface.
+
 ## Pre-deployment gates
 
 1. Merge the reviewed change to `origin/main` and obtain its 40-character commit SHA.
@@ -35,7 +56,7 @@ not a client secret.
    refuses publication if the canonical origin is not returned exactly.
 5. Keep all administrator frontend variables unset.
 
-## Command
+## Manual fallback command
 
 Run in PowerShell without placing credentials in shell history:
 

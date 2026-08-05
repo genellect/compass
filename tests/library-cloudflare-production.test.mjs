@@ -20,6 +20,12 @@ import {
 } from "../scripts/library-release-config.mjs";
 import { prepareLibraryRegistrationProductionArtifact } from
   "../scripts/prepare-library-registration-production-artifact.mjs";
+import {
+  LIBRARY_REGISTRATION_PRODUCTION_GOOGLE_CLIENT_ID,
+  resolveCloudflareGitBuildEnvironment
+} from "../scripts/cloudflare-git-build-environment.mjs";
+import { finalizeCloudflareGitBuild } from
+  "../scripts/finalize-cloudflare-git-build.mjs";
 import { verifyLibraryRegistrationProductionBuild } from
   "../scripts/verify-library-registration-production-build.mjs";
 import { LEGACY_LIBRARY_FORM_URL } from
@@ -47,6 +53,77 @@ function productionEnvironment(overrides = {}) {
     ...overrides
   };
 }
+
+function cloudflareEnvironment(overrides = {}) {
+  return {
+    CF_PAGES: "1",
+    CF_PAGES_BRANCH: "main",
+    CF_PAGES_COMMIT_SHA: "a".repeat(40),
+    CF_PAGES_URL: "https://a1b2c3d4.compass-official.pages.dev",
+    ...overrides
+  };
+}
+
+test("Cloudflare Git builds derive reviewed production and fail-closed preview profiles", () => {
+  const production = resolveCloudflareGitBuildEnvironment(
+    cloudflareEnvironment()
+  );
+  assert.equal(production.mode, "production");
+  assert.equal(production.metadata.branch, "main");
+  assert.equal(
+    production.environment.NEXT_PUBLIC_GOOGLE_OAUTH_CLIENT_ID,
+    LIBRARY_REGISTRATION_PRODUCTION_GOOGLE_CLIENT_ID
+  );
+  assert.equal(
+    resolveLibraryReleaseConfig(production.environment)
+      .registrationOnlyProductionRelease,
+    true
+  );
+
+  const canonical = resolveCloudflareGitBuildEnvironment(
+    cloudflareEnvironment({
+      CF_PAGES_URL: "https://compass-official.pages.dev"
+    })
+  );
+  assert.equal(canonical.mode, "production");
+
+  const preview = resolveCloudflareGitBuildEnvironment(
+    cloudflareEnvironment({
+      CF_PAGES_BRANCH: "codex/cloudflare-preview",
+      CF_PAGES_URL: "https://codex-cloudflare-preview.compass-official.pages.dev"
+    })
+  );
+  assert.equal(preview.mode, "preview");
+  assert.equal(preview.environment.LIBRARY_RELEASE_TARGET, "ui_review");
+  assert.equal(preview.environment.NEXT_PUBLIC_LIBRARY_UI_REVIEW, "true");
+  assert.equal(preview.environment.NEXT_PUBLIC_LIBRARY_REGISTRATION_MODE, "mock");
+  assert.equal(preview.environment.NEXT_PUBLIC_LIBRARY_API_BASE_URL, "");
+  assert.equal(
+    resolveLibraryReleaseConfig(preview.environment).uiReviewRelease,
+    true
+  );
+
+  const local = resolveCloudflareGitBuildEnvironment({ NODE_ENV: "test" });
+  assert.equal(local.mode, "local");
+  assert.equal(local.environment.NODE_ENV, "test");
+});
+
+test("Cloudflare Git profile rejects malformed provenance and conflicting release inputs", () => {
+  for (const overrides of [
+    { CF_PAGES_BRANCH: "" },
+    { CF_PAGES_COMMIT_SHA: "short" },
+    { CF_PAGES_URL: "http://a1b2c3d4.compass-official.pages.dev" },
+    { CF_PAGES_URL: "https://compass-official.pages.dev/path" },
+    { CF_PAGES_URL: "https://compass-official.example.com" },
+    { LIBRARY_RELEASE_TARGET: "ui_review" },
+    { NEXT_PUBLIC_LIBRARY_ADMIN_MODE: "google" },
+    { NEXT_PUBLIC_LIBRARY_ADMIN_API_BASE_URL: "/library-registration/admin/api" }
+  ]) {
+    assert.throws(() => resolveCloudflareGitBuildEnvironment(
+      cloudflareEnvironment(overrides)
+    ));
+  }
+});
 
 test("registration-only production configuration is explicit and exact", () => {
   const config = requireLibraryRegistrationProductionReleaseConfig(
@@ -220,6 +297,50 @@ test("production staging keeps public Functions and removes every administrator 
       }),
       /Staged Pages Functions contains an unreviewed file/
     );
+  } finally {
+    await rm(root, { recursive: true, force: true });
+  }
+});
+
+test("Cloudflare Git production finalization replaces out and retains only public Functions", async () => {
+  const root = await mkdtemp(join(tmpdir(), "fsl-cloudflare-git-production-"));
+  try {
+    await createProductionFixture(root);
+    await writeFile(
+      join(root, "out", "_next", "static", "chunks", "registration.js"),
+      `const clientId="${LIBRARY_REGISTRATION_PRODUCTION_GOOGLE_CLIENT_ID}";const api="${LIBRARY_REGISTRATION_PRODUCTION_API_ORIGIN}";`,
+      "utf8"
+    );
+    await mkdir(join(root, "functions", "library-registration"), {
+      recursive: true
+    });
+    await writeFile(
+      join(root, "functions", "library-registration", "admin.ts"),
+      "export const admin=true;",
+      "utf8"
+    );
+
+    const result = await finalizeCloudflareGitBuild({
+      root,
+      environment: cloudflareEnvironment()
+    });
+    assert.equal(result.mode, "production");
+    assert.equal(result.finalized, true);
+    await access(join(root, "out", "library-registration", "index.html"));
+    await assert.rejects(access(
+      join(root, "out", "library-registration", "admin")
+    ));
+    await access(join(root, "functions", "api", "community-registration.ts"));
+    await access(join(root, "functions", "api", "contact.ts"));
+    await assert.rejects(access(join(root, "functions", "library-registration")));
+    await assert.rejects(access(
+      join(
+        root,
+        "outputs",
+        "library-registration-production",
+        "a".repeat(40)
+      )
+    ));
   } finally {
     await rm(root, { recursive: true, force: true });
   }
