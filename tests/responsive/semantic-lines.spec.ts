@@ -99,7 +99,7 @@ const scenarios: SemanticScenario[] = [
     path: "/INTRO_Interactive/",
     viewport: mobile,
     expectations: [
-      { selector: "h1#hero-title", lines: ["わからないが", "動き出す。"] },
+      { selector: "h1#hero-title", lines: ["LET EVERYTHING", "MOVE."] },
       { selector: ".hero-lead", lines: ["リアルタイム×AIが、", "講義を次の次元へ。"] },
     ],
   },
@@ -108,7 +108,7 @@ const scenarios: SemanticScenario[] = [
     path: "/INTRO_Interactive/",
     viewport: desktop,
     expectations: [
-      { selector: "h1#hero-title", lines: ["わからないが、", "動き出す。"] },
+      { selector: "h1#hero-title", lines: ["LET EVERYTHING MOVE."] },
       { selector: ".hero-lead", lines: ["リアルタイム×AIが、講義を次の次元へ。"] },
     ],
   },

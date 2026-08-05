@@ -54,7 +54,13 @@ const heroContracts: HeroVisualContract[] = [
     name: "interactive",
     path: "/INTRO_Interactive/",
     heroSelector: "section#top.hero-section",
-    viewports: [viewports.iphone, viewports.laptop, viewports.desktop],
+    viewports: [
+      viewports.iphone,
+      viewports.laptop,
+      viewports.windowsChrome,
+      viewports.desktop,
+      viewports.raw4k,
+    ],
   },
   {
     name: "developer",

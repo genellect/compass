@@ -1,0 +1,1296 @@
+/* COMPASS Interactive — quiet Lecture Intelligence Matrix ------------------ */
+
+@keyframes matrixHeadlineIn {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 14px, 0);
+  }
+
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+@keyframes matrixCoreBreath {
+  0%,
+  100% {
+    filter: brightness(1);
+    text-shadow: 0 0 12px rgba(124, 236, 255, 0.48), 0 0 30px rgba(130, 255, 196, 0.18);
+  }
+
+  50% {
+    filter: brightness(1.1);
+    text-shadow: 0 0 17px rgba(124, 236, 255, 0.68), 0 0 38px rgba(130, 255, 196, 0.24);
+  }
+}
+
+.intro-redesign .hero-section--signal {
+  --matrix-cyan: #7cecff;
+  --matrix-mint: #82ffc4;
+  --matrix-violet: #ad9bff;
+  position: relative;
+  height: 100svh;
+  min-height: 0;
+  max-height: 100svh;
+  display: grid;
+  align-items: stretch;
+  box-sizing: border-box;
+  overflow: hidden;
+  isolation: isolate;
+  background:
+    radial-gradient(ellipse at 80% 45%, rgba(25, 145, 171, 0.18), transparent 35%),
+    radial-gradient(ellipse at 18% 78%, rgba(43, 78, 157, 0.15), transparent 38%),
+    linear-gradient(138deg, #020710 0%, #071529 50%, #020711 100%);
+}
+
+.intro-redesign .hero-section--signal .hero-visual {
+  display: block;
+  inset: -2%;
+  z-index: 0;
+  opacity: 0.16;
+  filter: saturate(0.82) contrast(1.04);
+  transform: scale(1.02);
+}
+
+.intro-redesign .hero-section--signal .hero-theater {
+  display: none;
+}
+
+.intro-redesign .hero-section--signal .hero-shade {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(90deg, rgba(2, 7, 16, 0.95), rgba(4, 14, 28, 0.69) 49%, rgba(2, 8, 18, 0.28)),
+    linear-gradient(180deg, rgba(2, 7, 16, 0.14), rgba(2, 7, 16, 0.9));
+}
+
+.intro-redesign .hero-section--signal .hero-ai-field {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+  display: block;
+  opacity: 0.78;
+  pointer-events: none;
+  mix-blend-mode: screen;
+  mask-image: linear-gradient(to bottom, transparent 2%, black 14%, black 88%, transparent 100%);
+}
+
+.intro-redesign .hero-section--signal::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0.43;
+  background-image:
+    linear-gradient(rgba(124, 236, 255, 0.045) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(124, 236, 255, 0.04) 1px, transparent 1px);
+  background-size: 72px 72px;
+  mask-image: linear-gradient(to bottom, transparent 1%, black 15%, black 80%, transparent 100%);
+  transform: none;
+}
+
+.intro-redesign .hero-section--signal::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background:
+    linear-gradient(180deg, rgba(2, 7, 16, 0.08), transparent 20%, transparent 76%, rgba(2, 7, 16, 0.86)),
+    radial-gradient(ellipse at center, transparent 45%, rgba(1, 5, 12, 0.46));
+}
+
+.intro-redesign .hero-section--signal .hero-grid {
+  position: relative;
+  z-index: 2;
+  width: min(100%, 1380px);
+  max-width: 1380px;
+  height: 100%;
+  min-height: 0;
+  margin-inline: auto;
+  padding: 0;
+}
+
+.intro-redesign .hero-section--signal .hero-copy {
+  position: relative;
+  z-index: 4;
+  min-width: 0;
+  max-width: 660px;
+  padding: 0;
+  text-align: left;
+}
+
+.intro-redesign .hero-section--signal .hero-copy .eyebrow {
+  width: fit-content;
+  min-height: 30px;
+  display: inline-flex;
+  align-items: center;
+  margin: 0;
+  padding: 0 12px;
+  border: 1px solid rgba(124, 236, 255, 0.2);
+  border-radius: 999px;
+  color: rgba(183, 241, 250, 0.82);
+  background: rgba(4, 24, 42, 0.58);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  backdrop-filter: blur(16px);
+  font-size: 0.64rem;
+  font-weight: 900;
+  letter-spacing: 0.18em;
+}
+
+.intro-redesign .hero-section--signal .hero-title {
+  width: fit-content;
+  max-width: none;
+  margin: 17px 0 0;
+  color: #f8fbff;
+  font-weight: 950;
+  line-height: 0.9;
+  letter-spacing: -0.062em;
+  white-space: nowrap;
+  text-wrap: nowrap;
+  text-shadow: 0 24px 72px rgba(0, 0, 0, 0.46);
+  animation: matrixHeadlineIn 680ms var(--ease-out) both;
+}
+
+.intro-redesign .hero-title__phrase {
+  display: inline;
+}
+
+.intro-redesign .hero-title__quiet {
+  color: rgba(248, 252, 255, 0.95);
+}
+
+.intro-redesign .hero-title__active {
+  color: transparent;
+  background: linear-gradient(108deg, #ffffff 4%, #abf5ff 43%, #cdffdc 82%, #b1a5ff 118%);
+  background-clip: text;
+  -webkit-background-clip: text;
+  filter: drop-shadow(0 16px 30px rgba(75, 220, 218, 0.15));
+}
+
+.intro-redesign .hero-title__core {
+  position: relative;
+  display: inline-block;
+  min-width: 0.2em;
+  color: var(--matrix-mint);
+  background: none;
+  -webkit-text-fill-color: var(--matrix-mint);
+  animation: matrixCoreBreath 7.4s ease-in-out 2.8s infinite;
+}
+
+.intro-redesign .hero-section--signal .hero-lead {
+  max-width: 620px;
+  margin: 24px 0 0;
+  color: rgba(248, 252, 255, 0.95);
+  font-size: clamp(1.06rem, 1.4vw, 1.3rem);
+  font-weight: 850;
+  line-height: 1.55;
+  text-shadow: 0 12px 34px rgba(0, 0, 0, 0.5);
+}
+
+.intro-redesign .hero-section--signal .hero-chips {
+  justify-content: flex-start;
+  max-width: 620px;
+  gap: 8px;
+  margin-top: 22px;
+}
+
+.intro-redesign .hero-section--signal .hero-ai-badge {
+  margin-top: 16px;
+  padding: 8px 11px;
+  border-color: rgba(124, 236, 255, 0.2);
+  color: rgba(231, 251, 255, 0.88);
+  background: rgba(5, 28, 44, 0.62);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06), 0 14px 38px rgba(0, 0, 0, 0.18);
+  backdrop-filter: blur(14px);
+}
+
+.intro-redesign .hero-section--signal .hero-actions {
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 12px;
+  margin-top: 20px;
+}
+
+.intro-redesign .hero-section--signal .hero-actions .hero-cta {
+  min-height: 54px;
+  margin: 0;
+  box-shadow: 0 16px 42px rgba(45, 205, 220, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.72);
+}
+
+.intro-redesign .hero-section--signal .hero-secondary-cta {
+  min-height: 48px;
+  margin: 0;
+  white-space: nowrap;
+}
+
+.intro-redesign .hero-section--signal .hero-cta-note {
+  margin: 8px 0 0;
+  color: rgba(219, 244, 249, 0.58);
+  font-size: 0.68rem;
+  font-weight: 750;
+  letter-spacing: 0.025em;
+}
+
+.intro-redesign .hero-section--signal .mobile-hero-brand-card {
+  display: none;
+}
+
+/* The matrix is isolated from copy. It never crosses the reading column. */
+.intro-redesign .hero-section--signal .hero-mock {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  max-width: none;
+  min-width: 0;
+  margin: 0;
+}
+
+.intro-redesign .hero-section--signal .hero-mock-stage.hero-signal-stage {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  border: 1px solid rgba(124, 236, 255, 0.11);
+  border-radius: 30px 4px 30px 4px;
+  background:
+    linear-gradient(135deg, rgba(124, 236, 255, 0.045), transparent 36%),
+    linear-gradient(315deg, rgba(130, 255, 196, 0.035), transparent 38%),
+    rgba(3, 14, 28, 0.2);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.035), 0 34px 90px rgba(0, 0, 0, 0.22);
+  clip-path: polygon(4% 0, 100% 0, 96% 100%, 0 100%);
+  pointer-events: none;
+}
+
+.intro-redesign .hero-signal-stage::before {
+  content: "";
+  position: absolute;
+  inset: 8% 6%;
+  z-index: 0;
+  border-top: 1px solid rgba(124, 236, 255, 0.09);
+  border-bottom: 1px solid rgba(124, 236, 255, 0.06);
+  opacity: 0.8;
+  background:
+    linear-gradient(90deg, transparent, rgba(124, 236, 255, 0.035) 48%, transparent),
+    repeating-linear-gradient(90deg, transparent 0 54px, rgba(124, 236, 255, 0.045) 54px 55px);
+}
+
+.intro-redesign .hero-signal-stage::after {
+  content: "";
+  position: absolute;
+  right: 4%;
+  bottom: 4%;
+  z-index: 0;
+  width: 88%;
+  height: 34%;
+  opacity: 0.25;
+  background-image:
+    linear-gradient(rgba(124, 236, 255, 0.08) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(124, 236, 255, 0.07) 1px, transparent 1px);
+  background-size: 28px 28px;
+  mask-image: linear-gradient(to top, black, transparent 86%);
+  transform: perspective(700px) rotateX(62deg);
+  transform-origin: center bottom;
+}
+
+.intro-redesign .hero-signal-matrix {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+  display: block;
+  pointer-events: none;
+  mix-blend-mode: screen;
+}
+
+/* A real product moment, re-skinned as one dark cinematic lecture surface. */
+.intro-redesign .hero-section--signal .hero-mock-stage.hero-signal-stage {
+  display: grid;
+  place-items: center;
+  transform: none;
+}
+
+.intro-redesign .hero-section--signal .hero-signal-matrix {
+  opacity: 0.38;
+}
+
+.intro-redesign .hero-section--signal .hero-product-experience {
+  position: relative;
+  z-index: 2;
+  width: 90%;
+  max-width: 720px;
+  padding: 12px;
+  border: 1px solid rgba(174, 231, 242, 0.2);
+  border-radius: 22px;
+  color: #edfaff;
+  background:
+    radial-gradient(circle at 12% 8%, rgba(99, 218, 238, 0.1), transparent 30%),
+    linear-gradient(145deg, rgba(5, 23, 39, 0.96), rgba(5, 14, 29, 0.97));
+  box-shadow:
+    0 34px 90px rgba(0, 0, 0, 0.42),
+    inset 0 1px 0 rgba(255, 255, 255, 0.055),
+    0 0 60px rgba(54, 197, 214, 0.08);
+  transform: none;
+  transition: border-color 300ms ease, box-shadow 300ms ease;
+}
+
+.intro-redesign .hero-section--signal .hero-mobile-product-proof {
+  display: none;
+}
+
+.intro-redesign .hero-section--signal .hero-mock-stage:hover .hero-product-experience {
+  border-color: rgba(174, 231, 242, 0.29);
+  box-shadow:
+    0 38px 100px rgba(0, 0, 0, 0.46),
+    inset 0 1px 0 rgba(255, 255, 255, 0.065),
+    0 0 72px rgba(54, 197, 214, 0.1);
+  transform: none;
+}
+
+.intro-redesign .hero-section--signal .hero-product-experience::before {
+  display: none;
+}
+
+.intro-redesign .hero-section--signal .hero-product-experience .product-experience-mock__brand {
+  color: rgba(226, 249, 254, 0.9);
+}
+
+.intro-redesign .hero-section--signal .hero-product-experience .product-experience-mock__mark {
+  border-color: rgba(124, 236, 255, 0.24);
+  background:
+    linear-gradient(128deg, transparent 45%, #69d4e8 46% 51%, transparent 52%),
+    radial-gradient(circle, rgba(225, 252, 255, 0.92) 0 35%, transparent 38%),
+    linear-gradient(135deg, rgba(40, 125, 148, 0.68), rgba(70, 55, 129, 0.68));
+}
+
+.intro-redesign .hero-section--signal .hero-product-experience .product-experience-mock__live {
+  color: rgba(195, 255, 222, 0.92);
+  background: rgba(39, 196, 134, 0.1);
+  border: 1px solid rgba(89, 239, 174, 0.16);
+}
+
+.intro-redesign .hero-section--signal .hero-product-experience .product-experience-mock__people {
+  color: rgba(198, 227, 235, 0.7);
+  background: rgba(133, 187, 205, 0.08);
+  border: 1px solid rgba(133, 187, 205, 0.11);
+}
+
+.intro-redesign .hero-section--signal .hero-product-experience .product-experience-mock__title {
+  margin-block: 8px;
+  padding-block: 8px;
+  border: 1px solid rgba(124, 236, 255, 0.09);
+  background: rgba(11, 38, 57, 0.58);
+}
+
+.intro-redesign .hero-section--signal .hero-product-experience .product-experience-mock__title span {
+  color: rgba(112, 222, 241, 0.78);
+}
+
+.intro-redesign .hero-section--signal .hero-product-experience .product-experience-mock__title strong {
+  color: rgba(239, 251, 255, 0.94);
+}
+
+.intro-redesign .hero-section--signal .hero-product-experience .product-slide,
+.intro-redesign .hero-section--signal .hero-product-experience .product-poll,
+.intro-redesign .hero-section--signal .hero-product-experience .product-voice {
+  border-color: rgba(132, 205, 220, 0.13);
+  background: rgba(6, 25, 40, 0.78);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.025);
+}
+
+.intro-redesign .hero-section--signal .hero-product-experience .product-experience-mock__grid {
+  gap: 8px;
+}
+
+.intro-redesign .hero-section--signal .hero-product-experience .product-poll,
+.intro-redesign .hero-section--signal .hero-product-experience .product-voice {
+  padding: 10px;
+}
+
+.intro-redesign .hero-section--signal .hero-product-experience .product-card-heading {
+  color: rgba(113, 223, 242, 0.78);
+}
+
+.intro-redesign .hero-section--signal .hero-product-experience .product-card-heading small {
+  color: rgba(186, 218, 227, 0.54);
+}
+
+.intro-redesign .hero-section--signal .hero-product-experience .product-slide__canvas {
+  min-height: 160px;
+  border: 1px solid rgba(124, 236, 255, 0.09);
+  background:
+    linear-gradient(rgba(124, 236, 255, 0.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(124, 236, 255, 0.03) 1px, transparent 1px),
+    radial-gradient(circle at 18% 82%, rgba(88, 201, 224, 0.13), transparent 32%),
+    linear-gradient(145deg, #071d30, #0a3043 56%, #101d38);
+  background-size: 28px 28px, 28px 28px, auto, auto;
+}
+
+.intro-redesign .hero-section--signal .hero-product-experience .product-slide__canvas strong {
+  color: rgba(242, 252, 255, 0.96);
+}
+
+.intro-redesign .hero-section--signal .hero-product-experience .product-caption {
+  background: rgba(12, 49, 64, 0.68);
+}
+
+.intro-redesign .hero-section--signal .hero-product-experience .product-caption__wave {
+  color: rgba(117, 226, 245, 0.84);
+  background: rgba(48, 150, 174, 0.14);
+}
+
+.intro-redesign .hero-section--signal .hero-product-experience .product-caption p {
+  color: rgba(218, 241, 247, 0.78);
+}
+
+.intro-redesign .hero-section--signal .hero-product-experience .product-caption p small {
+  color: rgba(113, 223, 242, 0.78);
+}
+
+.intro-redesign .hero-section--signal .hero-product-experience .product-poll > strong {
+  color: rgba(238, 249, 253, 0.88);
+}
+
+.intro-redesign .hero-section--signal .hero-product-experience .product-poll__choices span {
+  color: rgba(197, 222, 230, 0.68);
+  border-color: rgba(134, 192, 208, 0.11);
+  background: rgba(5, 20, 34, 0.62);
+}
+
+.intro-redesign .hero-section--signal .hero-product-experience .product-poll__choices span.is-selected {
+  color: rgba(203, 251, 255, 0.92);
+  border-color: rgba(100, 218, 236, 0.3);
+  background: rgba(48, 161, 181, 0.13);
+  box-shadow: 0 0 24px rgba(65, 196, 215, 0.07);
+}
+
+.intro-redesign .hero-section--signal .hero-product-experience .product-poll__choices i {
+  border-color: rgba(166, 212, 223, 0.48);
+}
+
+.intro-redesign .hero-section--signal .hero-product-experience .product-voice {
+  background: linear-gradient(145deg, rgba(9, 29, 44, 0.88), rgba(21, 17, 50, 0.74));
+}
+
+.intro-redesign .hero-section--signal .hero-product-experience .product-voice > div span {
+  color: rgba(200, 189, 255, 0.9);
+  background: rgba(118, 92, 201, 0.14);
+}
+
+.intro-redesign .hero-section--signal .hero-product-experience .product-voice > div small,
+.intro-redesign .hero-section--signal .hero-product-experience .product-voice p {
+  color: rgba(212, 220, 238, 0.7);
+}
+
+.intro-redesign .hero-section--signal .hero-product-experience .product-voice > strong {
+  color: rgba(192, 170, 255, 0.84);
+}
+
+.intro-redesign .hero-section--signal .hero-product-experience .product-ai-recap {
+  min-height: 52px;
+  margin-top: 8px;
+  border-color: rgba(165, 147, 237, 0.18);
+  background: linear-gradient(115deg, rgba(48, 34, 88, 0.62), rgba(14, 50, 63, 0.62) 62%, rgba(17, 61, 43, 0.46));
+}
+
+.intro-redesign .hero-section--signal .hero-product-experience .product-ai-recap__icon {
+  color: rgba(203, 190, 255, 0.95);
+  background: rgba(132, 102, 219, 0.17);
+  box-shadow: 0 8px 18px rgba(74, 52, 136, 0.18);
+}
+
+.intro-redesign .hero-section--signal .hero-product-experience .product-ai-recap p small {
+  color: rgba(197, 181, 255, 0.78);
+}
+
+.intro-redesign .hero-section--signal .hero-product-experience .product-ai-recap p strong {
+  color: rgba(229, 244, 248, 0.86);
+}
+
+.intro-redesign .hero-section--signal .hero-product-experience .product-ai-recap__status {
+  color: rgba(207, 194, 255, 0.86);
+  background: rgba(255, 255, 255, 0.06);
+}
+
+/* Desktop: bold new split, while preserving the production information rhythm. */
+@media (min-width: 1100px) and (max-width: 2199px) {
+  .intro-redesign .hero-section--signal {
+    padding: calc(var(--header-height) + clamp(14px, 2.2vh, 24px)) clamp(30px, 4vw, 66px) clamp(18px, 2.6vh, 30px);
+  }
+
+  .intro-redesign .hero-section--signal .hero-grid {
+    display: grid;
+    grid-template-columns: minmax(630px, 1.06fr) minmax(500px, 0.94fr);
+    align-content: center;
+    align-items: center;
+    gap: clamp(30px, 3vw, 44px);
+  }
+
+  .intro-redesign .hero-section--signal .hero-copy {
+    align-self: center;
+  }
+
+  .intro-redesign .hero-section--signal .hero-title {
+    font-size: clamp(3.4rem, min(4.35vw, 8.2vh), 4.55rem);
+  }
+
+  .intro-redesign .hero-section--signal .hero-mock {
+    height: clamp(390px, 58vh, 590px);
+    align-self: center;
+  }
+}
+
+/* Compact Desktop: no microscopic UI, still a two-part composition. */
+@media (min-width: 960px) and (max-width: 1099px) {
+  .intro-redesign .hero-section--signal {
+    padding: calc(var(--header-height) + 12px) 30px 18px;
+  }
+
+  .intro-redesign .hero-section--signal .hero-grid {
+    display: grid;
+    grid-template-columns: minmax(455px, 0.96fr) minmax(410px, 1.04fr);
+    align-content: center;
+    align-items: center;
+    gap: 28px;
+  }
+
+  .intro-redesign .hero-section--signal .hero-title {
+    font-size: clamp(2.55rem, 4.05vw, 2.85rem);
+  }
+
+  .intro-redesign .hero-section--signal .hero-lead {
+    margin-top: 17px;
+    font-size: 1rem;
+  }
+
+  .intro-redesign .hero-section--signal .hero-chips {
+    margin-top: 15px;
+  }
+
+  .intro-redesign .hero-section--signal .hero-ai-badge,
+  .intro-redesign .hero-section--signal .hero-actions {
+    margin-top: 13px;
+  }
+
+  .intro-redesign .hero-section--signal .hero-mock {
+    height: min(57vh, 450px);
+  }
+
+  .intro-redesign .hero-section--signal .hero-product-experience {
+    width: 96%;
+    padding: 10px;
+  }
+
+  .intro-redesign .hero-section--signal .hero-product-experience .product-experience-mock__title,
+  .intro-redesign .hero-section--signal .hero-product-experience .product-voice {
+    display: none;
+  }
+
+  .intro-redesign .hero-section--signal .hero-product-experience .product-slide__canvas {
+    min-height: 112px;
+    padding: 12px;
+  }
+
+  .intro-redesign .hero-section--signal .hero-product-experience .product-caption {
+    min-height: 42px;
+    margin-top: 6px;
+  }
+
+  .intro-redesign .hero-section--signal .hero-product-experience .product-ai-recap {
+    min-height: 44px;
+    margin-top: 6px;
+    padding-block: 6px;
+  }
+}
+
+/* Tablet: centered copy with a separate, calm visual field below. */
+@media (min-width: 681px) and (max-width: 959px) {
+  .intro-redesign .hero-section--signal {
+    padding: calc(var(--header-height) + 16px) clamp(22px, 4vw, 38px) 22px;
+  }
+
+  .intro-redesign .hero-section--signal .hero-shade {
+    background:
+      linear-gradient(180deg, rgba(2, 7, 16, 0.9), rgba(4, 15, 29, 0.58) 48%, rgba(2, 7, 16, 0.86)),
+      radial-gradient(ellipse at 50% 68%, rgba(30, 136, 158, 0.11), transparent 46%);
+  }
+
+  .intro-redesign .hero-section--signal .hero-grid {
+    width: min(100%, 760px);
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-template-rows: auto minmax(220px, 0.84fr);
+    align-content: center;
+    justify-items: center;
+    gap: clamp(22px, 3vh, 30px);
+    text-align: center;
+  }
+
+  .intro-redesign .hero-section--signal .hero-copy {
+    width: 100%;
+    max-width: 720px;
+    text-align: center;
+  }
+
+  .intro-redesign .hero-section--signal .hero-copy .eyebrow,
+  .intro-redesign .hero-section--signal .hero-ai-badge {
+    margin-inline: auto;
+  }
+
+  .intro-redesign .hero-section--signal .hero-title {
+    margin-inline: auto;
+    font-size: clamp(2.9rem, 6.55vw, 3.45rem);
+  }
+
+  .intro-redesign .hero-section--signal .hero-lead {
+    margin: 18px auto 0;
+  }
+
+  .intro-redesign .hero-section--signal .hero-chips,
+  .intro-redesign .hero-section--signal .hero-actions {
+    justify-content: center;
+    margin-inline: auto;
+  }
+
+  .intro-redesign .hero-section--signal .hero-chips {
+    margin-top: 17px;
+  }
+
+  .intro-redesign .hero-section--signal .hero-ai-badge,
+  .intro-redesign .hero-section--signal .hero-actions {
+    margin-top: 13px;
+  }
+
+  .intro-redesign .hero-section--signal .hero-mock {
+    width: min(88vw, 690px);
+    height: clamp(235px, 32vh, 340px);
+  }
+
+  .intro-redesign .hero-section--signal .hero-product-experience {
+    width: 94%;
+    padding: 10px;
+    border-radius: 18px;
+  }
+
+  .intro-redesign .hero-section--signal .hero-product-experience .product-experience-mock__title {
+    display: none;
+  }
+
+  .intro-redesign .hero-section--signal .hero-product-experience .product-slide__canvas {
+    min-height: 108px;
+    padding: 13px;
+  }
+
+  .intro-redesign .hero-section--signal .hero-product-experience .product-slide__canvas strong {
+    font-size: 0.8rem;
+  }
+
+  .intro-redesign .hero-section--signal .hero-product-experience .product-voice {
+    display: none;
+  }
+
+  .intro-redesign .hero-section--signal .hero-product-experience .product-ai-recap {
+    min-height: 44px;
+    margin-top: 6px;
+    padding-block: 6px;
+  }
+}
+
+/* Mobile: production-like balance, new English title, quieter technology. */
+@media (max-width: 680px) {
+  .intro-redesign .hero-section--signal {
+    padding: calc(var(--header-height) + 8px) 15px max(10px, env(safe-area-inset-bottom));
+    background:
+      radial-gradient(ellipse at 50% 43%, rgba(24, 137, 159, 0.14), transparent 38%),
+      linear-gradient(180deg, #020711 0%, #071426 50%, #020711 100%);
+  }
+
+  .intro-redesign .hero-section--signal .hero-visual {
+    display: block;
+    background-image:
+      repeating-radial-gradient(circle at 50% 24%, transparent 0 54px, rgba(124, 236, 255, 0.07) 55px, transparent 56px 88px),
+      repeating-conic-gradient(from 0deg at 50% 24%, rgba(124, 236, 255, 0.075) 0deg 0.45deg, transparent 0.45deg 45deg),
+      radial-gradient(circle at 50% 24%, rgba(130, 255, 196, 0.3) 0 1px, transparent 2px),
+      radial-gradient(ellipse at 50% 31%, rgba(33, 142, 166, 0.16), transparent 34%);
+    background-position: center;
+    opacity: 0.64;
+    filter: none;
+    mask-image: linear-gradient(to bottom, black 0%, black 54%, transparent 90%);
+    transform: none;
+  }
+
+  .intro-redesign .hero-section--signal .hero-shade {
+    background:
+      radial-gradient(ellipse at 50% 42%, rgba(29, 153, 172, 0.08), transparent 40%),
+      linear-gradient(180deg, rgba(2, 7, 16, 0.82), rgba(4, 15, 29, 0.57) 48%, rgba(2, 7, 16, 0.94));
+  }
+
+  .intro-redesign .hero-section--signal::before {
+    background-size: 96px 96px;
+    opacity: 0.2;
+  }
+
+  .intro-redesign .hero-section--signal .hero-ai-field {
+    opacity: 0.68;
+    mask-image: linear-gradient(to bottom, transparent 3%, black 13%, black 91%, transparent 100%);
+  }
+
+  .intro-redesign .hero-section--signal .hero-grid {
+    width: min(100%, 358px);
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-template-rows: auto auto;
+    align-content: center;
+    justify-items: center;
+    gap: 13px;
+    text-align: center;
+  }
+
+  .intro-redesign .hero-section--signal .hero-copy {
+    width: 100%;
+    max-width: 358px;
+    display: grid;
+    justify-items: center;
+    text-align: center;
+  }
+
+  .intro-redesign .hero-section--signal .hero-copy .eyebrow {
+    display: none;
+  }
+
+  .intro-redesign .hero-section--signal .mobile-hero-brand-card {
+    order: 0;
+    width: fit-content;
+    min-height: 36px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin-inline: auto;
+    padding: 7px 12px;
+    border: 1px solid rgba(124, 236, 255, 0.17);
+    border-radius: 999px;
+    color: rgba(235, 251, 255, 0.86);
+    background: rgba(3, 18, 34, 0.52);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06), 0 14px 36px rgba(0, 0, 0, 0.18);
+    backdrop-filter: blur(14px);
+  }
+
+  .intro-redesign .mobile-hero-brand-card__status {
+    width: 7px;
+    height: 7px;
+    flex: 0 0 auto;
+    border-radius: 50%;
+    background: var(--matrix-mint);
+    box-shadow: 0 0 13px rgba(130, 255, 196, 0.58);
+  }
+
+  .intro-redesign .mobile-hero-brand-card strong {
+    font-size: 0.72rem;
+    font-weight: 900;
+  }
+
+  .intro-redesign .mobile-hero-brand-card small {
+    padding-left: 8px;
+    border-left: 1px solid rgba(124, 236, 255, 0.15);
+    color: rgba(168, 233, 246, 0.62);
+    font-size: 0.55rem;
+    font-weight: 850;
+    letter-spacing: 0.08em;
+  }
+
+  .intro-redesign .hero-section--signal .hero-title {
+    order: 1;
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    display: block;
+    margin: 22px auto 0;
+    font-size: clamp(2rem, 10.3vw, 2.55rem);
+    line-height: 0.94;
+    letter-spacing: -0.055em;
+    white-space: normal;
+  }
+
+  .intro-redesign .hero-title__phrase {
+    display: block;
+    width: fit-content;
+    max-width: 100%;
+    margin-inline: auto;
+    white-space: nowrap;
+  }
+
+  .intro-redesign .hero-title__active {
+    width: fit-content;
+    margin-inline: auto;
+  }
+
+  .intro-redesign .hero-title__core {
+    min-width: 0.24em;
+  }
+
+  .intro-redesign .hero-section--signal .hero-lead {
+    order: 2;
+    max-width: 330px;
+    margin: 19px auto 0;
+    font-size: clamp(1.04rem, 5vw, 1.2rem);
+    font-weight: 900;
+    line-height: 1.38;
+  }
+
+  .intro-redesign .hero-lead__desktop {
+    display: none;
+  }
+
+  .intro-redesign .hero-lead__mobile {
+    display: inline-block;
+  }
+
+  .intro-redesign .hero-section--signal .hero-actions {
+    order: 3;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    margin-top: 22px;
+    min-width: 0;
+    max-width: 100%;
+  }
+
+  .intro-redesign .hero-section--signal .hero-actions .hero-cta {
+    width: min(100%, 284px);
+    min-height: 52px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-inline: auto;
+  }
+
+  .intro-redesign .hero-section--signal .hero-secondary-cta {
+    min-height: 31px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-inline: auto;
+    padding: 4px 8px;
+    font-size: 0.7rem;
+  }
+
+  .intro-redesign .hero-section--signal .hero-chips {
+    order: 4;
+    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0;
+    margin-top: 22px;
+  }
+
+  .intro-redesign .hero-section--signal .hero-chips .feature-chip {
+    min-height: 39px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 7px 4px;
+    border-radius: 0;
+    font-size: 0.62rem;
+    white-space: nowrap;
+  }
+
+  .intro-redesign .hero-section--signal .hero-chips .feature-chip:nth-child(n + 4) {
+    display: none;
+  }
+
+  .intro-redesign .hero-section--signal .hero-ai-badge {
+    order: 5;
+    margin: 12px auto 0;
+    padding: 0;
+    gap: 7px;
+    border: 0;
+    color: rgba(229, 249, 253, 0.76);
+    background: transparent;
+    box-shadow: none;
+    backdrop-filter: none;
+  }
+
+  .intro-redesign .hero-section--signal .hero-ai-badge strong {
+    font-size: 0.64rem;
+  }
+
+  .intro-redesign .hero-section--signal .hero-ai-badge small {
+    color: rgba(218, 244, 249, 0.46);
+    font-size: 0.56rem;
+  }
+
+  .intro-redesign .hero-section--signal .hero-cta-note {
+    order: 6;
+    margin-top: 8px;
+    font-size: 0.56rem;
+  }
+
+  .intro-redesign .hero-section--signal .hero-mock {
+    display: none;
+  }
+
+  .intro-redesign .hero-section--signal .hero-mock-stage.hero-signal-stage {
+    border-radius: 16px 3px 16px 3px;
+  }
+
+  .intro-redesign .hero-signal-stage::before,
+  .intro-redesign .hero-signal-stage::after {
+    display: none;
+  }
+
+  .intro-redesign .hero-section--signal .hero-signal-matrix {
+    opacity: 0.24;
+  }
+
+  .intro-redesign .hero-section--signal .hero-product-experience {
+    display: none;
+  }
+
+  .intro-redesign .hero-section--signal .hero-mobile-product-proof {
+    position: relative;
+    z-index: 2;
+    width: calc(100% - 12px);
+    min-height: 122px;
+    display: grid;
+    align-content: center;
+    gap: 10px;
+    padding: 12px;
+    border: 1px solid rgba(146, 226, 241, 0.2);
+    border-radius: 14px;
+    color: rgba(234, 251, 255, 0.94);
+    background: linear-gradient(145deg, rgba(5, 25, 42, 0.96), rgba(8, 19, 39, 0.97));
+    box-shadow: 0 18px 48px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  }
+
+  .intro-redesign .hero-mobile-product-proof__status {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    color: rgba(194, 255, 222, 0.9);
+    font-size: 0.62rem;
+    letter-spacing: 0.08em;
+  }
+
+  .intro-redesign .hero-mobile-product-proof__status strong {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .intro-redesign .hero-mobile-product-proof__status i {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--matrix-mint);
+    box-shadow: 0 0 12px rgba(130, 255, 196, 0.6);
+  }
+
+  .intro-redesign .hero-mobile-product-proof__status small {
+    color: rgba(197, 228, 235, 0.65);
+    font-size: 0.58rem;
+    font-weight: 800;
+    letter-spacing: 0;
+  }
+
+  .intro-redesign .hero-mobile-product-proof__flow {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+    align-items: center;
+    gap: 8px;
+  }
+
+  .intro-redesign .hero-mobile-product-proof__flow p {
+    min-width: 0;
+    display: grid;
+    gap: 3px;
+    text-align: left;
+  }
+
+  .intro-redesign .hero-mobile-product-proof__flow p small {
+    color: rgba(116, 225, 244, 0.82);
+    font-size: 0.55rem;
+    font-weight: 900;
+    letter-spacing: 0.07em;
+  }
+
+  .intro-redesign .hero-mobile-product-proof__flow p strong {
+    color: rgba(232, 248, 252, 0.86);
+    font-size: 0.62rem;
+    font-weight: 800;
+    line-height: 1.45;
+  }
+
+  .intro-redesign .hero-mobile-product-proof__flow > span {
+    color: rgba(130, 255, 196, 0.64);
+    font-size: 0.8rem;
+  }
+}
+
+/* Short Desktop keeps the entire Hero inside the first viewport. */
+@media (min-width: 960px) and (max-height: 740px) {
+  .intro-redesign .hero-section--signal {
+    padding-top: calc(var(--header-height) + 7px);
+    padding-bottom: 9px;
+  }
+
+  .intro-redesign .hero-section--signal .hero-grid {
+    gap: 24px;
+  }
+
+  .intro-redesign .hero-section--signal .hero-copy .eyebrow {
+    min-height: 25px;
+    font-size: 0.55rem;
+  }
+
+  .intro-redesign .hero-section--signal .hero-title {
+    margin-top: 8px;
+    font-size: clamp(2.62rem, 7.6vh, 3.48rem);
+  }
+
+  .intro-redesign .hero-section--signal .hero-lead {
+    margin-top: 11px;
+    font-size: 0.96rem;
+  }
+
+  .intro-redesign .hero-section--signal .hero-chips {
+    margin-top: 10px;
+  }
+
+  .intro-redesign .hero-section--signal .hero-chips .feature-chip:nth-child(n + 4) {
+    display: none;
+  }
+
+  .intro-redesign .hero-section--signal .hero-ai-badge,
+  .intro-redesign .hero-section--signal .hero-actions {
+    margin-top: 9px;
+  }
+
+  .intro-redesign .hero-section--signal .hero-actions .hero-cta {
+    min-height: 46px;
+  }
+
+  .intro-redesign .hero-section--signal .hero-secondary-cta {
+    min-height: 40px;
+  }
+
+  .intro-redesign .hero-section--signal .hero-cta-note {
+    margin-top: 3px;
+  }
+
+  .intro-redesign .hero-section--signal .hero-mock {
+    height: min(60vh, 390px);
+  }
+
+  .intro-redesign .hero-section--signal .hero-product-experience {
+    width: 96%;
+    padding: 8px;
+  }
+
+  .intro-redesign .hero-section--signal .hero-product-experience .product-experience-mock__bar {
+    min-height: 28px;
+  }
+
+  .intro-redesign .hero-section--signal .hero-product-experience .product-experience-mock__title,
+  .intro-redesign .hero-section--signal .hero-product-experience .product-voice {
+    display: none;
+  }
+
+  .intro-redesign .hero-section--signal .hero-product-experience .product-slide__canvas {
+    min-height: 106px;
+    padding: 12px;
+  }
+
+  .intro-redesign .hero-section--signal .hero-product-experience .product-caption {
+    min-height: 40px;
+    margin-top: 6px;
+  }
+
+  .intro-redesign .hero-section--signal .hero-product-experience .product-ai-recap {
+    min-height: 42px;
+    margin-top: 6px;
+    padding-block: 5px;
+  }
+}
+
+/* Standard laptops keep the complete product surface inside its visual stage. */
+@media (min-width: 1100px) and (min-height: 741px) and (max-height: 820px) {
+  .intro-redesign .hero-section--signal .hero-product-experience {
+    transform: scale(0.9);
+  }
+
+  .intro-redesign .hero-section--signal .hero-mock-stage:hover .hero-product-experience {
+    transform: scale(0.9);
+  }
+}
+
+/* Short phones preserve the same hierarchy with tighter, not smaller, rhythm. */
+@media (max-width: 360px), (max-width: 680px) and (max-height: 650px) {
+  .intro-redesign .hero-section--signal {
+    padding-top: calc(var(--header-height) + 5px);
+  }
+
+  .intro-redesign .hero-section--signal .mobile-hero-brand-card {
+    min-height: 30px;
+    padding-block: 5px;
+  }
+
+  .intro-redesign .hero-section--signal .hero-title {
+    margin-top: 11px;
+    font-size: clamp(1.92rem, 9.8vw, 2.2rem);
+  }
+
+  .intro-redesign .hero-section--signal .hero-lead {
+    margin-top: 10px;
+    font-size: 0.9rem;
+  }
+
+  .intro-redesign .hero-section--signal .hero-actions {
+    margin-top: 10px;
+  }
+
+  .intro-redesign .hero-section--signal .hero-actions .hero-cta {
+    min-height: 47px;
+  }
+
+  .intro-redesign .hero-section--signal .hero-secondary-cta {
+    min-height: 26px;
+  }
+
+  .intro-redesign .hero-section--signal .hero-chips {
+    margin-top: 9px;
+  }
+
+  .intro-redesign .hero-section--signal .hero-chips .feature-chip {
+    min-height: 34px;
+    font-size: 0.56rem;
+  }
+
+  .intro-redesign .hero-section--signal .hero-ai-badge {
+    margin-top: 6px;
+  }
+
+  .intro-redesign .hero-section--signal .hero-ai-badge small {
+    display: none;
+  }
+
+  .intro-redesign .hero-section--signal .hero-cta-note {
+    margin-top: 3px;
+  }
+
+  .intro-redesign .hero-section--signal .hero-mock {
+    display: none;
+  }
+}
+
+/* Large displays use the canvas, not a small centered website. */
+@media (min-width: 2200px) and (min-height: 1200px) {
+  .intro-redesign .hero-section--signal {
+    padding: calc(var(--header-height) + clamp(42px, 4vh, 86px)) 5vw clamp(52px, 5vh, 108px);
+  }
+
+  .intro-redesign .hero-section--signal .hero-grid {
+    width: min(86vw, 3300px);
+    max-width: 3300px;
+    display: grid;
+    grid-template-columns: minmax(0, 1.12fr) minmax(0, 0.88fr);
+    align-content: center;
+    align-items: center;
+    gap: clamp(110px, 5vw, 190px);
+  }
+
+  .intro-redesign .hero-section--signal .hero-copy {
+    max-width: none;
+  }
+
+  .intro-redesign .hero-section--signal .hero-copy .eyebrow {
+    min-height: 46px;
+    padding-inline: 20px;
+    font-size: 0.88rem;
+  }
+
+  .intro-redesign .hero-section--signal .hero-title {
+    margin-top: 28px;
+    font-size: clamp(5.6rem, 3.6vw, 8rem);
+  }
+
+  .intro-redesign .hero-section--signal .hero-lead {
+    max-width: 900px;
+    margin-top: 36px;
+    font-size: clamp(1.8rem, 1.16vw, 2.15rem);
+  }
+
+  .intro-redesign .hero-section--signal .hero-chips {
+    max-width: 980px;
+    margin-top: 34px;
+  }
+
+  .intro-redesign .hero-section--signal .hero-ai-badge,
+  .intro-redesign .hero-section--signal .hero-actions {
+    margin-top: 30px;
+  }
+
+  .intro-redesign .hero-section--signal .hero-actions .hero-cta {
+    min-width: 380px;
+    min-height: 74px;
+    font-size: 1.3rem;
+  }
+
+  .intro-redesign .hero-section--signal .hero-secondary-cta {
+    min-height: 66px;
+    padding-inline: 22px;
+    font-size: 1.05rem;
+  }
+
+  .intro-redesign .hero-section--signal .hero-mock {
+    height: min(62vh, 1180px);
+  }
+
+  .intro-redesign .hero-section--signal .hero-product-experience {
+    width: 96%;
+    max-width: 1320px;
+    padding: 28px;
+    border-radius: 34px;
+  }
+
+  .intro-redesign .hero-section--signal .hero-product-experience .product-experience-mock__brand,
+  .intro-redesign .hero-section--signal .hero-product-experience .product-experience-mock__live,
+  .intro-redesign .hero-section--signal .hero-product-experience .product-experience-mock__people,
+  .intro-redesign .hero-section--signal .hero-product-experience .product-experience-mock__title strong,
+  .intro-redesign .hero-section--signal .hero-product-experience .product-slide__canvas strong,
+  .intro-redesign .hero-section--signal .hero-product-experience .product-poll > strong {
+    font-size: 1.15rem;
+  }
+
+  .intro-redesign .hero-section--signal .hero-product-experience .product-slide__canvas {
+    min-height: 330px;
+  }
+
+  .intro-redesign .hero-section--signal .hero-product-experience .product-caption p,
+  .intro-redesign .hero-section--signal .hero-product-experience .product-voice p,
+  .intro-redesign .hero-section--signal .hero-product-experience .product-ai-recap p strong {
+    font-size: 0.95rem;
+  }
+
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .intro-redesign .hero-section--signal .hero-title,
+  .intro-redesign .hero-title__core {
+    animation: none;
+    transform: none;
+  }
+}

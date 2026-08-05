@@ -56,6 +56,10 @@ for (const contract of routeContracts) {
     const menu = page.locator("#mobile-menu").first();
 
     await expect(toggle).toBeVisible();
+    await expect.poll(
+      () => toggle.evaluate((element) => Object.keys(element).some((key) => key.startsWith("__reactProps$"))),
+      { message: "menu toggle did not hydrate" },
+    ).toBe(true);
     await expect(toggle).toHaveAttribute("aria-expanded", "false");
     await toggle.click();
     await expect(toggle).toHaveAttribute("aria-expanded", "true");

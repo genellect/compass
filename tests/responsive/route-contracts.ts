@@ -64,6 +64,7 @@ export const routeContracts: RouteContract[] = [
     criticalSelectors: [
       "h1#hero-title",
       ".hero-lead",
+      "#hero-primary-cta",
       "#experience h2",
       "#features h2",
       "#ai-support h2",

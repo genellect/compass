@@ -510,7 +510,7 @@ for (const expected of [
   'id="ai-support"',
   'id="teachers"',
   'id="developers"',
-  "わからないが、動き出す。",
+  "LET EVERYTHING MOVE.",
   "未来の講義を、いま体験。",
   'rel="canonical" href="https://compass-official.pages.dev/INTRO_Interactive/"',
   parentGaMeasurementId
