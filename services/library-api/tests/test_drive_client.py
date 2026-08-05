@@ -159,6 +159,11 @@ def test_drive_errors_are_generic_and_retry_classified(monkeypatch) -> None:
     ("reason", "expected_code", "retryable"),
     [
         ("appNotAuthorizedToFile", "drive_app_not_authorized", False),
+        (
+            "appNotAuthorizedToChild",
+            "drive_app_not_authorized_to_children",
+            False,
+        ),
         ("accessNotConfigured", "drive_api_not_configured", False),
         (
             "insufficientFilePermissions",
@@ -201,4 +206,31 @@ def test_drive_403_reason_is_safely_classified_without_message(
 
     assert captured.value.code == expected_code
     assert captured.value.retryable is retryable
+    assert "student@" not in str(captured.value)
+
+
+def test_drive_reason_is_extracted_from_modern_details_shape(monkeypatch) -> None:
+    client, _session = client_with_responses(
+        monkeypatch,
+        [
+            FakeResponse(
+                403,
+                {
+                    "error": {
+                        "message": "student@st.kitasato-u.ac.jp cannot share",
+                        "details": [{"reason": "appNotAuthorizedToChild"}],
+                    }
+                },
+            )
+        ],
+    )
+
+    with pytest.raises(DriveClientError) as captured:
+        client.create_reader_permission(
+            "folder-id",
+            "student@st.kitasato-u.ac.jp",
+        )
+
+    assert captured.value.code == "drive_app_not_authorized_to_children"
+    assert captured.value.retryable is False
     assert "student@" not in str(captured.value)

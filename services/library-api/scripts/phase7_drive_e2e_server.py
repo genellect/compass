@@ -40,7 +40,7 @@ from app.drive_attestation import (
     build_drive_operation_attestation_facts,
     issue_drive_operation_attestation,
 )
-from app.drive_client import DRIVE_FILE_SCOPE, GoogleDrivePermissionClient
+from app.drive_client import DRIVE_SCOPE, GoogleDrivePermissionClient
 from app.drive_operations import enqueue_drive_revoke, process_due_drive_operations
 
 
@@ -51,7 +51,7 @@ AUTHORIZATION_ENDPOINT = "https://accounts.google.com/o/oauth2/v2/auth"
 TOKEN_ENDPOINT = "https://oauth2.googleapis.com/token"
 REVOKE_ENDPOINT = "https://oauth2.googleapis.com/revoke"
 TOKENINFO_ENDPOINT = "https://oauth2.googleapis.com/tokeninfo"
-SCOPES = ("openid", "email", DRIVE_FILE_SCOPE)
+SCOPES = ("openid", "email", DRIVE_SCOPE)
 VALID_ISSUERS = {"accounts.google.com", "https://accounts.google.com"}
 FOLDER_MIME_TYPE = "application/vnd.google-apps.folder"
 MAX_REQUEST_BYTES = 20_000
@@ -431,7 +431,7 @@ def build_sanitized_evidence(
         "status": "pass" if passed else "blocked",
         "purpose": "phase7_real_drive_e2e",
         "captured_at_utc": datetime.now(UTC).isoformat(),
-        "scope": DRIVE_FILE_SCOPE,
+        "scope": DRIVE_SCOPE,
         "owner_subject_fingerprint_sha256_16": owner_subject_fingerprint,
         "owner_email_domain": owner_email_domain,
         "recipient_fingerprint_sha256_16": _fingerprint(
@@ -857,7 +857,7 @@ def create_handler(
                         access_token,
                         refresh_token,
                         id_token,
-                        DRIVE_FILE_SCOPE in granted_scopes,
+                        DRIVE_SCOPE in granted_scopes,
                     )
                 ):
                     raise RuntimeError("Required OAuth values are missing.")

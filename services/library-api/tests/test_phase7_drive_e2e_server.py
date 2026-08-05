@@ -39,7 +39,7 @@ def test_phase7_drive_e2e_evidence_contains_only_fingerprints() -> None:
     serialized = str(evidence)
 
     assert evidence["status"] == "pass"
-    assert evidence["scope"] == "https://www.googleapis.com/auth/drive.file"
+    assert evidence["scope"] == "https://www.googleapis.com/auth/drive"
     assert "recipient@example.net" not in serialized
     assert "secret-folder-id" not in serialized
     assert "secret-permission-id" not in serialized

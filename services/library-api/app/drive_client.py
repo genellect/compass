@@ -13,7 +13,7 @@ from app.config import Settings
 from app.eligibility import normalize_email
 
 
-DRIVE_FILE_SCOPE = "https://www.googleapis.com/auth/drive.file"
+DRIVE_SCOPE = "https://www.googleapis.com/auth/drive"
 DRIVE_PERMISSION_EMAIL_MESSAGE = (
     "未来戦略ライブラリの利用登録が完了しました。"
     "この通知内のリンクから共有フォルダをご利用ください。"
@@ -65,7 +65,7 @@ class GoogleDrivePermissionClient:
             token_uri=settings.google_drive_oauth_token_url,
             client_id=settings.google_drive_oauth_client_id,
             client_secret=settings.google_drive_oauth_client_secret,
-            scopes=[DRIVE_FILE_SCOPE],
+            scopes=[DRIVE_SCOPE],
         )
 
     def _access_token(self) -> str:
@@ -161,15 +161,16 @@ class GoogleDrivePermissionClient:
         error = payload.get("error")
         if not isinstance(error, dict):
             return ""
-        errors = error.get("errors")
-        if not isinstance(errors, list):
-            return ""
-        for item in errors:
-            if not isinstance(item, dict):
+        for collection_name in ("errors", "details"):
+            errors = error.get(collection_name)
+            if not isinstance(errors, list):
                 continue
-            reason = item.get("reason")
-            if isinstance(reason, str) and reason:
-                return reason
+            for item in errors:
+                if not isinstance(item, dict):
+                    continue
+                reason = item.get("reason")
+                if isinstance(reason, str) and reason:
+                    return reason
         return ""
 
     @classmethod
@@ -191,6 +192,11 @@ class GoogleDrivePermissionClient:
             )
         if reason == "appNotAuthorizedToFile":
             return DriveClientError("drive_app_not_authorized", retryable=False)
+        if reason == "appNotAuthorizedToChild":
+            return DriveClientError(
+                "drive_app_not_authorized_to_children",
+                retryable=False,
+            )
         if reason == "accessNotConfigured":
             return DriveClientError("drive_api_not_configured", retryable=False)
         if reason == "insufficientFilePermissions":
