@@ -3,6 +3,7 @@ import type { ReactNode } from "react";
 import { SiteHeader } from "../../../components/SiteHeader";
 import styles from "./future-strategy-library.module.css";
 import { KnowledgeHorizonGraphic } from "./components/KnowledgeHorizonGraphic";
+import { MobileRegistrationPrompt } from "./components/MobileRegistrationPrompt.client";
 import { RegistrationCTA } from "./components/RegistrationCTA.client";
 import { fields, footerLinks, libraryMetrics, materials, trustFacts } from "./content";
 
@@ -309,6 +310,7 @@ export default function FutureStrategyLibraryPage() {
         </section>
       </main>
 
+      <MobileRegistrationPrompt />
       <FslFooter />
       <script
         type="application/ld+json"

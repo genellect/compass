@@ -8,7 +8,7 @@ import {
   isExternalCompassHref
 } from "../../../../lib/futureStrategyLibrary";
 
-type Placement = "header" | "hero" | "materials" | "final";
+type Placement = "header" | "hero" | "materials" | "final" | "sticky";
 
 declare global {
   interface Window {
@@ -20,7 +20,8 @@ const placementClasses: Record<Placement, string> = {
   header: styles.ctaHeader,
   hero: styles.ctaHero,
   materials: styles.ctaMaterials,
-  final: styles.ctaFinal
+  final: styles.ctaFinal,
+  sticky: styles.ctaSticky
 };
 
 function viewportName() {
@@ -29,7 +30,13 @@ function viewportName() {
   return "desktop";
 }
 
-export function RegistrationCTA({ placement }: { placement: Placement }) {
+export function RegistrationCTA({
+  placement,
+  tabIndex
+}: {
+  placement: Placement;
+  tabIndex?: number;
+}) {
   const isExternal = isExternalCompassHref(FUTURE_STRATEGY_LIBRARY_REGISTRATION_HREF);
 
   const handleClick = () => {
@@ -42,7 +49,7 @@ export function RegistrationCTA({ placement }: { placement: Placement }) {
 
   const content = (
     <>
-      <span>大学アカウントで無料登録する</span>
+      <span>{placement === "sticky" ? "無料で登録する" : "大学アカウントで無料登録する"}</span>
       <span className={styles.ctaArrow} aria-hidden="true">{isExternal ? "↗" : "→"}</span>
       {isExternal ? <span className={styles.srOnly}>（新しいタブで開きます）</span> : null}
     </>
@@ -52,6 +59,7 @@ export function RegistrationCTA({ placement }: { placement: Placement }) {
     className: `${styles.registrationAction} ${placementClasses[placement]}`,
     "data-library-registration": "true",
     "data-placement": placement,
+    tabIndex,
     onClick: handleClick
   };
 
