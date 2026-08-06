@@ -464,7 +464,9 @@ export function AdminDashboard() {
     if (!mockState) return;
     const nextSession: AdminSession = {
       authorized: true,
-      role: "admin"
+      role: "admin",
+      mutationsEnabled: true,
+      exportEnabled: true
     };
     setSession(nextSession);
     setCredential(null);
@@ -691,7 +693,7 @@ export function AdminDashboard() {
   }
 
   function openExport() {
-    if (!session || !canExport(session.role)) return;
+    if (!session || !session.exportEnabled || !canExport(session.role)) return;
     setTab("export");
     setSelected(null);
     resetAction();
@@ -702,6 +704,7 @@ export function AdminDashboard() {
   async function executeExport() {
     if (
       !session
+      || !session.exportEnabled
       || !canExport(session.role)
       || exportInFlightRef.current
       || !exportPurposeCode
@@ -766,6 +769,7 @@ export function AdminDashboard() {
   async function executeAction() {
     if (
       !session
+      || !session.mutationsEnabled
       || !selected
       || !actionKind
       || actionReason.trim().length < 8
@@ -950,7 +954,7 @@ export function AdminDashboard() {
               >
                 申請・処理状況
               </button>
-              {canExport(session.role) && (
+              {session.exportEnabled && canExport(session.role) && (
                 <button
                   className={tab === "export" ? "is-active" : ""}
                   type="button"
@@ -1101,6 +1105,7 @@ export function AdminDashboard() {
                     detailRef={detailRef}
                     application={selected}
                     role={session.role}
+                    mutationsEnabled={session.mutationsEnabled}
                     actionKind={actionKind}
                     actionReason={actionReason}
                     actionConfirmed={actionConfirmed}
@@ -1519,6 +1524,7 @@ function ApplicationDetail({
   detailRef,
   application,
   role,
+  mutationsEnabled,
   actionKind,
   actionReason,
   actionConfirmed,
@@ -1532,6 +1538,7 @@ function ApplicationDetail({
   detailRef: RefObject<HTMLElement | null>;
   application: AdminApplicationDetail;
   role: AdminRole;
+  mutationsEnabled: boolean;
   actionKind: AdminActionKind | "";
   actionReason: string;
   actionConfirmed: boolean;
@@ -1542,7 +1549,7 @@ function ApplicationDetail({
   onActionConfirmed: (confirmed: boolean) => void;
   onExecute: () => void;
 }) {
-  const actions = availableAdminActions(application, role);
+  const actions = availableAdminActions(application, role, mutationsEnabled);
   const canExecute = Boolean(
     actionKind
     && actionReason.trim().length >= 8

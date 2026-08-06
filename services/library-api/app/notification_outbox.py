@@ -301,6 +301,9 @@ def _build_payload(
                 application.grade,
             ),
             "question": application.question or "",
+            "studentNumber": (
+                application.normalized_student_number or ""
+            ).strip(),
             "eligibilityStatus": "manual_review",
             "processedAt": _iso_utc(application.created_at),
         }
@@ -364,6 +367,7 @@ def _build_payload(
             application.grade,
         ),
         "question": application.question or "",
+        "studentNumber": (member.normalized_student_number or "").strip(),
         "eligibilityStatus": "approved",
         "driveAccessStatus": grant.status,
         "processedAt": _iso_utc(operation.completed_at),

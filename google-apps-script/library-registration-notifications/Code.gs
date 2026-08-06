@@ -10,6 +10,7 @@
 const CONFIG = Object.freeze({
   ADMIN_EMAIL_PROPERTY: "FSL_NOTIFICATION_ADMIN_EMAIL",
   ALLOWED_EMAIL_DOMAIN: "st.kitasato-u.ac.jp",
+  CONTACT_URL: "https://compass-official.pages.dev/contact/",
   DRIVE_URL_PROPERTY: "FSL_NOTIFICATION_DRIVE_URL",
   HMAC_KEY_PROPERTY: "FSL_NOTIFICATION_HMAC_KEY",
   LEDGER_PREFIX: "FSL_NOTIFICATION_LEDGER_",
@@ -38,7 +39,8 @@ const PAYLOAD_KEYS = Object.freeze([
   "grade",
   "processedAt",
   "question",
-  "registrationId"
+  "registrationId",
+  "studentNumber"
 ]);
 
 const REQUIRED_PAYLOAD_KEYS = Object.freeze([
@@ -180,9 +182,10 @@ function handlePost_(event) {
     if (sendApplicant && !state.applicantSent) {
       MailApp.sendEmail(
         request.payload.email,
-        "【未来戦略ライブラリ】登録申請を受け付けました",
+        "【未来戦略ライブラリ】利用登録が完了しました",
         buildApplicantText_(request.payload, configured),
         {
+          htmlBody: buildApplicantHtml_(request.payload, configured),
           name: CONFIG.SENDER_NAME,
           replyTo: configured.adminEmail
         }
@@ -260,6 +263,9 @@ function validatePayload_(raw) {
     : "";
   const grade = typeof raw.grade === "string" ? raw.grade.trim() : "その他";
   const question = typeof raw.question === "string" ? raw.question.trim() : "";
+  const studentNumber = typeof raw.studentNumber === "string"
+    ? raw.studentNumber.trim()
+    : "";
   const driveStatuses = ["granted", "already_granted"];
   const grades = ["1年", "2年", "3年", "4年", "5年", "6年", "M1", "M2", "その他"];
 
@@ -273,6 +279,9 @@ function validatePayload_(raw) {
     question.length > 1000 ||
     (raw.question !== undefined && raw.question !== question) ||
     /[\u0000-\u0008\u000b\u000c\u000e-\u001f\u007f]/.test(question) ||
+    studentNumber.length > 32 ||
+    (raw.studentNumber !== undefined && raw.studentNumber !== studentNumber) ||
+    /[\u0000-\u001f\u007f]/.test(studentNumber) ||
     ["approved", "manual_review"].indexOf(raw.eligibilityStatus) === -1 ||
     !isUtcTimestamp_(raw.processedAt)
   ) {
@@ -313,6 +322,7 @@ function validatePayload_(raw) {
     data.driveAccessStatus = raw.driveAccessStatus;
   }
   if (raw.question !== undefined) data.question = question;
+  if (raw.studentNumber !== undefined) data.studentNumber = studentNumber;
   return { ok: true, data: data };
 }
 
@@ -503,6 +513,7 @@ function buildAdminText_(payload) {
   const lines = [
     `【氏名】${payload.fullName}`,
     `【学年】${payload.grade || "その他"}`,
+    `【学籍番号】${payload.studentNumber || "—"}`,
     payload.eligibilityStatus === "approved"
       ? "【判定結果】承認"
       : "【判定結果】個別確認"
@@ -514,50 +525,86 @@ function buildAdminText_(payload) {
 }
 
 function buildApplicantText_(payload, configured) {
-  if (payload.driveAccessStatus === "already_granted") {
-    return `${payload.fullName} 様
+  return `${payload.fullName} さん
 
-既に未来戦略ライブラリの利用登録は完了しております。
+未来戦略ライブラリへの登録申請を受け付けました。
 
-引き続き、以下のURLよりご利用ください。
-
+Google Driveを開く
 ${configured.driveUrl}
 
-ご不明な点などございましたら、お気軽にご連絡ください。
+上記URLからアクセスできます。
+24時間経過してもアクセスできない場合は、公式サイトのお問い合わせフォームよりご連絡ください。
+${CONFIG.CONTACT_URL}
 
-――――――――――
-大学生のための未来戦略ライブラリ
-Yuto Matsui（松井 優知）
-学生支援団体 COMPASS 代表
-✉ ${configured.adminEmail}
-――――――――――
+学生支援団体 COMPASS
+代表　YUTO MATSUI`;
+}
 
-※本メールはGoogle Apps Scriptにより自動送信されています。`;
-  }
+function buildApplicantHtml_(payload, configured) {
+  const fullName = escapeHtml_(payload.fullName);
+  const driveUrl = escapeHtml_(configured.driveUrl);
+  const contactUrl = escapeHtml_(CONFIG.CONTACT_URL);
 
-  return `${payload.fullName} 様
+  return `<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>未来戦略ライブラリ</title>
+</head>
+<body style="margin:0;padding:0;background:#020812;color:#0b1b2e;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Hiragino Kaku Gothic ProN','Yu Gothic',Meiryo,sans-serif;">
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="width:100%;background:#020812;border-collapse:collapse;">
+    <tr>
+      <td align="center" style="padding:28px 12px;">
+        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="width:100%;max-width:600px;background:#f4f7f8;border:1px solid #17334a;border-radius:18px;border-collapse:separate;overflow:hidden;">
+          <tr>
+            <td style="height:4px;background:#66e6ef;font-size:0;line-height:0;">&nbsp;</td>
+          </tr>
+          <tr>
+            <td style="padding:30px 36px 28px;background:#071629;color:#fbfdff;">
+              <p style="margin:0;font-size:17px;font-weight:700;letter-spacing:0.04em;line-height:1.6;">未来戦略ライブラリ</p>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding:38px 36px 36px;background:#f4f7f8;">
+              <p style="margin:0 0 26px;font-size:18px;font-weight:700;line-height:1.8;color:#0b1b2e;">${fullName} さん</p>
+              <p style="margin:0 0 30px;font-size:15px;line-height:1.9;color:#30465b;">未来戦略ライブラリへの登録申請を受け付けました。</p>
 
-大学生のための未来戦略ライブラリへのお申し込みを受け付けました。
+              <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="border-collapse:separate;">
+                <tr>
+                  <td bgcolor="#087f99" style="border-radius:10px;">
+                    <a href="${driveUrl}" style="display:inline-block;padding:14px 24px;color:#ffffff;font-size:15px;font-weight:700;line-height:1.4;text-decoration:none;border-radius:10px;">Google Driveを開く</a>
+                  </td>
+                </tr>
+              </table>
 
-システムによる登録情報の照合の結果、利用条件を満たしていることを確認しました。
-Google Drive共有フォルダの閲覧権限を付与しました。Googleから届く共有案内をご確認ください。
+              <p style="margin:28px 0 0;font-size:14px;line-height:1.9;color:#516074;">上記URLからアクセスできます。<br>24時間経過してもアクセスできない場合は、公式サイトの<a href="${contactUrl}" style="color:#087f99;font-weight:700;text-decoration:underline;">お問い合わせフォーム</a>よりご連絡ください。</p>
 
-以下のURLからもライブラリを開くことができます。
-${configured.driveUrl}
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="width:100%;margin-top:34px;border-top:1px solid #cedae0;border-collapse:collapse;">
+                <tr>
+                  <td style="padding-top:22px;">
+                    <p style="margin:0;font-size:13px;font-weight:700;line-height:1.8;color:#0b1b2e;">学生支援団体 COMPASS</p>
+                    <p style="margin:2px 0 0;font-size:13px;line-height:1.8;color:#516074;">代表　YUTO MATSUI</p>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>`;
+}
 
-通常は数分以内にアクセス権の反映が確認できます。
-24時間以上経過しても確認できない場合は、運営代表者までお問い合わせください。
-
-今後とも、大学生のための未来戦略ライブラリをよろしくお願いいたします。
-
-――――――――――
-大学生のための未来戦略ライブラリ
-Yuto Matsui（松井 優知）
-学生支援団体 COMPASS 代表
-✉ ${configured.adminEmail}
-――――――――――
-
-※本メールはGoogle Apps Scriptにより自動送信されています。`;
+function escapeHtml_(value) {
+  return String(value)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
 }
 
 function jsonResponse_(body) {

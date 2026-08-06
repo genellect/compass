@@ -178,7 +178,7 @@ def test_drive_success_creates_one_idempotent_pii_minimal_outbox_row(
     )
 
 
-def test_notification_payload_is_exact_eight_field_contract(
+def test_notification_payload_is_exact_nine_field_contract(
     session: Session,
 ) -> None:
     queued_registration(session, key="notification-payload-0001")
@@ -201,16 +201,17 @@ def test_notification_payload_is_exact_eight_field_contract(
         "email",
         "grade",
         "question",
+        "studentNumber",
         "eligibilityStatus",
         "driveAccessStatus",
         "processedAt",
     }
     assert payload["grade"] == "3年"
     assert payload["question"] == ""
+    assert payload["studentNumber"] == "PP23000"
     assert payload["eligibilityStatus"] == "approved"
     assert payload["driveAccessStatus"] == "granted"
     serialized = str(payload)
-    assert "PP23000" not in serialized
     assert "consent" not in serialized
 
 
@@ -268,10 +269,12 @@ def test_manual_review_queues_admin_only_notification(
         "fullName",
         "grade",
         "question",
+        "studentNumber",
         "eligibilityStatus",
         "processedAt",
     }
     assert payload["eligibilityStatus"] == "manual_review"
+    assert payload["studentNumber"] == "PP23000"
     assert "email" not in payload
     assert "driveAccessStatus" not in payload
 

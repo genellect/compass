@@ -209,6 +209,8 @@ class Phase7RegistrationStatusResponse(ApiModel):
 class AdminSessionResponse(ApiModel):
     authorized: Literal[True] = True
     role: Literal["viewer", "operator", "admin"]
+    mutations_enabled: bool
+    export_enabled: bool
 
 
 class AdminApplicationItem(ApiModel):
