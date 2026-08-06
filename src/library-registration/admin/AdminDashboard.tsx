@@ -896,7 +896,7 @@ export function AdminDashboard() {
               一般の大学アカウントには名簿を表示しません。
             </p>
             {previewEnabled ? (
-              <div className="admin-mock-login">
+              <div className="admin-login-controls">
                 <button
                   className="admin-button admin-button-primary"
                   type="button"

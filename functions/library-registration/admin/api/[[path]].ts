@@ -4,6 +4,8 @@ const MAX_REQUEST_BODY_BYTES = 64 * 1024;
 const MAX_RESPONSE_BODY_BYTES = 12 * 1024 * 1024;
 const MAX_GOOGLE_CREDENTIAL_CHARS = 8192;
 const UPSTREAM_TIMEOUT_MS = 20_000;
+const COLD_START_RETRY_DELAY_MS = 250;
+const RETRYABLE_GET_STATUSES = new Set([500, 502, 503, 504]);
 const UUID_SEGMENT =
   "[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-" +
   "[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}";
@@ -264,6 +266,27 @@ function safeResponseHeaders(upstream: Response): Headers {
   return headers;
 }
 
+async function fetchUpstream(
+  target: URL,
+  route: RouteContract,
+  headers: Headers,
+  body: string
+): Promise<Response> {
+  const request = () => fetch(target, {
+    method: route.method,
+    headers,
+    body: route.method === "POST" ? body : undefined,
+    redirect: "manual",
+    signal: AbortSignal.timeout(UPSTREAM_TIMEOUT_MS)
+  });
+  const first = await request();
+  if (route.method !== "GET" || !RETRYABLE_GET_STATUSES.has(first.status)) {
+    return first;
+  }
+  await new Promise((resolve) => setTimeout(resolve, COLD_START_RETRY_DELAY_MS));
+  return request();
+}
+
 export async function onRequest(context: PagesContext): Promise<Response> {
   const { env, request } = context;
   const requestUrl = new URL(request.url);
@@ -290,13 +313,7 @@ export async function onRequest(context: PagesContext): Promise<Response> {
 
   let upstream: Response;
   try {
-    upstream = await fetch(target, {
-      method: route.method,
-      headers,
-      body: route.method === "POST" ? body : undefined,
-      redirect: "manual",
-      signal: AbortSignal.timeout(UPSTREAM_TIMEOUT_MS)
-    });
+    upstream = await fetchUpstream(target, route, headers, body);
   } catch {
     return jsonResponse("admin_proxy_unavailable", 502);
   }

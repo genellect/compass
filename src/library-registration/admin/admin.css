@@ -227,12 +227,12 @@
   letter-spacing: 0.06em;
 }
 
-.admin-mock-login { display: grid; gap: 14px; margin-top: 25px; }
-.admin-mock-login label,
+.admin-login-controls { display: grid; gap: 14px; margin-top: 25px; }
+.admin-login-controls label,
 .admin-filters label,
 .admin-action-panel > label,
 .admin-export-form label { display: grid; gap: 7px; }
-.admin-mock-login label,
+.admin-login-controls label,
 .admin-filters label > span,
 .admin-action-panel label > span,
 .admin-export-form label > span {
@@ -284,7 +284,7 @@
   font-size: 0.72rem;
 }
 .admin-login .admin-security-note,
-.admin-login .admin-mock-login label { color: #b8c7d3; }
+.admin-login .admin-login-controls label { color: #b8c7d3; }
 .admin-inline-status { color: var(--admin-blue); font-weight: 700; }
 .admin-login .admin-inline-status { color: var(--admin-cyan); }
 .admin-alert {
