@@ -201,14 +201,16 @@ for (const expected of [
   "transform: translateX(clamp(230px, 24vw, 360px));",
   "@media (min-width: 901px) and (max-width: 1179px)",
   "@media (min-width: 1180px)",
-  "clamp(1200px, 87.5vw, 2400px)",
+  "clamp(1200px, 90vw, 2880px)",
   "min(calc(5.51vw + 19.36px), 11.3svh)",
-  "clamp(3.65rem, calc(22.74vw - 209.9px), 5rem)",
-  "calc(11.3svh + 14.53vw - 171.45px)",
+  "clamp(5rem, calc(137.5px - 4.5vw), 5.27rem)",
+  "min(5.8vw, 10.4svh)",
+  "padding-left: clamp(12px, calc(312px - 20vw), 76px);",
   "calc(136% + 71.6vw - 733.2px)",
   "clamp(86svh, calc(86svh + 80vw - 944px), 98svh)",
   "clamp(-126px, -16.5svh, -60px) -",
   "clamp(0px, calc(16.67vw - 170.67px), 44px)",
+  "margin-top: clamp(-151px, calc(-291.6px + 11.92vw), -112px);",
   "animation: desktopKnowledgeFieldDrift 34s ease-in-out infinite alternate;",
   "animation: desktopParticleDrift 18s ease-in-out infinite alternate;",
   "radial-gradient(circle at 86% 66%, rgba(87, 90, 209, 0.13)",
@@ -222,12 +224,17 @@ for (const unexpected of [
 ]) expectExcludes(libraryStyles, unexpected, "Library continuous Desktop Hero responsiveness");
 for (const expected of [
   ".compass-v4-page + .site-footer .footer-inner",
+  ".site-footer[data-route-context=\"messages\"] .footer-inner",
   'grid-template-areas:\n      "brand"\n      "cta"\n      "note"\n      "copyright";',
   ".compass-v4-page + .site-footer .footer-nav",
+  ".site-footer[data-route-context=\"messages\"] .footer-nav",
   "display: none;",
   ".compass-v4-page + .site-footer .footer-note",
   "grid-template-columns: repeat(2, minmax(0, 1fr));"
 ]) expectIncludes(coreRedesignStyles.replace(/\r\n/g, "\n"), expected, "Parent Footer hierarchy");
+expectIncludes(official, "Don’t Just Learn. Build What’s Next.", "Parent Footer Hero message");
+expectIncludes(official, 'data-route-context="root"', "Parent Footer route context");
+expectIncludes(messages, 'data-route-context="messages"', "Manifesto Footer route context");
 
 for (const expected of [
   '.js.reveal-ready [data-reveal]',
@@ -1000,7 +1007,7 @@ const libraryRegistrationCount = (
   library.match(/data-library-registration="true"/g) ?? []
 ).length;
 if (libraryRegistrationCount !== 4) {
-  throw new Error("Future Strategy Library must contain four registration actions; found " + libraryRegistrationCount + ".");
+  throw new Error("Future Strategy Library must contain four server-rendered registration actions; found " + libraryRegistrationCount + ".");
 }
 
 const libraryRegistrationActions = library.match(/<a\b[^>]*data-library-registration="true"[^>]*>[\s\S]*?<\/a>/g) ?? [];
@@ -1018,7 +1025,9 @@ for (const action of libraryRegistrationActions) {
   const visibleLabel = normalizeText(action).replace("（新しいタブで開きます）", "").trim();
   const expectedLabel = action.includes('data-placement="header"')
     ? "無料で資料を見る"
-    : `大学アカウントで無料登録する${libraryRegistrationUsesLegacyForm ? "↗" : "→"}`;
+    : action.includes('data-placement="sticky"')
+      ? `無料で登録する${libraryRegistrationUsesLegacyForm ? "↗" : "→"}`
+      : `大学アカウントで無料登録する${libraryRegistrationUsesLegacyForm ? "↗" : "→"}`;
   if (visibleLabel !== expectedLabel) {
     throw new Error("Future Strategy Library registration CTA label changed: " + normalizeText(action));
   }

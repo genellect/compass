@@ -14,11 +14,11 @@ export function SiteFooter({ routeContext = "root" }: { routeContext?: SiteRoute
 
   return (
     <>
-<footer className="site-footer">
+<footer className="site-footer" data-route-context={routeContext}>
   <div className="container footer-inner">
     <div className="footer-brand">
       <p className="footer-logo">COMPASS</p>
-      <p>Better Education. Better Decisions.</p>
+      <p>{routeContext === "root" ? "Don’t Just Learn. Build What’s Next." : "Better Education. Better Decisions."}</p>
     </div>
 
     <nav className="footer-nav" aria-label="Footer navigation">

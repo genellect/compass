@@ -172,6 +172,66 @@ for (const path of ["/", "/INTRO_Interactive/", "/INTRO_Interactive/developers/"
   });
 }
 
+test("FSL Mobile registration prompt follows the reading position", async ({ page }) => {
+  const runtimeErrors = await openRoute(page, "/future-strategy-library/", {
+    name: "fsl-sticky-registration",
+    width: 390,
+    height: 844,
+  });
+  const prompt = page.locator("[data-mobile-registration-prompt]");
+  await expect(prompt).toHaveCount(0);
+
+  await page.locator('[data-library-section="thesis"]').scrollIntoViewIfNeeded();
+  await expect(prompt).toHaveCount(1);
+  await expect(prompt).toHaveAttribute("data-visible", "true");
+  await expect(prompt.locator('[data-placement="sticky"]')).toContainText("無料で登録する");
+
+  const menuToggle = page.locator("button.menu-toggle").first();
+  await menuToggle.click();
+  await expect(prompt).toHaveAttribute("data-visible", "false");
+  await page.keyboard.press("Escape");
+  await expect(prompt).toHaveAttribute("data-visible", "true");
+
+  await page.locator('[data-library-section="final"]').scrollIntoViewIfNeeded();
+  await expect(prompt).toHaveAttribute("data-visible", "false");
+  expect(runtimeErrors).toEqual([]);
+});
+
+test("Parent and Manifesto footer hierarchy remains route-specific", async ({ page }) => {
+  let runtimeErrors = await openRoute(page, "/", {
+    name: "parent-footer-desktop",
+    width: 1363,
+    height: 936,
+  });
+  const parentFooter = page.locator('.site-footer[data-route-context="root"]');
+  await expect(parentFooter.locator(".footer-brand > p").last()).toHaveText(
+    "Don’t Just Learn. Build What’s Next.",
+  );
+  await expect(parentFooter.locator(".footer-source-link")).toBeVisible();
+  expect(runtimeErrors).toEqual([]);
+
+  runtimeErrors = await openRoute(page, "/messages/", {
+    name: "manifesto-footer-desktop",
+    width: 1363,
+    height: 936,
+  });
+  const manifestoFooter = page.locator('.site-footer[data-route-context="messages"]');
+  await manifestoFooter.scrollIntoViewIfNeeded();
+  await expect(manifestoFooter.locator(".footer-nav")).toBeHidden();
+  await expect(manifestoFooter.locator(".footer-note")).toBeVisible();
+  await expect(manifestoFooter.locator(".copyright")).toBeVisible();
+  expect(runtimeErrors).toEqual([]);
+
+  runtimeErrors = await openRoute(page, "/messages/", {
+    name: "manifesto-footer-mobile",
+    width: 390,
+    height: 844,
+  });
+  await page.locator('.site-footer[data-route-context="messages"]').scrollIntoViewIfNeeded();
+  await expect(page.locator('.site-footer[data-route-context="messages"] .footer-nav')).toBeVisible();
+  expect(runtimeErrors).toEqual([]);
+});
+
 for (const viewport of [
   { name: "library-admin-mobile", width: 390, height: 844 },
   { name: "library-admin-desktop", width: 1440, height: 900 },
