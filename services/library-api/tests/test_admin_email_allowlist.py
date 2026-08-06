@@ -296,4 +296,9 @@ def test_allowlisted_email_and_active_database_subject_are_both_required(
     app.dependency_overrides.clear()
 
     assert response.status_code == 200
-    assert response.json() == {"authorized": True, "role": "admin"}
+    assert response.json() == {
+        "authorized": True,
+        "role": "admin",
+        "mutationsEnabled": False,
+        "exportEnabled": False,
+    }
