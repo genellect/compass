@@ -266,6 +266,8 @@ Google Driveへの権限付与と取消は、APIリクエスト内で直接完�
 
 Windowsでは、Node.jsコマンドを`npm.cmd`で実行します。
 
+GitHub CodespacesとCodex Cloudを使用する標準手順は、[`docs/CLOUD_DEVELOPMENT.md`](docs/CLOUD_DEVELOPMENT.md)を参照してください。クラウド環境はrepositoryごとに分離し、既存PCの未commit変更やProduction資格情報を引き継ぎません。
+
 ### Webフロントエンド
 
 ```powershell

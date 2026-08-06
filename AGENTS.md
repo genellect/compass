@@ -92,6 +92,15 @@ npm.cmd run check
 
 commit、push、PR、Cloudflare設定、GAS deployment、Production公開は、ユーザーが明示的に依頼した場合だけ行う。既存の未関連変更を保持し、破壊的なGit操作で消去しない。
 
+## Cloud Development
+
+- GitHubを正本とし、新規作業は最新`origin/main`からGitHub CodespacesまたはCodex Cloudで開始する。
+- repositoryごとに環境とbranchを分離し、COMPASS Interactiveのcheckout、secret、runtimeを共有しない。
+- Codespacesでは`.devcontainer/devcontainer.json`と`docs/CLOUD_DEVELOPMENT.md`を正本とする。
+- 既存PCの`.env*`、credential、Production dataをcloud環境へcopyしない。
+- 通常のcloud taskはnon-live testのみとし、Production form、実email、deploy、migration、secret変更を実行しない。
+- Codex taskは完了前に該当testを実行し、branchへcommitしてDraft PRでreview可能な状態にする。
+
 ## Responsive Browser Gate
 
 - UI、navigation、font、breakpoint、animationを変更した場合は、`docs/responsive-browser-qa.md`に従い`npm.cmd run check:responsive:full`を実行する。
