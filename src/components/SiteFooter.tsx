@@ -84,7 +84,7 @@ export function SiteFooter({ routeContext = "root" }: { routeContext?: SiteRoute
       {routeContext === "root" ? (
         <a
           className="footer-source-link"
-          href="https://github.com/my270yuto0413-cmyk/compass"
+          href="https://github.com/genellect/compass"
           target="_blank"
           rel="noopener noreferrer"
           aria-label="COMPASS source code on GitHub"

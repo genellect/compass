@@ -1,4 +1,4 @@
-const githubProfileUrl = "https://github.com/my270yuto0413-cmyk";
+const githubProfileUrl = "https://github.com/genellect";
 
 export function GitHubProfileLink({ className = "" }: { className?: string }) {
   return (

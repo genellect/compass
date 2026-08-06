@@ -3,7 +3,7 @@
 Status: Canonical
 Scope: COMPASSの公開brand、公式Webサイト、接続する公開体験
 Last verified: 2026-08-01
-Reference: `my270yuto0413-cmyk/compass` / `origin/main`
+Reference: `genellect/compass` / `origin/main`
 
 ## 1. この文書の役割
 
