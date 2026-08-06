@@ -869,6 +869,7 @@ export function AdminDashboard() {
       <a className="admin-skip-link" href={session ? "#admin-content" : "#admin-title"}>管理内容へ移動</a>
       <header className="admin-header">
         <div className="admin-brand" aria-label="未来戦略ライブラリ 管理">
+          <span className="admin-brand-mark" aria-hidden="true"><span /></span>
           <span>
             <strong>未来戦略ライブラリ</strong>
             <small>管理</small>

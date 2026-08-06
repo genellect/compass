@@ -619,18 +619,19 @@ describe("Phase 8B admin client", () => {
     }
   });
 
-  it("uses a compact neutral interface without changing the roster-first layout", async () => {
+  it("uses a compact COMPASS interface without changing the roster-first layout", async () => {
     const [source, styles] = await Promise.all([
       readFile(new URL("./AdminDashboard.tsx", import.meta.url), "utf8"),
       readFile(new URL("./admin.css", import.meta.url), "utf8")
     ]);
 
     expect(styles).toContain("/* Compact production administrator interface. */");
-    expect(styles).toMatch(/\.admin-login\s*\{[\s\S]*?width: min\(400px, calc\(100% - 32px\)\)/);
-    expect(styles).toMatch(/\.admin-login::before,[\s\S]*?\.admin-login::after \{ display: none; \}/);
-    expect(styles).toMatch(/\.admin-header\s*\{[\s\S]*?background: #fff/);
+    expect(styles).toMatch(/\.admin-login\s*\{[\s\S]*?width: min\(430px, calc\(100% - 32px\)\)/);
+    expect(styles).toMatch(/\.admin-login::before\s*\{[\s\S]*?linear-gradient\(150deg, #020812, #071629/);
+    expect(styles).toMatch(/\.admin-header\s*\{[\s\S]*?background: rgba\(2, 8, 18, 0\.96\)/);
     expect(styles).toMatch(/\.admin-table-wrap,[\s\S]*?box-shadow: none/);
-    expect(source).not.toContain('className="admin-brand-mark"');
+    expect(source).toContain('className="admin-brand-mark"');
+    expect(source).not.toContain("管理画面へようこそ");
     expect(source).toContain('useState<DashboardTab>("members")');
   });
 
