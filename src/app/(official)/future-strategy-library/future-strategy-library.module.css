@@ -415,10 +415,21 @@
   margin-top: 30px;
 }
 
+.heroEditorial {
+  position: relative;
+  z-index: 3;
+  align-self: center;
+}
+
+.heroIntelligenceField {
+  display: none;
+}
+
 .heroCopy {
   position: relative;
   z-index: 3;
   align-self: center;
+  margin-top: clamp(36px, 4vw, 58px);
   padding-bottom: 28px;
 }
 
@@ -673,9 +684,10 @@
   57%, 100% { transform: translateX(500px); opacity: 0; }
 }
 
-@keyframes desktopKnowledgeFieldDrift {
-  0% { transform: translate3d(-1.2%, -0.6%, 0) rotate(-12deg) scaleY(0.58); }
-  100% { transform: translate3d(1.4%, 0.8%, 0) rotate(-9deg) scaleY(0.61); }
+@keyframes desktopAmbientLightSweep {
+  0% { opacity: 0.26; transform: translate3d(-5%, 1%, 0) scale(0.98); }
+  52% { opacity: 0.56; }
+  100% { opacity: 0.3; transform: translate3d(5%, -1%, 0) scale(1.02); }
 }
 
 @keyframes desktopSignalBreathe {
@@ -693,12 +705,6 @@
   0% { opacity: 0.34; transform: translate3d(34px, -20px, 0) scale(0.98); }
   55% { opacity: 0.68; }
   100% { opacity: 0.4; transform: translate3d(-42px, 30px, 0) scale(1.03); }
-}
-
-@keyframes desktopDataSweep {
-  0% { opacity: 0.32; transform: translate3d(-5%, 2%, 0); }
-  46% { opacity: 0.82; }
-  100% { opacity: 0.4; transform: translate3d(6%, -2%, 0); }
 }
 
 @keyframes desktopGraphicEnter {
@@ -1543,10 +1549,11 @@
     min-height: 0;
     grid-template-columns: 1fr;
     gap: 34px;
-    margin-top: 40px;
+    margin-top: 0;
   }
 
   .heroCopy {
+    margin-top: 40px;
     padding-bottom: 0;
   }
 
@@ -1787,9 +1794,10 @@
 
   .heroTitle {
     max-width: 10ch;
-    font-size: clamp(2.4rem, 12vw, 4.05rem);
-    line-height: 0.96;
-    letter-spacing: -0.052em;
+    font-size: clamp(2.05rem, 10vw, 2.65rem);
+    font-weight: 720;
+    line-height: 1;
+    letter-spacing: -0.042em;
   }
 
   .heroTitle span:last-child::after {
@@ -1798,13 +1806,14 @@
 
   .heroLower {
     gap: 26px;
-    margin-top: 35px;
+    margin-top: 0;
   }
 
   .heroSubhead {
     max-width: none;
-    font-size: clamp(1.4rem, 6.8vw, 2rem);
-    line-height: 1.38;
+    font-size: clamp(1.2rem, 5.7vw, 1.48rem);
+    font-weight: 700;
+    line-height: 1.42;
   }
 
   .heroSubhead span {
@@ -1814,7 +1823,7 @@
   .heroDescription {
     margin-top: 20px !important;
     color: #e2edf3;
-    font-size: 1rem;
+    font-size: 0.93rem;
     line-height: 1.7;
   }
 
@@ -2261,11 +2270,11 @@
   }
 
   .heroTitle {
-    font-size: clamp(2.38rem, 12vw, 2.85rem);
+    font-size: clamp(2rem, 10vw, 2.35rem);
   }
 
   .heroSubhead {
-    font-size: clamp(1.4rem, 6.8vw, 1.62rem);
+    font-size: clamp(1.18rem, 5.7vw, 1.38rem);
   }
 
   .materialCard {
@@ -2393,46 +2402,49 @@
 
   .heroAtmosphere {
     background:
-      linear-gradient(90deg, #020711 0%, rgba(2, 8, 18, 0.985) 31%, rgba(2, 8, 18, 0.68) 58%, rgba(2, 8, 18, 0.22) 100%),
+      linear-gradient(90deg, #020711 0%, rgba(2, 8, 18, 0.985) 31%, rgba(2, 8, 18, 0.72) 58%, rgba(2, 8, 18, 0.3) 100%),
       linear-gradient(180deg, rgba(2, 8, 18, 0.08) 0%, transparent 64%, rgba(102, 230, 239, 0.06) 100%);
   }
 
   .heroAtmosphere::before {
     content: "";
     position: absolute;
-    width: 68vw;
-    min-width: 880px;
-    aspect-ratio: 1;
-    top: 8%;
-    right: -14vw;
-    border-radius: 50%;
-    background: repeating-radial-gradient(
-      circle,
-      transparent 0 78px,
-      rgba(109, 220, 231, 0.13) 79px 80px,
-      transparent 81px 128px
-    );
-    -webkit-mask-image: radial-gradient(circle, #000 0 56%, rgba(0, 0, 0, 0.56) 67%, transparent 78%);
-    mask-image: radial-gradient(circle, #000 0 56%, rgba(0, 0, 0, 0.56) 67%, transparent 78%);
-    opacity: 0.9;
-    transform-origin: 56% 48%;
-    animation: desktopKnowledgeFieldDrift 34s ease-in-out infinite alternate;
+    inset: -18% -14% -14% 28%;
+    background:
+      linear-gradient(112deg, transparent 22%, rgba(102, 230, 239, 0.038) 44%, rgba(121, 139, 255, 0.025) 52%, transparent 71%),
+      radial-gradient(ellipse at 48% 42%, rgba(64, 210, 228, 0.105), transparent 38%),
+      radial-gradient(ellipse at 72% 66%, rgba(101, 91, 220, 0.08), transparent 34%);
+    filter: blur(22px);
+    transform-origin: 58% 46%;
+    animation: desktopAmbientLightSweep 22s ease-in-out infinite alternate;
   }
 
   .heroAtmosphere::after {
     content: "";
     position: absolute;
-    inset: 13% 2% 8% 43%;
+    inset: 10% 1% 7% 38%;
     background:
-      linear-gradient(112deg, transparent 0 42%, rgba(102, 230, 239, 0.08) 42.15%, transparent 42.45% 64%, rgba(126, 119, 255, 0.065) 64.15%, transparent 64.45%),
-      radial-gradient(circle at 73% 27%, rgba(192, 255, 248, 0.46) 0 1.5px, transparent 2px),
-      radial-gradient(circle at 46% 58%, rgba(102, 230, 239, 0.32) 0 1px, transparent 1.8px),
-      radial-gradient(circle at 86% 74%, rgba(155, 142, 255, 0.32) 0 1px, transparent 1.8px);
+      radial-gradient(ellipse at 42% 48%, rgba(105, 229, 238, 0.075), transparent 29%),
+      radial-gradient(ellipse at 78% 42%, rgba(83, 116, 222, 0.07), transparent 34%);
     -webkit-mask-image: linear-gradient(90deg, transparent, #000 22%, #000 92%, transparent);
     mask-image: linear-gradient(90deg, transparent, #000 22%, #000 92%, transparent);
-    filter: drop-shadow(0 0 12px rgba(102, 230, 239, 0.2));
-    opacity: 0.72;
-    animation: desktopDataSweep 18s ease-in-out infinite alternate;
+    filter: blur(18px);
+    opacity: 0.62;
+    animation: desktopAmbientLightSweep 28s ease-in-out -9s infinite alternate-reverse;
+  }
+
+  .heroIntelligenceField {
+    position: absolute;
+    z-index: 0;
+    inset: 0;
+    display: block;
+    width: 100%;
+    height: 100%;
+    opacity: 0.82;
+    mix-blend-mode: screen;
+    -webkit-mask-image: linear-gradient(to bottom, transparent 3%, #000 14%, #000 89%, transparent 100%);
+    mask-image: linear-gradient(to bottom, transparent 3%, #000 14%, #000 89%, transparent 100%);
+    pointer-events: none;
   }
 
   .heroInner {
@@ -2440,8 +2452,16 @@
     z-index: 1;
     min-height: calc(100svh - var(--header-height));
     display: grid;
-    grid-template-rows: auto minmax(0, 1fr) auto;
+    grid-template-rows: minmax(0, 1fr) auto;
     padding: clamp(28px, calc(10.9svh - 21.6px), 160px) 0 clamp(5px, 1svh, 22px);
+  }
+
+  .heroLower {
+    margin-top: 0;
+  }
+
+  .heroEditorial {
+    align-self: center;
   }
 
   .heroTitle {
@@ -2469,7 +2489,7 @@
     align-self: start;
     padding-bottom: 0;
     padding-left: clamp(48px, 6.5vw, 124px);
-    padding-top: clamp(12px, 2svh, 46px);
+    padding-top: 0;
   }
 
   .heroSubhead {
@@ -2656,6 +2676,42 @@
 }
 
 @media (min-width: 901px) and (max-width: 1179px) {
+  .heroLower {
+    grid-template-columns: minmax(360px, 0.9fr) minmax(420px, 1.1fr);
+    gap: clamp(24px, 3vw, 36px);
+  }
+
+  .heroEditorial {
+    width: min(100%, 460px);
+    padding-left: 0;
+  }
+
+  .heroTitle {
+    max-width: 8.6ch;
+    padding-left: 0;
+    font-size: clamp(3.2rem, 5.2vw, 4rem);
+    font-weight: 720;
+    line-height: 0.96;
+    letter-spacing: -0.035em;
+  }
+
+  .heroCopy {
+    width: min(100%, 390px);
+    margin-top: clamp(28px, 4svh, 38px);
+    padding-left: 0;
+  }
+
+  .heroSubhead {
+    font-size: clamp(1.55rem, 2.55vw, 1.9rem);
+  }
+
+  .knowledgeGraphic {
+    width: min(100%, 620px, 84svh);
+    align-self: center;
+    justify-self: center;
+    margin: 0;
+  }
+
   .graphicFrame text {
     font-size: 14.5px;
     letter-spacing: 0.9px;
@@ -2680,30 +2736,8 @@
 }
 
 @media (min-width: 1024px) and (max-width: 1179px) {
-  .heroTitle {
-    font-size: clamp(
-      3.65rem,
-      min(calc(5.51vw + 19.36px), 11.3svh),
-      5.27rem
-    );
-  }
-
-  .heroLower {
-    grid-template-columns:
-      minmax(0, clamp(469px, calc(1043px - 48.6vw), 545px))
-      minmax(0, 1fr);
-  }
-
   .fslPage .knowledgeGraphic {
-    width: min(
-      clamp(136%, calc(136% + 71.6vw - 733.2px), 154%),
-      1850px,
-      clamp(
-        clamp(86svh, calc(88svh - 7.69vw + 78.77px), 88svh),
-        calc(86svh + 80vw - 944px),
-        98svh
-      )
-    );
+    width: min(100%, 620px, 84svh);
   }
 }
 
@@ -2725,48 +2759,74 @@
   }
 
   .heroInner {
-    width: min(
-      calc(100% - clamp(56px, 5vw, 240px)),
-      clamp(1200px, 90vw, 2880px)
-    );
+    width: min(calc(100% - clamp(72px, 6.4vw, 240px)), 1760px);
+    grid-template-rows: minmax(0, 1fr) auto;
+    padding-top: clamp(30px, 4.5svh, 68px);
+    padding-bottom: clamp(14px, 2svh, 28px);
   }
 
   .heroTitle {
-    padding-left: clamp(12px, calc(312px - 20vw), 76px);
+    max-width: 8.6ch;
+    padding-left: 0;
     color: #f2f7fa;
-    font-size: clamp(
-      clamp(5rem, calc(137.5px - 4.5vw), 5.27rem),
-      min(5.8vw, 10.4svh),
-      9.25rem
-    );
-    font-weight: 800;
-    line-height: 0.93;
-    letter-spacing: -0.036em;
-    text-shadow: 0 12px 32px rgba(0, 0, 0, 0.2);
+    font-size: clamp(3.8rem, min(4.65vw, 8.7svh), 5.7rem);
+    font-weight: 700;
+    line-height: 0.96;
+    letter-spacing: -0.03em;
+    text-align: left;
+    text-shadow: 0 12px 32px rgba(0, 0, 0, 0.16);
+  }
+
+  .heroTitle span {
+    display: block;
+    white-space: nowrap;
   }
 
   .heroTitle span:first-child {
     color: #dce7ed;
     font-size: 0.92em;
-    font-weight: 730;
-    letter-spacing: -0.025em;
+    font-weight: 650;
+    letter-spacing: -0.018em;
   }
 
   .heroTitle span:last-child {
-    font-weight: 800;
+    font-weight: 760;
   }
 
   .heroLower {
-    grid-template-columns: minmax(0, 4.85fr) minmax(0, 7.15fr);
-    gap: clamp(24px, 2.2vw, 58px);
+    min-height: 0;
+    grid-template-columns: minmax(360px, 0.82fr) minmax(580px, 1.18fr);
+    align-items: center;
+    gap: clamp(30px, 3vw, 64px);
+    margin-top: 0;
+  }
+
+  .heroEditorial {
+    width: min(100%, 510px);
+    justify-self: start;
+    padding-left: clamp(0px, 1.2vw, 24px);
   }
 
   .heroCopy {
-    padding-left: clamp(12px, calc(312px - 20vw), 76px);
+    width: min(100%, 390px);
+    margin-top: clamp(32px, 4.2svh, 48px);
+    padding: 0;
   }
 
   .heroSubhead {
-    font-size: clamp(1.9rem, min(2.5vw, 5.2svh), 3.5rem);
+    font-size: clamp(1.72rem, min(2.05vw, 4.2svh), 2.32rem);
+    line-height: 1.34;
+    letter-spacing: -0.028em;
+  }
+
+  .heroDescription {
+    margin-top: clamp(18px, 2.5svh, 28px) !important;
+    font-size: clamp(0.96rem, min(1vw, 2.2svh), 1.08rem);
+    line-height: 1.7;
+  }
+
+  .heroActionGroup {
+    margin-top: clamp(24px, 3.2svh, 36px);
   }
 
   .registrationAction.ctaHero {
@@ -2775,13 +2835,10 @@
   }
 
   .fslPage .knowledgeGraphic {
-    width: min(
-      154%,
-      1850px,
-      clamp(86svh, calc(86svh + 80vw - 944px), 98svh)
-    );
-    margin-top: clamp(-151px, calc(-291.6px + 11.92vw), -112px);
-    margin-right: clamp(-56px, -2.4vw, -24px);
+    width: min(100%, clamp(700px, 45vw, 960px), 86svh);
+    align-self: center;
+    justify-self: start;
+    margin: 0;
   }
 
   .graphicFrame text {
@@ -2866,7 +2923,8 @@
   }
 
   .heroAtmosphere::before {
-    transform: rotate(-10deg) scaleY(0.6);
+    opacity: 0.4;
+    transform: none;
   }
 
   .heroAtmosphere::after {
