@@ -55,20 +55,44 @@ SELECT
         ),
         FALSE
     ) AS private_rpc_keys_select,
-    has_function_privilege(
-        current_user,
-        'fsl_public_api.submit_registration_v1(jsonb,text)',
-        'EXECUTE'
+    COALESCE(
+        (
+            SELECT has_function_privilege(current_user, function.oid, 'EXECUTE')
+            FROM pg_proc AS function
+            JOIN pg_namespace AS function_schema
+              ON function_schema.oid = function.pronamespace
+            WHERE function_schema.nspname = 'fsl_public_api'
+              AND function.proname = 'submit_registration_v1'
+              AND pg_get_function_identity_arguments(function.oid) =
+                  'p_request jsonb, p_rpc_token text'
+        ),
+        FALSE
     ) AS submit_registration_rpc_execute,
-    has_function_privilege(
-        current_user,
-        'fsl_public_api.registration_status_v1(uuid,text,text,text)',
-        'EXECUTE'
+    COALESCE(
+        (
+            SELECT has_function_privilege(current_user, function.oid, 'EXECUTE')
+            FROM pg_proc AS function
+            JOIN pg_namespace AS function_schema
+              ON function_schema.oid = function.pronamespace
+            WHERE function_schema.nspname = 'fsl_public_api'
+              AND function.proname = 'registration_status_v1'
+              AND pg_get_function_identity_arguments(function.oid) =
+                  'p_application_id uuid, p_authentication_subject_hash text, p_rpc_key_version text, p_rpc_token text'
+        ),
+        FALSE
     ) AS registration_status_rpc_execute,
-    has_function_privilege(
-        current_user,
-        'fsl_public_api.enqueue_manual_review_notification_v1(uuid,text,uuid,text,text)',
-        'EXECUTE'
+    COALESCE(
+        (
+            SELECT has_function_privilege(current_user, function.oid, 'EXECUTE')
+            FROM pg_proc AS function
+            JOIN pg_namespace AS function_schema
+              ON function_schema.oid = function.pronamespace
+            WHERE function_schema.nspname = 'fsl_public_api'
+              AND function.proname = 'enqueue_manual_review_notification_v1'
+              AND pg_get_function_identity_arguments(function.oid) =
+                  'p_application_id uuid, p_authentication_subject_hash text, p_candidate_notification_id uuid, p_rpc_key_version text, p_rpc_token text'
+        ),
+        FALSE
     ) AS enqueue_manual_review_notification_rpc_execute,
     NOT EXISTS (
         SELECT 1
