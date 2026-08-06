@@ -1,6 +1,6 @@
 # 未来戦略ライブラリ 名簿正本・旧データ照合記録
 
-Status: `READ-ONLY INVENTORY PASS / LOCAL ROSTER IMPLEMENTED / REAL IMPORT PENDING`<br>
+Status: `PRODUCTION ROSTER MIGRATION APPLIED / 42 MEMBERS VERIFIED`<br>
 Scope: 旧Googleフォーム、管理記録、ドライブ利用者名簿、対象Drive folder権限<br>
 Observed at: 2026-08-02<br>
 PII handling: 実値をrepository、文書、log、test fixtureへ保存していない
@@ -79,7 +79,33 @@ M2 0、その他3である。
 `full_name, roster_grade, student_number, registered_at_utc`とし、既定行順を学年、学籍番号、
 登録日時、member IDにする。
 
-## 6. 実移行gate
+## 6. Production名簿移行結果（2026-08-06）
+
+運営責任者が既存登録者と確認した`ドライブ利用者名簿`40行を、元Sheetを変更せず、
+Google APIから対象3列だけメモリ取得してProduction PostgreSQLへ適用した。
+
+| 照合項目 | 結果 |
+|---|---:|
+| 旧名簿source行 | 40 |
+| `ready` / `applied` | 40 / 40 |
+| 新規member | 38 |
+| 既存member再利用 | 2 |
+| 移行後`library_members` | 42 |
+| 旧名簿lineageを持つmember | 40 |
+
+旧値のうち現行の学籍番号書式を満たさない3件は、手動追加等の例外仕様に従いNULLで保持した。
+移行前後でDrive grant、Drive operation、notification outboxの件数は変化していない。
+承認に用いた一回限りのmigration adminはapply直後に無効化した。raw行fingerprint用HMAC鍵は
+専用Secret Manager containerのversion 2に保存し、誤生成したversion 1は無効化済みである。
+
+別接続による再監査では、Production schema head `0b1c2d3e4f5a`、applied batch 1、
+applied member-roster row 40、active member 42を確認した。氏名、メール、学籍番号等の実値は
+repository、CI artifact、作業logへ出力していない。
+
+旧フォーム回答・管理記録の履歴行と既存Drive permissionの四source完全照合は、
+今回の「登録者名簿の正本復旧」とは分離して引き続き履歴移行対象とする。
+
+## 7. 実移行gate（履歴四source）
 
 実データ投入前に次が必要である。
 
@@ -92,5 +118,6 @@ M2 0、その他3である。
 6. 移行後に申請履歴、名簿、Drive権限、監査件数を照合し、問題時はrollbackする。
 
 ローカル実装では、合成40名（メール対応18名、未対応22名、空学籍番号1名）について、同一batch
-再実行、rollback・再apply、未対応会員への外部副作用なしを検証する。現時点では実PIIのexport・
-DB投入・旧sheet編集・Drive権限変更を行っていない。
+再実行、rollback・再apply、未対応会員への外部副作用なしを検証した。登録者名簿40行の
+Production投入は完了した。旧sheet編集とDrive権限変更は行っていない。旧フォーム・管理記録・
+Drive permissionを含む四source履歴移行は未実行である。

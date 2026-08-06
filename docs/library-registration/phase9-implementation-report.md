@@ -1,9 +1,9 @@
 # Phase 9 旧名簿移行 実装報告
 
-Status: Four-source local implementation complete; PostgreSQL rerun pending
+Status: Production roster component applied; four-source historical reconciliation pending
 Scope: Phase 9 private legacy migration<br>
 Last verified: 2026-08-02
-正式判定: `LOCAL HOST PASS / FOUR-SOURCE POSTGRES AND REAL SNAPSHOT GATES PENDING / PRODUCTION BLOCKED`
+正式判定: `PRODUCTION ROSTER PASS / FOUR-SOURCE HISTORY PENDING`
 
 ## 1. 結論
 
@@ -12,8 +12,13 @@ PostgreSQLへ段階移行するローカル実装を完了した。合成デー�
 migrationのdowngrade・再upgrade、同時apply、冪等性、rollback・re-import、raw snapshotの
 改変拒否、Phase 10A監査の追記専用制約まで確認した。
 
-実利用者データは取得・投入していない。Google、Drive、メール、Neon、Cloud Runへの
-外部操作も行っていない。このためPhase 9は本番完了ではない。
+2026-08-06に、運営責任者が確認済みの旧登録者名簿40行をProduction PostgreSQLへ適用した。
+40行すべてが`ready/applied`となり、38 memberを新規作成、既存2 memberを再利用した。
+移行後の正本はactive member 42である。Drive grant、operation、notification outboxは
+移行前後で不変であり、外部副作用は発生していない。
+
+今回完了したのは登録者名簿componentである。旧Google Form回答、管理記録、既存Drive
+permissionを含む四sourceの履歴照合・投入は未完了のため、Phase 9全体を完了とは判定しない。
 
 ## 2. 実装済みの境界
 
