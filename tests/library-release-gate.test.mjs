@@ -541,7 +541,7 @@ test("production artifact verifier rejects visible mock administrator copy", asy
   const deploymentHeaders = renderLibraryDeploymentHeaders(template, config);
   const artifacts = {
     registrationHtml: '<main><span>GOOGLE API</span></main>',
-    adminHtml: '<main><h2>管理者として認証</h2></main>',
+    adminHtml: '<main><h1>管理者ログイン</h1></main>',
     deploymentHeaders,
     config,
     textArtifacts: [
@@ -560,7 +560,7 @@ test("production artifact verifier rejects visible mock administrator copy", asy
   assert.doesNotThrow(() => verifyLibraryProductionArtifacts(artifacts));
   assert.throws(() => verifyLibraryProductionArtifacts({
     ...artifacts,
-    adminHtml: '<main><h2>管理者として認証</h2><label id="mock-admin-role">local</label></main>'
+    adminHtml: '<main><h1>管理者ログイン</h1><label id="mock-admin-role">local</label></main>'
   }));
   assert.throws(() => verifyLibraryProductionArtifacts({
     ...artifacts,

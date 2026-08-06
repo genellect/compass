@@ -68,7 +68,7 @@ type ExportReceipt = Omit<AdminExportResult, "blob">;
 
 const TAB_LABELS: Record<DashboardTab, string> = {
   members: "登録者名簿",
-  applications: "申請・処理状況",
+  applications: "申請",
   export: "名簿出力",
   audit: "操作履歴"
 };
@@ -869,32 +869,17 @@ export function AdminDashboard() {
       <a className="admin-skip-link" href={session ? "#admin-content" : "#admin-title"}>管理内容へ移動</a>
       <header className="admin-header">
         <div className="admin-brand" aria-label="未来戦略ライブラリ 管理">
-          <span className="admin-brand-mark" aria-hidden="true"><span /></span>
           <span>
-            <strong>COMPASS</strong>
-            <small>未来戦略ライブラリ 管理</small>
+            <strong>未来戦略ライブラリ</strong>
+            <small>管理</small>
           </span>
         </div>
-        <span className="admin-environment">管理者専用</span>
       </header>
 
       {!session ? (
         <section className="admin-login" aria-labelledby="admin-title">
-          <div>
-            <p className="admin-eyebrow">利用者情報管理</p>
-            <h1 id="admin-title">未来戦略ライブラリ<br />管理者画面</h1>
-            <p className="admin-lead">
-              登録者名簿、申請状況、共有フォルダの処理状況を確認する専用画面です。
-              このページを開くだけでは利用できません。
-            </p>
-          </div>
           <div className="admin-login-card">
-            <span className="admin-step">管理者認証</span>
-            <h2>管理者として認証</h2>
-            <p>
-              許可されたGoogleアカウントで本人確認と管理権限の確認を行います。
-              一般の大学アカウントには名簿を表示しません。
-            </p>
+            <h1 id="admin-title">管理者ログイン</h1>
             {previewEnabled ? (
               <div className="admin-login-controls">
                 <button
@@ -905,10 +890,6 @@ export function AdminDashboard() {
                 >
                   {mockState && previewModule ? "管理画面を開く" : "画面を準備しています"}
                 </button>
-                <p className="admin-security-note">
-                  ここで行った操作は保存されず、
-                  共有フォルダや登録者情報には反映されません。
-                </p>
               </div>
             ) : runtimeConfig.mode === "google" && runtimeConfig.ready ? (
               <>
@@ -917,10 +898,7 @@ export function AdminDashboard() {
                   onCredential={handleGoogleCredential}
                   onError={() => setError("Google認証画面を読み込めませんでした。")}
                 />
-                {isAuthenticating && <p className="admin-inline-status" role="status">管理者権限を確認しています。</p>}
-                <p className="admin-security-note">
-                  認証情報はこの画面を開いている間だけ使用し、ブラウザには保存しません。
-                </p>
+                {isAuthenticating && <p className="admin-inline-status" role="status">確認中…</p>}
               </>
             ) : (
               <p className="admin-alert is-error" role="alert">
@@ -952,7 +930,7 @@ export function AdminDashboard() {
                 aria-pressed={tab === "applications"}
                 onClick={() => { setTab("applications"); setSelected(null); resetAction(); }}
               >
-                申請・処理状況
+                申請
               </button>
               {session.exportEnabled && canExport(session.role) && (
                 <button
@@ -964,27 +942,23 @@ export function AdminDashboard() {
                   名簿出力
                 </button>
               )}
-              <button
-                className={tab === "audit" ? "is-active" : ""}
-                type="button"
-                aria-pressed={tab === "audit"}
-                onClick={openAudit}
-              >
-                操作履歴
-              </button>
+              {session.role !== "viewer" && (
+                <button
+                  className={tab === "audit" ? "is-active" : ""}
+                  type="button"
+                  aria-pressed={tab === "audit"}
+                  onClick={openAudit}
+                >
+                  操作履歴
+                </button>
+              )}
             </nav>
-            <button className="admin-signout" type="button" onClick={signOut}>この画面から退出</button>
+            <button className="admin-signout" type="button" onClick={signOut}>ログアウト</button>
           </aside>
 
           <section className="admin-workspace" aria-busy={isLoading || isMutating || isExporting}>
             <div className="admin-workspace-heading">
-              <div>
-                <p className="admin-eyebrow">利用者情報管理</p>
-                <h1>{TAB_LABELS[tab]}</h1>
-              </div>
-              <span className="admin-mode-note">
-                {previewEnabled ? "変更は保存されません" : "管理者専用"}
-              </span>
+              <h1>{TAB_LABELS[tab]}</h1>
             </div>
 
             {message && <p className="admin-alert is-success" role="status">{message}</p>}
@@ -1029,7 +1003,6 @@ export function AdminDashboard() {
 
                 <div className="admin-summary-strip" aria-label="現在の表示件数">
                   <span>表示</span><strong>{visibleApplications.length}</strong><span>件</span>
-                  <small>個人情報を含むため、必要な目的の範囲だけで閲覧してください。</small>
                 </div>
 
                 <div className="admin-table-wrap">
@@ -1272,7 +1245,6 @@ function MemberRoster({
 
       <div className="admin-summary-strip" aria-label="現在の名簿表示件数">
         <span>表示</span><strong>{members.length}</strong><span>件</span>
-        <small>個人情報を含むため、管理目的に必要な範囲で閲覧してください。</small>
       </div>
 
       <div
@@ -1775,7 +1747,7 @@ function toMockAction(
 
 function adminErrorMessage(error: unknown): string {
   if (!(error instanceof AdminApiError)) {
-    return "管理画面に接続できませんでした。処理結果を確認してから再試行してください。";
+    return "管理画面に接続できませんでした。再試行してください。";
   }
   if (error.code === "admin_email_not_allowed") {
     return "このアカウントには管理権限がありません。";
@@ -1785,7 +1757,7 @@ function adminErrorMessage(error: unknown): string {
   if (error.status === 409) return "別の処理で状態が更新されています。再読み込みして最新状態を確認してください。";
   if (error.status === 429) return "操作が集中しています。しばらく待ってから再試行してください。";
   if (error.status === 422) return "入力内容を確認してください。操作理由は8文字以上必要です。";
-  return "処理を完了できませんでした。操作履歴と現在の状態を確認してください。";
+  return "読み込みに失敗しました。再試行してください。";
 }
 
 function formatDate(value: string): string {

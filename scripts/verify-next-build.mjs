@@ -812,10 +812,7 @@ expectOneH1(libraryRegistration, "Library registration preview");
 const libraryAdminExpected = [
   '<html lang="ja"',
   "未来戦略ライブラリ",
-  "管理者画面",
-  "利用者情報管理",
-  "このページを開くだけでは利用できません。",
-  "管理者として認証",
+  "管理者ログイン",
   "noindex",
   "nofollow"
 ];

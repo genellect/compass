@@ -251,7 +251,7 @@ function Get-OutputEvidence {
         mode = $Mode
         registration_google_api = $registration.Contains("GOOGLE API")
         registration_local_mock = $registration.Contains("LOCAL MOCK")
-        admin_authentication = $admin.Contains("管理者として認証")
+        admin_authentication = $admin.Contains("管理者ログイン")
         admin_static_fail_closed = $admin.Contains('class="admin-alert is-error"') -and -not $admin.Contains('class="admin-mock-login"')
         inspected_text_artifact_count = $textArtifacts.Count
         empty_text_artifact_count = $emptyTextArtifactCount
