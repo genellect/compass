@@ -122,18 +122,20 @@ export function verifyLibraryProductionArtifacts({
 
 export async function verifyLibraryProductionBuild({
   root = process.cwd(),
-  environment = process.env
+  environment = process.env,
+  outputDirectory = path.join(root, "out")
 } = {}) {
   const config = requireLibraryProductionReleaseConfig(environment);
-  const out = path.join(root, "out");
+  const out = path.resolve(outputDirectory);
   const artifactPaths = await collectProductionTextArtifacts(out);
-  const [registrationHtml, adminHtml, deploymentHeaders, artifactContents] = await Promise.all([
+  const [registrationHtml, adminHtml, deploymentHeaders, routes, artifactContents] = await Promise.all([
     readFile(path.join(out, "library-registration", "index.html"), "utf8"),
     readFile(
       path.join(out, "library-registration", "admin", "index.html"),
       "utf8"
     ),
     readFile(path.join(out, "_headers"), "utf8"),
+    readFile(path.join(out, "_routes.json"), "utf8").then(JSON.parse),
     Promise.all(artifactPaths.map(async (artifact) => ({
       label: path.relative(root, artifact),
       contents: await readFile(artifact, "utf8")
@@ -147,6 +149,18 @@ export async function verifyLibraryProductionBuild({
     config,
     textArtifacts: artifactContents
   });
+  const expectedRoutes = {
+    version: 1,
+    include: [
+      "/api/community-registration",
+      "/api/contact",
+      "/library-registration/admin/api/*"
+    ],
+    exclude: []
+  };
+  if (JSON.stringify(routes) !== JSON.stringify(expectedRoutes)) {
+    throw new Error("Full production Function routes are not the exact reviewed set.");
+  }
   return {
     ...config,
     ...verification,
