@@ -321,6 +321,10 @@ try {
         Set-ProductionRehearsalEnvironment
         Invoke-ExternalStep "production_build" "npm.cmd" @("run", "build")
         Invoke-ExternalStep "production_normal_verify" "npm.cmd" @("run", "verify")
+        Invoke-ExternalStep "production_function_bundle" "node.exe" @(
+            "scripts/finalize-cloudflare-git-build.mjs",
+            "--production-rehearsal"
+        )
         Invoke-ExternalStep "production_dedicated_verify" "node.exe" @("scripts/verify-library-production-build.mjs")
         $script:CurrentStage = "production_evidence"
         $productionOutput = Get-OutputEvidence -Mode "production"

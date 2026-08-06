@@ -263,7 +263,7 @@ for (const viewport of [
           gold: root.getPropertyValue("--admin-gold").trim(),
         },
         headerBackground: header ? getComputedStyle(header).backgroundColor : "",
-        workspaceBackground: workspace ? getComputedStyle(workspace).backgroundImage : "",
+        workspaceBackground: workspace ? getComputedStyle(workspace).backgroundColor : "",
         tableHeaderPosition: tableHeader ? getComputedStyle(tableHeader).position : "",
         tableClientWidth: tableWrap?.clientWidth ?? 0,
         tableScrollWidth: tableWrap?.scrollWidth ?? 0,
@@ -273,8 +273,15 @@ for (const viewport of [
     });
 
     expect(report.tokens).toEqual({ night: "#020812", cyan: "#66e6ef", gold: "#e7bc5d" });
-    expect(report.headerBackground).toBe("rgba(2, 8, 18, 0.97)");
-    expect(report.workspaceBackground).toContain("linear-gradient");
+    const headerChannels = report.headerBackground.match(
+      /^rgba?\(\s*(\d+),\s*(\d+),\s*(\d+)(?:,\s*([\d.]+))?\s*\)$/,
+    );
+    expect(headerChannels, "administrator header must retain the COMPASS night color").not.toBeNull();
+    expect(headerChannels?.slice(1, 4).map(Number)).toEqual([2, 8, 18]);
+    const headerAlpha = Number(headerChannels?.[4] ?? 1);
+    expect(headerAlpha).toBeGreaterThanOrEqual(0.94);
+    expect(headerAlpha).toBeLessThanOrEqual(1);
+    expect(report.workspaceBackground).toBe("rgb(245, 246, 247)");
     expect(report.tableHeaderPosition).toBe("sticky");
     expect(report.pageOverflow).toBeLessThanOrEqual(1);
     if (viewport.width === 390) {
