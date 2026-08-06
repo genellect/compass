@@ -21,6 +21,8 @@ export type AdminRuntimeConfig = {
 export type AdminSession = {
   authorized?: true;
   role: AdminRole;
+  mutationsEnabled: boolean;
+  exportEnabled: boolean;
 };
 
 export type AdminApplicationStatus =
@@ -226,8 +228,10 @@ export function canExport(role: AdminRole): boolean {
 
 export function availableAdminActions(
   application: AdminApplicationSummary,
-  role: AdminRole
+  role: AdminRole,
+  mutationsEnabled = true
 ): AdminActionKind[] {
+  if (!mutationsEnabled) return [];
   const actions: AdminActionKind[] = [];
   if (application.adminDecision === "pending" && canReview(role)) {
     actions.push("approve", "reject");

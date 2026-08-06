@@ -936,7 +936,14 @@ def test_admin_mutation_kill_switch_preserves_read_routes(
         session.commit()
 
     client = TestClient(app)
-    assert client.get("/admin/v1/session", headers=_headers()).status_code == 200
+    session_response = client.get("/admin/v1/session", headers=_headers())
+    assert session_response.status_code == 200
+    assert session_response.json() == {
+        "authorized": True,
+        "role": "admin",
+        "mutationsEnabled": False,
+        "exportEnabled": False,
+    }
     mutation_cases = [
         (
             f"/admin/v1/applications/{fixed_id}/decision",

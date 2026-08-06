@@ -1,13 +1,14 @@
 import {
+  LIBRARY_ADMIN_API_BASE_PATH,
   LIBRARY_REGISTRATION_HOSTED_DOMAIN,
   LIBRARY_REGISTRATION_PRODUCTION_API_ORIGIN,
-  LIBRARY_REGISTRATION_PRODUCTION_CONFIRMATION,
-  LIBRARY_REGISTRATION_PRODUCTION_FRONTEND_ORIGIN,
-  LIBRARY_REGISTRATION_PRODUCTION_SCOPE
+  LIBRARY_REGISTRATION_PRODUCTION_FRONTEND_ORIGIN
 } from "./library-release-config.mjs";
 
 export const LIBRARY_REGISTRATION_PRODUCTION_GOOGLE_CLIENT_ID =
   "398501996286-d6r3sgh8vttjiucp6f7pp12ivhp6m5ta.apps.googleusercontent.com";
+export const LIBRARY_ADMIN_PRODUCTION_GOOGLE_CLIENT_ID =
+  "398501996286-pfnd7jfrp4qclm3ti9um3hput0n8lbhg.apps.googleusercontent.com";
 export const LEGACY_LIBRARY_REGISTRATION_FORM_URL =
   "https://docs.google.com/forms/d/e/1FAIpQLSf8gLujuK-giYnkCnv-Cxp7qon1kY8mhnGvfkA62hOlrJgAHA/viewform";
 
@@ -78,16 +79,6 @@ export function resolveCloudflareGitBuildEnvironment(environment = process.env) 
     setExact(resolved, "LIBRARY_RELEASE_TARGET", "production");
     setExact(
       resolved,
-      "LIBRARY_RELEASE_SCOPE",
-      LIBRARY_REGISTRATION_PRODUCTION_SCOPE
-    );
-    setExact(
-      resolved,
-      "LIBRARY_RELEASE_CONFIRMATION",
-      LIBRARY_REGISTRATION_PRODUCTION_CONFIRMATION
-    );
-    setExact(
-      resolved,
       "LIBRARY_RELEASE_APPROVED_FRONTEND_ORIGIN",
       LIBRARY_REGISTRATION_PRODUCTION_FRONTEND_ORIGIN
     );
@@ -102,7 +93,12 @@ export function resolveCloudflareGitBuildEnvironment(environment = process.env) 
       LIBRARY_REGISTRATION_PRODUCTION_API_ORIGIN
     );
     setExact(resolved, "NEXT_PUBLIC_LIBRARY_REGISTRATION_MODE", "google");
-    setExact(resolved, "NEXT_PUBLIC_LIBRARY_ADMIN_MODE", "mock");
+    setExact(resolved, "NEXT_PUBLIC_LIBRARY_ADMIN_MODE", "google");
+    setExact(
+      resolved,
+      "NEXT_PUBLIC_LIBRARY_ADMIN_API_BASE_URL",
+      LIBRARY_ADMIN_API_BASE_PATH
+    );
     setExact(
       resolved,
       "NEXT_PUBLIC_LIBRARY_GOOGLE_HOSTED_DOMAIN",
@@ -113,11 +109,16 @@ export function resolveCloudflareGitBuildEnvironment(environment = process.env) 
       "NEXT_PUBLIC_GOOGLE_OAUTH_CLIENT_ID",
       LIBRARY_REGISTRATION_PRODUCTION_GOOGLE_CLIENT_ID
     );
+    setExact(
+      resolved,
+      "NEXT_PUBLIC_LIBRARY_ADMIN_GOOGLE_OAUTH_CLIENT_ID",
+      LIBRARY_ADMIN_PRODUCTION_GOOGLE_CLIENT_ID
+    );
     requireUnset(resolved, [
+      "LIBRARY_RELEASE_SCOPE",
+      "LIBRARY_RELEASE_CONFIRMATION",
       "NEXT_PUBLIC_LIBRARY_UI_REVIEW",
-      "NEXT_PUBLIC_FSL_REGISTRATION_URL",
-      "NEXT_PUBLIC_LIBRARY_ADMIN_API_BASE_URL",
-      "NEXT_PUBLIC_LIBRARY_ADMIN_GOOGLE_OAUTH_CLIENT_ID"
+      "NEXT_PUBLIC_FSL_REGISTRATION_URL"
     ]);
     return { environment: resolved, mode: "production", metadata };
   }

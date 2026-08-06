@@ -587,7 +587,11 @@ def admin_session(
         principal = require_admin(session, identity)
     except AdminAccessError as error:
         raise _admin_http_error(error) from error
-    response = AdminSessionResponse(role=principal.role)
+    response = AdminSessionResponse(
+        role=principal.role,
+        mutations_enabled=settings.admin_mutations_enabled,
+        export_enabled=settings.phase10a_export_api_enabled,
+    )
     _emit_admin_read_success(
         settings,
         http_request,

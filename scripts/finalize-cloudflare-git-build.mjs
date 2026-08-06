@@ -2,12 +2,12 @@ import { readdir, rename, rm } from "node:fs/promises";
 import path from "node:path";
 import { resolveCloudflareGitBuildEnvironment } from
   "./cloudflare-git-build-environment.mjs";
-import { prepareLibraryRegistrationProductionArtifact } from
-  "./prepare-library-registration-production-artifact.mjs";
+import { prepareLibraryFullProductionArtifact } from
+  "./prepare-library-full-production-artifact.mjs";
 import { prepareLibraryUiReviewArtifact } from
   "./prepare-library-ui-review-artifact.mjs";
-import { verifyLibraryRegistrationProductionBuild } from
-  "./verify-library-registration-production-build.mjs";
+import { verifyLibraryProductionBuild } from
+  "./verify-library-production-build.mjs";
 import { verifyLibraryUiReviewBuild } from
   "./verify-library-ui-review-build.mjs";
 
@@ -19,7 +19,7 @@ async function replaceOutputWithStage(root, stage) {
   await rm(stageRoot, { recursive: true, force: true });
 }
 
-async function requireExactPublicFunctions(root) {
+async function requireExactProductionFunctions(root) {
   const functionsRoot = path.join(root, "functions");
   const files = [];
   async function visit(directory) {
@@ -32,7 +32,11 @@ async function requireExactPublicFunctions(root) {
     }
   }
   await visit(functionsRoot);
-  const expected = ["api/community-registration.ts", "api/contact.ts"];
+  const expected = [
+    "api/community-registration.ts",
+    "api/contact.ts",
+    "library-registration/admin/api/[[path]].ts"
+  ];
   if (JSON.stringify(files.sort()) !== JSON.stringify(expected)) {
     throw new Error(
       `Cloudflare production Functions are not the exact reviewed pair: ${files.join(", ")}.`
@@ -51,26 +55,22 @@ export async function finalizeCloudflareGitBuild({
     const stage = path.join(
       root,
       "outputs",
-      "library-registration-production",
+      "library-full-production",
       profile.metadata.commit,
       "site"
     );
-    const prepared = await prepareLibraryRegistrationProductionArtifact({
+    const prepared = await prepareLibraryFullProductionArtifact({
       root,
       source: path.join(root, "out"),
       stage
     });
-    await verifyLibraryRegistrationProductionBuild({
+    await verifyLibraryProductionBuild({
       root,
-      stage,
-      environment: profile.environment
+      environment: profile.environment,
+      outputDirectory: stage
     });
     await replaceOutputWithStage(root, stage);
-    await rm(path.join(root, "functions", "library-registration"), {
-      recursive: true,
-      force: true
-    });
-    await requireExactPublicFunctions(root);
+    await requireExactProductionFunctions(root);
     return {
       mode: "production",
       finalized: true,

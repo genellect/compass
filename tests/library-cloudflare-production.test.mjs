@@ -21,6 +21,7 @@ import {
 import { prepareLibraryRegistrationProductionArtifact } from
   "../scripts/prepare-library-registration-production-artifact.mjs";
 import {
+  LIBRARY_ADMIN_PRODUCTION_GOOGLE_CLIENT_ID,
   LIBRARY_REGISTRATION_PRODUCTION_GOOGLE_CLIENT_ID,
   resolveCloudflareGitBuildEnvironment
 } from "../scripts/cloudflare-git-build-environment.mjs";
@@ -33,6 +34,8 @@ import { LEGACY_LIBRARY_FORM_URL } from
 
 const registrationClientId =
   "123456789012-registration-prodgate.apps.googleusercontent.com";
+const adminClientId =
+  "123456789012-admin-prodgate.apps.googleusercontent.com";
 
 function productionEnvironment(overrides = {}) {
   return {
@@ -75,9 +78,18 @@ test("Cloudflare Git builds derive reviewed production and fail-closed preview p
     LIBRARY_REGISTRATION_PRODUCTION_GOOGLE_CLIENT_ID
   );
   assert.equal(
+    production.environment.NEXT_PUBLIC_LIBRARY_ADMIN_GOOGLE_OAUTH_CLIENT_ID,
+    LIBRARY_ADMIN_PRODUCTION_GOOGLE_CLIENT_ID
+  );
+  assert.equal(
     resolveLibraryReleaseConfig(production.environment)
       .registrationOnlyProductionRelease,
-    true
+    false
+  );
+  assert.equal(production.environment.NEXT_PUBLIC_LIBRARY_ADMIN_MODE, "google");
+  assert.equal(
+    production.environment.NEXT_PUBLIC_LIBRARY_ADMIN_API_BASE_URL,
+    "/library-registration/admin/api"
   );
 
   const canonical = resolveCloudflareGitBuildEnvironment(
@@ -90,7 +102,8 @@ test("Cloudflare Git builds derive reviewed production and fail-closed preview p
   const preview = resolveCloudflareGitBuildEnvironment(
     cloudflareEnvironment({
       CF_PAGES_BRANCH: "codex/cloudflare-preview",
-      CF_PAGES_URL: "https://codex-cloudflare-preview.compass-official.pages.dev"
+      CF_PAGES_URL: "https://codex-cloudflare-preview.compass-official.pages.dev",
+      NEXT_PUBLIC_LIBRARY_ADMIN_GOOGLE_OAUTH_CLIENT_ID: ""
     })
   );
   assert.equal(preview.mode, "preview");
@@ -116,8 +129,12 @@ test("Cloudflare Git profile rejects malformed provenance and conflicting releas
     { CF_PAGES_URL: "https://compass-official.pages.dev/path" },
     { CF_PAGES_URL: "https://compass-official.example.com" },
     { LIBRARY_RELEASE_TARGET: "ui_review" },
-    { NEXT_PUBLIC_LIBRARY_ADMIN_MODE: "google" },
-    { NEXT_PUBLIC_LIBRARY_ADMIN_API_BASE_URL: "/library-registration/admin/api" }
+    { NEXT_PUBLIC_LIBRARY_ADMIN_MODE: "mock" },
+    { NEXT_PUBLIC_LIBRARY_ADMIN_API_BASE_URL: "/invalid" },
+    {
+      NEXT_PUBLIC_LIBRARY_ADMIN_GOOGLE_OAUTH_CLIENT_ID:
+        LIBRARY_REGISTRATION_PRODUCTION_GOOGLE_CLIENT_ID
+    }
   ]) {
     assert.throws(() => resolveCloudflareGitBuildEnvironment(
       cloudflareEnvironment(overrides)
@@ -302,7 +319,7 @@ test("production staging keeps public Functions and removes every administrator 
   }
 });
 
-test("Cloudflare Git production finalization replaces out and retains only public Functions", async () => {
+test("Cloudflare Git production finalization retains the protected administrator surface", async () => {
   const root = await mkdtemp(join(tmpdir(), "fsl-cloudflare-git-production-"));
   try {
     await createProductionFixture(root);
@@ -311,11 +328,25 @@ test("Cloudflare Git production finalization replaces out and retains only publi
       `const clientId="${LIBRARY_REGISTRATION_PRODUCTION_GOOGLE_CLIENT_ID}";const api="${LIBRARY_REGISTRATION_PRODUCTION_API_ORIGIN}";`,
       "utf8"
     );
-    await mkdir(join(root, "functions", "library-registration"), {
+    await writeFile(
+      join(root, "out", "library-registration", "admin", "index.html"),
+      '<main><h2>管理者として認証</h2></main>',
+      "utf8"
+    );
+    await rm(
+      join(root, "out", "_next", "static", "chunks", "admin-preview.js"),
+      { force: true }
+    );
+    await writeFile(
+      join(root, "out", "_next", "static", "chunks", "admin.js"),
+      `const clientId="${LIBRARY_ADMIN_PRODUCTION_GOOGLE_CLIENT_ID}";const base="/library-registration/admin/api";`,
+      "utf8"
+    );
+    await mkdir(join(root, "functions", "library-registration", "admin", "api"), {
       recursive: true
     });
     await writeFile(
-      join(root, "functions", "library-registration", "admin.ts"),
+      join(root, "functions", "library-registration", "admin", "api", "[[path]].ts"),
       "export const admin=true;",
       "utf8"
     );
@@ -327,17 +358,22 @@ test("Cloudflare Git production finalization replaces out and retains only publi
     assert.equal(result.mode, "production");
     assert.equal(result.finalized, true);
     await access(join(root, "out", "library-registration", "index.html"));
-    await assert.rejects(access(
-      join(root, "out", "library-registration", "admin")
-    ));
+    await access(join(root, "out", "library-registration", "admin", "index.html"));
     await access(join(root, "functions", "api", "community-registration.ts"));
     await access(join(root, "functions", "api", "contact.ts"));
-    await assert.rejects(access(join(root, "functions", "library-registration")));
+    await access(join(
+      root,
+      "functions",
+      "library-registration",
+      "admin",
+      "api",
+      "[[path]].ts"
+    ));
     await assert.rejects(access(
       join(
         root,
         "outputs",
-        "library-registration-production",
+        "library-full-production",
         "a".repeat(40)
       )
     ));

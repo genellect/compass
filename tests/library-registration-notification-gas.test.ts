@@ -38,7 +38,7 @@ const payload = {
 
 type SentEmail = {
   body: string;
-  options: { name: string; replyTo?: string };
+  options: { htmlBody?: string; name: string; replyTo?: string };
   subject: string;
   to: string;
 };
@@ -223,12 +223,13 @@ describe("Future Strategy Library notification GAS", () => {
     expect(signedEnvelope()).toEqual(testVector.request);
   });
 
-  it("sends the requested admin summary and a legacy-equivalent applicant acceptance", () => {
+  it("sends the requested admin summary and the approved applicant HTML message", () => {
     const runtime = createGasRuntime();
     const enrichedPayload = {
       ...payload,
       grade: "3年",
-      question: "利用開始時期について確認したいです。"
+      question: "利用開始時期について確認したいです。",
+      studentNumber: "PP23000"
     };
     const result = post(runtime.context, signedEnvelope({ payload: enrichedPayload }));
 
@@ -243,6 +244,7 @@ describe("Future Strategy Library notification GAS", () => {
     });
     expect(admin?.body).toContain(`【氏名】${payload.fullName}`);
     expect(admin?.body).toContain("【学年】3年");
+    expect(admin?.body).toContain("【学籍番号】PP23000");
     expect(admin?.body).toContain("【判定結果】承認");
     expect(admin?.body).toContain("【連絡事項】利用開始時期について確認したいです。");
     expect(admin?.body).not.toContain(registrationId);
@@ -251,12 +253,31 @@ describe("Future Strategy Library notification GAS", () => {
     const applicant = runtime.sentEmails[1];
     expect(applicant).toMatchObject({
       to: payload.email,
-      subject: "【未来戦略ライブラリ】登録申請を受け付けました",
+      subject: "【未来戦略ライブラリ】利用登録が完了しました",
       options: { name: "未来戦略ライブラリ", replyTo: adminEmail }
     });
-    expect(applicant?.body).toContain(`${payload.fullName} 様`);
-    expect(applicant?.body).toContain(driveUrl);
-    expect(applicant?.body).toContain("Googleから届く共有案内");
+    expect(applicant?.body).toBe([
+      `${payload.fullName} さん`,
+      "",
+      "未来戦略ライブラリへの登録申請を受け付けました。",
+      "",
+      "Google Driveを開く",
+      driveUrl,
+      "",
+      "上記URLからアクセスできます。",
+      "24時間経過してもアクセスできない場合は、公式サイトのお問い合わせフォームよりご連絡ください。",
+      "https://compass-official.pages.dev/contact/",
+      "",
+      "学生支援団体 COMPASS",
+      "代表　YUTO MATSUI"
+    ].join("\n"));
+    expect(applicant?.options.htmlBody).toContain(`${payload.fullName} さん`);
+    expect(applicant?.options.htmlBody).toContain(`href="${driveUrl}"`);
+    expect(applicant?.options.htmlBody).toContain("Google Driveを開く");
+    expect(applicant?.options.htmlBody).toContain("お問い合わせフォーム");
+    expect(applicant?.options.htmlBody).not.toContain("システムによる登録情報");
+    expect(applicant?.options.htmlBody).not.toContain("Google Apps Script");
+    expect(applicant?.options.htmlBody).not.toContain("PP23000");
 
     const ledger = [...runtime.properties.entries()]
       .filter(([key]) => key.startsWith("FSL_NOTIFICATION_LEDGER_"))
@@ -264,8 +285,26 @@ describe("Future Strategy Library notification GAS", () => {
       .join("\n");
     expect(ledger).not.toContain(payload.fullName);
     expect(ledger).not.toContain(payload.email);
+    expect(ledger).not.toContain("PP23000");
     expect(ledger).not.toContain(driveUrl);
     expect(ledger).not.toContain(hmacKey);
+  });
+
+  it("escapes the applicant name before inserting it into HTML", () => {
+    const runtime = createGasRuntime();
+    const unsafeName = "<strong>北里 花子</strong>";
+    const result = post(runtime.context, signedEnvelope({
+      payload: {
+        ...payload,
+        fullName: unsafeName,
+        studentNumber: "PP23000"
+      }
+    }));
+
+    expect(result).toEqual({ ok: true, messageId });
+    const htmlBody = runtime.sentEmails[1]?.options.htmlBody ?? "";
+    expect(htmlBody).toContain("&lt;strong&gt;北里 花子&lt;/strong&gt; さん");
+    expect(htmlBody).not.toContain("<strong>北里 花子</strong>");
   });
 
   it("sends a manual-review summary only to the administrator", () => {
@@ -275,6 +314,7 @@ describe("Future Strategy Library notification GAS", () => {
       fullName: "北里 教員",
       grade: "その他",
       question: "所属確認をお願いします。",
+      studentNumber: "",
       eligibilityStatus: "manual_review",
       processedAt: "2026-08-04T09:59:30.000Z"
     };
@@ -292,6 +332,7 @@ describe("Future Strategy Library notification GAS", () => {
     expect(runtime.sentEmails[0]?.body).toBe([
       "【氏名】北里 教員",
       "【学年】その他",
+      "【学籍番号】—",
       "【判定結果】個別確認",
       "【連絡事項】所属確認をお願いします。"
     ].join("\n"));
@@ -325,7 +366,7 @@ describe("Future Strategy Library notification GAS", () => {
       payload: { ...payload, email: "student@st.kitasato-u.ac.jp.attacker.invalid" }
     }))).toEqual({ ok: false, code: "validation" });
     expect(post(runtime.context, signedEnvelope({
-      payload: { ...payload, studentNumber: "PP23000" }
+      payload: { ...payload, homeAddress: "東京都" }
     }))).toEqual({ ok: false, code: "validation" });
     expect(post(runtime.context, signedEnvelope({
       payload: { ...payload, eligibilityStatus: "manual_review" }
