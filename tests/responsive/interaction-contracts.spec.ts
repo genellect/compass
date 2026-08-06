@@ -163,8 +163,8 @@ for (const scenario of [
 for (const path of ["/", "/INTRO_Interactive/", "/INTRO_Interactive/developers/"]) {
   test(`GitHub Portfolio link contract: ${path}`, async ({ page }) => {
     const runtimeErrors = await openRoute(page, path, { name: "github-link", width: 390, height: 844 });
-    const link = page.locator('a[href="https://github.com/my270yuto0413-cmyk"]').first();
-    await expect(link).toHaveAttribute("href", "https://github.com/my270yuto0413-cmyk");
+    const link = page.locator('a[href="https://github.com/genellect"]').first();
+    await expect(link).toHaveAttribute("href", "https://github.com/genellect");
     await expect(link).toContainText("GitHub Portfolio");
     await link.scrollIntoViewIfNeeded();
     await expect(link).toBeVisible();

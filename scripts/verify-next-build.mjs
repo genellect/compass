@@ -251,7 +251,7 @@ for (const expected of [
   'target.classList.add("is-visible")'
 ]) expectIncludes(legacyInteractionComponent, expected, "Failure-safe reveal fallback");
 
-const githubProfileUrl = "https://github.com/my270yuto0413-cmyk";
+const githubProfileUrl = "https://github.com/genellect";
 for (const [html, label] of [
   [official, "Official founder profile"],
   [interactive, "Interactive developer profile"],
@@ -375,7 +375,7 @@ for (const expected of [
   "COMPASS Interactive紹介サイト",
   "未来戦略ライブラリ紹介サイト",
   "Community参加フォーム",
-  "https://github.com/my270yuto0413-cmyk/compass",
+  "https://github.com/genellect/compass",
   'aria-label="COMPASS source code on GitHub"',
   'class="footer-source-link"',
   "<span>Source</span>",

@@ -1,7 +1,7 @@
 # COMPASS Public Architecture
 
 Status: Canonical
-Scope: `my270yuto0413-cmyk/compass`公開repositoryと接続systemの境界
+Scope: `genellect/compass`公開repositoryと接続systemの境界
 Last source verification: 2026-08-03 (`origin/main` `7d65cfa230e5d20acbe4b72f971b07b8325827f1`)
 
 未来戦略ライブラリの公開リポジトリ前提の認証・PII・artifact境界は
