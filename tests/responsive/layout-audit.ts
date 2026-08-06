@@ -369,13 +369,18 @@ export async function auditRenderedPage(
               `FSL short-desktop title top ${titleRect.top.toFixed(1)} is too close to header ${headerBottom.toFixed(1)}`,
             );
           }
-          const minimumTitleSize = viewport.width >= 1180 ? 76 : 58;
+          // The approved editorial Hero deliberately uses a calmer headline than
+          // the former display-heavy composition. Keep a meaningful readability
+          // floor without forcing the retired visual scale back into production.
+          const minimumTitleSize = viewport.width >= 1180 ? 58 : 50;
           if (viewport.height <= 760 && titleSize < minimumTitleSize) {
             violations.push(`FSL short-desktop title is too small: ${titleSize.toFixed(1)}px`);
           }
+          // The knowledge horizon is sized against the available first-fold
+          // height so short Windows browser viewports retain the complete CTA.
           const minimumGraphicWidth = viewport.width >= 1180
-            ? Math.min(620, viewport.height * 0.92)
-            : Math.min(500, viewport.height * 0.8, viewport.width * 0.52);
+            ? Math.min(600, viewport.height * 0.84)
+            : Math.min(500, viewport.height * 0.78, viewport.width * 0.49);
           if (viewport.height <= 760 && graphicRect && graphicRect.width < minimumGraphicWidth) {
             violations.push(`FSL short-desktop graphic is too small: ${graphicRect.width.toFixed(1)}px`);
           }

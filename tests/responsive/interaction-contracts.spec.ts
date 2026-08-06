@@ -263,7 +263,7 @@ for (const viewport of [
           gold: root.getPropertyValue("--admin-gold").trim(),
         },
         headerBackground: header ? getComputedStyle(header).backgroundColor : "",
-        workspaceBackground: workspace ? getComputedStyle(workspace).backgroundImage : "",
+        workspaceBackground: workspace ? getComputedStyle(workspace).backgroundColor : "",
         tableHeaderPosition: tableHeader ? getComputedStyle(tableHeader).position : "",
         tableClientWidth: tableWrap?.clientWidth ?? 0,
         tableScrollWidth: tableWrap?.scrollWidth ?? 0,
@@ -281,7 +281,7 @@ for (const viewport of [
     const headerAlpha = Number(headerChannels?.[4] ?? 1);
     expect(headerAlpha).toBeGreaterThanOrEqual(0.94);
     expect(headerAlpha).toBeLessThanOrEqual(1);
-    expect(report.workspaceBackground).toContain("linear-gradient");
+    expect(report.workspaceBackground).toBe("rgb(245, 246, 247)");
     expect(report.tableHeaderPosition).toBe("sticky");
     expect(report.pageOverflow).toBeLessThanOrEqual(1);
     if (viewport.width === 390) {
