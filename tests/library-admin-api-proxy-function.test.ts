@@ -147,6 +147,38 @@ describe("Library administrator same-origin API proxy", () => {
     );
   });
 
+  it("retries one transient cold-start failure for idempotent GET requests", async () => {
+    const fetchMock = vi.fn()
+      .mockResolvedValueOnce(new Response(null, { status: 500 }))
+      .mockResolvedValueOnce(new Response(
+        JSON.stringify({ authorized: true, role: "viewer" }),
+        { status: 200, headers: { "Content-Type": "application/json" } }
+      ));
+    vi.stubGlobal("fetch", fetchMock);
+
+    const response = await onRequest({ env, request: proxyRequest("/session") });
+
+    expect(response.status).toBe(200);
+    expect(await response.json()).toEqual({ authorized: true, role: "viewer" });
+    expect(fetchMock).toHaveBeenCalledTimes(2);
+  });
+
+  it("never retries non-idempotent POST requests", async () => {
+    const fetchMock = vi.fn().mockResolvedValue(new Response(null, { status: 503 }));
+    vi.stubGlobal("fetch", fetchMock);
+
+    const response = await onRequest({
+      env,
+      request: proxyRequest("/applications/search", {
+        method: "POST",
+        body: JSON.stringify({ offset: 0, limit: 25 })
+      })
+    });
+
+    expect(response.status).toBe(503);
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+  });
+
   it.each([
     ["GET", "/applications/search"],
     ["POST", "/session"],
