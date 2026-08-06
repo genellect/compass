@@ -57,7 +57,7 @@ export function verifyLibraryProductionArtifacts({
   requireNoSecrets(deploymentHeaders, "Generated deployment headers");
 
   requireIncludes(registrationHtml, "GOOGLE API", "Library registration HTML");
-  requireIncludes(adminHtml, "管理者として認証", "Library administrator HTML");
+  requireIncludes(adminHtml, "管理者ログイン", "Library administrator HTML");
 
   for (const marker of [
     "LOCAL MOCK",
@@ -128,7 +128,7 @@ export async function verifyLibraryProductionBuild({
   const config = requireLibraryProductionReleaseConfig(environment);
   const out = path.resolve(outputDirectory);
   const artifactPaths = await collectProductionTextArtifacts(out);
-  const [registrationHtml, adminHtml, deploymentHeaders, routes, artifactContents] = await Promise.all([
+  const [registrationHtml, adminHtml, deploymentHeaders, routes, workerSource, artifactContents] = await Promise.all([
     readFile(path.join(out, "library-registration", "index.html"), "utf8"),
     readFile(
       path.join(out, "library-registration", "admin", "index.html"),
@@ -136,6 +136,7 @@ export async function verifyLibraryProductionBuild({
     ),
     readFile(path.join(out, "_headers"), "utf8"),
     readFile(path.join(out, "_routes.json"), "utf8").then(JSON.parse),
+    readFile(path.join(out, "_worker.js"), "utf8"),
     Promise.all(artifactPaths.map(async (artifact) => ({
       label: path.relative(root, artifact),
       contents: await readFile(artifact, "utf8")
@@ -161,6 +162,16 @@ export async function verifyLibraryProductionBuild({
   if (JSON.stringify(routes) !== JSON.stringify(expectedRoutes)) {
     throw new Error("Full production Function routes are not the exact reviewed set.");
   }
+  requireIncludes(
+    workerSource,
+    "/library-registration/admin/api",
+    "Cloudflare advanced-mode Worker"
+  );
+  requireIncludes(
+    workerSource,
+    'env["ASSETS"].fetch',
+    "Cloudflare advanced-mode Worker"
+  );
   return {
     ...config,
     ...verification,

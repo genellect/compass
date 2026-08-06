@@ -1,5 +1,7 @@
-import { readdir, rename, rm } from "node:fs/promises";
+import { spawnSync } from "node:child_process";
+import { copyFile, mkdir, mkdtemp, readdir, rename, rm } from "node:fs/promises";
 import path from "node:path";
+import { fileURLToPath } from "node:url";
 import { resolveCloudflareGitBuildEnvironment } from
   "./cloudflare-git-build-environment.mjs";
 import { prepareLibraryFullProductionArtifact } from
@@ -44,6 +46,59 @@ async function requireExactProductionFunctions(root) {
   }
 }
 
+async function buildAdvancedModeWorker(root, outputDirectory) {
+  const temporaryParent = path.join(root, "outputs");
+  await mkdir(temporaryParent, { recursive: true });
+  const temporaryOutput = await mkdtemp(
+    path.join(temporaryParent, ".cloudflare-functions-")
+  );
+  const wranglerEntry = fileURLToPath(
+    new URL("../node_modules/wrangler/bin/wrangler.js", import.meta.url)
+  );
+
+  try {
+    const result = spawnSync(process.execPath, [
+      wranglerEntry,
+      "pages",
+      "functions",
+      "build",
+      path.join(root, "functions"),
+      "--outdir",
+      temporaryOutput,
+      "--fallback-service",
+      "ASSETS",
+      "--build-output-directory",
+      outputDirectory
+    ], {
+      cwd: root,
+      env: {
+        ...process.env,
+        WRANGLER_WRITE_LOGS: "false"
+      },
+      encoding: "utf8"
+    });
+    if (result.error) throw result.error;
+    if (result.status !== 0) {
+      throw new Error(
+        `Cloudflare Pages Functions build failed with exit code ${result.status}: `
+          + `${result.stderr || result.stdout}`.trim()
+      );
+    }
+    const builtFiles = (await readdir(temporaryOutput)).sort();
+    if (JSON.stringify(builtFiles) !== JSON.stringify(["index.js"])) {
+      throw new Error(
+        `Cloudflare Functions build produced unexpected files: ${builtFiles.join(", ")}.`
+      );
+    }
+    await copyFile(
+      path.join(temporaryOutput, "index.js"),
+      path.join(outputDirectory, "_worker.js")
+    );
+  } finally {
+    await rm(temporaryOutput, { recursive: true, force: true });
+  }
+}
+
 export async function finalizeCloudflareGitBuild({
   root = process.cwd(),
   environment = process.env
@@ -64,17 +119,18 @@ export async function finalizeCloudflareGitBuild({
       source: path.join(root, "out"),
       stage
     });
+    await replaceOutputWithStage(root, stage);
+    await requireExactProductionFunctions(root);
+    await buildAdvancedModeWorker(root, path.join(root, "out"));
     await verifyLibraryProductionBuild({
       root,
       environment: profile.environment,
-      outputDirectory: stage
+      outputDirectory: path.join(root, "out")
     });
-    await replaceOutputWithStage(root, stage);
-    await requireExactProductionFunctions(root);
     return {
       mode: "production",
       finalized: true,
-      retainedFiles: prepared.retainedSiteFiles
+      retainedFiles: prepared.retainedSiteFiles + 1
     };
   }
 

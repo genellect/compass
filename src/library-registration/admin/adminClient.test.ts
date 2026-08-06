@@ -590,7 +590,8 @@ describe("Phase 8B admin client", () => {
     expect(source).toContain('className="admin-row-number"');
     expect(source).toContain('className="admin-table-wrap admin-roster-table-wrap"');
     expect(source).not.toContain('aria-live="polite"');
-    expect(source).toContain("ここで行った操作は保存されず、");
+    expect(source).toContain('<h1 id="admin-title">管理者ログイン</h1>');
+    expect(source).not.toContain("ここで行った操作は保存されず、");
     expect(source).not.toContain("閲覧モードで開きます。");
     expect(source).not.toContain('id="mock-admin-role"');
     expect(source).not.toContain("表示する管理範囲");
@@ -618,25 +619,18 @@ describe("Phase 8B admin client", () => {
     }
   });
 
-  it("uses the COMPASS visual system without changing the roster-first layout", async () => {
+  it("uses a compact neutral interface without changing the roster-first layout", async () => {
     const [source, styles] = await Promise.all([
       readFile(new URL("./AdminDashboard.tsx", import.meta.url), "utf8"),
       readFile(new URL("./admin.css", import.meta.url), "utf8")
     ]);
 
-    for (const token of [
-      "--admin-night-950: #020812",
-      "--admin-night-800: #071629",
-      "--admin-cyan: #66e6ef",
-      "--admin-gold: #e7bc5d"
-    ]) {
-      expect(styles).toContain(token);
-    }
-    expect(styles).toMatch(/\.admin-workspace\s*\{[\s\S]*?linear-gradient\(rgba\(27, 92, 121, 0\.055\) 1px, transparent 1px\)/);
-    expect(styles).toMatch(/\.admin-login::after\s*\{[\s\S]*?linear-gradient\(90deg, transparent, var\(--admin-cyan\), var\(--admin-gold\), transparent\)/);
-    expect(styles).toMatch(/\.admin-header\s*\{[\s\S]*?background: rgba\(2, 8, 18, 0\.97\)/);
-    expect(styles).toContain(".admin-brand-mark span::before");
-    expect(source).toContain('<span className="admin-brand-mark" aria-hidden="true"><span /></span>');
+    expect(styles).toContain("/* Compact production administrator interface. */");
+    expect(styles).toMatch(/\.admin-login\s*\{[\s\S]*?width: min\(400px, calc\(100% - 32px\)\)/);
+    expect(styles).toMatch(/\.admin-login::before,[\s\S]*?\.admin-login::after \{ display: none; \}/);
+    expect(styles).toMatch(/\.admin-header\s*\{[\s\S]*?background: #fff/);
+    expect(styles).toMatch(/\.admin-table-wrap,[\s\S]*?box-shadow: none/);
+    expect(source).not.toContain('className="admin-brand-mark"');
     expect(source).toContain('useState<DashboardTab>("members")');
   });
 

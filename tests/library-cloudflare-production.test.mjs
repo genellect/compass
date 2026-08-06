@@ -330,7 +330,7 @@ test("Cloudflare Git production finalization retains the protected administrator
     );
     await writeFile(
       join(root, "out", "library-registration", "admin", "index.html"),
-      '<main><h2>管理者として認証</h2></main>',
+      '<main><h1>管理者ログイン</h1></main>',
       "utf8"
     );
     await rm(
@@ -347,7 +347,7 @@ test("Cloudflare Git production finalization retains the protected administrator
     });
     await writeFile(
       join(root, "functions", "library-registration", "admin", "api", "[[path]].ts"),
-      "export const admin=true;",
+      "export async function onRequest(){return new Response('admin')}",
       "utf8"
     );
 
@@ -359,6 +359,9 @@ test("Cloudflare Git production finalization retains the protected administrator
     assert.equal(result.finalized, true);
     await access(join(root, "out", "library-registration", "index.html"));
     await access(join(root, "out", "library-registration", "admin", "index.html"));
+    const worker = await readFile(join(root, "out", "_worker.js"), "utf8");
+    assert.match(worker, /\/library-registration\/admin\/api/);
+    assert.match(worker, /env\["ASSETS"\]\.fetch/);
     await access(join(root, "functions", "api", "community-registration.ts"));
     await access(join(root, "functions", "api", "contact.ts"));
     await access(join(
