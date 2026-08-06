@@ -104,7 +104,15 @@ export async function finalizeCloudflareGitBuild({
   environment = process.env
 } = {}) {
   const profile = resolveCloudflareGitBuildEnvironment(environment);
-  if (profile.mode === "local") return { mode: "local", finalized: false };
+  if (profile.mode === "local") {
+    if (String(environment.LIBRARY_RELEASE_TARGET ?? "").trim() !== "production") {
+      return { mode: "local", finalized: false };
+    }
+
+    await requireExactProductionFunctions(root);
+    await buildAdvancedModeWorker(root, path.join(root, "out"));
+    return { mode: "local-production", finalized: true, retainedFiles: null };
+  }
 
   if (profile.mode === "production") {
     const stage = path.join(
