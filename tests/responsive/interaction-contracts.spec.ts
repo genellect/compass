@@ -273,7 +273,14 @@ for (const viewport of [
     });
 
     expect(report.tokens).toEqual({ night: "#020812", cyan: "#66e6ef", gold: "#e7bc5d" });
-    expect(report.headerBackground).toBe("rgba(2, 8, 18, 0.97)");
+    const headerChannels = report.headerBackground.match(
+      /^rgba?\(\s*(\d+),\s*(\d+),\s*(\d+)(?:,\s*([\d.]+))?\s*\)$/,
+    );
+    expect(headerChannels, "administrator header must retain the COMPASS night color").not.toBeNull();
+    expect(headerChannels?.slice(1, 4).map(Number)).toEqual([2, 8, 18]);
+    const headerAlpha = Number(headerChannels?.[4] ?? 1);
+    expect(headerAlpha).toBeGreaterThanOrEqual(0.94);
+    expect(headerAlpha).toBeLessThanOrEqual(1);
     expect(report.workspaceBackground).toContain("linear-gradient");
     expect(report.tableHeaderPosition).toBe("sticky");
     expect(report.pageOverflow).toBeLessThanOrEqual(1);

@@ -99,6 +99,34 @@ async function buildAdvancedModeWorker(root, outputDirectory) {
   }
 }
 
+export async function finalizeFullProductionArtifact({
+  root = process.cwd(),
+  environment = process.env,
+  commit = "rehearsal"
+} = {}) {
+  const stage = path.join(
+    root,
+    "outputs",
+    "library-full-production",
+    commit,
+    "site"
+  );
+  const prepared = await prepareLibraryFullProductionArtifact({
+    root,
+    source: path.join(root, "out"),
+    stage
+  });
+  await replaceOutputWithStage(root, stage);
+  await requireExactProductionFunctions(root);
+  await buildAdvancedModeWorker(root, path.join(root, "out"));
+  await verifyLibraryProductionBuild({
+    root,
+    environment,
+    outputDirectory: path.join(root, "out")
+  });
+  return { retainedFiles: prepared.retainedSiteFiles + 1 };
+}
+
 export async function finalizeCloudflareGitBuild({
   root = process.cwd(),
   environment = process.env
@@ -107,30 +135,15 @@ export async function finalizeCloudflareGitBuild({
   if (profile.mode === "local") return { mode: "local", finalized: false };
 
   if (profile.mode === "production") {
-    const stage = path.join(
-      root,
-      "outputs",
-      "library-full-production",
-      profile.metadata.commit,
-      "site"
-    );
-    const prepared = await prepareLibraryFullProductionArtifact({
-      root,
-      source: path.join(root, "out"),
-      stage
-    });
-    await replaceOutputWithStage(root, stage);
-    await requireExactProductionFunctions(root);
-    await buildAdvancedModeWorker(root, path.join(root, "out"));
-    await verifyLibraryProductionBuild({
+    const finalized = await finalizeFullProductionArtifact({
       root,
       environment: profile.environment,
-      outputDirectory: path.join(root, "out")
+      commit: profile.metadata.commit
     });
     return {
       mode: "production",
       finalized: true,
-      retainedFiles: prepared.retainedSiteFiles + 1
+      retainedFiles: finalized.retainedFiles
     };
   }
 
@@ -158,4 +171,20 @@ export async function finalizeCloudflareGitBuild({
     finalized: true,
     retainedFiles: prepared.retainedFiles
   };
+}
+
+const invokedAsScript = process.argv[1]
+  && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url);
+if (invokedAsScript) {
+  if (!process.argv.includes("--production-rehearsal")) {
+    throw new Error("Direct invocation requires --production-rehearsal.");
+  }
+  const finalized = await finalizeFullProductionArtifact({
+    root: process.cwd(),
+    environment: process.env,
+    commit: "rehearsal"
+  });
+  console.log(
+    `Finalized production-shaped rehearsal artifact: ${finalized.retainedFiles} site files retained.`
+  );
 }
