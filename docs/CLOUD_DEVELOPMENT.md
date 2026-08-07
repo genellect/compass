@@ -72,18 +72,7 @@ Windows hostにNode.jsを入れたくない場合は、VS Codeが提供するDev
 
 Dev Container CLI `0.88.0`を固定して使用する。必要なのはDocker EngineまたはDocker Desktopと、CLI起動用のNode.jsだけである。
 
-PowerShell:
-
-```powershell
-powershell.exe -NoProfile -ExecutionPolicy Bypass -File scripts/devcontainer.ps1 -Action config
-powershell.exe -NoProfile -ExecutionPolicy Bypass -File scripts/devcontainer.ps1 -Action up
-powershell.exe -NoProfile -ExecutionPolicy Bypass -File scripts/devcontainer.ps1 -Action setup
-powershell.exe -NoProfile -ExecutionPolicy Bypass -File scripts/devcontainer.ps1 -Action doctor
-powershell.exe -NoProfile -ExecutionPolicy Bypass -File scripts/devcontainer.ps1 -Action shell
-powershell.exe -NoProfile -ExecutionPolicy Bypass -File scripts/devcontainer.ps1 -Action check
-```
-
-Bash:
+Bash（Linux / macOS / Dev Container / Codespaces）:
 
 ```bash
 ./scripts/devcontainer.sh config
@@ -92,6 +81,17 @@ Bash:
 ./scripts/devcontainer.sh doctor
 ./scripts/devcontainer.sh shell
 ./scripts/devcontainer.sh check
+```
+
+PowerShell（Windows host）:
+
+```powershell
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File scripts/devcontainer.ps1 -Action config
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File scripts/devcontainer.ps1 -Action up
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File scripts/devcontainer.ps1 -Action setup
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File scripts/devcontainer.ps1 -Action doctor
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File scripts/devcontainer.ps1 -Action shell
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File scripts/devcontainer.ps1 -Action check
 ```
 
 | Action | 内容 |
@@ -121,7 +121,31 @@ npm run build
 npm run verify
 ```
 
-UI、navigation、font、breakpoint、animationを変更した場合は`docs/responsive-browser-qa.md`に従う。FastAPIはVS Code task **Library: start FastAPI**、composite PostgreSQL環境は既存`compose.library-dev.yaml`とrunbookを使用する。
+UI、navigation、font、breakpoint、animationを変更した場合はcloudで実行可能なresponsive gateを使う。
+
+```bash
+npm run check:responsive:cloud
+```
+
+FastAPIはVS Code task **Library: start FastAPI**、composite PostgreSQL環境は`compose.library-dev.yaml`と次のwrapperを使用する。wrapperはCompose project、network、volume、ownership label、localhost portを固定し、COMPASS Interactiveと分離する。
+
+```bash
+./scripts/library-docker-dev.sh Validate
+./scripts/library-docker-dev.sh Up
+./scripts/library-docker-dev.sh Test
+./scripts/library-docker-dev.sh Down
+```
+
+`scripts/library-docker-dev.sh`と`scripts/library-docker-dev.ps1`は同じactionとisolation assertionを持つ。片方にactionを追加した場合は両方へ反映する。
+
+### cloudで実行しないもの
+
+| 対象 | 理由 | 判定元 |
+|---|---|---|
+| `npm run check:responsive:full` | visual regression baselineがWindows生成の`*-win32.png` | GitHub Actions `Responsive Quality Gate` |
+| `npm run test:responsive:update-snapshots` | Windows baselineの横にLinux baselineを作ってしまう | UI承認後にWindowsで人が実行 |
+| `npm run rehearse:library-production` | PowerShell script | GitHub Actions `Library Security Quality Gate` |
+| `npm run deploy:*` | Production side effect | ユーザーの明示承認を伴う別workflow |
 
 ## Codexを主要開発環境にする
 
@@ -150,16 +174,38 @@ bash .codex/maintenance.sh
 
 Codex CloudはDev Containerそのものを起動する経路ではないため、Node.jsは`.node-version`、Pythonは`3.12`へ固定する。DockerやProduction接続を必要としない通常の実装・review・非live testに使用する。
 
+Codex Cloud環境では`.devcontainer/doctor.sh`のDev Container専用checkが失敗する。これは想定挙動であり、doctorは全項目を報告してからexit 1する。Codex Cloudの受入基準は`npm run cloud:check`である。
+
+## Claude Codeから参加する
+
+Claude CodeはCodexを主環境とする前提の上で、review・focusした微修正・監査に使用する副次的なagentである。`CLAUDE.md` → `AGENTS.md`の順に読み、Codexと同じ検証コマンドを使う。
+
+repository側で共有するもの:
+
+| 資産 | 内容 |
+|---|---|
+| `CLAUDE.md` | 入口。`AGENTS.md`へ委譲し、gateとworkspace資産だけを示す |
+| `.claude/settings.json.example` | SessionStart hook登録と権限境界のtemplate。`.claude/settings.json`へcopyして有効化する |
+| `.claude/hooks/session-start.sh` | cloud session開始時にnpm・Playwright・Library API環境を用意する |
+| `.claude/agents/` | read-onlyの`repo-mapper`、`quality-reviewer`、`security-reviewer` |
+| `.claude/commands/` | `/cloud-check`、`/responsive-check`、`/handoff` |
+
+`.claude/settings.json`はrepositoryへcommitしていない。権限のallowlistを共有するかは各利用者の判断とし、有効化する場合は`.claude/settings.json.example`の全ruleをreviewしてからcopyする。`deny`はAGENTS.mdの安全境界（deploy、wrangler secret、terraform apply、force push、`.env*`とcredentialの読み取り）をpermission層へ写したものである。
+
+Claude CodeのsubscriptionログインはGitへ保存しない。`.claude/settings.local.json`は個人設定であり共有しない。
+
 ## 複数エージェント運用
 
-| Agent / IDE | 読む指示 | 標準コマンド |
-|---|---|---|
-| Codex | `AGENTS.md`, `.codex/config.toml` | `npm run dev:cloud`, `npm run cloud:check` |
-| Claude Code | `CLAUDE.md` → `AGENTS.md` | 同上 |
-| GitHub Copilot | `.github/copilot-instructions.md` → `AGENTS.md` | 同上 |
-| VS Code agent | workspace recommendations + `AGENTS.md` | VS Code tasks |
+| Agent / IDE | 読む指示 | 標準コマンド | repository資産 |
+|---|---|---|---|
+| Codex（主） | `AGENTS.md`, `.codex/config.toml` | `npm run dev:cloud`, `npm run cloud:check` | `.codex/agents/` |
+| Claude Code（副） | `CLAUDE.md` → `AGENTS.md` | 同上 | `.claude/agents/`, `.claude/commands/` |
+| GitHub Copilot | `.github/copilot-instructions.md` → `AGENTS.md` | 同上 | — |
+| VS Code agent | workspace recommendations + `AGENTS.md` | VS Code tasks | `.vscode/tasks.json` |
 
-複数のwrite-capable agentを同じbranchまたはworktreeで同時実行しない。並列実装はagentごとにbranch/worktreeを分離し、main agentがdiff、test、commitを統合する。並列reviewは`.codex/agents/`のread-only agentを使用できる。
+複数のwrite-capable agentを同じbranchまたはworktreeで同時実行しない。並列実装はagentごとにbranch/worktreeを分離し、main agentがdiff、test、commitを統合する。並列reviewは`.codex/agents/`または`.claude/agents/`のread-only agentを使用できる。両者は同じreview観点を持つため、片方を更新した場合はもう片方も更新する。
+
+agent別の設定fileは実行設定のみを持ち、方針を複製しない。`AGENTS.md`と食い違った場合は`AGENTS.md`を優先し、差分を報告する。
 
 各agentの個人認証はGitへ保存しない。Codex、Claude Code、GitHub Copilotのsubscription loginは各サービスの安全な認証UIで行う。
 
