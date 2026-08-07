@@ -1,0 +1,71 @@
+{
+  "name": "COMPASS Cloud Development",
+  "image": "mcr.microsoft.com/devcontainers/javascript-node:1-22-bookworm",
+  "features": {
+    "ghcr.io/devcontainers/features/node:1": {
+      "version": "22.16.0",
+      "pnpmVersion": "11.20.0"
+    },
+    "ghcr.io/devcontainers/features/docker-in-docker:4": {
+      "version": "29.7.1",
+      "dockerDashComposeVersion": "latest"
+    },
+    "ghcr.io/devcontainers/features/github-cli:1": {
+      "version": "2.97.0"
+    },
+    "ghcr.io/devcontainers/features/copilot-cli:1": {
+      "version": "1.0.78"
+    },
+    "ghcr.io/devcontainers/features/python:1": {
+      "version": "3.12",
+      "toolsToInstall": "uv==0.11.28"
+    }
+  },
+  "forwardPorts": [3000, 8000, 8788],
+  "portsAttributes": {
+    "3000": {
+      "label": "COMPASS Next.js",
+      "onAutoForward": "openPreview"
+    },
+    "8000": {
+      "label": "Library FastAPI",
+      "onAutoForward": "notify"
+    },
+    "8788": {
+      "label": "Cloudflare Pages local runtime",
+      "onAutoForward": "notify"
+    }
+  },
+  "mounts": [
+    "source=compass-cloud-dev-node-modules,target=${containerWorkspaceFolder}/node_modules,type=volume",
+    "source=compass-cloud-dev-npm-cache,target=/home/node/.npm,type=volume",
+    "source=compass-cloud-dev-user-cache,target=/home/node/.cache,type=volume"
+  ],
+  "postCreateCommand": "bash .devcontainer/post-create.sh",
+  "remoteEnv": {
+    "NEXT_TELEMETRY_DISABLED": "1",
+    "NPM_CONFIG_UPDATE_NOTIFIER": "false",
+    "PYTHONDONTWRITEBYTECODE": "1"
+  },
+  "customizations": {
+    "codespaces": {
+      "openFiles": [
+        "docs/CLOUD_DEVELOPMENT.md",
+        "AGENTS.md"
+      ]
+    },
+    "vscode": {
+      "extensions": [
+        "openai.chatgpt",
+        "github.copilot",
+        "github.copilot-chat",
+        "anthropic.claude-code",
+        "dbaeumer.vscode-eslint",
+        "esbenp.prettier-vscode",
+        "ms-azuretools.vscode-docker",
+        "ms-python.python",
+        "ms-python.vscode-pylance"
+      ]
+    }
+  }
+}
