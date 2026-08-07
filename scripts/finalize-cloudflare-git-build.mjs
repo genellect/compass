@@ -85,13 +85,17 @@ async function buildAdvancedModeWorker(root, outputDirectory) {
       );
     }
     const builtFiles = (await readdir(temporaryOutput)).sort();
-    if (JSON.stringify(builtFiles) !== JSON.stringify(["index.js"])) {
+    const workerEntry = builtFiles.length === 1
+      && ["index.js", "_worker.js"].includes(builtFiles[0])
+      ? builtFiles[0]
+      : null;
+    if (!workerEntry) {
       throw new Error(
         `Cloudflare Functions build produced unexpected files: ${builtFiles.join(", ")}.`
       );
     }
     await copyFile(
-      path.join(temporaryOutput, "index.js"),
+      path.join(temporaryOutput, workerEntry),
       path.join(outputDirectory, "_worker.js")
     );
   } finally {
