@@ -30,7 +30,8 @@
     "deploy:cloudflare:library-ui-review": "powershell.exe -NoProfile -ExecutionPolicy Bypass -File scripts/deploy-library-cloudflare-ui-review.ps1",
     "deploy:cloudflare:library-production": "powershell.exe -NoProfile -ExecutionPolicy Bypass -File scripts/deploy-library-cloudflare-registration-production.ps1",
     "check": "npm run verify:public-source && npm run test && npm run typecheck && npm run build && npm run verify && npm run test:responsive",
-    "cloud:check": "npm run check"
+    "cloud:check": "npm run check",
+    "dev:doctor": "bash .devcontainer/doctor.sh"
   },
   "dependencies": {
     "next": "16.2.11",

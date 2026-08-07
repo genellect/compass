@@ -101,6 +101,7 @@ commit、push、PR、Cloudflare設定、GAS deployment、Production公開は、�
 - 既存PCの`.env*`、credential、Production dataをcloud環境へcopyしない。
 - 通常のcloud taskはnon-live testのみとし、Production form、実email、deploy、migration、secret変更を実行しない。
 - Codex taskは完了前に該当testを実行し、branchへcommitしてDraft PRでreview可能な状態にする。
+- Dev Containerの初回作成後と環境定義変更後は`npm run dev:doctor`を実行し、手作業のglobal package導入で不足を隠さない。
 
 ## Agent Interoperability
 

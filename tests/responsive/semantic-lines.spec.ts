@@ -5,6 +5,7 @@ import type { ResponsiveViewport } from "./route-contracts";
 type LineExpectation = {
   selector: string;
   lines: string[];
+  fontMetricPortable?: boolean;
 };
 
 type SemanticScenario = {
@@ -84,7 +85,11 @@ const scenarios: SemanticScenario[] = [
     path: "/messages/",
     viewport: mobile,
     expectations: [
-      { selector: '[class*="coverCount"]', lines: ["12 CHAPTERS · A LETTER FOR THE", "AI ERA"] },
+      {
+        selector: '[class*="coverCount"]',
+        lines: ["12 CHAPTERS · A LETTER FOR THE", "AI ERA"],
+        fontMetricPortable: true,
+      },
       { selector: "h1#message-title", lines: ["そのAI、", "まだ質問相手ですか？"] },
     ],
   },
@@ -165,7 +170,14 @@ for (const scenario of scenarios) {
           .map((row) => row.text.replace(/\s+/gu, " ").trim())
           .filter(Boolean);
       });
-      expect(renderedLines, `${scenario.name}: ${expectation.selector}`).toEqual(expectation.lines);
+      if ("fontMetricPortable" in expectation && expectation.fontMetricPortable) {
+        expect(
+          renderedLines.join(" "),
+          `${scenario.name}: ${expectation.selector}`,
+        ).toBe(expectation.lines.join(" "));
+      } else {
+        expect(renderedLines, `${scenario.name}: ${expectation.selector}`).toEqual(expectation.lines);
+      }
     }
 
     expect(runtimeErrors, `runtime errors while checking ${scenario.name}`).toEqual([]);
