@@ -16,8 +16,10 @@ COMPASSは、北里大学薬学部を起点として、公開Web、教育コン�
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-17-4169E1?logo=postgresql&logoColor=white)](https://www.postgresql.org/)
 [![Cloudflare](https://img.shields.io/badge/Cloudflare-Pages_%2B_Functions-F38020?logo=cloudflare&logoColor=white)](https://www.cloudflare.com/)
 [![Google Cloud](https://img.shields.io/badge/Google_Cloud-Cloud_Run-4285F4?logo=googlecloud&logoColor=white)](https://cloud.google.com/run)
+[![Open in Codespaces](https://img.shields.io/badge/Open_in-GitHub_Codespaces-24292F?logo=github)](https://codespaces.new/genellect/compass?quickstart=1)
+[![Dev Container Contract](https://github.com/genellect/compass/actions/workflows/devcontainer-contract.yml/badge.svg?branch=main)](https://github.com/genellect/compass/actions/workflows/devcontainer-contract.yml)
 
-[公開Web](https://compass-official.pages.dev/) · [アーキテクチャ](#プラットフォーム構成) · [技術構成](#技術構成) · [クラウド開発（推奨）](#クラウド開発推奨) · [ローカル開発](#ローカル開発) · [検証](#検証) · [ドキュメント](#ドキュメント)
+[公開Web](https://compass-official.pages.dev/) · [Cloud-first Development](#cloud-first-development) · [アーキテクチャ](#プラットフォーム構成) · [技術構成](#技術構成) · [検証](#検証) · [ドキュメント](#ドキュメント)
 
 </div>
 
@@ -32,6 +34,67 @@ COMPASSは、北里大学薬学部を起点として、公開Web、教育コン�
 | **ビジョン** | **学びを、意思決定の力へ。** |
 | **活動領域** | Technology · Resources · Education · Community |
 | **公開導線** | Interactive · Library · Manifesto · Community |
+
+## Cloud-first Development
+
+> [!IMPORTANT]
+> **GitHubを正本とし、通常の開発はCodespacesまたはCodex Cloudで行います。** Windows、macOS、ブラウザ、VS Code、Codex、Claude Code、GitHub Copilotの入口が変わっても、同じDev Container、同じlockfile、同じdoctor、同じCIを使用します。ホストPC固有のNodeやDocker構成は、開発品質の前提にしません。
+
+### 2分で同一ワークスペースへ
+
+1. **[Open in GitHub Codespaces](https://codespaces.new/genellect/compass?quickstart=1)** を開く。
+2. `postCreateCommand`の完了を待つ。Node、npm/pnpm CLI、Python、uv、Docker、Compose、GitHub CLI、Copilot CLI、Playwright、API依存が自動で揃います。
+3. ターミナルで次を実行する。
+
+```bash
+npm run dev:doctor
+npm run dev:cloud
+```
+
+ポート`3000`が自動転送され、ブラウザ上で編集・実行できます。変更後は`npm run cloud:check`、commit、push、Pull Request作成まで同じワークスペース内で完結します。
+
+| Contract | Pinned / canonical value |
+|---|---|
+| Node.js | `22.16.0` |
+| Package manager | **npm + `package-lock.json`**（正本） |
+| Optional pnpm CLI | `11.20.0`（lockfile移行はしない） |
+| Python / uv | `3.12` / `0.11.28` |
+| Docker / Compose | `29.7.1` / `5.4.0`（リポジトリ専用daemon） |
+| GitHub CLI / Copilot CLI | `2.97.0` / `1.0.78` |
+| Workspace validation | `npm run dev:doctor` |
+| Repository gate | `npm run cloud:check` |
+
+### 開発サーフェス
+
+| Entry point | 推奨用途 | セットアップ |
+|---|---|---|
+| **GitHub Codespaces** | ブラウザ、別PC、チーム参加 | リンクを開くだけ |
+| **Codex Cloud** | Codexの主要実装・検証環境 | `.codex/setup.sh`をenvironment setupへ登録 |
+| **VS Code Dev Containers** | Dockerを使うWindows / macOS | `Reopen in Container` |
+| **Dev Container CLI** | 自動化、CI、他エージェント | `./scripts/devcontainer.sh up` |
+| **ChatGPT / GitHub mobile** | Codex進捗、PR、CIの監督 | Codex RemoteとGitHub通知を利用 |
+
+各リポジトリは独立したDocker daemon、`node_modules`、npm cache、ユーザーcacheを持ちます。COMPASS Interactiveや他案件のコンテナ、volume、ローカルDBとは共有しません。
+
+### Secrets are injected, never committed
+
+- 標準のWeb開発とmock buildは秘密情報なしで開始できます。
+- 秘密情報が必要な検証だけ、GitHub Codespaces repository/user secretsまたはCodex Cloud environment secretsから注入します。
+- `.env.local`、秘密鍵、API key、token、production dataをcommit、PR本文、ログ、チャットへ貼り付けません。
+- 公開リポジトリ境界と到達可能なGit履歴はCIで走査します。
+
+完全な操作手順、Docker経路、Codex/Claude/Copilotの共通運用、スマートフォン監督、復旧手順は[`docs/CLOUD_DEVELOPMENT.md`](docs/CLOUD_DEVELOPMENT.md)を参照してください。
+
+```mermaid
+flowchart LR
+    GitHub["GitHub repository\nsource of truth"] --> Workspace["Codespaces / Codex Cloud\nlocked Dev Container"]
+    Workspace --> Doctor["Environment doctor"]
+    Doctor --> Develop["Develop / run / test"]
+    Develop --> PR["Commit / Pull Request"]
+    PR --> CI["Same Node / npm / tests\nDev Container contract"]
+    CI --> Review["Browser / mobile review"]
+    Review --> GitHub
+```
 
 ## プラットフォーム構成
 
@@ -257,6 +320,8 @@ Google Driveへの権限付与と取消は、APIリクエスト内で直接完�
 通常の開発はGitHub CodespacesまたはCodex Cloudで開始します。Docker Desktop、VS Code Dev Containers、Dev Container CLIも同じ`.devcontainer/devcontainer.json`を使用するため、PCやエージェントが変わってもNode.js、Python、Docker、GitHub CLI、テスト環境は一致します。
 
 最短経路、Docker CLI経路、Codex／Claude Code／GitHub Copilotの共通運用、スマートフォンからの監督方法は[`docs/CLOUD_DEVELOPMENT.md`](docs/CLOUD_DEVELOPMENT.md)を参照してください。
+
+初回作成と環境変更後は`npm run dev:doctor`でruntime、CLI、独立Docker、依存を検証します。必要packageはDev Container Featureまたはrepository lockfileへ記録し、個人PCへの未記録global installで不足を回避しません。
 
 ---
 
