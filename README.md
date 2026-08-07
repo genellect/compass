@@ -19,13 +19,14 @@ COMPASSは、北里大学薬学部を起点として、公開Web、教育コン�
 [![Open in Codespaces](https://img.shields.io/badge/Open_in-GitHub_Codespaces-24292F?logo=github)](https://codespaces.new/genellect/compass?quickstart=1)
 [![Dev Container Contract](https://github.com/genellect/compass/actions/workflows/devcontainer-contract.yml/badge.svg?branch=main)](https://github.com/genellect/compass/actions/workflows/devcontainer-contract.yml)
 
-[公開Web](https://compass-official.pages.dev/) · [Cloud-first Development](#cloud-first-development) · [アーキテクチャ](#プラットフォーム構成) · [技術構成](#技術構成) · [検証](#検証) · [ドキュメント](#ドキュメント)
+[公開Web](https://compass-official.pages.dev/) · [Cloud-first Development](#cloud-first-development) · [アーキテクチャ](#プラットフォーム構成) · [技術スタック](#技術構成) · [検証](#検証) · [ドキュメント](#ドキュメント)
 
 </div>
 
 ---
 
-本リポジトリは、COMPASSの公開Web基盤と未来戦略ライブラリ登録基盤を管理します。ユーザーインターフェースだけでなく、Google Workspaceアカウントの検証、利用資格の判定、PostgreSQLによる状態管理、Google Drive閲覧権限の非同期処理、管理者運用、旧名簿移行、監査出力、運用文書、品質保証までを一貫して実装しています。
+COMPASS Platformは、公開Webから利用者管理基盤までを一貫して支える、Web・認証・権限管理の統合基盤です。Webフロントエンドだけでなく、Google Workspaceによる本人確認と利用資格判定、PostgreSQLでの状態管理、Google Driveの権限付与までを一つのリポジトリで扱っています。
+
 
 | | |
 |---|---|
@@ -38,264 +39,115 @@ COMPASSは、北里大学薬学部を起点として、公開Web、教育コン�
 ## Cloud-first Development
 
 > [!IMPORTANT]
-> **GitHubを正本とし、通常の開発はCodespacesまたはCodex Cloudで行います。** Windows、macOS、ブラウザ、VS Code、Codex、Claude Code、GitHub Copilotの入口が変わっても、同じDev Container、同じlockfile、同じdoctor、同じCIを使用します。ホストPC固有のNodeやDocker構成は、開発品質の前提にしません。
+> **開発環境はGitHub上で統一しています。**
+> 通常の開発にはGitHub CodespacesまたはCodex Cloudを使用します。Windows / macOS / ブラウザのどこから入っても、Dev Container、依存関係、環境チェック、CIは共通です。
 
-### 2分で同一ワークスペースへ
+### Codespacesで開始
 
 1. **[Open in GitHub Codespaces](https://codespaces.new/genellect/compass?quickstart=1)** を開く。
-2. `postCreateCommand`の完了を待つ。Node、npm/pnpm CLI、Python、uv、Docker、Compose、GitHub CLI、Copilot CLI、Playwright、API依存が自動で揃います。
-3. ターミナルで次を実行する。
+2. 初期セットアップの完了後、次を実行する。
 
 ```bash
 npm run dev:doctor
 npm run dev:cloud
 ```
 
-ポート`3000`が自動転送され、ブラウザ上で編集・実行できます。変更後は`npm run cloud:check`、commit、push、Pull Request作成まで同じワークスペース内で完結します。
+`3000`番ポートが転送され、そのままブラウザまたはVS Codeから開発できます。
 
-| Contract | Pinned / canonical value |
-|---|---|
-| Node.js | `22.16.0` |
-| Package manager | **npm + `package-lock.json`**（正本） |
-| Optional pnpm CLI | `11.20.0`（lockfile移行はしない） |
-| Python / uv | `3.12` / `0.11.28` |
-| Docker / Compose | `29.7.1` / `5.4.0`（リポジトリ専用daemon） |
-| GitHub CLI / Copilot CLI | `2.97.0` / `1.0.78` |
-| Workspace validation | `npm run dev:doctor` |
-| Repository gate | `npm run cloud:check` |
+変更後の確認は以下です。
 
-### 開発サーフェス
+```bash
+npm run cloud:check
+```
 
-| Entry point | 推奨用途 | セットアップ |
-|---|---|---|
-| **GitHub Codespaces** | ブラウザ、別PC、チーム参加 | リンクを開くだけ |
-| **Codex Cloud** | Codexの主要実装・検証環境 | `.codex/setup.sh`をenvironment setupへ登録 |
-| **VS Code Dev Containers** | Dockerを使うWindows / macOS | `Reopen in Container` |
-| **Dev Container CLI** | 自動化、CI、他エージェント | `./scripts/devcontainer.sh up` |
-| **ChatGPT / GitHub mobile** | Codex進捗、PR、CIの監督 | Codex RemoteとGitHub通知を利用 |
+commit、push、Pull RequestまでCodespaces内で完結します。
 
-各リポジトリは独立したDocker daemon、`node_modules`、npm cache、ユーザーcacheを持ちます。COMPASS Interactiveや他案件のコンテナ、volume、ローカルDBとは共有しません。
+| Environment              | Version / Command         |
+| ------------------------ | ------------------------- |
+| Node.js                  | `22.16.0`                 |
+| Package manager          | npm / `package-lock.json` |
+| pnpm CLI                 | `11.20.0`                 |
+| Python / uv              | `3.12` / `0.11.28`        |
+| Docker / Compose         | `29.7.1` / `5.4.0`        |
+| GitHub CLI / Copilot CLI | `2.97.0` / `1.0.78`       |
+| Environment check        | `npm run dev:doctor`      |
+| Full check               | `npm run cloud:check`     |
 
-### Secrets are injected, never committed
+### 開発環境
 
-- 標準のWeb開発とmock buildは秘密情報なしで開始できます。
-- 秘密情報が必要な検証だけ、GitHub Codespaces repository/user secretsまたはCodex Cloud environment secretsから注入します。
-- `.env.local`、秘密鍵、API key、token、production dataをcommit、PR本文、ログ、チャットへ貼り付けません。
-- 公開リポジトリ境界と到達可能なGit履歴はCIで走査します。
+| Environment                 | 用途                |
+| --------------------------- | ----------------- |
+| **GitHub Codespaces**       | ブラウザや別PCからのアクセス   |
+| **Codex Cloud**             | Codexによる実装        |
+| **VS Code Dev Containers**  | ローカルDocker環境での開発  |
+| **Dev Container CLI**       | CI・自動化            |
+| **ChatGPT / GitHub mobile** | PR・CI・Codexタスクの確認 |
 
-完全な操作手順、Docker経路、Codex/Claude/Copilotの共通運用、スマートフォン監督、復旧手順は[`docs/CLOUD_DEVELOPMENT.md`](docs/CLOUD_DEVELOPMENT.md)を参照してください。
+各リポジトリのコンテナ、`node_modules`、キャッシュ、ローカルDBは分離されています。COMPASS Interactiveや他プロジェクトの開発環境とは共有しません。
+
+### Secrets
+
+通常の開発とmock buildにはsecretを必要としません。
+
+秘密情報が必要な処理では、GitHub CodespacesまたはCodex CloudのSecretsを使用します。`.env.local`、秘密鍵、API key、token、production dataはリポジトリに含めません。
+
+詳細なセットアップ、Docker構成、Codex / Claude Code / Copilotからの利用方法、復旧手順は `docs/CLOUD_DEVELOPMENT.md` にまとめています。
 
 ```mermaid
 flowchart LR
-    GitHub["GitHub repository\nsource of truth"] --> Workspace["Codespaces / Codex Cloud\nlocked Dev Container"]
-    Workspace --> Doctor["Environment doctor"]
-    Doctor --> Develop["Develop / run / test"]
-    Develop --> PR["Commit / Pull Request"]
-    PR --> CI["Same Node / npm / tests\nDev Container contract"]
-    CI --> Review["Browser / mobile review"]
+    GitHub["GitHub"] --> Workspace["Codespaces / Codex Cloud"]
+    Workspace --> Doctor["Environment check"]
+    Doctor --> Develop["Develop / Test"]
+    Develop --> PR["Pull Request"]
+    PR --> CI["CI"]
+    CI --> Review["Review"]
     Review --> GitHub
 ```
 
-## プラットフォーム構成
-
-```mermaid
-flowchart LR
-    browser["Browser"]
-    pages["Cloudflare Pages<br/>Next.js Static Export"]
-    forms["Pages Functions<br/>Community / Contact"]
-    gas["Google Apps Script"]
-    identity["Google Identity Services"]
-    adminEdge["Cloudflare Access<br/>Admin API Proxy"]
-    publicApi["Cloud Run<br/>Public API"]
-    adminApi["Cloud Run<br/>Admin API"]
-    worker["Cloud Run<br/>Drive Worker"]
-    scheduler["Cloud Scheduler"]
-    migration["Cloud Run Job<br/>Migration"]
-    neon["Neon PostgreSQL"]
-    drive["Google Drive API"]
-    interactive["COMPASS Interactive<br/>Private Repository / Separate Deployment"]
-
-    browser --> pages
-    pages --> forms --> gas
-    pages --> identity --> publicApi
-    pages --> adminEdge --> adminApi
-    publicApi --> neon
-    adminApi --> neon
-    scheduler --> worker
-    worker --> neon
-    worker --> drive
-    migration --> neon
-    browser -. separate product .-> interactive
 ```
+### システム構成
 
-### 実行境界
+| Component               | 役割                            | Stack                                            |
+| ----------------------- | ----------------------------- | ------------------------------------------------ |
+| **Official Web**        | COMPASS公式サイト、Library案内、公開フォーム | Next.js / Cloudflare Pages                       |
+| **Community / Contact** | フォーム受付、不正送信対策、通知              | Pages Functions / Turnstile / Google Apps Script |
+| **Library API**         | Google認証、利用資格の確認、登録、利用状況の取得   | FastAPI / Cloud Run                              |
+| **Admin API**           | 利用者・申請管理、監査、データ出力             | FastAPI / Cloud Run / Cloudflare Access          |
+| **Drive Worker**        | Google Driveの閲覧権限付与・取消        | Cloud Run / Cloud Scheduler                      |
+| **Migration**           | DB migration、role設定、既存データの移行  | Alembic / Cloud Run Jobs                         |
+| **Database**            | 利用者、申請、権限、処理履歴、監査ログ           | Neon PostgreSQL                                  |
 
-| Surface | 主な責務 | Runtime |
-|---|---|---|
-| **Official Web** | ブランド、公開情報、Library紹介、Manifesto、公開フォーム | Next.js / Cloudflare Pages |
-| **Community / Contact** | 不正送信対策、入力検証、通知処理 | Pages Functions / Turnstile / Google Apps Script |
-| **Library Public API** | Google認証、利用資格判定、登録、状態照会 | FastAPI / Cloud Run |
-| **Library Admin API** | 管理者認証、名簿、申請、監査、CSV/XLSX出力 | FastAPI / Cloud Run / Cloudflare Access |
-| **Library Worker** | Drive権限付与・取消、再試行、収束確認 | FastAPI / Cloud Run / Cloud Scheduler |
-| **Migration** | Alembic、DB role設定、旧名簿移行 | Cloud Run Job / PostgreSQL direct connection |
-| **Data** | 利用者、申請、認証主体、権限、operation、監査 | Neon PostgreSQL |
+COMPASS Interactiveは別リポジトリで開発・運用しています。講義中の資料配信やリアルタイム参加、字幕、投票、コメント、AI機能などを扱う独立したプロダクトです。
 
-COMPASS Interactiveは、講義中の資料配信、リアルタイム参加、字幕、投票、コメント、AI支援機能などを扱う独立プロダクトです。設計思想と技術構成は本サイト上の開発者向けページで公開していますが、プロダクト本体の実装および運用データは別の非公開環境で管理しています。
-
----
-
-## リポジトリの責務
-
-### 公開Web
-
-- COMPASS公式サイト
-- 活動理念、プロジェクト、教育コンテンツの紹介
-- COMPASS Manifesto
-- COMPASS Interactive紹介サイト
-- COMPASS Interactive開発者向け技術紹介
-- 未来戦略ライブラリの紹介ページ
-- Community参加フォーム
-- Contactフォーム
-
-### 未来戦略ライブラリ登録基盤
-
-- 登録ユーザーインターフェース
-- Google Identity Servicesによるログイン
-- Google IDトークンのサーバー検証
-- Google Workspace組織への所属確認
-- 入力情報とデータベース状態に基づく利用資格判定
-- 利用者、申請、認証主体、権限処理状態の永続化
-- Google Drive閲覧権限の付与・取消処理
-- 登録状態および権限処理状態の表示
-- 冪等性を備えた非同期処理
-- 障害時の再試行、停止、手動復旧
-- 管理者向け申請・名簿・監査・権限運用
-- 旧Google Form、Sheet、Drive permissionの整合・移行
-- PostgreSQL正本からの監査済みCSV/XLSX出力
-
-### フォーム・通知基盤
-
-- Cloudflare Pages Functions
-- Cloudflare Turnstileによる不正送信対策
-- Google Apps ScriptによるCommunity・Contact通知処理
-- Zodによる入力検証
-- フォーム処理の自動テスト
-
-### 品質保証・運用
-
-- TypeScript型検査
-- Python APIテスト
-- フォーム、Pages Function、Google Apps Scriptテスト
-- Next.js本番ビルドと静的出力検証
-- Playwrightによるレスポンシブ検証
-- PostgreSQL統合テスト
-- Alembicマイグレーション検証
-- Terraform構成・activation contract検証
-- Docker image・service boundary検証
-- Google OAuth・Google Drive実環境E2E
-- 公開ソース・Git履歴のsecret scan
-- CodeQL、Dependabot、GitHub Actions quality gate
-- アーキテクチャ、運用、プライバシー、障害対応文書
 
 ---
+## リポジトリ構成
 
-## システム境界
+本リポジトリでは、COMPASS公式Web、問い合わせフォーム、及び未来戦略ライブラリの登録・運用基盤を管理しています。
 
-公開リポジトリには、アプリケーションコード、データベーススキーマ、マイグレーション、API契約、Infrastructure as Code、テスト、運用文書を配置します。
+### COMPASS Web
 
-一方、次の情報は各本番サービスの管理環境に隔離されます。
+公式サイト、Manifesto、未来戦略ライブラリの案内、Community / Contactフォームなど、COMPASSの公開Webを管理します。
 
-- 本番利用者の個人情報
-- PostgreSQLの本番データおよびバックアップ
-- Google OAuthトークン
-- アクセストークンおよびリフレッシュトークン
-- APIキー、秘密鍵、サービスアカウント資格情報
-- Neon、Google Cloud、Cloudflareの本番設定値
-- Google Drive上の保護対象資料
-- COMPASS Interactive本体のソースコード
-- COMPASS Interactiveの認証情報、データベース、利用者データ
+### 未来戦略ライブラリ
 
-ソースコードと本番データを明確に分離し、秘密情報をリポジトリへ保存しないことを基本原則とします。
+Google Workspaceを利用した本人確認・利用資格判定、PostgreSQLでの登録状態管理、Google Drive権限の付与・取消、管理者向け運用、データ移行・監査を扱います。
+
+### COMPASS Interactive
+
+COMPASS Interactiveは独立したプロダクトとして、紹介Webサイトを除き別リポジトリ・別環境で開発、運用しています。
 
 ---
+## 公開範囲
 
-## 主要機能
+本リポジトリでは、アプリケーションコード、データベーススキーマ、Infrastructure as Code、テスト、運用ドキュメントを公開しています。
 
-### Googleアカウント検証
+本番環境の認証情報、APIキー、個人情報、データベース、バックアップ、Google Drive上の保護対象資料は公開リポジトリでは管理しません。
 
-ブラウザで取得したGoogle IDトークンは、FastAPIへ送信され、サーバー側で検証されます。
-
-検証対象は次のとおりです。
-
-- 電子署名
-- `aud`
-- `iss`
-- `exp`
-- `email_verified`
-- Google Workspaceドメイン情報
-
-Google Workspaceドメインへの所属確認と、COMPASS上の利用資格判定は別の処理として扱います。ドメイン情報のみを根拠として、所属学部、在籍区分、学年、学籍番号を確定することはありません。
-
-### 利用資格判定
-
-利用資格は、認証済みユーザーの入力情報、同意状態、申請履歴、既存登録状態を基に、FastAPIがサーバー側で判定します。
-
-クライアントから送信された判定結果を信用せず、重要な条件はAPI側で再評価します。
-
-### PostgreSQLによる状態管理
-
-Neon PostgreSQLをシステム上の正本として使用し、次の状態を管理します。
-
-- 利用者
-- 登録申請
-- Google認証主体
-- 資料アクセス権限
-- 権限付与・取消operation
-- 再試行・障害状態
-- 管理者とRBAC
-- 旧名簿移行batch
-- Export実行履歴
-- 監査に必要な処理履歴
-
-FastAPIからの通常接続にはプール接続を使用し、Alembicによるマイグレーションには直接接続を使用します。Public、Admin、Worker、Migrationは、それぞれ独立したdatabase loginと最小権限roleを使用します。
-
-### Google Drive権限処理
-
-Google Driveへの権限付与と取消は、APIリクエスト内で直接完結させず、非同期ワーカーによって処理します。
-
-処理基盤には次の設計を採用しています。
-
-- Transactional Outbox
-- 冪等なoperation
-- リソース単位のLease
-- 有限回の再試行
-- `dead`状態への隔離
-- 手動Requeue
-- 重複実行の抑制
-- HMAC-SHA256によるversioned operation attestation
-- Worker専用の固定Drive targetとOAuth credential
-- 権限付与・取消の収束確認
-
-外部サービスへの副作用は、必要な運用フラグ、認証、署名、対象固定、安全条件がすべて成立した場合にのみ許可されます。条件が不完全な場合は処理を停止する、fail-closedの設計です。
-
-### 管理者運用
-
-管理者surfaceは、公開登録surfaceから分離されています。
-
-- Cloudflare Access
-- Same-origin Pages Function proxy
-- Private edge secret
-- 管理専用Google OAuth audience
-- 完全一致メールallowlist
-- Server-side Google `sub` RBAC
-- `viewer` / `operator` / `admin`の権限分離
-- 重要操作の理由、楽観lock、冪等性、再確認
-- Append-only監査とPIIを含まないsecurity event
-- CSV/XLSXのformula injection対策とSHA-256照合
-
+COMPASS Interactiveのアプリケーション本体と運用データも、独立した非公開環境で管理しています。
 ---
 
-## 技術構成
+## 技術スタック
 
 | Layer | Technology |
 |---|---|
@@ -317,11 +169,18 @@ Google Driveへの権限付与と取消は、APIリクエスト内で直接完�
 
 ## クラウド開発（推奨）
 
-通常の開発はGitHub CodespacesまたはCodex Cloudで開始します。Docker Desktop、VS Code Dev Containers、Dev Container CLIも同じ`.devcontainer/devcontainer.json`を使用するため、PCやエージェントが変わってもNode.js、Python、Docker、GitHub CLI、テスト環境は一致します。
+開発にはGitHub CodespacesまたはCodex Cloudを推奨します。ローカルで開発する場合も、`.devcontainer/devcontainer.json`から同じ環境を立ち上げられます。
 
-最短経路、Docker CLI経路、Codex／Claude Code／GitHub Copilotの共通運用、スマートフォンからの監督方法は[`docs/CLOUD_DEVELOPMENT.md`](docs/CLOUD_DEVELOPMENT.md)を参照してください。
+セットアップや各環境での使い方は [`docs/CLOUD_DEVELOPMENT.md`](docs/CLOUD_DEVELOPMENT.md) を参照してください。
 
-初回作成と環境変更後は`npm run dev:doctor`でruntime、CLI、独立Docker、依存を検証します。必要packageはDev Container Featureまたはrepository lockfileへ記録し、個人PCへの未記録global installで不足を回避しません。
+環境の確認には次を使用します。
+
+```bash
+npm run dev:doctor
+```
+
+Node.js、Python、Docker、CLI、依存関係など、開発に必要な環境をまとめて確認できます。追加の依存関係はDev Containerまたはlockfileで管理します。
+
 
 ---
 
@@ -565,27 +424,3 @@ src/app/(official)/page.tsx
 | [`infra/library-registration/README.md`](infra/library-registration/README.md) | Cloud Run、IAM、Secret Manager、Terraform構成 |
 | [`services/library-api/README.md`](services/library-api/README.md) | FastAPI、PostgreSQL、Drive Workerの開発・運用 |
 | [`CODEX_LINKS.md`](CODEX_LINKS.md) | 正式な公開URLと画面遷移契約 |
-
----
-
-## 開発原則
-
-1. データベースを状態管理の正本とする
-2. 認証と利用資格判定を分離する
-3. クライアント入力を信頼せず、サーバー側で再検証する
-4. Public、Admin、Worker、Migrationの責務と権限を分離する
-5. 外部副作用を非同期処理として分離する
-6. 重要処理に冪等性を持たせる
-7. 障害時は安全側へ停止する
-8. 本番データとソースコードを分離する
-9. 実装、テスト、運用文書を同じ変更単位で更新する
-10. ブランド上の説明と、実装機能の説明を区別する
-11. 技術的な主張を、コード、テスト、運用状態によって裏付ける
-
----
-
-## 組織上の位置づけ
-
-COMPASSは、学生有志が運営する独立した学生支援活動です。
-
-北里大学、北里大学薬学部、各研究室、関連機関が運営する公式サービスではありません。試験、履修、進級、研究室配属、進路に関する重要事項は、必ず大学等の公式情報で確認してください。
