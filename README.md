@@ -17,7 +17,7 @@ COMPASSは、北里大学薬学部を起点として、公開Web、教育コン�
 [![Cloudflare](https://img.shields.io/badge/Cloudflare-Pages_%2B_Functions-F38020?logo=cloudflare&logoColor=white)](https://www.cloudflare.com/)
 [![Google Cloud](https://img.shields.io/badge/Google_Cloud-Cloud_Run-4285F4?logo=googlecloud&logoColor=white)](https://cloud.google.com/run)
 
-[公開Web](https://compass-official.pages.dev/) · [アーキテクチャ](#プラットフォーム構成) · [技術構成](#技術構成) · [ローカル開発](#ローカル開発) · [検証](#検証) · [ドキュメント](#ドキュメント)
+[公開Web](https://compass-official.pages.dev/) · [アーキテクチャ](#プラットフォーム構成) · [技術構成](#技術構成) · [クラウド開発（推奨）](#クラウド開発推奨) · [ローカル開発](#ローカル開発) · [検証](#検証) · [ドキュメント](#ドキュメント)
 
 </div>
 
@@ -252,6 +252,14 @@ Google Driveへの権限付与と取消は、APIリクエスト内で直接完�
 
 ---
 
+## クラウド開発（推奨）
+
+通常の開発はGitHub CodespacesまたはCodex Cloudで開始します。Docker Desktop、VS Code Dev Containers、Dev Container CLIも同じ`.devcontainer/devcontainer.json`を使用するため、PCやエージェントが変わってもNode.js、Python、Docker、GitHub CLI、テスト環境は一致します。
+
+最短経路、Docker CLI経路、Codex／Claude Code／GitHub Copilotの共通運用、スマートフォンからの監督方法は[`docs/CLOUD_DEVELOPMENT.md`](docs/CLOUD_DEVELOPMENT.md)を参照してください。
+
+---
+
 ## ローカル開発
 
 ### 必要環境
@@ -266,7 +274,7 @@ Google Driveへの権限付与と取消は、APIリクエスト内で直接完�
 
 Windowsでは、Node.jsコマンドを`npm.cmd`で実行します。
 
-GitHub CodespacesとCodex Cloudを使用する標準手順は、[`docs/CLOUD_DEVELOPMENT.md`](docs/CLOUD_DEVELOPMENT.md)を参照してください。クラウド環境はrepositoryごとに分離し、既存PCの未commit変更やProduction資格情報を引き継ぎません。
+クラウド環境はrepositoryごとに分離し、既存PCの未commit変更やProduction資格情報を引き継ぎません。ローカル環境は障害対応や特殊なデバイス検証の補助経路です。
 
 ### Webフロントエンド
 

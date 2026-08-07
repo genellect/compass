@@ -95,11 +95,19 @@ commit、push、PR、Cloudflare設定、GAS deployment、Production公開は、�
 ## Cloud Development
 
 - GitHubを正本とし、新規作業は最新`origin/main`からGitHub CodespacesまたはCodex Cloudで開始する。
+- Dev Container Specificationを環境の唯一の正本とし、Codespaces、VS Code + Docker Desktop、Dev Container CLIで同じ`.devcontainer/devcontainer.json`を使用する。
 - repositoryごとに環境とbranchを分離し、COMPASS Interactiveのcheckout、secret、runtimeを共有しない。
 - Codespacesでは`.devcontainer/devcontainer.json`と`docs/CLOUD_DEVELOPMENT.md`を正本とする。
 - 既存PCの`.env*`、credential、Production dataをcloud環境へcopyしない。
 - 通常のcloud taskはnon-live testのみとし、Production form、実email、deploy、migration、secret変更を実行しない。
 - Codex taskは完了前に該当testを実行し、branchへcommitしてDraft PRでreview可能な状態にする。
+
+## Agent Interoperability
+
+- `AGENTS.md`を全エージェント共通の正本とする。`CLAUDE.md`と`.github/copilot-instructions.md`はこの文書と`docs/CLOUD_DEVELOPMENT.md`へ従う。
+- Codex、Claude Code、GitHub Copilot、VS Code上のエージェントは、同じDev Container、同じnpm/uv lockfile、同じ検証コマンドを使用する。
+- 複数のwrite-capable agentを同じbranch・worktreeで同時実行しない。並列実装はagentごとにbranchまたはworktreeを分離する。
+- 明示的に並列reviewを依頼された場合は、`.codex/agents/`のread-only agentを使い、main agentが判断と最終統合を担当する。
 
 ## Responsive Browser Gate
 

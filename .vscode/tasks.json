@@ -4,7 +4,7 @@
     {
       "label": "COMPASS: start Next.js",
       "type": "shell",
-      "command": "npx next dev --webpack --hostname 0.0.0.0",
+      "command": "npm run dev:cloud",
       "isBackground": true,
       "problemMatcher": [],
       "presentation": {
@@ -15,7 +15,7 @@
     {
       "label": "COMPASS: run repository check",
       "type": "shell",
-      "command": "npm run check",
+      "command": "npm run cloud:check",
       "problemMatcher": [],
       "presentation": {
         "panel": "dedicated",
