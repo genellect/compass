@@ -103,8 +103,6 @@ flowchart LR
     CI --> Review["Review"]
     Review --> GitHub
 ```
-
-```
 ### システム構成
 
 | Component               | 役割                            | Stack                                            |
@@ -117,10 +115,10 @@ flowchart LR
 | **Migration**           | DB migration、role設定、既存データの移行  | Alembic / Cloud Run Jobs                         |
 | **Database**            | 利用者、申請、権限、処理履歴、監査ログ           | Neon PostgreSQL                                  |
 
-COMPASS Interactiveは別リポジトリで開発・運用しています。講義中の資料配信やリアルタイム参加、字幕、投票、コメント、AI機能などを扱う独立したプロダクトです。
-
+COMPASS Interactiveは、講義中の資料配信、リアルタイム参加、字幕、投票、コメント、AI機能などを扱う独立したプロダクトです。アプリケーション本体は別リポジトリ・別環境で開発、運用しています。
 
 ---
+
 ## リポジトリ構成
 
 本リポジトリでは、COMPASS公式Web、問い合わせフォーム、及び未来戦略ライブラリの登録・運用基盤を管理しています。
@@ -138,34 +136,35 @@ Google Workspaceを利用した本人確認・利用資格判定、PostgreSQLで
 COMPASS Interactiveは独立したプロダクトとして、紹介Webサイトを除き別リポジトリ・別環境で開発、運用しています。
 
 ---
+
 ## 公開範囲
 
 本リポジトリでは、アプリケーションコード、データベーススキーマ、Infrastructure as Code、テスト、運用ドキュメントを公開しています。
 
-本番環境の認証情報、APIキー、個人情報、データベース、バックアップ、Google Drive上の保護対象資料は公開リポジトリでは管理しません。
+本番環境の認証情報、APIキー、個人情報、データベース、バックアップ、Google Drive上の保護対象資料は、公開リポジトリでは管理しません。
 
 COMPASS Interactiveのアプリケーション本体と運用データも、独立した非公開環境で管理しています。
+
 ---
 
 ## 技術スタック
 
-| Layer | Technology |
-|---|---|
-| **Web Frontend** | Next.js 16.2.11 · React 19 · TypeScript 5.9 · Zod 4 · Static Export |
-| **Identity** | Google Identity Services · OpenID Connect · `google-auth` · Google Picker API |
-| **Application API** | Python 3.12–3.13 · FastAPI · Pydantic 2 · Uvicorn |
-| **Data Access** | SQLAlchemy 2 · Psycopg 3 · PostgreSQL 17 · Neon |
-| **Schema** | Alembic · Versioned SQL boundary · Database role audit |
-| **Access Automation** | Google Drive API · Transactional Outbox · Lease · Retry · Operation Attestation |
-| **Edge** | Cloudflare Pages · Pages Functions · Turnstile · Cloudflare Access |
-| **Application Runtime** | Google Cloud Run · Cloud Run Job · Cloud Scheduler |
-| **Secrets / Operations** | Google Secret Manager · Cloud Monitoring · Budget guardrails |
-| **Infrastructure as Code** | Terraform · Docker · Docker Compose |
-| **Notifications** | Google Apps Script · Google Drive standard notification |
-| **Analytics** | Google Analytics 4 · Cloudflare Web Analytics |
-| **Quality** | Vitest · Pytest · Playwright · CodeQL · GitHub Actions |
+| Layer                      | Technology                                                                      |
+| -------------------------- | ------------------------------------------------------------------------------- |
+| **Web Frontend**           | Next.js 16.2.11 · React 19 · TypeScript 5.9 · Zod 4 · Static Export             |
+| **Identity**               | Google Identity Services · OpenID Connect · `google-auth` · Google Picker API   |
+| **Application API**        | Python 3.12–3.13 · FastAPI · Pydantic 2 · Uvicorn                               |
+| **Data Access**            | SQLAlchemy 2 · Psycopg 3 · PostgreSQL 17 · Neon                                 |
+| **Schema**                 | Alembic · Versioned SQL boundary · Database role audit                          |
+| **Access Automation**      | Google Drive API · Transactional Outbox · Lease · Retry · Operation Attestation |
+| **Edge**                   | Cloudflare Pages · Pages Functions · Turnstile · Cloudflare Access              |
+| **Application Runtime**    | Google Cloud Run · Cloud Run Job · Cloud Scheduler                              |
+| **Secrets / Operations**   | Google Secret Manager · Cloud Monitoring · Budget guardrails                    |
+| **Infrastructure as Code** | Terraform · Docker · Docker Compose                                             |
+| **Notifications**          | Google Apps Script · Google Drive standard notification                         |
+| **Analytics**              | Google Analytics 4 · Cloudflare Web Analytics                                   |
+| **Quality**                | Vitest · Pytest · Playwright · CodeQL · GitHub Actions                          |
 
----
 
 ## クラウド開発（推奨）
 
