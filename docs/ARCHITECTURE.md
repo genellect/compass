@@ -69,7 +69,7 @@ src/app/(official)/page.tsx
 ## 4. Build and Export Pipeline
 
 ```text
-npm.cmd run check
+npm run check
   ├─ test:registration  → Vitest: schema / Pages Function / GAS
   ├─ typecheck          → TypeScript
   ├─ build
@@ -82,7 +82,7 @@ npm.cmd run check
 
 `scripts/assemble-next-export.mjs`は`.nojekyll`、`_headers`、`_redirects`、Search Console verification、`robots.txt`、`sitemap.xml`を`out/`へ組み込む。
 
-`npm.cmd run check`はrepository内のcode・export contractを検証する。Production email delivery、Cloudflare dashboard設定、GAS deployment、Interactive本体の挙動、教育効果を証明しない。
+`npm run check`（cloud aliasは`npm run cloud:check`）はrepository内のcode・export contractを検証する。Production email delivery、Cloudflare dashboard設定、GAS deployment、Interactive本体の挙動、教育効果を証明しない。
 
 ## 5. Dynamic Functions on a Static Site
 
@@ -93,7 +93,7 @@ npm.cmd run check
 | `/api/community-registration` | `functions/api/community-registration.ts` | Community申請を検証しCommunity専用GASへ転送 |
 | `/api/contact` | `functions/api/contact.ts` | 確認code発行・検証・問い合わせ送信をContact専用GASへ転送 |
 
-Next.js development serverだけではPages Functionsは動作しない。localでfunctionを含めて確認する場合はstatic exportを作成し、`npm.cmd run dev:pages`を使用する。
+Next.js development serverだけではPages Functionsは動作しない。localでfunctionを含めて確認する場合はstatic exportを作成し、`npm run dev:pages`を使用する。
 
 ## 6. Form Isolation
 

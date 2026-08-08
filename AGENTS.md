@@ -82,9 +82,11 @@ COMPASS Interactiveプロダクト本体、Productionデータベース、保護
 
 repository-wide gateは次のコマンドである。
 
-```powershell
-npm.cmd run check
+```bash
+npm run check
 ```
+
+`npm run cloud:check`は同一gateのcloud向けaliasである。どのOS・どのagentからも、この形式を正本とする。Windows PowerShellから直接実行する場合だけ`npm.cmd run check`と読み替える。文書・PR・報告には`npm run`形式で記載する。
 
 これはform関連テスト、TypeScript検査、Production build、static export検証、全公開routeのPlaywright responsive smokeを実行する。変更範囲に応じて個別commandを使う場合も、実行したもの・省略したもの・理由を最終報告へ記載する。
 
@@ -102,17 +104,21 @@ commit、push、PR、Cloudflare設定、GAS deployment、Production公開は、�
 - 通常のcloud taskはnon-live testのみとし、Production form、実email、deploy、migration、secret変更を実行しない。
 - Codex taskは完了前に該当testを実行し、branchへcommitしてDraft PRでreview可能な状態にする。
 - Dev Containerの初回作成後と環境定義変更後は`npm run dev:doctor`を実行し、手作業のglobal package導入で不足を隠さない。
+- cloud経路はLinuxである。`.ps1` script、`npm.cmd`、`Get-NetTCPConnection`等のWindows専用手順をcloud taskの前提にしない。Docker composeを使うLibrary環境は`scripts/library-docker-dev.sh`を使用する。
 
 ## Agent Interoperability
 
 - `AGENTS.md`を全エージェント共通の正本とする。`CLAUDE.md`と`.github/copilot-instructions.md`はこの文書と`docs/CLOUD_DEVELOPMENT.md`へ従う。
 - Codex、Claude Code、GitHub Copilot、VS Code上のエージェントは、同じDev Container、同じnpm/uv lockfile、同じ検証コマンドを使用する。
+- agent別の実行設定は正本を分けない。`.codex/`はCodex、`.claude/`はClaude Codeの起動・権限・read-only agent定義のみを持ち、方針は`AGENTS.md`が唯一の正本である。両者の内容が食い違った場合は`AGENTS.md`を優先し、差分を報告する。
 - 複数のwrite-capable agentを同じbranch・worktreeで同時実行しない。並列実装はagentごとにbranchまたはworktreeを分離する。
-- 明示的に並列reviewを依頼された場合は、`.codex/agents/`のread-only agentを使い、main agentが判断と最終統合を担当する。
+- 明示的に並列reviewを依頼された場合は、`.codex/agents/`または`.claude/agents/`のread-only agentを使い、main agentが判断と最終統合を担当する。両者は同じreview観点（repo mapping、quality、security）を持つ。
 
 ## Responsive Browser Gate
 
-- UI、navigation、font、breakpoint、animationを変更した場合は、`docs/responsive-browser-qa.md`に従い`npm.cmd run check:responsive:full`を実行する。
+- UI、navigation、font、breakpoint、animationを変更した場合は、`docs/responsive-browser-qa.md`に従い責任gateを実行する。
+- Linux・cloud（Codespaces、Codex Cloud、Claude Code、Dev Container）では`npm run check:responsive:cloud`を実行する。これはvisual regression以外の全responsive contractを含む。
+- visual regression baselineはWindowsで生成された`*-win32.png`であり、Linuxからは実行も更新もしない。`npm run check:responsive:full`はWindows専用gateであり、cloudからの合格判定にはGitHub Actions `Responsive Quality Gate`の結果を使う。
 - 物理解像度だけで合格にせず、CSS viewport、height境界、DPR、実描画行、overflow、consoleを記録する。
 - responsive testを通すためにcanonical copy、背景、layoutを無関係に変更しない。意図的なcontract変更では、差分を人間が確認してからtest expectationを更新する。
 

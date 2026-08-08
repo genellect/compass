@@ -82,7 +82,31 @@ baselineはUI承認後にWindows + repository指定Chromiumで一度だけ生成
 npm.cmd run test:responsive:update-snapshots
 ```
 
+#### Platform boundary
+
+Playwrightはsnapshotをplatform別に解決します。現行baselineは`tests/responsive/visual-regression.spec.ts-snapshots/*-win32.png`のみであり、Linux（Codespaces、Codex Cloud、Claude Code、Dev Container）から`visual-regression.spec.ts`を実行すると`*-linux.png`を探して必ず失敗します。
+
+したがってvisual regressionの判定元は次のいずれかだけです。
+
+1. Windows hostでの`npm.cmd run check:responsive:full`
+2. GitHub Actions **Responsive Quality Gate**（`windows-latest`）
+
+cloud sessionから`test:responsive:update-snapshots`を実行しないでください。承認済みWindows baselineの横にLinux baselineを作り、以後どちらが正本か判別できなくなります。
+
 ## 5. Local commands
+
+### Cloud / Linux（Codespaces、Codex Cloud、Claude Code、Dev Container）
+
+```bash
+npm ci
+npx playwright install chromium
+npm run cloud:check
+npm run check:responsive:cloud
+```
+
+`check:responsive:cloud`は`check:responsive:full`からvisual regressionだけを除いた同一内容です。viewport matrix、breakpoint境界、interaction contract、interactive hero、manifesto章、semantic line、mobile device emulationをすべて含みます。visual regressionは上のPlatform boundaryに従い、CIの結果を使用します。
+
+### Windows
 
 ```powershell
 npm.cmd ci
@@ -91,17 +115,23 @@ npm.cmd run check
 npm.cmd run check:responsive:full
 ```
 
-既にbuild済みなら`npm.cmd run test:responsive`または`npm.cmd run test:responsive:full`を実行できます。
+既にbuild済みなら`npm run test:responsive`、`npm run test:responsive:cloud`、または（Windowsのみ）`npm.cmd run test:responsive:full`を実行できます。
 
-Hero visual baselineだけを確認する場合は`npm.cmd run test:responsive:visual`を使います。
+Hero visual baselineだけを確認する場合はWindowsで`npm.cmd run test:responsive:visual`を使います。
 
 Production成果物へ同じsmokeを適用する場合:
+
+```bash
+RESPONSIVE_BASE_URL="https://compass-official.pages.dev" npm run test:responsive
+```
 
 ```powershell
 $env:RESPONSIVE_BASE_URL="https://compass-official.pages.dev"
 npm.cmd run test:responsive
 Remove-Item Env:RESPONSIVE_BASE_URL
 ```
+
+このsmokeは公開pageの読み取り監査だけを行い、form送信やmutationを実行しません。
 
 ## 6. Failure evidence
 

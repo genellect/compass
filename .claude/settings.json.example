@@ -1,0 +1,82 @@
+{
+  "_comment": "Copy this file to .claude/settings.json to activate. It registers the cloud bootstrap hook and encodes the AGENTS.md safety boundary as Claude Code permission rules. Review every rule before enabling: the allow list removes approval prompts for those commands.",
+  "permissions": {
+    "allow": [
+      "Bash(npm ci)",
+      "Bash(npm install)",
+      "Bash(npm test)",
+      "Bash(npm run typecheck)",
+      "Bash(npm run build)",
+      "Bash(npm run verify)",
+      "Bash(npm run clean)",
+      "Bash(npm run check)",
+      "Bash(npm run check:*)",
+      "Bash(npm run cloud:check)",
+      "Bash(npm run dev:doctor)",
+      "Bash(npm run test:*)",
+      "Bash(npm run verify:*)",
+      "Bash(npx playwright install *)",
+      "Bash(node scripts/*)",
+      "Bash(uv run *)",
+      "Bash(uv sync *)",
+      "Bash(bash .devcontainer/doctor.sh)",
+      "Bash(./scripts/library-docker-dev.sh Validate)",
+      "Bash(./scripts/library-docker-dev.sh Ps)",
+      "Bash(./scripts/library-docker-dev.sh Logs)",
+      "Bash(git status *)",
+      "Bash(git diff *)",
+      "Bash(git log *)",
+      "Bash(git show *)",
+      "Bash(git branch *)",
+      "Bash(git ls-files *)",
+      "Bash(git fetch *)",
+      "Bash(git add *)",
+      "Bash(git stash *)"
+    ],
+    "ask": [
+      "Bash(git commit *)",
+      "Bash(git push *)",
+      "Bash(git reset *)",
+      "Bash(git rebase *)",
+      "Bash(docker *)",
+      "Bash(./scripts/library-docker-dev.sh *)",
+      "Bash(npx wrangler *)"
+    ],
+    "deny": [
+      "Bash(npm run deploy:*)",
+      "Bash(npm run rehearse:*)",
+      "Bash(npx wrangler deploy *)",
+      "Bash(npx wrangler pages deploy *)",
+      "Bash(npx wrangler secret *)",
+      "Bash(wrangler deploy *)",
+      "Bash(wrangler pages deploy *)",
+      "Bash(wrangler secret *)",
+      "Bash(clasp *)",
+      "Bash(terraform apply *)",
+      "Bash(terraform destroy *)",
+      "Bash(git push --force *)",
+      "Bash(git push -f *)",
+      "Read(./.env)",
+      "Read(./.env.*)",
+      "Read(./.dev.vars)",
+      "Read(./.dev.vars.*)",
+      "Read(./**/client_secret*.json)",
+      "Read(./**/credentials.json)",
+      "Read(./**/token.json)"
+    ]
+  },
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "$CLAUDE_PROJECT_DIR/.claude/hooks/session-start.sh",
+            "timeout": 300,
+            "statusMessage": "Bootstrapping COMPASS cloud workspace..."
+          }
+        ]
+      }
+    ]
+  }
+}
