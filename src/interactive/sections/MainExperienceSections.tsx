@@ -1,13 +1,12 @@
 import { CTAButton } from "../components/ui/CTAButton";
-import { GitHubProfileLink } from "../../components/GitHubProfileLink";
 import { ProductExperienceMock } from "../components/ui/ProductExperienceMock";
 import { Reveal } from "../components/ui/Reveal";
 import { Section } from "../components/ui/Section";
 import { SectionHeader } from "../components/ui/SectionHeader";
 import { TeacherDashboardMock } from "../components/ui/TeacherDashboardMock";
+import { DeveloperProfile } from "./DeveloperProfile";
 import {
   aiLearningOutcomes,
-  developerGatewayPoints,
   lectureTimeline,
   studentExperienceSteps,
   teacherJourney,
@@ -198,74 +197,26 @@ export function DeveloperGateway() {
     <Section id="developers" className="developer-gateway section--dark">
       <div className="audience-label audience-label--developer" aria-label="開発者の体験">
         <span>DEVELOPER</span>
-        <small>設計判断をたどる</small>
+        <small>Product ownership</small>
       </div>
       <div className="developer-gateway__layout">
         <Reveal>
           <SectionHeader
-            eyebrow="BEHIND THE EXPERIENCE"
-            title="この体験を、見えない設計から支える。"
-            lead="画面の速さ、情報の扱い、AIの妥当性、負荷、費用、障害時の継続性。教育体験から逆算した設計判断を公開します。"
+            eyebrow="DEVELOPER"
+            title="専門領域を超え、COMPASSシリーズを一つの体験で貫く。"
+            lead="COMPASS Interactiveの設計には、ソフトウェア開発だけでは得られない複数の現場経験が重なっています。"
           />
+          <p className="developer-gateway__body">私は、学生エンジニアであると同時に、集団塾講師・大学TAとして教育現場に関わり、生命科学の実験研究にも取り組んできました。実務で英語を使い、薬学教育の課題を現役学生の立場として観察しながら、AIネイティブな開発では最新のコーディングエージェントを実装工程へ段階的に組み込んできました。</p>
           <CTAButton className="developer-gateway__cta" href="/INTRO_Interactive/developers/">
             開発者向け情報へ <span aria-hidden="true">→</span>
           </CTAButton>
         </Reveal>
         <Reveal delay={100}>
-          <ul className="developer-gateway__points">
-            {developerGatewayPoints.map((point, index) => (
-              <li key={point}><span>{String(index + 1).padStart(2, "0")}</span><p>{point}</p></li>
-            ))}
-          </ul>
+          <p className="developer-gateway__statement"><strong>教育する側と学ぶ側、研究する側と開発する側。</strong>その複数の視点が、教員の操作性、学生の参加体験、学術的根拠、検証可能性、AI活用まで、一見バラバラに見える1つ1つの専門性と経験が、COMPASS Interactive全体の製品価値につながっています。</p>
         </Reveal>
       </div>
       <Reveal>
-        <div id="developer-profile" className="developer-credit developer-credit--wide">
-          <span>開発者・プロダクト設計者</span>
-          <strong>Yuto Matsui</strong>
-          <p>生命科学・教育・AIを横断し、研究・教育現場で自ら見いだした課題を、実装可能なプロダクトへ変換する。</p>
-          <GitHubProfileLink className="developer-credit__github" />
-          <div className="developer-credit__grid">
-            <div>
-              <h3>得意領域</h3>
-              <ul>
-                <li>生命科学・分子生物学研究</li>
-                <li>フルスタックWebアプリケーション開発</li>
-                <li>研究データ解析パイプラインの構築</li>
-                <li>独自バックエンド基盤による業務自動化・効率化</li>
-                <li>AI統合型システムの設計・検証</li>
-              </ul>
-            </div>
-            <details className="developer-expertise">
-              <summary>
-                <span>Technical Expertise</span>
-                <small>技術領域を表示</small>
-              </summary>
-              <dl>
-                <div>
-                  <dt>主要言語</dt>
-                  <dd>TypeScript / Python</dd>
-                </div>
-                <div>
-                  <dt>フロントエンド</dt>
-                  <dd>React / Next.js / Vite</dd>
-                </div>
-                <div>
-                  <dt>バックエンド・データ基盤</dt>
-                  <dd>FastAPI / Supabase / PostgreSQL</dd>
-                </div>
-                <div>
-                  <dt>開発・運用基盤</dt>
-                  <dd>Git / Docker / Linux / Cloudflare</dd>
-                </div>
-                <div>
-                  <dt>AIエージェント</dt>
-                  <dd>OpenAI Codex / Claude Code</dd>
-                </div>
-              </dl>
-            </details>
-          </div>
-        </div>
+        <DeveloperProfile />
       </Reveal>
     </Section>
   );

@@ -244,17 +244,19 @@ for (const expected of [
 ]) expectIncludes(legacyInteractionComponent, expected, "Failure-safe reveal fallback");
 
 const githubProfileUrl = "https://github.com/genellect";
-for (const [html, label] of [
-  [official, "Official founder profile"],
-  [interactive, "Interactive developer profile"],
-  [interactiveDevelopers, "Interactive developer introduction profile"]
+for (const [html, label, expectedCount] of [
+  [official, "Official founder profile", 1],
+  [interactive, "Interactive developer profile", 2],
+  [interactiveDevelopers, "Interactive developer introduction profile", 2]
 ]) {
   const links = html.match(new RegExp(`<a\\b[^>]*href="${githubProfileUrl}"[^>]*>`, "g")) ?? [];
-  if (links.length !== 1) {
-    throw new Error(`${label} must contain exactly one GitHub portfolio link; found ${links.length}.`);
+  if (links.length !== expectedCount) {
+    throw new Error(`${label} must contain exactly ${expectedCount} GitHub portfolio link(s); found ${links.length}.`);
   }
-  expectIncludes(links[0], 'target="_blank"', `${label} GitHub link`);
-  expectIncludes(links[0], 'rel="noopener noreferrer"', `${label} GitHub link`);
+  for (const link of links) {
+    expectIncludes(link, 'target="_blank"', `${label} GitHub link`);
+    expectIncludes(link, 'rel="noopener noreferrer"', `${label} GitHub link`);
+  }
   expectIncludes(html, "GitHub Portfolio", `${label} GitHub CTA label`);
 }
 
@@ -525,6 +527,46 @@ if (interactive.includes('<div id="root"></div>')) {
 
 expectOneH1(official, "Official page");
 expectOneH1(interactive, "Interactive page");
+
+for (const expected of [
+  'id="developer-top"',
+  'id="stack"',
+  'id="architecture"',
+  'id="security"',
+  'id="decisions"',
+  'id="verification"',
+  'id="classroom-validation"',
+  'id="codebase"',
+  'id="developer-profile"',
+  'id="developer-final"',
+  "One real-time foundation",
+  "Web、DB、Edge、Windowsを、ひとつのコードベースでつなぐ。",
+  "748",
+  "56",
+  "31",
+  "43",
+  "18",
+  "x86 + x64",
+  "匿名参加でも、権限は曖昧にしない。",
+  "75 / 75",
+  "専門領域を超え、COMPASSシリーズを一つの体験で貫く。",
+  "/INTRO_Interactive/developers/opengraph-image-",
+  "/INTRO_Interactive/developers/twitter-image-",
+  'rel="canonical" href="https://compass-official.pages.dev/INTRO_Interactive/developers/"'
+]) expectIncludes(interactiveDevelopers, expected, "Interactive developer page");
+
+for (const unexpected of [
+  "学びの熱を、",
+  "ESSAY: AI時代に、専門性を「実装」するということ",
+  "教育体験を支える、統合技術基盤",
+  "変更を、安心して積み重ねるために。",
+  'property="og:image" content="https://compass-official.pages.dev/images/hero.desktop.highlight.png"',
+  'id="educational-design"',
+  'id="developer-message"',
+  'id="quality-assurance"'
+]) expectExcludes(interactiveDevelopers, unexpected, "Interactive developer page");
+
+expectOneH1(interactiveDevelopers, "Interactive developer page");
 
 for (const expected of [
   '<html lang="ja"',

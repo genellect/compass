@@ -2650,6 +2650,15 @@
 }
 
 @media (max-width: 430px) {
+  .intro-redesign .developer-gateway__layout > * {
+    min-width: 0;
+  }
+
+  .intro-redesign .developer-gateway__cta {
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+
   .intro-redesign .hero-copy h1 {
     font-size: clamp(2.5rem, 11.8vw, 2.95rem);
   }

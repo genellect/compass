@@ -122,14 +122,14 @@ const scenarios: SemanticScenario[] = [
     path: "/INTRO_Interactive/developers/",
     viewport: mobile,
     expectations: [
-      { selector: "h1#developer-title", lines: ["学びの熱を、", "設計で、", "途切れさせない。"] },
+      { selector: "h1#developer-title", lines: ["One real-", "time foundation", "for the", "entire lecture."] },
     ],
   },
   {
     name: "Developer Desktop Hero copy",
     path: "/INTRO_Interactive/developers/",
     viewport: desktop,
-    expectations: [{ selector: "h1#developer-title", lines: ["学びの熱を、", "実装する。"] }],
+    expectations: [{ selector: "h1#developer-title", lines: ["One real-time foundation", "for the entire lecture."] }],
   },
 ];
 

@@ -3,24 +3,22 @@ import "../../../../interactive/styles/developer-refresh.css";
 import { DeveloperApp } from "../../../../interactive/DeveloperApp";
 
 export const metadata: Metadata = {
-  title: "学びの熱を、設計で、途切れさせない。 | COMPASS Interactive",
+  title: "COMPASS Interactive — Architecture, Security & Engineering",
   description:
-    "教育現場で継続的に使える実用性と、その体験を支えるUX、アーキテクチャ、セキュリティ、検証を、一つのシステムに統合した開発者向けページです。",
+    "匿名参加、資料同期、Live Poll、字幕、AI、講義後Reviewを同じ講義状態で動かすCOMPASS Interactive。ReactからPostgreSQL、Cloudflare、Windows Presenter Bridge、CIまでの設計と検証を紹介します。",
   alternates: { canonical: "/INTRO_Interactive/developers/" },
   openGraph: {
     locale: "ja_JP",
     type: "website",
     siteName: "COMPASS Interactive",
-    title: "学びの熱を、設計で、途切れさせない。 | COMPASS Interactive",
-    description: "教育体験を支える技術基盤、設計判断、実装、検証を紹介します。",
-    url: "/INTRO_Interactive/developers/",
-    images: ["/images/hero.desktop.highlight.png"]
+    title: "講義全体を動かす、リアルタイム基盤。— COMPASS Interactive",
+    description: "Architecture、Security、Engineeringと、その検証証拠を紹介します。",
+    url: "/INTRO_Interactive/developers/"
   },
   twitter: {
     card: "summary_large_image",
-    title: "学びの熱を、設計で、途切れさせない。 | COMPASS Interactive",
-    description: "教育体験を支える技術基盤、設計判断、実装、検証を紹介します。",
-    images: ["/images/hero.desktop.highlight.png"]
+    title: "講義全体を動かす、リアルタイム基盤。— COMPASS Interactive",
+    description: "Architecture、Security、Engineeringと、その検証証拠を紹介します。"
   }
 };
 
