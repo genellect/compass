@@ -147,6 +147,18 @@ for (const scenario of [
     viewport: { name: "interactive-action", width: 1024, height: 768 },
     selector: "a#hero-primary-cta.hero-cta",
   },
+  {
+    name: "Developer Windows short",
+    path: "/INTRO_Interactive/developers/",
+    viewport: { name: "developer-short-action", width: 1275, height: 553 },
+    selector: ".developer-hero__actions .developer-button--primary",
+  },
+  {
+    name: "Developer mobile",
+    path: "/INTRO_Interactive/developers/",
+    viewport: { name: "developer-mobile-action", width: 390, height: 844 },
+    selector: ".developer-hero__actions .developer-button--primary",
+  },
 ] satisfies Array<{
   name: string;
   path: string;
