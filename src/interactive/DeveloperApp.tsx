@@ -1,4 +1,5 @@
-import type { ReactNode } from "react";
+import Image from "next/image";
+import { Children, type ReactNode } from "react";
 import { Footer } from "./components/layout/Footer";
 import { Header } from "./components/layout/Header";
 import { links } from "./content/interactiveContent";
@@ -12,6 +13,7 @@ import {
   roleMatrix,
   selectedDecisions,
   stackMetrics,
+  technologyHighlights,
   technologyStack,
   threatMatrix,
   verificationRows
@@ -23,14 +25,29 @@ type SectionHeadingProps = {
   eyebrow: string;
   title: string;
   children?: ReactNode;
+  disclosureLabel?: string;
 };
 
-function SectionHeading({ id, eyebrow, title, children }: SectionHeadingProps) {
+function SectionHeading({ id, eyebrow, title, children, disclosureLabel }: SectionHeadingProps) {
+  const copy = Children.toArray(children);
+
   return (
     <header className="developer-section-heading">
       <p className="developer-eyebrow">{eyebrow}</p>
       <h2 id={id}>{title}</h2>
-      {children && <div className="developer-section-heading__copy">{children}</div>}
+      {copy.length > 0 && (
+        <div className="developer-section-heading__copy">
+          {disclosureLabel && copy.length > 1 ? (
+            <>
+              {copy[0]}
+              <details className="developer-section-disclosure">
+                <summary>{disclosureLabel}<span aria-hidden="true" /></summary>
+                <div>{copy.slice(1)}</div>
+              </details>
+            </>
+          ) : copy}
+        </div>
+      )}
     </header>
   );
 }
@@ -39,28 +56,101 @@ function Paragraphs({ copy }: { copy: string }) {
   return <>{copy.split("\n\n").map((paragraph) => <p key={paragraph}>{paragraph}</p>)}</>;
 }
 
-function DeveloperProductPreview() {
+function DisclosureParagraphs({ copy, summary }: { copy: string; summary: string }) {
+  const paragraphs = copy.split("\n\n");
+
   return (
-    <div className="developer-product-preview" aria-label="COMPASS InteractiveのStudent、Educator、Architectureプレビュー">
-      <section className="developer-product-preview__student">
-        <header><span>LIVE PRODUCT / STUDENT</span><small>Demo data</small></header>
-        <div className="developer-product-preview__appbar"><strong>COMPASS</strong><span><i /> LIVE</span><small>220 Demo participants</small></div>
-        <div className="developer-product-preview__lecture">
-          <small>LECTURE</small>
-          <strong>AI時代の英語と学び</strong>
-          <p>Material · Caption · Voices · Poll</p>
-        </div>
-        <div className="developer-product-preview__recap"><span>✦</span><p><small>5 MIN RECAP</small><strong>講義の要点を、理解の入口へ。</strong></p></div>
-      </section>
-      <section className="developer-product-preview__educator">
-        <header><span>PRODUCT SURFACE / EDUCATOR</span><small>SYNCED</small></header>
-        <strong>Lecture control</strong>
-        <div className="developer-product-preview__pulse"><i /><i /><i /><i /><i /></div>
-        <p>Student · Educator · Display · Review</p>
-      </section>
-      <div className="developer-product-preview__map" aria-label="Architecture mini map">
-        <span>REACT UI</span><i>→</i><span>POSTGRES / RLS</span><i>→</i><span>EDGE / R2</span><i>→</i><span>.NET BRIDGE</span>
+    <>
+      <p>{paragraphs[0]}</p>
+      {paragraphs.length > 1 && (
+        <details className="developer-card-disclosure">
+          <summary>{summary}<span aria-hidden="true" /></summary>
+          <div>{paragraphs.slice(1).map((paragraph) => <p key={paragraph}>{paragraph}</p>)}</div>
+        </details>
+      )}
+    </>
+  );
+}
+
+function DeveloperLiveSystemGraphic() {
+  return (
+    <div className="developer-system-graphic" role="img" aria-label="Student、Educator、Display、Reviewが一つの講義状態へ同期するリアルタイム基盤">
+      <svg className="developer-system-graphic__field" viewBox="0 0 640 640" aria-hidden="true" focusable="false">
+        <defs>
+          <radialGradient id="developer-core-glow">
+            <stop offset="0" stopColor="#73e7ff" stopOpacity="0.25" />
+            <stop offset="0.52" stopColor="#7c3aed" stopOpacity="0.08" />
+            <stop offset="1" stopColor="#050a14" stopOpacity="0" />
+          </radialGradient>
+          <linearGradient id="developer-signal-line" x1="0" x2="1">
+            <stop offset="0" stopColor="#73e7ff" stopOpacity="0.08" />
+            <stop offset="0.48" stopColor="#73e7ff" stopOpacity="0.88" />
+            <stop offset="1" stopColor="#91efc1" stopOpacity="0.12" />
+          </linearGradient>
+        </defs>
+        <circle cx="320" cy="320" r="286" fill="url(#developer-core-glow)" />
+        <circle className="developer-system-graphic__orbit developer-system-graphic__orbit--outer" cx="320" cy="320" r="266" />
+        <circle className="developer-system-graphic__orbit developer-system-graphic__orbit--middle" cx="320" cy="320" r="202" />
+        <circle className="developer-system-graphic__orbit developer-system-graphic__orbit--inner" cx="320" cy="320" r="132" />
+        <path className="developer-system-graphic__signal developer-system-graphic__signal--one" d="M100 166 C190 210 222 247 320 320 C420 392 462 438 548 478" />
+        <path className="developer-system-graphic__signal developer-system-graphic__signal--two" d="M548 166 C454 215 420 248 320 320 C220 392 180 430 92 478" />
+        <path className="developer-system-graphic__signal developer-system-graphic__signal--three" d="M320 70 C320 162 320 224 320 320 C320 418 320 478 320 566" />
+        <g className="developer-system-graphic__pulse developer-system-graphic__pulse--one"><circle cx="100" cy="166" r="5" /></g>
+        <g className="developer-system-graphic__pulse developer-system-graphic__pulse--two"><circle cx="548" cy="166" r="5" /></g>
+        <g className="developer-system-graphic__pulse developer-system-graphic__pulse--three"><circle cx="320" cy="70" r="5" /></g>
+        <g className="developer-system-graphic__pulse developer-system-graphic__pulse--four"><circle cx="548" cy="478" r="5" /></g>
+      </svg>
+
+      <div className="developer-system-graphic__core">
+        <span><i /> LIVE STATE</span>
+        <strong>COMPASS</strong>
+        <small>LECTURE CORE</small>
+        <b>v.221</b>
       </div>
+
+      <div className="developer-system-node developer-system-node--student">
+        <span>01 / INPUT</span><strong>STUDENT</strong><small>join · poll · voice</small>
+      </div>
+      <div className="developer-system-node developer-system-node--educator">
+        <span>02 / CONTROL</span><strong>EDUCATOR</strong><small>state · material · AI</small>
+      </div>
+      <div className="developer-system-node developer-system-node--display">
+        <span>03 / OUTPUT</span><strong>DISPLAY</strong><small>slide · caption · signal</small>
+      </div>
+      <div className="developer-system-node developer-system-node--review">
+        <span>04 / MEMORY</span><strong>REVIEW</strong><small>recap · evidence · archive</small>
+      </div>
+
+      <div className="developer-system-graphic__rail" aria-hidden="true">
+        <span>POSTGRES / RLS</span><i />
+        <span>EDGE / R2</span><i />
+        <span>.NET BRIDGE</span>
+      </div>
+
+      <div className="developer-system-graphic__telemetry" aria-hidden="true">
+        <div><span>SYNC</span><strong>5 sec</strong></div>
+        <div><span>SURFACES</span><strong>4</strong></div>
+        <div><span>STATE</span><strong>LIVE</strong></div>
+      </div>
+    </div>
+  );
+}
+
+function TechnologyShowcase() {
+  return (
+    <div className="developer-stack__showcase" aria-label="主要技術基盤">
+      {technologyHighlights.map((technology) => (
+        <article key={technology.name}>
+          <div className="developer-stack__logo">
+            <Image src={technology.logo} alt="" width={58} height={58} aria-hidden="true" />
+          </div>
+          <div>
+            <span>{technology.role}</span>
+            <h3>{technology.name}</h3>
+            <p>{technology.detail}</p>
+          </div>
+        </article>
+      ))}
     </div>
   );
 }
@@ -73,7 +163,6 @@ export function DeveloperApp() {
 
       <main id="developer-main">
         <section id="developer-top" className="developer-reframe-hero" aria-labelledby="developer-title">
-          <div className="developer-hero-orbit" aria-hidden="true"><i /><i /><i /></div>
           <div className="developer-shell developer-hero__grid">
             <div className="developer-hero__content">
               <p className="developer-eyebrow">COMPASS INTERACTIVE / ENGINEERING CASE STUDY</p>
@@ -88,7 +177,7 @@ export function DeveloperApp() {
                 <a className="developer-button developer-button--secondary" href="#architecture">Architectureを見る <span aria-hidden="true">↓</span></a>
               </div>
             </div>
-            <DeveloperProductPreview />
+            <DeveloperLiveSystemGraphic />
           </div>
         </section>
 
@@ -101,6 +190,7 @@ export function DeveloperApp() {
             <div className="developer-stack__metrics" aria-label="Engineering Snapshot">
               {stackMetrics.map((metric) => <div key={metric.label}><strong>{metric.value}</strong><span>{metric.label}</span></div>)}
             </div>
+            <TechnologyShowcase />
             <h3 className="developer-table-title">Technology Stack</h3>
             <div className="developer-stack__grid">
               {technologyStack.map(([area, technology], index) => (
@@ -113,7 +203,7 @@ export function DeveloperApp() {
 
         <section id="architecture" className="developer-section developer-architecture" aria-labelledby="architecture-title">
           <div className="developer-shell">
-            <SectionHeading id="architecture-title" eyebrow="ARCHITECTURE" title="リアルタイム講義のためのアーキテクチャ。">
+            <SectionHeading id="architecture-title" eyebrow="ARCHITECTURE" title="リアルタイム講義のためのアーキテクチャ。" disclosureLabel="障害分離と継続性の設計を読む">
               <p>COMPASS Interactiveは、講義状態、認可、AI処理、資料配信、PowerPoint連携を独立した処理経路に分けています。</p>
               <p>AIや外部APIの障害は、投票・資料閲覧・講義進行から分離。資料配信やPowerPoint連携に問題が起きても、講義状態と認証は維持されます。</p>
               <p>外部サービスを多用する構成でも、部分的な障害の影響範囲を限定し、主要な講義機能を継続できるよう設計しています。</p>
@@ -134,7 +224,7 @@ export function DeveloperApp() {
 
         <section id="security" className="developer-section developer-security" aria-labelledby="security-title">
           <div className="developer-shell">
-            <SectionHeading id="security-title" eyebrow="SECURITY MODEL" title="匿名参加でも、権限は曖昧にしない。">
+            <SectionHeading id="security-title" eyebrow="SECURITY MODEL" title="匿名参加でも、権限は曖昧にしない。" disclosureLabel="教員認証の分離設計を読む">
               <p>学生は氏名や学籍番号を入力せず、通常のアカウント登録なしで参加できます。一方で、投稿や回答の所有権はSupabase Anonymous Authの <code>auth.uid()</code> に結び付け、操作のたびにRLSとRPCで権限を検証します。</p>
               <p>教員側はGoogle認証に加えてTOTPによるAAL2を要求し、学生用の認証とはクライアントと保存領域を分離します。</p>
             </SectionHeading>
@@ -161,7 +251,7 @@ export function DeveloperApp() {
 
         <section id="decisions" className="developer-section developer-decisions" aria-labelledby="decisions-title">
           <div className="developer-shell">
-            <SectionHeading id="decisions-title" eyebrow="SELECTED DECISIONS" title="実運用の制約から選んだ、四つの設計判断。">
+            <SectionHeading id="decisions-title" eyebrow="SELECTED DECISIONS" title="実運用の制約から選んだ、四つの設計判断。" disclosureLabel="失敗時まで含めた判断基準を読む">
               <p>リアルタイム講義では、通信の不安定さ、ブラウザの停止、外部API障害、同時実行、利用量の増加までを前提に設計する必要があります。</p>
               <p>COMPASS Interactiveでは、特に影響の大きい<strong>状態同期、講義終了、資料公開、AI実行</strong>について、通常系だけでなく失敗時の挙動まで設計しています。</p>
             </SectionHeading>
@@ -170,8 +260,11 @@ export function DeveloperApp() {
                 <article key={decision.number}>
                   <header><span>{decision.number}</span><h3>{decision.title}</h3></header>
                   <div><h4>課題</h4><p>{decision.problem}</p></div>
-                  <div><h4>設計</h4><Paragraphs copy={decision.design} /></div>
-                  <div className="developer-decision__evidence"><h4>検証</h4><p>{decision.evidence}</p></div>
+                  <details className="developer-decision__details">
+                    <summary>設計と検証を読む<span aria-hidden="true" /></summary>
+                    <div><h4>設計</h4><Paragraphs copy={decision.design} /></div>
+                    <div className="developer-decision__evidence"><h4>検証</h4><p>{decision.evidence}</p></div>
+                  </details>
                 </article>
               ))}
             </div>
@@ -209,7 +302,7 @@ export function DeveloperApp() {
 
         <section id="codebase" className="developer-section developer-codebase" aria-labelledby="codebase-title">
           <div className="developer-shell">
-            <SectionHeading id="codebase-title" eyebrow="CODEBASE & OWNERSHIP" title="WebからWindowsまで、748ファイルを単一リポジトリで管理。">
+            <SectionHeading id="codebase-title" eyebrow="CODEBASE & OWNERSHIP" title="WebからWindowsまで、748ファイルを単一リポジトリで管理。" disclosureLabel="変更履歴の管理単位を読む">
               <p>React UI、PostgreSQL、Edge Functions、Cloudflare、Presenter Bridge、E2E、運用ドキュメントまでを一つのリポジトリに集約しています。</p>
               <p>機能ごとにディレクトリを分離し、実装だけでなく、対応するDB変更、テスト、運用手順まで同じ変更履歴で追跡できる構成です。</p>
             </SectionHeading>
@@ -239,10 +332,10 @@ export function DeveloperApp() {
             <SectionHeading id="owner-title" eyebrow="DEVELOPER" title="専門領域を超え、COMPASSシリーズを一つの体験で貫く。">
               <p>COMPASS Interactiveの設計には、ソフトウェア開発だけでは得られない複数の現場経験が重なっています。</p>
               <p>私は、学生エンジニアであると同時に、集団塾講師・大学TAとして教育現場に関わり、生命科学の実験研究にも取り組んできました。実務で英語を使い、薬学教育の課題を現役学生の立場として観察しながら、AIネイティブな開発では最新のコーディングエージェントを実装工程へ段階的に組み込んできました。</p>
-              <p><strong>教育する側と学ぶ側、研究する側と開発する側。その複数の視点が、教員の操作性、学生の参加体験、学術的根拠、検証可能性、AI活用まで、一見バラバラに見える1つ1つの専門性と経験が、COMPASS Interactive全体の製品価値につながっています。</strong></p>
+              <p>教育する側と学ぶ側、研究する側と開発する側。その複数の視点が、教員の操作性、学生の参加体験、学術的根拠、検証可能性、AI活用まで、一見バラバラに見える1つ1つの専門性と経験が、COMPASS Interactive全体の製品価値につながっています。</p>
             </SectionHeading>
             <div className="developer-owner__principles">
-              {developerPrinciples.map((principle) => <article key={principle.number}><header><span>{principle.number}</span><p>{principle.label}</p></header><h3>{principle.title}</h3><Paragraphs copy={principle.body} /></article>)}
+              {developerPrinciples.map((principle) => <article key={principle.number}><header><span>{principle.number}</span><p>{principle.label}</p></header><h3>{principle.title}</h3><DisclosureParagraphs copy={principle.body} summary="経験と設計への反映を読む" /></article>)}
             </div>
             <div className="developer-ownership">
               <div><p className="developer-eyebrow">OWNERSHIP</p><h3>Ownership</h3><p>COMPASS Interactiveでは、以下の領域を開発者が一貫して担当しています。</p></div>

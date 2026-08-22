@@ -7,6 +7,57 @@ export const stackMetrics = [
   { value: "x86 + x64", label: "ネイティブ対応" }
 ];
 
+export const technologyHighlights = [
+  {
+    name: "React 19",
+    role: "INTERFACE RUNTIME",
+    detail: "Student · Educator · Display · Review",
+    logo: "/images/technology/react.svg"
+  },
+  {
+    name: "TypeScript 6",
+    role: "TYPE SYSTEM",
+    detail: "Web UI · Edge Functions · tooling",
+    logo: "/images/technology/typescript.svg"
+  },
+  {
+    name: "Vite 8",
+    role: "BUILD PIPELINE",
+    detail: "Fast development · production bundles",
+    logo: "/images/technology/vite.svg"
+  },
+  {
+    name: "PostgreSQL",
+    role: "STATE & AUTHORIZATION",
+    detail: "RLS · RPC · 56 migrations · 43 pgTAP",
+    logo: "/images/technology/postgresql.svg"
+  },
+  {
+    name: "Supabase",
+    role: "REALTIME BACKEND",
+    detail: "Auth · Realtime · 31 Edge Functions",
+    logo: "/images/technology/supabase.svg"
+  },
+  {
+    name: "Cloudflare",
+    role: "DELIVERY EDGE",
+    detail: "Pages · Workers · Private R2",
+    logo: "/images/technology/cloudflare.svg"
+  },
+  {
+    name: ".NET 10",
+    role: "NATIVE BRIDGE",
+    detail: "PowerPoint · Windows x86 / x64",
+    logo: "/images/technology/dotnet.svg"
+  },
+  {
+    name: "Docker",
+    role: "DEVELOPMENT SYSTEM",
+    detail: "Dev Container · local Supabase · CI",
+    logo: "/images/technology/docker.svg"
+  }
+] as const;
+
 export const technologyStack = [
   ["フロントエンド", "React 19 · TypeScript 6 · Vite 8 · React Router 8"],
   ["バックエンド / DB", "Supabase · PostgreSQL · RLS · RPC · Realtime · Edge Functions"],
