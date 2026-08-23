@@ -25,7 +25,7 @@ const SLIDES = [
   }
 ] as const;
 
-const INTERVAL_MS = 6800;
+const INTERVAL_MS = 5200;
 
 export function FounderHeroGallery() {
   const [activeIndex, setActiveIndex] = useState(0);

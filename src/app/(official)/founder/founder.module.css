@@ -275,10 +275,10 @@
   filter: blur(4px);
   transform: scale(1.075) translate3d(1.4%, 0, 0);
   transition:
-    opacity 1050ms cubic-bezier(0.23, 0.73, 0.23, 1),
-    clip-path 1320ms cubic-bezier(0.62, 0, 0.2, 1),
-    filter 1100ms ease,
-    transform 6.8s cubic-bezier(0.2, 0.6, 0.2, 1);
+    opacity 780ms cubic-bezier(0.23, 0.73, 0.23, 1),
+    clip-path 1050ms cubic-bezier(0.62, 0, 0.2, 1),
+    filter 850ms ease,
+    transform 5.2s cubic-bezier(0.2, 0.6, 0.2, 1);
 }
 
 .photoSlide[data-motion="from-right"] {
@@ -317,6 +317,19 @@
   object-fit: contain;
   object-position: center;
   filter: saturate(0.94) contrast(1.045);
+  will-change: transform;
+}
+
+.photoSlide[data-active="true"][data-motion="from-left"] img {
+  animation: photoDriftLeft 5.2s cubic-bezier(0.2, 0.56, 0.2, 1) both;
+}
+
+.photoSlide[data-active="true"][data-motion="from-right"] img {
+  animation: photoDriftRight 5.2s cubic-bezier(0.2, 0.56, 0.2, 1) both;
+}
+
+.photoSlide[data-active="true"][data-motion="soft-rise"] img {
+  animation: photoDriftRise 5.2s cubic-bezier(0.2, 0.56, 0.2, 1) both;
 }
 
 .photoScan {
@@ -335,7 +348,7 @@
   height: 18%;
   content: "";
   background: linear-gradient(180deg, transparent, rgba(95, 218, 231, 0.13), transparent);
-  animation: photoScan 7s ease-in-out infinite;
+  animation: photoScan 5.2s ease-in-out infinite;
 }
 
 .photoControls {
@@ -374,7 +387,7 @@
   background: linear-gradient(90deg, var(--cyan), var(--blue));
 }
 
-.photoDots button[data-active="true"] span { width: 100%; animation: photoProgress 6.8s linear; }
+.photoDots button[data-active="true"] span { width: 100%; animation: photoProgress 5.2s linear; }
 
 .photoMeta {
   overflow: hidden;
@@ -1338,6 +1351,18 @@
 @keyframes ambientOrbit { to { transform: rotate(360deg); } }
 @keyframes photoScan { 0%, 12% { transform: translateY(0); opacity: 0; } 28% { opacity: 1; } 72% { opacity: 0.8; } 88%, 100% { transform: translateY(680%); opacity: 0; } }
 @keyframes photoProgress { from { width: 0; } to { width: 100%; } }
+@keyframes photoDriftLeft {
+  from { transform: scale(1.015) translate3d(-0.75%, 0.35%, 0); }
+  to { transform: scale(1.065) translate3d(1.2%, -0.55%, 0); }
+}
+@keyframes photoDriftRight {
+  from { transform: scale(1.015) translate3d(0.8%, 0.2%, 0); }
+  to { transform: scale(1.06) translate3d(-1.15%, -0.5%, 0); }
+}
+@keyframes photoDriftRise {
+  from { transform: scale(1.012) translate3d(0, 0.8%, 0); }
+  to { transform: scale(1.06) translate3d(0.45%, -0.9%, 0); }
+}
 @keyframes interfaceDraw { to { stroke-dashoffset: 0; } }
 @keyframes nodeAppear { from { opacity: 0; transform: scale(0.3); transform-origin: center; } to { opacity: 1; transform: scale(1); transform-origin: center; } }
 
@@ -1496,6 +1521,7 @@
 @media (prefers-reduced-motion: reduce) {
   .heroAmbient span,
   .photoScan::before,
+  .photoSlide[data-active="true"] img,
   .photoDots button[data-active="true"] span,
   .interfaceGraphic path,
   .interfaceGraphic circle { animation: none !important; }

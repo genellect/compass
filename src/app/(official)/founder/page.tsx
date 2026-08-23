@@ -240,6 +240,7 @@ export default function FounderPage() {
           <a href="#story">Story</a>
           <a href="#products">Products</a>
           <a href="#credentials">Credentials</a>
+          <a href="#off-hours">Off Hours</a>
           <a href="#contact-cta">Contact</a>
         </nav>
         <nav className={styles.mobileNavigation} aria-label="Mobile portfolio navigation">
