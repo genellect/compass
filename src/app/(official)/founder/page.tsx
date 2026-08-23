@@ -102,6 +102,39 @@ const credentials = [
   { kind: "ielts", mark: "IELTS", name: "IELTS Academic", score: "7.5" }
 ] as const;
 
+const offHours = [
+  {
+    id: "01",
+    label: "DRIVE",
+    image: "/images/founder-portfolio/off-hours-drive.webp",
+    alt: "雪山と新緑を背景に高原道路を走る車",
+    copy: [
+      "自然の中で車を走らせるのが好きです。",
+      "一番の思い出は、友人との長野ドライブです。"
+    ]
+  },
+  {
+    id: "02",
+    label: "SHOGI",
+    image: "/images/founder-portfolio/off-hours-shogi.webp",
+    alt: "新将棋会館のエントランスと将棋会館の石碑",
+    copy: [
+      "将棋は小学生から始め、棋力はアマチュア三段です。",
+      "全国大会にも何度か出場しました。"
+    ]
+  },
+  {
+    id: "03",
+    label: "CLIMBING",
+    image: "/images/founder-portfolio/off-hours-climbing.webp",
+    alt: "ボルダリングウォールを登るYuto Matsui",
+    copy: [
+      "高校時代はクライミング部。",
+      "最近は頻度こそ減りましたが、登山や自然の中で過ごすことが好きです。"
+    ]
+  }
+] as const;
+
 const personSchema = {
   "@context": "https://schema.org",
   "@type": "Person",
@@ -375,6 +408,8 @@ export default function FounderPage() {
                     <h3>
                       {product.key === "interactive" ? (
                         <><span>リアルタイム × AIが、</span><span>講義を次の次元へ。</span></>
+                      ) : product.key === "library" ? (
+                        <><span>北里大学薬学部生のための、</span><span>学生目線の資料ライブラリ。</span></>
                       ) : product.title}
                     </h3>
                     <nav aria-label={`${product.label}へのリンク`}>
@@ -404,9 +439,33 @@ export default function FounderPage() {
           </div>
         </section>
 
+        <section id="off-hours" className={styles.offHours} aria-labelledby="off-hours-title">
+          <div className={styles.sectionShell}>
+            <header className={styles.offHoursHeading} data-reveal>
+              <p className={styles.sectionKicker}>Away from the desk</p>
+              <h2 id="off-hours-title">OFF HOURS</h2>
+            </header>
+            <div className={styles.offHoursGrid}>
+              {offHours.map((item) => (
+                <article key={item.label} className={styles.offHoursCard}>
+                  <div className={styles.offHoursVisual}>
+                    <Image src={item.image} alt={item.alt} fill sizes="(min-width: 901px) 32vw, 100vw" />
+                    <span aria-hidden="true">{item.id}</span>
+                  </div>
+                  <div className={styles.offHoursCopy}>
+                    <h3>{item.label}</h3>
+                    <p>{item.copy.map((line) => <span key={line}>{line}</span>)}</p>
+                  </div>
+                </article>
+              ))}
+            </div>
+          </div>
+        </section>
+
         <section id="contact-cta" className={styles.contact} aria-labelledby="contact-title">
           <div className={styles.contactShell} data-reveal>
             <div>
+              <p className={styles.contactKicker}>お問い合わせ</p>
               <h2 id="contact-title">CONTACT</h2>
             </div>
             <div className={styles.contactCopy}>
@@ -433,7 +492,10 @@ export default function FounderPage() {
             Life science: <a href="https://unsplash.com/photos/white-and-black-microscope-5HbxyB0_DBg" target="_blank" rel="noopener noreferrer">Jaron Nix / Unsplash</a> ·
             Software development: <a href="https://unsplash.com/photos/code-appears-on-a-computer-screen-XG5q_aosoPo" target="_blank" rel="noopener noreferrer">Rob Wingate / Unsplash</a> ·
             Education portrait: Yuto Matsui / personal archive ·
-            Manifesto visual: COMPASS visual archive
+            Manifesto visual: COMPASS visual archive ·
+            Drive: <a href="https://unsplash.com/photos/a-car-drives-along-a-scenic-mountain-road-e6XJTEz5SfA" target="_blank" rel="noopener noreferrer">Zixplore / Unsplash</a> ·
+            Shogi: <a href="https://commons.wikimedia.org/wiki/File:Hulic_Shogi-kaikan_Sendagaya_Building_entrance_2024-09-12.jpg" target="_blank" rel="noopener noreferrer">Asanagi / Wikimedia Commons (CC0)</a> ·
+            Personal portraits &amp; climbing: Yuto Matsui / personal archive
           </p>
         </details>
         <p className={styles.copyright}>© 2026 Yuto Matsui. Personal portfolio hosted within the COMPASS site.</p>

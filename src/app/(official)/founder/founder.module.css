@@ -186,7 +186,7 @@
   height: 100svh;
   min-height: 0;
   max-height: 100svh;
-  grid-template-columns: minmax(420px, 52fr) minmax(420px, 48fr);
+  grid-template-columns: minmax(450px, 55fr) minmax(400px, 45fr);
   padding-top: 68px;
   overflow: hidden;
   background:
@@ -238,13 +238,13 @@
   grid-template-rows: minmax(0, 1fr) auto;
   align-items: center;
   justify-items: center;
-  padding: clamp(28px, 4vh, 52px) clamp(32px, 5vw, 86px) 22px;
+  padding: clamp(20px, 3vh, 38px) clamp(24px, 3.6vw, 58px) 18px;
 }
 
 .photoFrame {
   position: relative;
-  width: min(100%, calc((100svh - 175px) * 0.667));
-  height: min(calc(100svh - 175px), calc((52vw - 100px) * 1.5));
+  width: min(100%, calc((100svh - 145px) * 0.695));
+  height: min(calc(100svh - 145px), calc((55vw - 76px) / 0.695));
   min-height: 0;
   max-height: 760px;
   overflow: hidden;
@@ -272,24 +272,51 @@
   margin: 0;
   opacity: 0;
   clip-path: inset(0 0 0 100%);
-  transform: scale(1.025);
+  filter: blur(4px);
+  transform: scale(1.075) translate3d(1.4%, 0, 0);
   transition:
-    opacity 950ms cubic-bezier(0.23, 0.73, 0.23, 1),
-    clip-path 1050ms cubic-bezier(0.62, 0, 0.2, 1),
-    transform 6.5s cubic-bezier(0.2, 0.6, 0.2, 1);
+    opacity 1050ms cubic-bezier(0.23, 0.73, 0.23, 1),
+    clip-path 1320ms cubic-bezier(0.62, 0, 0.2, 1),
+    filter 1100ms ease,
+    transform 6.8s cubic-bezier(0.2, 0.6, 0.2, 1);
+}
+
+.photoSlide[data-motion="from-right"] {
+  clip-path: inset(0 100% 0 0);
+  transform: scale(1.075) translate3d(-1.4%, 0, 0);
+}
+
+.photoSlide[data-motion="soft-rise"] {
+  clip-path: inset(100% 0 0);
+  transform: scale(1.065) translate3d(0, 1.2%, 0);
 }
 
 .photoSlide[data-active="true"] {
   z-index: 1;
   opacity: 1;
   clip-path: inset(0 0 0 0);
-  transform: scale(1);
+  filter: blur(0);
+  transform: scale(1.01) translate3d(0, 0, 0);
 }
+
+.photoSlide::after {
+  position: absolute;
+  inset: 0;
+  content: "";
+  background:
+    radial-gradient(circle at 68% 34%, rgba(255, 255, 255, 0.13), transparent 34%),
+    linear-gradient(160deg, transparent 58%, rgba(13, 36, 52, 0.1));
+  opacity: 0;
+  transition: opacity 1100ms ease;
+  pointer-events: none;
+}
+
+.photoSlide[data-active="true"]::after { opacity: 1; }
 
 .photoSlide img {
   object-fit: contain;
   object-position: center;
-  filter: saturate(0.91) contrast(1.015);
+  filter: saturate(0.94) contrast(1.045);
 }
 
 .photoScan {
@@ -313,7 +340,7 @@
 
 .photoControls {
   display: grid;
-  width: min(100%, calc((100svh - 175px) * 0.667));
+  width: min(100%, calc((100svh - 145px) * 0.695));
   grid-template-columns: auto 1fr auto;
   gap: 16px;
   align-items: center;
@@ -347,7 +374,7 @@
   background: linear-gradient(90deg, var(--cyan), var(--blue));
 }
 
-.photoDots button[data-active="true"] span { width: 100%; animation: photoProgress 6.5s linear; }
+.photoDots button[data-active="true"] span { width: 100%; animation: photoProgress 6.8s linear; }
 
 .photoMeta {
   overflow: hidden;
@@ -1138,6 +1165,90 @@
 .credentialCard p { margin: 0; color: #557084; font-size: 0.66rem; font-weight: 720; letter-spacing: 0.04em; }
 .credentialCard strong { display: block; margin-top: 5px; color: #142b3c; font-size: 1.35rem; font-weight: 700; letter-spacing: -0.035em; }
 
+.offHours {
+  padding: clamp(112px, 10vw, 164px) 0 clamp(122px, 11vw, 178px);
+  background:
+    radial-gradient(circle at 7% 13%, rgba(232, 178, 107, 0.12), transparent 24%),
+    radial-gradient(circle at 92% 82%, rgba(77, 145, 169, 0.1), transparent 28%),
+    #fffdfa;
+}
+
+.offHoursHeading { margin-bottom: clamp(46px, 5vw, 70px); }
+.offHoursHeading .sectionKicker { color: #9a7354; }
+
+.offHoursHeading h2 {
+  margin: 10px 0 0;
+  color: #142b3c;
+  font-size: clamp(2.25rem, 4.2vw, 4rem);
+  font-weight: 650;
+  letter-spacing: -0.06em;
+  line-height: 1;
+}
+
+.offHoursGrid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: clamp(22px, 2.4vw, 34px);
+}
+
+.offHoursCard { min-width: 0; }
+
+.offHoursVisual {
+  position: relative;
+  aspect-ratio: 16 / 11;
+  overflow: hidden;
+  border-radius: 5px 26px 5px 5px;
+  background: #e9eef0;
+  box-shadow: 0 22px 54px rgba(48, 65, 75, 0.11);
+}
+
+.offHoursVisual::after {
+  position: absolute;
+  inset: 0;
+  content: "";
+  background: linear-gradient(180deg, transparent 60%, rgba(10, 25, 34, 0.2));
+  pointer-events: none;
+}
+
+.offHoursVisual img {
+  object-fit: cover;
+  transition: transform 650ms cubic-bezier(0.22, 0.7, 0.2, 1);
+}
+
+.offHoursCard:hover .offHoursVisual img { transform: scale(1.025); }
+
+.offHoursVisual > span {
+  position: absolute;
+  right: 15px;
+  bottom: 13px;
+  z-index: 1;
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 0.6rem;
+  font-weight: 780;
+  letter-spacing: 0.12em;
+}
+
+.offHoursCopy { padding: 24px 4px 0; }
+
+.offHoursCopy h3 {
+  margin: 0;
+  color: #9a7354;
+  font-size: 0.68rem;
+  font-weight: 850;
+  letter-spacing: 0.18em;
+}
+
+.offHoursCopy p {
+  display: grid;
+  gap: 5px;
+  margin: 15px 0 0;
+  color: #334b5b;
+  font-size: 0.88rem;
+  line-height: 1.82;
+}
+
+.offHoursCopy p span { display: block; }
+
 .contact {
   padding: clamp(78px, 8vw, 118px) 0;
   color: #eaf4f8;
@@ -1157,6 +1268,14 @@
 }
 
 .contact .sectionKicker { color: #70ced5; }
+
+.contactKicker {
+  margin: 0 0 12px;
+  color: #70ced5;
+  font-size: 0.65rem;
+  font-weight: 760;
+  letter-spacing: 0.15em;
+}
 
 .contact h2 {
   margin: 0;
@@ -1229,7 +1348,7 @@
 @media (max-width: 1080px) {
   .hero { grid-template-columns: minmax(390px, 51fr) minmax(390px, 49fr); }
   .heroPhoto { padding-inline: 34px; }
-  .photoFrame { height: min(calc(100svh - 175px), calc((51vw - 68px) * 1.5)); }
+  .photoFrame { height: min(calc(100svh - 150px), calc((51vw - 68px) / 0.695)); }
   .heroCopy { padding-inline: 38px; }
   .storyShell { grid-template-columns: minmax(330px, 0.82fr) minmax(0, 1.18fr); }
 }
@@ -1282,6 +1401,7 @@
   .fieldGrid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .fieldCard:last-child { grid-column: 1 / -1; display: grid; grid-template-columns: 1fr 1fr; }
   .fieldCard:last-child .fieldImage { min-height: 230px; }
+  .offHoursGrid { grid-template-columns: 1fr; gap: 52px; }
 
   .storyShell { grid-template-columns: 1fr; }
   .storyPortrait { position: relative; top: auto; height: min(88svh, 720px); }
@@ -1313,6 +1433,7 @@
   .sectionShell,
   .storyShell { width: min(100% - 34px, 1240px); }
   .expertise, .products, .credentials { padding: 76px 0; }
+  .offHours { padding: 90px 0 104px; }
   .compactHeading { margin-bottom: 28px; }
 
   .fieldGrid { grid-template-columns: 1fr; gap: 13px; }
@@ -1348,6 +1469,10 @@
   .interactiveHeroStage :global(.founder-interactive-product-preview) { width: 112%; padding: 6px; transform: scale(0.8); }
 
   .credentialGrid { grid-template-columns: 1fr; }
+  .offHoursGrid { grid-template-columns: 1fr; gap: 48px; }
+  .offHoursHeading { margin-bottom: 34px; }
+  .offHoursVisual { aspect-ratio: 16 / 11; }
+  .offHoursCopy { padding-top: 20px; }
   .contactShell { grid-template-columns: 1fr; gap: 30px; }
   .footer { padding-inline: 20px; }
   .footerPrimary { display: grid; }
@@ -1380,6 +1505,6 @@
   .photoDots button[data-active="true"] span { width: 100%; }
   .interfaceGraphic path { stroke-dasharray: none; stroke-dashoffset: 0; }
   .interfaceGraphic circle { opacity: 1; }
-  .fieldImage img, .productVisual img, .navigation a::after, .socialLinks a, .productCopy nav a { transition: none !important; }
+  .fieldImage img, .productVisual img, .offHoursVisual img, .navigation a::after, .socialLinks a, .productCopy nav a { transition: none !important; }
   .interactiveHeroStage :global(.hero-signal-matrix) { display: none; }
 }
