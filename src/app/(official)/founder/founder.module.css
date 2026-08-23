@@ -1502,13 +1502,19 @@
   .photoMeta { font-size: 0.49rem; }
   .photoDots button { width: 28px; }
 
-  .heroCopy { min-height: 0; padding: 18px 20px 42px; }
+  .heroCopy {
+    min-height: 0;
+    align-items: center;
+    padding: 18px 20px 42px;
+    text-align: center;
+  }
   .eyebrow { font-size: 0.57rem; }
   .heroCopy h1 { margin-top: 15px; font-size: clamp(2.45rem, 12vw, 3.35rem); }
   .japaneseName { margin-top: 9px; }
-  .heroStatement { font-size: 1.08rem; }
-  .axisList { grid-template-columns: 1fr; gap: 7px; }
-  .socialLinks { margin-top: 16px; padding-top: 14px; }
+  .heroStatement { margin-inline: auto; font-size: 1.08rem; }
+  .axisList { width: 100%; grid-template-columns: 1fr; gap: 7px; justify-items: center; }
+  .axisList li { justify-content: center; text-align: center; }
+  .socialLinks { width: min(100%, 260px); justify-content: center; margin-top: 16px; padding-top: 14px; }
   .socialLinks a { width: 40px; height: 40px; }
 
   .sectionShell,
@@ -1581,39 +1587,51 @@
   .header { min-height: 52px; padding-block: 6px; }
 
   .hero {
-    grid-template-rows: minmax(0, 45fr) minmax(0, 55fr);
+    grid-template-rows: minmax(0, 55fr) minmax(0, 45fr);
     padding-top: 52px;
   }
 
-  .heroPhoto { padding: 8px 10px 4px; }
+  .heroPhoto { padding: 7px 10px 2px; }
 
   .photoFrame {
-    width: min(72vw, calc((45svh - 78px) * 0.667));
-    height: calc(45svh - 78px);
+    width: min(78vw, calc((55svh - 75px) * 0.8), 260px);
+    height: calc(55svh - 75px);
   }
 
   .photoControls {
-    width: min(72vw, calc((45svh - 78px) * 0.667));
-    margin-top: 7px;
+    width: min(78vw, calc((55svh - 75px) * 0.8), 260px);
+    margin-top: 6px;
   }
 
   .photoMeta { display: none; }
   .photoControls { grid-template-columns: 1fr auto; }
 
   .heroCopy {
-    padding: 8px 16px max(10px, env(safe-area-inset-bottom));
+    padding: 6px 18px max(10px, env(safe-area-inset-bottom));
   }
 
-  .eyebrow { font-size: 0.52rem; }
-  .heroCopy h1 { margin-top: 8px; font-size: clamp(2rem, 10.5vw, 2.55rem); line-height: 0.96; }
-  .japaneseName { margin-top: 5px; font-size: 0.66rem; }
-  .heroStatement { margin-top: 10px; font-size: 0.94rem; line-height: 1.4; }
-  .axisList { gap: 4px; margin-top: 10px; }
-  .axisList li { font-size: 0.64rem; line-height: 1.3; }
-  .axisList li > span { width: 6px; height: 6px; margin-top: 0.24em; }
-  .socialLinks { gap: 9px; margin-top: 8px; padding-top: 8px; }
-  .socialLinks a { width: 34px; height: 34px; }
-  .socialLinks svg { width: 17px; height: 17px; }
+  .eyebrow { font-size: 0.56rem; }
+  .heroCopy h1 { margin-top: 8px; font-size: clamp(2.45rem, 11.5vw, 3.05rem); line-height: 0.96; }
+  .japaneseName { margin-top: 5px; font-size: 0.72rem; }
+  .heroStatement { margin-top: 10px; font-size: 1.05rem; line-height: 1.4; }
+  .axisList { gap: 5px; margin-top: 12px; }
+  .axisList li { font-size: 0.68rem; line-height: 1.35; }
+  .socialLinks { gap: 10px; margin-top: 10px; padding-top: 9px; }
+  .socialLinks a { width: 38px; height: 38px; }
+  .socialLinks svg { width: 19px; height: 19px; }
+}
+
+@media (max-width: 640px) and (max-height: 600px) {
+  .hero { grid-template-rows: minmax(0, 53fr) minmax(0, 47fr); }
+  .photoFrame {
+    width: min(76vw, calc((53svh - 72px) * 0.8), 230px);
+    height: calc(53svh - 72px);
+  }
+  .photoControls { width: min(76vw, calc((53svh - 72px) * 0.8), 230px); }
+  .heroCopy h1 { font-size: clamp(2.3rem, 11.5vw, 2.65rem); }
+  .heroStatement { font-size: 0.98rem; }
+  .axisList li { font-size: 0.64rem; }
+  .socialLinks a { width: 35px; height: 35px; }
 }
 
 @media (prefers-reduced-motion: reduce) {
