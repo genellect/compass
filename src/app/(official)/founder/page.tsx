@@ -279,7 +279,10 @@ export default function FounderPage() {
             <div className={styles.essay}>
               <header className={styles.storyHeading} data-reveal>
                 <p className={styles.sectionKicker}>Personal statement</p>
-                <h2 id="story-title">研究とエンジニアリングの<br />インターフェース。</h2>
+                <h2 id="story-title">
+                  研究と<span className={styles.mobileStoryBreak} aria-hidden="true"><br /></span>エンジニアリングの<br />
+                  インターフェース。
+                </h2>
               </header>
 
               <section className={styles.essayChapter} aria-labelledby="chapter-origin" data-reveal>
@@ -323,7 +326,6 @@ export default function FounderPage() {
           <div className={styles.sectionShell}>
             <header className={styles.productsHeading} data-reveal>
               <div><p className={styles.sectionKicker}>Products</p><h2 id="products-title">プロダクト紹介</h2></div>
-              <p>教育と研究の現場から生まれた、公開中のプロダクトと思想。</p>
             </header>
             <div className={styles.productGrid}>
               {products.map((product) => (
