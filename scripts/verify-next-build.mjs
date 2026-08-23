@@ -246,8 +246,8 @@ for (const expected of [
 const githubProfileUrl = "https://github.com/genellect";
 for (const [html, label, expectedCount] of [
   [official, "Official founder profile", 1],
-  [interactive, "Interactive developer profile", 2],
-  [interactiveDevelopers, "Interactive developer introduction profile", 2]
+  [interactive, "Interactive developer profile", 1],
+  [interactiveDevelopers, "Interactive developer introduction profile", 1]
 ]) {
   const links = html.match(new RegExp(`<a\\b[^>]*href="${githubProfileUrl}"[^>]*>`, "g")) ?? [];
   if (links.length !== expectedCount) {
@@ -517,6 +517,8 @@ for (const expected of [
   'id="developers"',
   "LET EVERYTHING MOVE.",
   "未来の講義を、いま体験。",
+  "設計判断をたどる",
+  "この体験を、見えない設計から支える。",
   'rel="canonical" href="https://compass-official.pages.dev/INTRO_Interactive/"',
   parentGaMeasurementId
 ]) expectIncludes(interactive, expected, "Interactive page");
@@ -549,11 +551,17 @@ for (const expected of [
   "x86 + x64",
   "匿名参加でも、権限は曖昧にしない。",
   "75 / 75",
+  "WebからWindowsまで、単一リポジトリで管理。",
   "専門領域を超え、COMPASSシリーズを一つの体験で貫く。",
   "/INTRO_Interactive/developers/opengraph-image-",
   "/INTRO_Interactive/developers/twitter-image-",
   'rel="canonical" href="https://compass-official.pages.dev/INTRO_Interactive/developers/"'
 ]) expectIncludes(interactiveDevelopers, expected, "Interactive developer page");
+
+for (const unexpected of [
+  'class="developer-codebase__metrics"',
+  '<th scope="col">Files</th>'
+]) expectExcludes(interactiveDevelopers, unexpected, "Interactive developer codebase section");
 
 for (const unexpected of [
   "学びの熱を、",

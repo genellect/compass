@@ -610,8 +610,6 @@
   color: #edf9fb;
   background: var(--portfolio-navy-soft);
 }
-.developer-classroom { padding-top: 0; }
-
 .developer-last-verified {
   display: flex;
   flex-wrap: wrap;
@@ -677,8 +675,7 @@
 .developer-codebase__metrics > div:last-child { border-right: 0; }
 .developer-codebase__metrics strong { display: block; font-size: 1.7rem; letter-spacing: -0.04em; }
 .developer-codebase__metrics span { display: block; margin-top: 7px; color: var(--portfolio-muted); font-size: 0.58rem; line-height: 1.35; }
-.developer-table-wrap--directories th:first-child { width: 23%; }
-.developer-table-wrap--directories th:nth-child(2) { width: 10%; }
+.developer-table-wrap--directories th:first-child { width: 28%; }
 
 .developer-public-source {
   display: grid;

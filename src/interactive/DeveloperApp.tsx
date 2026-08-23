@@ -6,7 +6,6 @@ import { links } from "./content/interactiveContent";
 import {
   architectureLayers,
   ciJobs,
-  codebaseMetrics,
   developerPrinciples,
   directoryRows,
   ownershipItems,
@@ -224,7 +223,7 @@ export function DeveloperApp() {
 
         <section id="security" className="developer-section developer-security" aria-labelledby="security-title">
           <div className="developer-shell">
-            <SectionHeading id="security-title" eyebrow="SECURITY MODEL" title="匿名参加でも、権限は曖昧にしない。" disclosureLabel="教員認証の分離設計を読む">
+            <SectionHeading id="security-title" eyebrow="SECURITY MODEL" title="匿名参加でも、権限は曖昧にしない。">
               <p>学生は氏名や学籍番号を入力せず、通常のアカウント登録なしで参加できます。一方で、投稿や回答の所有権はSupabase Anonymous Authの <code>auth.uid()</code> に結び付け、操作のたびにRLSとRPCで権限を検証します。</p>
               <p>教員側はGoogle認証に加えてTOTPによるAAL2を要求し、学生用の認証とはクライアントと保存領域を分離します。</p>
             </SectionHeading>
@@ -251,7 +250,7 @@ export function DeveloperApp() {
 
         <section id="decisions" className="developer-section developer-decisions" aria-labelledby="decisions-title">
           <div className="developer-shell">
-            <SectionHeading id="decisions-title" eyebrow="SELECTED DECISIONS" title="実運用の制約から選んだ、四つの設計判断。" disclosureLabel="失敗時まで含めた判断基準を読む">
+            <SectionHeading id="decisions-title" eyebrow="SELECTED DECISIONS" title="実運用の制約から選んだ、四つの設計判断。">
               <p>リアルタイム講義では、通信の不安定さ、ブラウザの停止、外部API障害、同時実行、利用量の増加までを前提に設計する必要があります。</p>
               <p>COMPASS Interactiveでは、特に影響の大きい<strong>状態同期、講義終了、資料公開、AI実行</strong>について、通常系だけでなく失敗時の挙動まで設計しています。</p>
             </SectionHeading>
@@ -302,15 +301,14 @@ export function DeveloperApp() {
 
         <section id="codebase" className="developer-section developer-codebase" aria-labelledby="codebase-title">
           <div className="developer-shell">
-            <SectionHeading id="codebase-title" eyebrow="CODEBASE & OWNERSHIP" title="WebからWindowsまで、748ファイルを単一リポジトリで管理。" disclosureLabel="変更履歴の管理単位を読む">
+            <SectionHeading id="codebase-title" eyebrow="CODEBASE & OWNERSHIP" title="WebからWindowsまで、単一リポジトリで管理。" disclosureLabel="変更履歴の管理単位を読む">
               <p>React UI、PostgreSQL、Edge Functions、Cloudflare、Presenter Bridge、E2E、運用ドキュメントまでを一つのリポジトリに集約しています。</p>
               <p>機能ごとにディレクトリを分離し、実装だけでなく、対応するDB変更、テスト、運用手順まで同じ変更履歴で追跡できる構成です。</p>
             </SectionHeading>
-            <div className="developer-codebase__metrics">{codebaseMetrics.map(([value, label]) => <div key={label}><strong>{value}</strong><span>{label}</span></div>)}</div>
             <div className="developer-table-wrap developer-table-wrap--directories">
               <table>
-                <thead><tr><th scope="col">ディレクトリ</th><th scope="col">Files</th><th scope="col">主な役割</th></tr></thead>
-                <tbody>{directoryRows.map((row) => <tr key={row[0]}><th scope="row" data-label="ディレクトリ"><code>{row[0]}</code></th><td data-label="Files">{row[1]}</td><td data-label="主な役割">{row[2]}</td></tr>)}</tbody>
+                <thead><tr><th scope="col">ディレクトリ</th><th scope="col">主な役割</th></tr></thead>
+                <tbody>{directoryRows.map((row) => <tr key={row[0]}><th scope="row" data-label="ディレクトリ"><code>{row[0]}</code></th><td data-label="主な役割">{row[1]}</td></tr>)}</tbody>
               </table>
             </div>
             <div className="developer-public-source">

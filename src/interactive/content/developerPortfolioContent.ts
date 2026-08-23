@@ -167,25 +167,15 @@ export const ciJobs = [
   "Presenter Bridge · Windows x86"
 ];
 
-export const codebaseMetrics = [
-  ["748", "tracked files"],
-  ["119", "directories"],
-  ["56", "DB migrations"],
-  ["31", "Edge Function entrypoints"],
-  ["43", "pgTAP SQL files"],
-  ["18", "Playwright specs"],
-  ["34", "C# / .NET files"]
-] as const;
-
 export const directoryRows = [
-  ["supabase/", "175", "PostgreSQL · RLS · RPC · Realtime · Edge Functions · SQL tests"],
-  ["src/", "159", "React UI · 状態管理 · データアクセス"],
-  ["scripts/", "144", "静的検査 · 負荷 · 競合 · upgrade · release検証"],
-  ["docs/", "109", "Architecture · Security · Runbook · 検証記録"],
-  ["presenter-bridge/", "47", "Windows / .NET · PowerPoint連携"],
-  ["e2e/", "25", "Demo · Local Supabase · ブラウザE2E"],
-  ["publisher/", "15", "PDF公開 · 復旧処理"],
-  ["cloudflare/", "12", "Asset Worker · Private R2 · Presenter Gateway"]
+  ["supabase/", "PostgreSQL · RLS · RPC · Realtime · Edge Functions · SQL tests"],
+  ["src/", "React UI · 状態管理 · データアクセス"],
+  ["scripts/", "静的検査 · 負荷 · 競合 · upgrade · release検証"],
+  ["docs/", "Architecture · Security · Runbook · 検証記録"],
+  ["presenter-bridge/", "Windows / .NET · PowerPoint連携"],
+  ["e2e/", "Demo · Local Supabase · ブラウザE2E"],
+  ["publisher/", "PDF公開 · 復旧処理"],
+  ["cloudflare/", "Asset Worker · Private R2 · Presenter Gateway"]
 ] as const;
 
 export const developerPrinciples = [

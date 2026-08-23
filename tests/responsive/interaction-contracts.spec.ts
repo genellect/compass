@@ -175,7 +175,9 @@ for (const scenario of [
 for (const path of ["/", "/INTRO_Interactive/", "/INTRO_Interactive/developers/"]) {
   test(`GitHub Portfolio link contract: ${path}`, async ({ page }) => {
     const runtimeErrors = await openRoute(page, path, { name: "github-link", width: 390, height: 844 });
-    const link = page.locator('a[href="https://github.com/genellect"]').first();
+    const links = page.locator('a[href="https://github.com/genellect"]');
+    await expect(links).toHaveCount(1);
+    const link = links.first();
     await expect(link).toHaveAttribute("href", "https://github.com/genellect");
     await expect(link).toContainText("GitHub Portfolio");
     await link.scrollIntoViewIfNeeded();
@@ -183,6 +185,54 @@ for (const path of ["/", "/INTRO_Interactive/", "/INTRO_Interactive/developers/"
     expect(runtimeErrors, `runtime errors while checking GitHub Portfolio on ${path}`).toEqual([]);
   });
 }
+
+test("Interactive Developer Gateway keeps the product engineering message", async ({ page }) => {
+  const runtimeErrors = await openRoute(page, "/INTRO_Interactive/", {
+    name: "interactive-developer-gateway",
+    width: 1440,
+    height: 900,
+  });
+  const gateway = page.locator("#developers");
+  await expect(gateway.getByText("設計判断をたどる", { exact: true })).toBeVisible();
+  await expect(gateway.getByRole("heading", { name: "この体験を、見えない設計から支える。" })).toBeVisible();
+  await expect(gateway.getByText("Product ownership", { exact: true })).toHaveCount(0);
+  expect(runtimeErrors).toEqual([]);
+});
+
+test("Interactive developer content remains visible without repeated scale metrics", async ({ page }) => {
+  const runtimeErrors = await openRoute(page, "/INTRO_Interactive/developers/", {
+    name: "developer-content-contract",
+    width: 1440,
+    height: 900,
+  });
+
+  const securityCopy = page.getByText(
+    "教員側はGoogle認証に加えてTOTPによるAAL2を要求し、学生用の認証とはクライアントと保存領域を分離します。",
+    { exact: true },
+  );
+  const decisionCopy = page.getByText(
+    /COMPASS Interactiveでは、特に影響の大きい状態同期、講義終了、資料公開、AI実行について、通常系だけでなく失敗時の挙動まで設計しています。/,
+  );
+  await expect(securityCopy).toBeVisible();
+  await expect(decisionCopy).toBeVisible();
+  await expect(securityCopy.locator("xpath=ancestor::details")).toHaveCount(0);
+  await expect(decisionCopy.locator("xpath=ancestor::details")).toHaveCount(0);
+  await expect(page.locator(".developer-codebase__metrics")).toHaveCount(0);
+  await expect(page.getByRole("heading", { name: "WebからWindowsまで、単一リポジトリで管理。" })).toBeVisible();
+  await expect(page.locator(".developer-table-wrap--directories thead th")).toHaveCount(2);
+
+  const spacing = await page.evaluate(
+    ({ verificationSelector, headingSelector }) => {
+      const previous = document.querySelector<HTMLElement>(verificationSelector);
+      const heading = document.querySelector<HTMLElement>(headingSelector);
+      if (!previous || !heading) return -1;
+      return heading.getBoundingClientRect().top - previous.getBoundingClientRect().bottom;
+    },
+    { verificationSelector: ".developer-verification", headingSelector: "#classroom-title" },
+  );
+  expect(spacing, "CLASSROOM VALIDATION heading needs a clear Desktop section break").toBeGreaterThanOrEqual(80);
+  expect(runtimeErrors).toEqual([]);
+});
 
 test("FSL Mobile registration prompt follows the reading position", async ({ page }) => {
   const runtimeErrors = await openRoute(page, "/future-strategy-library/", {
