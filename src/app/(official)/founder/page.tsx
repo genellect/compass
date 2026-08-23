@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import { LegacyInteractions } from "../../../components/LegacyInteractions";
+import { FounderHeroGallery } from "./FounderHeroGallery";
 import styles from "./founder.module.css";
 
 export const metadata: Metadata = {
@@ -38,7 +39,7 @@ const fields = [
     id: "01",
     title: "ライフサイエンス研究",
     english: "Life Science Research",
-    description: "神経変性疾患に関わる遺伝子変異と分子病態を、実験系研究の現場から捉える。",
+    description: "神経変性疾患の分子病態を、実験研究の現場から理解する。",
     image: "/images/founder-portfolio/source/life-science-unsplash.jpg",
     alt: "細胞培養の観察に使われる顕微鏡",
     accent: "bio"
@@ -47,7 +48,7 @@ const fields = [
     id: "02",
     title: "AIネイティブ開発",
     english: "AI-native Development",
-    description: "AIを追加機能ではなく、一人が設計・実装できるシステムの規模を拡張する基盤として使う。",
+    description: "AIとともに、一人が設計・実装できるシステムの規模を広げる。",
     image: "/images/founder-portfolio/source/ai-abstract-unsplash.jpg",
     alt: "情報の流れを想起させる青い光跡",
     accent: "ai"
@@ -56,37 +57,47 @@ const fields = [
     id: "03",
     title: "大学教育支援",
     english: "University Education Support",
-    description: "学生と教育現場の課題を要件へ変換し、実際に使われるWebシステムとして届ける。",
+    description: "学生と教育現場の課題を、実際に使われる仕組みへ変換する。",
     image: "/images/founder-portfolio/source/software-development-unsplash.jpg",
     alt: "ソースコードを表示した開発環境",
     accent: "education"
   }
 ] as const;
 
-const works = [
+const products = [
   {
-    number: "01",
-    label: "Experimental Research",
-    title: "Life Science Research",
-    description: "神経変性疾患に関わる遺伝子変異と分子病態を研究。研究現場の不確実性と、仮説検証に必要な時間・認知資源を理解する。",
-    meta: "Molecular biology / Neurodegeneration"
+    key: "interactive",
+    label: "COMPASS Interactive",
+    title: "リアルタイム × AIが、講義を次の次元へ。",
+    image: "/images/hero.desktop.highlight.webp",
+    alt: "DNA、コンパス、ネットワークで構成されたCOMPASS Interactiveのビジュアル",
+    links: [
+      { label: "紹介サイト", href: "/INTRO_Interactive/" },
+      { label: "開発者向けポートフォリオ", href: "/INTRO_Interactive/developers/" }
+    ]
   },
   {
-    number: "02",
-    label: "Student-led Platform",
-    title: "COMPASS Platform",
-    description: "資料共有の招待・名簿管理の自動化から始まり、教育、情報、コミュニティを一つにつなぐ学生主導の基盤へ。",
-    meta: "Founder / Product & Engineering",
-    href: "/"
+    key: "library",
+    label: "未来戦略ライブラリ",
+    title: "北里大学薬学部生のための、学生目線の資料ライブラリ。",
+    image: "/images/future-strategy-library/knowledge-horizon-og.png",
+    alt: "未来戦略ライブラリのBeyond the Syllabusビジュアル",
+    links: [{ label: "ライブラリを見る", href: "/future-strategy-library/" }]
   },
   {
-    number: "03",
-    label: "Education Technology",
-    title: "COMPASS Interactive",
-    description: "質問、反応、教材、AIを同じ講義体験へ接続する大学講義支援システム。現場の課題を要件へ落とし、実装へ変換する。",
-    meta: "Architecture / Frontend / Product",
-    href: "/INTRO_Interactive/"
+    key: "manifesto",
+    label: "COMPASS Manifesto",
+    title: "AI時代をどう生きるか。",
+    image: "/images/Image5.jpg",
+    alt: "新しい可能性を象徴する朝日の差す山岳風景",
+    links: [{ label: "Manifestoを読む", href: "/messages/" }]
   }
+] as const;
+
+const credentials = [
+  { mark: "E1", name: "実用英語技能検定", score: "1級" },
+  { mark: "T", name: "TOEIC L&R", score: "965" },
+  { mark: "I", name: "IELTS Academic", score: "7.5" }
 ] as const;
 
 const personSchema = {
@@ -106,11 +117,33 @@ const personSchema = {
     name: "COMPASS",
     url: "https://compass-official.pages.dev/"
   },
-  sameAs: ["https://github.com/genellect"]
+  sameAs: ["https://github.com/genellect", "https://www.instagram.com/n.m.w.314/"]
 };
 
 function ArrowIcon() {
   return <span aria-hidden="true">↗</span>;
+}
+
+function InstagramIcon() {
+  return (
+    <svg viewBox="0 0 24 24" role="presentation">
+      <rect x="3" y="3" width="18" height="18" rx="5" />
+      <circle cx="12" cy="12" r="4.25" />
+      <circle className={styles.iconFill} cx="17.4" cy="6.7" r="1.1" />
+    </svg>
+  );
+}
+
+function GitHubIcon() {
+  return (
+    <svg viewBox="0 0 24 24" role="presentation">
+      <path className={styles.iconFill} d="M12 2a10 10 0 0 0-3.16 19.49c.5.09.68-.22.68-.48v-1.87c-2.78.61-3.37-1.18-3.37-1.18-.45-1.16-1.11-1.47-1.11-1.47-.91-.62.07-.61.07-.61 1 .07 1.53 1.03 1.53 1.03.89 1.53 2.34 1.09 2.91.83.09-.65.35-1.09.64-1.34-2.22-.25-4.56-1.11-4.56-4.94 0-1.09.39-1.98 1.03-2.68-.1-.25-.45-1.27.1-2.64 0 0 .84-.27 2.75 1.02A9.58 9.58 0 0 1 12 6.82c.85 0 1.71.11 2.51.34 1.91-1.29 2.75-1.02 2.75-1.02.55 1.37.2 2.39.1 2.64.64.7 1.03 1.59 1.03 2.68 0 3.84-2.34 4.68-4.57 4.93.36.31.68.92.68 1.86v2.76c0 .27.18.58.69.48A10 10 0 0 0 12 2Z" />
+    </svg>
+  );
+}
+
+function CompassIcon() {
+  return <Image src="/images/compass-mark.svg" alt="" width={28} height={28} aria-hidden="true" />;
 }
 
 export default function FounderPage() {
@@ -124,39 +157,24 @@ export default function FounderPage() {
           <span>Research × Engineering</span>
         </a>
         <nav className={styles.navigation} aria-label="Portfolio navigation">
-          <a href="#practice">Practice</a>
-          <a href="#work">Work</a>
+          <a href="#expertise">Expertise</a>
           <a href="#story">Story</a>
-          <a href="/" aria-label="COMPASS公式サイトへ">COMPASS <ArrowIcon /></a>
+          <a href="#products">Products</a>
+          <a href="#credentials">Credentials</a>
+          <a href="#contact-cta">Contact</a>
         </nav>
       </header>
 
       <main id="founder-main">
         <section id="top" className={styles.hero} aria-labelledby="founder-title">
-          <div className={styles.heroPhoto}>
-            <Image
-              src="/images/founder-portfolio/yuto-matsui-profile-hero.webp"
-              alt="横顔のYuto Matsui / 松井優知"
-              fill
-              priority
-              sizes="(min-width: 901px) 59vw, 100vw"
-              className={styles.heroPortrait}
-            />
-            <div className={styles.heroPhotoWash} aria-hidden="true" />
-            <div className={styles.photoIndex} aria-hidden="true">
-              <span>01</span>
-              <span>Portrait / Interface</span>
-            </div>
-          </div>
+          <div className={styles.heroAmbient} aria-hidden="true"><span /><span /><span /></div>
+          <FounderHeroGallery />
 
           <div className={styles.heroCopy}>
-            <p className={styles.eyebrow}>Researcher · Engineer · Founder</p>
+            <p className={styles.eyebrow}>Life science · AI · Education</p>
             <h1 id="founder-title">Yuto Matsui</h1>
             <p className={styles.japaneseName}>松井優知</p>
-            <p className={styles.heroStatement}>
-              研究現場を理解し、<br />
-              解決を支えるシステムを実装する。
-            </p>
+            <p className={styles.heroStatement}>境界を越え、新しい可能性へ。</p>
 
             <ul className={styles.axisList} aria-label="専門領域">
               <li data-accent="bio"><span aria-hidden="true" />ライフサイエンス研究</li>
@@ -164,48 +182,44 @@ export default function FounderPage() {
               <li data-accent="education"><span aria-hidden="true" />大学教育支援</li>
             </ul>
 
-            <div className={styles.heroLinks}>
-              <a href="#story">背景と価値観を読む <span aria-hidden="true">↓</span></a>
-              <a href="https://github.com/genellect" target="_blank" rel="noopener noreferrer">
-                GitHub <ArrowIcon />
+            <nav className={styles.socialLinks} aria-label="Yuto Matsuiの外部リンク">
+              <a href="https://www.instagram.com/n.m.w.314/?__pwa=1#" target="_blank" rel="noopener noreferrer" aria-label="Instagram" title="Instagram">
+                <InstagramIcon />
               </a>
-            </div>
+              <a href="https://github.com/genellect" target="_blank" rel="noopener noreferrer" aria-label="GitHub" title="GitHub">
+                <GitHubIcon />
+              </a>
+              <a href="/" aria-label="COMPASS公式サイト" title="COMPASS公式サイト">
+                <CompassIcon />
+              </a>
+            </nav>
           </div>
 
           <div className={styles.interfaceGraphic} aria-hidden="true">
-            <svg viewBox="0 0 360 520" role="presentation">
-              <path className={styles.bioLine} d="M8 86 C132 86 126 246 252 260" />
-              <path className={styles.aiLine} d="M8 260 C132 260 154 260 252 260" />
-              <path className={styles.educationLine} d="M8 434 C132 434 126 274 252 260" />
-              <circle className={styles.bioNode} cx="8" cy="86" r="5" />
-              <circle className={styles.aiNode} cx="8" cy="260" r="5" />
-              <circle className={styles.educationNode} cx="8" cy="434" r="5" />
-              <circle className={styles.interfaceNode} cx="252" cy="260" r="8" />
-              <path className={styles.outputLine} d="M260 260 H352" />
+            <svg viewBox="0 0 410 220" role="presentation">
+              <path className={styles.bioLine} d="M8 34 C124 34 135 110 250 110" />
+              <path className={styles.aiLine} d="M8 110 H250" />
+              <path className={styles.educationLine} d="M8 186 C124 186 135 110 250 110" />
+              <circle className={styles.bioNode} cx="8" cy="34" r="4" />
+              <circle className={styles.aiNode} cx="8" cy="110" r="4" />
+              <circle className={styles.educationNode} cx="8" cy="186" r="4" />
+              <circle className={styles.interfaceNode} cx="250" cy="110" r="7" />
+              <path className={styles.outputLine} d="M258 110 H402" />
             </svg>
           </div>
         </section>
 
-        <section id="practice" className={styles.practice} aria-labelledby="practice-title">
+        <section id="expertise" className={styles.expertise} aria-labelledby="expertise-title">
           <div className={styles.sectionShell}>
-            <header className={styles.sectionHeading} data-reveal>
-              <p className={styles.sectionKicker}>Three fields, one practice</p>
-              <h2 id="practice-title">三つの現場を、<br />ひとつの実装へ。</h2>
-              <p>
-                専門を並べるのではなく、研究で観察し、AIで拡張し、教育の現場へ届く仕組みとして統合します。
-              </p>
+            <header className={styles.compactHeading} data-reveal>
+              <p className={styles.sectionKicker}>Expertise</p>
+              <h2 id="expertise-title">専門領域</h2>
             </header>
-
             <div className={styles.fieldGrid}>
               {fields.map((field) => (
                 <article key={field.id} className={styles.fieldCard} data-reveal data-accent={field.accent}>
                   <div className={styles.fieldImage}>
-                    <Image
-                      src={field.image}
-                      alt={field.alt}
-                      fill
-                      sizes="(min-width: 901px) 33vw, (min-width: 641px) 50vw, 100vw"
-                    />
+                    <Image src={field.image} alt={field.alt} fill sizes="(min-width: 901px) 32vw, (min-width: 641px) 50vw, 100vw" />
                     <div className={styles.fieldOverlay} aria-hidden="true" />
                     <span className={styles.fieldNumber}>{field.id}</span>
                   </div>
@@ -217,53 +231,6 @@ export default function FounderPage() {
                 </article>
               ))}
             </div>
-
-            <div className={styles.practiceFlow} data-reveal aria-label="研究から実装までの流れ">
-              <div><small>01</small><strong>Observe</strong><span>現場と課題を理解する</span></div>
-              <i aria-hidden="true">→</i>
-              <div><small>02</small><strong>Define</strong><span>要件と判断軸に変える</span></div>
-              <i aria-hidden="true">→</i>
-              <div><small>03</small><strong>Build</strong><span>使える仕組みを実装する</span></div>
-            </div>
-          </div>
-        </section>
-
-        <section id="work" className={styles.work} aria-labelledby="work-title">
-          <div className={styles.sectionShell}>
-            <header className={styles.sectionHeading} data-reveal>
-              <p className={styles.sectionKicker}>Selected work</p>
-              <h2 id="work-title">考えを、<br />動くものにする。</h2>
-              <p>研究、学生支援、大学教育。それぞれの現場で、課題を観察し、構造をつくり、実装へ進めています。</p>
-            </header>
-
-            <div className={styles.workList}>
-              {works.map((work) => {
-                const content = (
-                  <>
-                    <div className={styles.workNumber}>{work.number}</div>
-                    <div className={styles.workIdentity}>
-                      <p>{work.label}</p>
-                      <h3>{work.title}</h3>
-                    </div>
-                    <p className={styles.workDescription}>{work.description}</p>
-                    <div className={styles.workMeta}>
-                      <span>{work.meta}</span>
-                      {"href" in work ? <ArrowIcon /> : <span aria-hidden="true">—</span>}
-                    </div>
-                  </>
-                );
-
-                return "href" in work ? (
-                  <a key={work.number} className={styles.workItem} href={work.href}>
-                    {content}
-                  </a>
-                ) : (
-                  <article key={work.number} className={styles.workItem}>
-                    {content}
-                  </article>
-                );
-              })}
-            </div>
           </div>
         </section>
 
@@ -271,12 +238,8 @@ export default function FounderPage() {
           <div className={styles.storyShell}>
             <aside className={styles.storyPortrait} data-reveal>
               <div className={styles.storyPortraitFrame}>
-                <Image
-                  src="/images/founder-portfolio/yuto-matsui-front.webp"
-                  alt="正面を向くYuto Matsui / 松井優知"
-                  fill
-                  sizes="(min-width: 901px) 34vw, 100vw"
-                />
+                <Image src="/images/founder-portfolio/yuto-matsui-front.webp" alt="正面を向くYuto Matsui / 松井優知" fill sizes="(min-width: 901px) 38vw, 92vw" />
+                <div className={styles.storyPhotoGrid} aria-hidden="true" />
               </div>
               <div className={styles.storyPortraitCaption}>
                 <span>Background &amp; values</span>
@@ -294,35 +257,92 @@ export default function FounderPage() {
                 <header><span>01</span><h3 id="chapter-origin">Origin</h3></header>
                 <p>高校時代の2020年頃から趣味でプログラミングを始め、Webフロントエンド開発を中心に学びました。当時は現在のようなLLMやコーディングエージェントはなく、実装、デバッグ、Git操作の多くを手作業で行う時代でした。開発そのものには強く惹かれましたが、大学では、より関心のあった生命科学・薬学を選びました。</p>
                 <p>大学では学部2年次から実験系研究室に所属し、神経変性疾患に関わる遺伝子変異と分子病態を研究してきました。その一方で、生成AIとコーディングエージェントの急速な進歩をきっかけに、研究支援やデータ解析から再びソフトウェア開発へ軸足を広げました。</p>
-                <p>そこで実感したのは、AIの価値は単にコーディングを高速化することではなく、<strong>一人の人間が設計・実装できるシステムの規模を拡張すること</strong>にあるという点です。</p>
+                <p>そこで実感したのは、AIの価値は単にコーディングを高速化することではなく、一人の人間が設計・実装できるシステムの規模を拡張することにあるという点です。</p>
               </section>
 
               <section className={styles.essayChapter} aria-labelledby="chapter-compass" data-reveal>
                 <header><span>02</span><h3 id="chapter-compass">From a tool to COMPASS</h3></header>
-                <p>この考えを最初に形にしたのが、現在の<strong>COMPASS Platform</strong>につながる開発です。当初は、学生向け資料を共有するGoogle Driveの招待や名簿管理を自動化する小さな仕組みでした。その後、学生支援団体<strong>COMPASS</strong>の設立、大学講義支援システム<strong>COMPASS Interactive</strong>の開発へと対象を広げてきました。</p>
+                <p>この考えを最初に形にしたのが、現在のCOMPASS Platformにつながる開発です。当初は、学生向け資料を共有するGoogle Driveの招待や名簿管理を自動化する小さな仕組みでした。その後、学生支援団体COMPASSの設立、大学講義支援システムCOMPASS Interactiveの開発へと対象を広げてきました。</p>
                 <p>現在は、生命科学研究を継続しながら、教育・研究支援システムの開発、研究OSの構築、ITベンチャーでのエンジニアリングにも取り組んでいます。研究現場の課題を理解し、それを要件へ落とし込み、実装可能なシステムへ変換することが、現在の私のエンジニアリングの中心です。</p>
               </section>
 
               <section className={styles.essayChapter} aria-labelledby="chapter-themes" data-reveal>
                 <header><span>03</span><h3 id="chapter-themes">Two long-term themes</h3></header>
                 <p>私が長期的に取り組んでいるテーマは、大きく二つあります。</p>
-                <p>一つは、<strong>学生が自分の可能性を知り、将来の選択肢を広げられる仕組みをつくること</strong>です。能力や意欲があっても、情報や機会へのアクセスによって選択肢は大きく変わります。COMPASSでは、教育やキャリアに関する機会を、偶然だけに左右されにくい構造へ変えていくことを目指しています。</p>
-                <p>もう一つは、<strong>AIとソフトウェアによって、生命科学研究の生産性と研究環境そのものを再設計すること</strong>です。</p>
+                <p>一つは、学生が自分の可能性を知り、将来の選択肢を広げられる仕組みをつくることです。能力や意欲があっても、情報や機会へのアクセスによって選択肢は大きく変わります。COMPASSでは、教育やキャリアに関する機会を、偶然だけに左右されにくい構造へ変えていくことを目指しています。</p>
+                <p>もう一つは、AIとソフトウェアによって、生命科学研究の生産性と研究環境そのものを再設計することです。</p>
                 <p>実験研究では、不確実性の高い仮説検証に多くの時間と認知資源が必要です。一方、ソフトウェア開発では、AIによって情報処理、実装、検証の速度が大きく変わりました。私はこの二つの現場を同時に経験してきたからこそ、その間にまだ大きな未開拓領域があると考えています。</p>
               </section>
 
               <section className={styles.essayChapter} aria-labelledby="chapter-interface" data-reveal>
                 <header><span>04</span><h3 id="chapter-interface">The interface</h3></header>
-                <p>私が目指しているのは、<strong>研究者として生命科学の課題を理解し、エンジニアとして、その解決を支えるシステムを実装すること</strong>です。一人の研究成果だけでなく、多くの研究者の生産性や研究体験を改善することで、より大きなスケールで生命科学に貢献することを目指しています。</p>
-                <p>そのため、生命科学、ソフトウェア開発、AIのいずれか一つに自分を限定するのではなく、<strong>研究とエンジニアリングのインターフェース</strong>を自分の専門領域として深めることを目指しています。</p>
+                <p>私が目指しているのは、研究者として生命科学の課題を理解し、エンジニアとして、その解決を支えるシステムを実装することです。一人の研究成果だけでなく、多くの研究者の生産性や研究体験を改善することで、より大きなスケールで生命科学に貢献することを目指しています。</p>
+                <p>そのため、生命科学、ソフトウェア開発、AIのいずれか一つに自分を限定するのではなく、研究とエンジニアリングのインターフェースを自分の専門領域として深めることを目指しています。</p>
               </section>
 
               <section className={`${styles.essayChapter} ${styles.essayClosing}`} aria-labelledby="chapter-future" data-reveal>
                 <header><span>05</span><h3 id="chapter-future">Future</h3></header>
                 <p>生命科学研究、ソフトウェア開発、大学教育、英語学習。扱う領域は異なりますが、根底にある考え方は共通しています。</p>
-                <p className={styles.closingPrinciple}><strong>人が持つ能力や知識を、より大きな成果につなげる仕組みをつくること。</strong></p>
+                <p className={styles.closingPrinciple}>人が持つ能力や知識を、より大きな成果につなげる仕組みをつくること。</p>
                 <p>それを実現することが、私が目標とする未来です。</p>
               </section>
+            </div>
+          </div>
+        </section>
+
+        <section id="products" className={styles.products} aria-labelledby="products-title">
+          <div className={styles.sectionShell}>
+            <header className={styles.productsHeading} data-reveal>
+              <div><p className={styles.sectionKicker}>Products</p><h2 id="products-title">プロダクト紹介</h2></div>
+              <p>教育と研究の現場から生まれた、公開中のプロダクトと思想。</p>
+            </header>
+            <div className={styles.productGrid}>
+              {products.map((product) => (
+                <article key={product.key} className={styles.productCard} data-product={product.key} data-reveal>
+                  <div className={styles.productVisual}>
+                    <Image src={product.image} alt={product.alt} fill sizes={product.key === "interactive" ? "(min-width: 901px) 64vw, 100vw" : "(min-width: 901px) 32vw, 100vw"} />
+                    <div className={styles.productWash} aria-hidden="true" />
+                    <Image src="/images/compass-mark.svg" alt="" width={40} height={40} className={styles.productMark} aria-hidden="true" />
+                  </div>
+                  <div className={styles.productCopy}>
+                    <p>{product.label}</p>
+                    <h3>{product.title}</h3>
+                    <nav aria-label={`${product.label}へのリンク`}>
+                      {product.links.map((link) => <a key={link.href} href={link.href}><span>{link.label}</span><ArrowIcon /></a>)}
+                    </nav>
+                  </div>
+                </article>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        <section id="credentials" className={styles.credentials} aria-labelledby="credentials-title">
+          <div className={styles.sectionShell}>
+            <header className={styles.compactHeading} data-reveal>
+              <p className={styles.sectionKicker}>Credentials</p>
+              <h2 id="credentials-title">取得資格</h2>
+            </header>
+            <div className={styles.credentialGrid}>
+              {credentials.map((credential) => (
+                <article key={credential.name} className={styles.credentialCard} data-reveal>
+                  <span className={styles.credentialMark} aria-hidden="true">{credential.mark}</span>
+                  <div><p>{credential.name}</p><strong>{credential.score}</strong></div>
+                </article>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        <section id="contact-cta" className={styles.contact} aria-labelledby="contact-title">
+          <div className={styles.contactShell} data-reveal>
+            <div>
+              <p className={styles.sectionKicker}>Contact</p>
+              <h2 id="contact-title">新しい接点から、<br />次の可能性へ。</h2>
+            </div>
+            <div className={styles.contactCopy}>
+              <p>ご興味を持っていただけましたら、下記のフォームからお気軽にご連絡ください。学生・教職員・団体・企業の方を問わず、さまざまな方とのご縁を歓迎しています。</p>
+              <a href="/contact/">Contact form <ArrowIcon /></a>
             </div>
           </div>
         </section>
@@ -330,11 +350,9 @@ export default function FounderPage() {
 
       <footer className={styles.footer}>
         <div className={styles.footerPrimary}>
-          <div>
-            <strong>Yuto Matsui / 松井優知</strong>
-            <span>Life Science · AI-native Development · University Education</span>
-          </div>
+          <div><strong>Yuto Matsui / 松井優知</strong><span>Life Science · AI-native Development · University Education</span></div>
           <nav aria-label="Personal links">
+            <a href="https://www.instagram.com/n.m.w.314/?__pwa=1#" target="_blank" rel="noopener noreferrer">Instagram <ArrowIcon /></a>
             <a href="https://github.com/genellect" target="_blank" rel="noopener noreferrer">GitHub <ArrowIcon /></a>
             <a href="/">COMPASS <ArrowIcon /></a>
             <a href="#top">Back to top ↑</a>
@@ -352,10 +370,7 @@ export default function FounderPage() {
       </footer>
 
       <LegacyInteractions />
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(personSchema) }}
-      />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(personSchema) }} />
     </div>
   );
 }

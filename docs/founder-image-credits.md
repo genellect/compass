@@ -2,7 +2,7 @@
 
 Scope: `/founder/`
 
-The two Yuto Matsui portraits were supplied by Yuto Matsui for this portfolio.
+The three Yuto Matsui portraits were supplied by Yuto Matsui for this portfolio.
 
 The supporting field images are stored locally to keep the page stable and avoid third-party requests:
 
