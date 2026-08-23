@@ -51,8 +51,8 @@ const fields = [
     title: "AIネイティブ開発",
     english: "AI-native Development",
     description: "AIとともに、一人が設計・実装できるシステムの規模を広げる。",
-    image: "/images/founder-portfolio/source/ai-abstract-unsplash.jpg",
-    alt: "情報の流れを想起させる青い光跡",
+    image: "/images/founder-portfolio/source/software-development-unsplash.jpg",
+    alt: "ソースコードを表示したPCの開発環境",
     accent: "ai"
   },
   {
@@ -60,8 +60,8 @@ const fields = [
     title: "大学教育支援",
     english: "University Education Support",
     description: "学生と教育現場の課題を、実際に使われる仕組みへ変換する。",
-    image: "/images/founder-portfolio/source/software-development-unsplash.jpg",
-    alt: "ソースコードを表示した開発環境",
+    image: "/images/founder-portfolio/yuto-matsui-education-support.webp",
+    alt: "ホワイトボードに研究分野を書き示すスーツ姿のYuto Matsui",
     accent: "education"
   }
 ] as const;
@@ -90,16 +90,16 @@ const products = [
     key: "manifesto",
     label: "COMPASS Manifesto",
     title: "AI時代をどう生きるか。",
-    image: "/images/Image5.jpg",
-    alt: "新しい可能性を象徴する朝日の差す山岳風景",
+    image: "/images/Image4.jpg",
+    alt: "AI時代の可能性を象徴する光に包まれた未来都市",
     links: [{ label: "Manifestoを読む", href: "/messages/" }]
   }
 ] as const;
 
 const credentials = [
-  { mark: "E1", name: "実用英語技能検定", score: "1級" },
-  { mark: "T", name: "TOEIC L&R", score: "965" },
-  { mark: "I", name: "IELTS Academic", score: "7.5" }
+  { kind: "eiken", mark: "英検", name: "実用英語技能検定", score: "1級" },
+  { kind: "toeic", mark: "TOEIC", name: "TOEIC L&R", score: "965" },
+  { kind: "ielts", mark: "IELTS", name: "IELTS Academic", score: "7.5" }
 ] as const;
 
 const personSchema = {
@@ -148,6 +148,22 @@ function CompassIcon() {
   return <Image src="/images/compass-mark.svg" alt="" width={28} height={28} aria-hidden="true" />;
 }
 
+function MoreIcon() {
+  return (
+    <svg viewBox="0 0 24 24" aria-hidden="true">
+      <circle cx="5" cy="5" r="1.6" />
+      <circle cx="12" cy="5" r="1.6" />
+      <circle cx="19" cy="5" r="1.6" />
+      <circle cx="5" cy="12" r="1.6" />
+      <circle cx="12" cy="12" r="1.6" />
+      <circle cx="19" cy="12" r="1.6" />
+      <circle cx="5" cy="19" r="1.6" />
+      <circle cx="12" cy="19" r="1.6" />
+      <circle cx="19" cy="19" r="1.6" />
+    </svg>
+  );
+}
+
 function InteractiveHeroPreview() {
   return (
     <div
@@ -192,6 +208,19 @@ export default function FounderPage() {
           <a href="#products">Products</a>
           <a href="#credentials">Credentials</a>
           <a href="#contact-cta">Contact</a>
+        </nav>
+        <nav className={styles.mobileNavigation} aria-label="Mobile portfolio navigation">
+          <a href="#message">Message</a>
+          <a href="#products">Product</a>
+          <a href="#contact-cta">Contact</a>
+          <details className={styles.mobileExternalLinks}>
+            <summary aria-label="外部リンクを表示"><MoreIcon /></summary>
+            <div className={styles.mobileExternalPopover} aria-label="Yuto Matsuiの外部リンク">
+              <a href="https://www.instagram.com/n.m.w.314/?__pwa=1#" target="_blank" rel="noopener noreferrer" aria-label="Instagram"><InstagramIcon /></a>
+              <a href="https://github.com/genellect" target="_blank" rel="noopener noreferrer" aria-label="GitHub"><GitHubIcon /></a>
+              <a href="/" aria-label="COMPASS公式サイト"><CompassIcon /></a>
+            </div>
+          </details>
         </nav>
       </header>
 
@@ -277,7 +306,7 @@ export default function FounderPage() {
             </aside>
 
             <div className={styles.essay}>
-              <header className={styles.storyHeading} data-reveal>
+              <header id="message" className={styles.storyHeading} data-reveal>
                 <p className={styles.sectionKicker}>Personal statement</p>
                 <h2 id="story-title">
                   研究と<span className={styles.mobileStoryBreak} aria-hidden="true"><br /></span>エンジニアリングの<br />
@@ -362,11 +391,11 @@ export default function FounderPage() {
           <div className={styles.sectionShell}>
             <header className={styles.compactHeading} data-reveal>
               <p className={styles.sectionKicker}>Credentials</p>
-              <h2 id="credentials-title">取得資格</h2>
+              <h2 id="credentials-title">English Proficiency</h2>
             </header>
             <div className={styles.credentialGrid}>
               {credentials.map((credential) => (
-                <article key={credential.name} className={styles.credentialCard} data-reveal>
+                <article key={credential.name} className={styles.credentialCard} data-credential={credential.kind} data-reveal>
                   <span className={styles.credentialMark} aria-hidden="true">{credential.mark}</span>
                   <div><p>{credential.name}</p><strong>{credential.score}</strong></div>
                 </article>
@@ -402,8 +431,9 @@ export default function FounderPage() {
           <summary>Image credits</summary>
           <p>
             Life science: <a href="https://unsplash.com/photos/white-and-black-microscope-5HbxyB0_DBg" target="_blank" rel="noopener noreferrer">Jaron Nix / Unsplash</a> ·
-            AI background: <a href="https://unsplash.com/photos/abstract-blue-light-streaks-on-a-dark-background-dOYVMySdXd0" target="_blank" rel="noopener noreferrer">灿雄 邱 / Unsplash</a> ·
-            Software development: <a href="https://unsplash.com/photos/code-appears-on-a-computer-screen-XG5q_aosoPo" target="_blank" rel="noopener noreferrer">Rob Wingate / Unsplash</a>
+            Software development: <a href="https://unsplash.com/photos/code-appears-on-a-computer-screen-XG5q_aosoPo" target="_blank" rel="noopener noreferrer">Rob Wingate / Unsplash</a> ·
+            Education portrait: Yuto Matsui / personal archive ·
+            Manifesto visual: COMPASS visual archive
           </p>
         </details>
         <p className={styles.copyright}>© 2026 Yuto Matsui. Personal portfolio hosted within the COMPASS site.</p>
