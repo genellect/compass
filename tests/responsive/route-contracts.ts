@@ -10,6 +10,7 @@ export type RouteContract = {
   h1Lines: { min: number; max: number };
   requiredSelectors: string[];
   criticalSelectors: string[];
+  sharedMobileMenu?: boolean;
 };
 
 export const routeContracts: RouteContract[] = [
@@ -41,6 +42,7 @@ export const routeContracts: RouteContract[] = [
       "#community-title",
       "#community .v4-community__cta",
       "#founder-title",
+      "#founder .v4-founder__web-portfolio",
       "#founder .v4-founder__github",
       "#contact-title",
       "#contact .button-primary",
@@ -107,6 +109,27 @@ export const routeContracts: RouteContract[] = [
       "#developer-final h2",
       ".developer-credit__github",
     ],
+  },
+  {
+    name: "founder",
+    path: "/founder/",
+    h1Lines: { min: 1, max: 2 },
+    requiredSelectors: ["#top", "#expertise", "#story", "#products", "#credentials", "#contact-cta"],
+    criticalSelectors: [
+      "h1#founder-title",
+      '[aria-label="専門領域"]',
+      "#expertise h2",
+      "#expertise article",
+      "#story h2",
+      "#story aside img",
+      "#chapter-future",
+      "#products h2",
+      "#products article",
+      "#credentials h2",
+      "#contact-cta h2",
+      "#contact-cta a",
+    ],
+    sharedMobileMenu: false,
   },
   {
     name: "future-strategy-library",

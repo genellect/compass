@@ -15,6 +15,7 @@ Reference: `origin/main`
 | COMPASS Interactive Developer紹介 | <https://compass-official.pages.dev/INTRO_Interactive/developers/> | Same tab |
 | 未来戦略ライブラリ紹介 | <https://compass-official.pages.dev/future-strategy-library/> | Same tab |
 | COMPASS Manifesto | <https://compass-official.pages.dev/messages/> | Same tab |
+| Yuto Matsui 個人ポートフォリオ | <https://compass-official.pages.dev/founder/> | Same tab |
 | Community参加 | <https://compass-official.pages.dev/community/join/> | Same tab |
 | Contact | <https://compass-official.pages.dev/contact/> | Same tab |
 
