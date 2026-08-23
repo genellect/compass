@@ -266,6 +266,9 @@ export function FounderPortfolioSection() {
               {background.map(([term, description]) => <div key={term}><dt>{term}</dt><dd>{description}</dd></div>)}
             </dl>
             <GitHubProfileLink className="v4-founder__github" />
+            <a className="v4-founder__portfolio-link" href="/founder/">
+              Personal Portfolio <span aria-hidden="true">→</span>
+            </a>
           </div>
         </div>
       </div>

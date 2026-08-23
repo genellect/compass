@@ -856,6 +856,10 @@
 .compass-v4-page .v4-founder__profile-copy dd { margin: 0; color: #e4edf6; font-size: 0.92rem; line-height: 1.6; }
 .compass-v4-page .v4-founder__github { margin-top: 22px; color: #b9cbd9; background: rgba(255, 255, 255, 0.025); }
 .compass-v4-page .v4-founder__github:hover { border-color: rgba(112, 231, 239, 0.72); background: rgba(112, 231, 239, 0.055); color: #f2fcff; }
+.compass-v4-page .v4-founder__portfolio-link { display: inline-flex; align-items: center; gap: 10px; margin-top: 18px; color: #a9bbc8; font-size: 0.72rem; font-weight: 780; letter-spacing: 0.075em; text-decoration: none; }
+.compass-v4-page .v4-founder__portfolio-link span { color: #70e7ef; transition: transform 180ms ease; }
+.compass-v4-page .v4-founder__portfolio-link:hover { color: #f3fbff; }
+.compass-v4-page .v4-founder__portfolio-link:hover span { transform: translateX(3px); }
 
 /* Contact / Manifesto */
 .compass-v4-page .v4-closing { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; padding: clamp(80px, 8vw, 120px) max(36px, calc((100% - var(--v4-container)) / 2)); background: #f5f7fa; }

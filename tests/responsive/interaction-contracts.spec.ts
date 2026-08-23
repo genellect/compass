@@ -49,7 +49,7 @@ async function expectInitialHitTarget(page: Page, locator: Locator) {
 
 const phone = { name: "mobile-menu", width: 390, height: 844 } satisfies ResponsiveViewport;
 
-for (const contract of routeContracts) {
+for (const contract of routeContracts.filter(({ sharedMobileMenu }) => sharedMobileMenu !== false)) {
   test(`Mobile navigation opens, traps focus, and closes: ${contract.name}`, async ({ page }) => {
     const runtimeErrors = await openRoute(page, contract.path, phone);
     const toggle = page.locator("button.menu-toggle").first();
