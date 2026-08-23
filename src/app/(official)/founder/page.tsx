@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import Image from "next/image";
+import { LectureSignalMatrix } from "../../../interactive/components/hero/LectureSignalMatrix";
+import { ProductExperienceMock } from "../../../interactive/components/ui/ProductExperienceMock";
 import { LegacyInteractions } from "../../../components/LegacyInteractions";
 import { FounderHeroGallery } from "./FounderHeroGallery";
 import styles from "./founder.module.css";
@@ -37,8 +39,8 @@ export const metadata: Metadata = {
 const fields = [
   {
     id: "01",
-    title: "ライフサイエンス研究",
-    english: "Life Science Research",
+    title: "分子生物学研究",
+    english: "Molecular Biology Research",
     description: "神経変性疾患の分子病態を、実験研究の現場から理解する。",
     image: "/images/founder-portfolio/source/life-science-unsplash.jpg",
     alt: "細胞培養の観察に使われる顕微鏡",
@@ -146,6 +148,34 @@ function CompassIcon() {
   return <Image src="/images/compass-mark.svg" alt="" width={28} height={28} aria-hidden="true" />;
 }
 
+function InteractiveHeroPreview() {
+  return (
+    <div
+      className={`${styles.interactiveHeroPreview} hero-section--signal`}
+      aria-label="COMPASS Interactive紹介サイトのHeroプレビュー"
+    >
+      <div className={styles.interactiveHeroGrid}>
+        <div className={styles.interactiveHeroCopy}>
+          <span className={styles.interactiveEyebrow}>NEXT LECTURE EXPERIENCE</span>
+          <p className={styles.interactiveHeroTitle} aria-label="LET EVERYTHING MOVE.">
+            <span>LET EVERYTHING</span>
+            <strong>MOVE.</strong>
+          </p>
+          <p className={styles.interactiveHeroLead}>
+            <span>リアルタイム×AIが、</span>
+            <span>講義を次の次元へ。</span>
+          </p>
+        </div>
+
+        <div className={`${styles.interactiveHeroStage} hero-signal-stage`} aria-hidden="true">
+          <LectureSignalMatrix />
+          <ProductExperienceMock compact className="founder-interactive-product-preview" />
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function FounderPage() {
   return (
     <div className={styles.page} data-founder-page>
@@ -212,8 +242,7 @@ export default function FounderPage() {
         <section id="expertise" className={styles.expertise} aria-labelledby="expertise-title">
           <div className={styles.sectionShell}>
             <header className={styles.compactHeading} data-reveal>
-              <p className={styles.sectionKicker}>Expertise</p>
-              <h2 id="expertise-title">専門領域</h2>
+              <h2 id="expertise-title">Expertise</h2>
             </header>
             <div className={styles.fieldGrid}>
               {fields.map((field) => (
@@ -300,13 +329,23 @@ export default function FounderPage() {
               {products.map((product) => (
                 <article key={product.key} className={styles.productCard} data-product={product.key} data-reveal>
                   <div className={styles.productVisual}>
-                    <Image src={product.image} alt={product.alt} fill sizes={product.key === "interactive" ? "(min-width: 901px) 64vw, 100vw" : "(min-width: 901px) 32vw, 100vw"} />
-                    <div className={styles.productWash} aria-hidden="true" />
-                    <Image src="/images/compass-mark.svg" alt="" width={40} height={40} className={styles.productMark} aria-hidden="true" />
+                    {product.key === "interactive" ? (
+                      <InteractiveHeroPreview />
+                    ) : (
+                      <>
+                        <Image src={product.image} alt={product.alt} fill sizes="(min-width: 901px) 32vw, 100vw" />
+                        <div className={styles.productWash} aria-hidden="true" />
+                        <Image src="/images/compass-mark.svg" alt="" width={40} height={40} className={styles.productMark} aria-hidden="true" />
+                      </>
+                    )}
                   </div>
                   <div className={styles.productCopy}>
                     <p>{product.label}</p>
-                    <h3>{product.title}</h3>
+                    <h3>
+                      {product.key === "interactive" ? (
+                        <><span>リアルタイム × AIが、</span><span>講義を次の次元へ。</span></>
+                      ) : product.title}
+                    </h3>
                     <nav aria-label={`${product.label}へのリンク`}>
                       {product.links.map((link) => <a key={link.href} href={link.href}><span>{link.label}</span><ArrowIcon /></a>)}
                     </nav>
@@ -337,8 +376,7 @@ export default function FounderPage() {
         <section id="contact-cta" className={styles.contact} aria-labelledby="contact-title">
           <div className={styles.contactShell} data-reveal>
             <div>
-              <p className={styles.sectionKicker}>Contact</p>
-              <h2 id="contact-title">新しい接点から、<br />次の可能性へ。</h2>
+              <h2 id="contact-title">CONTACT</h2>
             </div>
             <div className={styles.contactCopy}>
               <p>ご興味を持っていただけましたら、下記のフォームからお気軽にご連絡ください。学生・教職員・団体・企業の方を問わず、さまざまな方とのご縁を歓迎しています。</p>

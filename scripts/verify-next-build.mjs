@@ -531,6 +531,8 @@ if (interactive.includes('<div id="root"></div>')) {
 expectOneH1(official, "Official page");
 expectOneH1(interactive, "Interactive page");
 expectIncludes(official, 'href="/founder/"', "Official Founder portfolio link");
+expectIncludes(official, "Web Portfolio", "Official Founder Web Portfolio CTA");
+expectIncludes(official, "GitHub Portfolio", "Official Founder GitHub Portfolio CTA");
 
 for (const expected of [
   '<html lang="ja"',
@@ -542,7 +544,8 @@ for (const expected of [
   'id="contact-cta"',
   "Yuto Matsui",
   "松井優知",
-  "ライフサイエンス研究",
+  "Molecular Biology Research",
+  "分子生物学研究",
   "AIネイティブ開発",
   "大学教育支援",
   "/images/founder-portfolio/yuto-matsui-profile-hero.webp",
@@ -550,6 +553,8 @@ for (const expected of [
   "/images/founder-portfolio/yuto-matsui-front.webp",
   "境界を越え、新しい可能性へ。",
   "COMPASS Interactive",
+  "LET EVERYTHING",
+  "MOVE.",
   "未来戦略ライブラリ",
   "COMPASS Manifesto",
   "TOEIC L&amp;R",
@@ -558,6 +563,7 @@ for (const expected of [
   "7.5",
   "https://www.instagram.com/n.m.w.314/?__pwa=1#",
   "さまざまな方とのご縁を歓迎しています。",
+  "CONTACT",
   'href="/contact/"',
   'rel="canonical" href="https://compass-official.pages.dev/founder/"',
   parentGaMeasurementId

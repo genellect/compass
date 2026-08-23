@@ -854,8 +854,13 @@
 .compass-v4-page .v4-founder__profile-copy dl div:nth-child(even) { padding-left: 26px; border-left: 1px solid var(--v4-line-dark); }
 .compass-v4-page .v4-founder__profile-copy dt { margin-bottom: 8px; color: #70e7ef; font-size: 0.67rem; font-weight: 850; letter-spacing: 0.12em; text-transform: uppercase; }
 .compass-v4-page .v4-founder__profile-copy dd { margin: 0; color: #e4edf6; font-size: 0.92rem; line-height: 1.6; }
-.compass-v4-page .v4-founder__github { margin-top: 22px; color: #b9cbd9; background: rgba(255, 255, 255, 0.025); }
+.compass-v4-page .v4-founder__portfolio-actions { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; margin-top: 22px; }
+.compass-v4-page .v4-founder__portfolio-actions .github-profile-link { margin-top: 0; }
+.compass-v4-page .v4-founder__github { color: #b9cbd9; background: rgba(255, 255, 255, 0.025); }
 .compass-v4-page .v4-founder__github:hover { border-color: rgba(112, 231, 239, 0.72); background: rgba(112, 231, 239, 0.055); color: #f2fcff; }
+.compass-v4-page .v4-founder__web-portfolio { color: #ecfeff; border-color: rgba(112, 231, 239, 0.62); background: linear-gradient(120deg, rgba(112, 231, 239, 0.13), rgba(128, 110, 255, 0.09)); box-shadow: 0 10px 28px rgba(59, 188, 207, 0.09); opacity: 0.94; }
+.compass-v4-page .v4-founder__web-portfolio:hover { border-color: rgba(134, 244, 249, 0.9); color: #fff; background: linear-gradient(120deg, rgba(112, 231, 239, 0.2), rgba(128, 110, 255, 0.13)); }
+.compass-v4-page .v4-founder__web-portfolio svg { overflow: visible; fill: none; stroke: currentColor; stroke-width: 1.35; stroke-linecap: round; stroke-linejoin: round; }
 .compass-v4-page .v4-founder__portfolio-link { display: inline-flex; align-items: center; gap: 10px; margin-top: 18px; color: #a9bbc8; font-size: 0.72rem; font-weight: 780; letter-spacing: 0.075em; text-decoration: none; }
 .compass-v4-page .v4-founder__portfolio-link span { color: #70e7ef; transition: transform 180ms ease; }
 .compass-v4-page .v4-founder__portfolio-link:hover { color: #f3fbff; }
