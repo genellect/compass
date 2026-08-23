@@ -50,7 +50,6 @@ export function DeveloperProfile({ id = "developer-profile" }: DeveloperProfileP
           </dl>
         </details>
       </div>
-      <GitHubProfileLink className="developer-credit__github developer-credit__github--footer" label="GitHub Portfolioを見る" />
     </div>
   );
 }
