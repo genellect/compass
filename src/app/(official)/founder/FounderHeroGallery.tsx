@@ -8,16 +8,24 @@ const SLIDES = [
   {
     src: "/images/founder-portfolio/yuto-matsui-profile-hero.webp",
     alt: "横顔のYuto Matsui / 松井優知",
-    location: "PORTRAIT / SIDE"
+    location: "PORTRAIT / SIDE",
+    motion: "from-left"
   },
   {
     src: "/images/founder-portfolio/yuto-matsui-queens-square.webp",
     alt: "横浜の街角でベンチに座るYuto Matsui / 松井優知",
-    location: "YOKOHAMA / CITY"
+    location: "YOKOHAMA / CITY",
+    motion: "from-right"
+  },
+  {
+    src: "/images/founder-portfolio/yuto-matsui-lab-hero.webp",
+    alt: "分析機器が並ぶ研究室で微笑むYuto Matsui / 松井優知",
+    location: "LAB / LIFE SCIENCE",
+    motion: "soft-rise"
   }
 ] as const;
 
-const INTERVAL_MS = 6500;
+const INTERVAL_MS = 5200;
 
 export function FounderHeroGallery() {
   const [activeIndex, setActiveIndex] = useState(0);
@@ -48,6 +56,7 @@ export function FounderHeroGallery() {
             key={slide.src}
             className={styles.photoSlide}
             data-active={index === activeIndex}
+            data-motion={slide.motion}
             aria-hidden={index !== activeIndex}
           >
             <Image

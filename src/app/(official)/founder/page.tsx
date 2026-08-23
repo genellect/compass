@@ -3,7 +3,9 @@ import Image from "next/image";
 import { LectureSignalMatrix } from "../../../interactive/components/hero/LectureSignalMatrix";
 import { ProductExperienceMock } from "../../../interactive/components/ui/ProductExperienceMock";
 import { LegacyInteractions } from "../../../components/LegacyInteractions";
+import { EssayContinuation } from "./EssayContinuation";
 import { FounderHeroGallery } from "./FounderHeroGallery";
+import { MobileExternalMenu } from "./MobileExternalMenu";
 import styles from "./founder.module.css";
 
 export const metadata: Metadata = {
@@ -51,8 +53,8 @@ const fields = [
     title: "AIネイティブ開発",
     english: "AI-native Development",
     description: "AIとともに、一人が設計・実装できるシステムの規模を広げる。",
-    image: "/images/founder-portfolio/source/ai-abstract-unsplash.jpg",
-    alt: "情報の流れを想起させる青い光跡",
+    image: "/images/founder-portfolio/source/software-development-unsplash.jpg",
+    alt: "ソースコードを表示したPCの開発環境",
     accent: "ai"
   },
   {
@@ -60,8 +62,8 @@ const fields = [
     title: "大学教育支援",
     english: "University Education Support",
     description: "学生と教育現場の課題を、実際に使われる仕組みへ変換する。",
-    image: "/images/founder-portfolio/source/software-development-unsplash.jpg",
-    alt: "ソースコードを表示した開発環境",
+    image: "/images/founder-portfolio/yuto-matsui-education-support.webp",
+    alt: "ホワイトボードに研究分野を書き示すスーツ姿のYuto Matsui",
     accent: "education"
   }
 ] as const;
@@ -90,16 +92,49 @@ const products = [
     key: "manifesto",
     label: "COMPASS Manifesto",
     title: "AI時代をどう生きるか。",
-    image: "/images/Image5.jpg",
-    alt: "新しい可能性を象徴する朝日の差す山岳風景",
+    image: "/images/Image4.jpg",
+    alt: "AI時代の可能性を象徴する光に包まれた未来都市",
     links: [{ label: "Manifestoを読む", href: "/messages/" }]
   }
 ] as const;
 
 const credentials = [
-  { mark: "E1", name: "実用英語技能検定", score: "1級" },
-  { mark: "T", name: "TOEIC L&R", score: "965" },
-  { mark: "I", name: "IELTS Academic", score: "7.5" }
+  { kind: "eiken", mark: "英検", name: "実用英語技能検定", score: "1級" },
+  { kind: "toeic", mark: "TOEIC", name: "TOEIC L&R", score: "965" },
+  { kind: "ielts", mark: "IELTS", name: "IELTS Academic", score: "7.5" }
+] as const;
+
+const offHours = [
+  {
+    id: "01",
+    label: "DRIVE",
+    image: "/images/founder-portfolio/off-hours-drive.webp",
+    alt: "雪山と新緑を背景に高原道路を走る車",
+    copy: [
+      "自然の中で車を走らせるのが好きです。",
+      "一番の思い出は、友人との長野ドライブです。"
+    ]
+  },
+  {
+    id: "02",
+    label: "SHOGI",
+    image: "/images/founder-portfolio/off-hours-shogi.webp",
+    alt: "新将棋会館のエントランスと将棋会館の石碑",
+    copy: [
+      "将棋は小学生から始め、棋力はアマチュア三段です。",
+      "全国大会にも何度か出場しました。"
+    ]
+  },
+  {
+    id: "03",
+    label: "CLIMBING",
+    image: "/images/founder-portfolio/off-hours-climbing.webp",
+    alt: "ボルダリングウォールを登るYuto Matsui",
+    copy: [
+      "高校時代はクライミング部。",
+      "最近は頻度こそ減りましたが、登山や自然の中で過ごすことが好きです。"
+    ]
+  }
 ] as const;
 
 const personSchema = {
@@ -191,7 +226,20 @@ export default function FounderPage() {
           <a href="#story">Story</a>
           <a href="#products">Products</a>
           <a href="#credentials">Credentials</a>
+          <a href="#off-hours">Off Hours</a>
           <a href="#contact-cta">Contact</a>
+        </nav>
+        <nav className={styles.mobileNavigation} aria-label="Mobile portfolio navigation">
+          <a href="#message">Message</a>
+          <a href="#products">Product</a>
+          <a href="#contact-cta">Contact</a>
+          <MobileExternalMenu className={styles.mobileExternalLinks}>
+            <div className={styles.mobileExternalPopover} aria-label="Yuto Matsuiの外部リンク">
+              <a href="https://www.instagram.com/n.m.w.314/?__pwa=1#" target="_blank" rel="noopener noreferrer" aria-label="Instagram"><InstagramIcon /></a>
+              <a href="https://github.com/genellect" target="_blank" rel="noopener noreferrer" aria-label="GitHub"><GitHubIcon /></a>
+              <a href="/" aria-label="COMPASS公式サイト"><CompassIcon /></a>
+            </div>
+          </MobileExternalMenu>
         </nav>
       </header>
 
@@ -277,7 +325,7 @@ export default function FounderPage() {
             </aside>
 
             <div className={styles.essay}>
-              <header className={styles.storyHeading} data-reveal>
+              <header id="message" className={styles.storyHeading} data-reveal>
                 <p className={styles.sectionKicker}>Personal statement</p>
                 <h2 id="story-title">
                   研究と<span className={styles.mobileStoryBreak} aria-hidden="true"><br /></span>エンジニアリングの<br />
@@ -292,32 +340,38 @@ export default function FounderPage() {
                 <p>そこで実感したのは、AIの価値は単にコーディングを高速化することではなく、一人の人間が設計・実装できるシステムの規模を拡張することにあるという点です。</p>
               </section>
 
-              <section className={styles.essayChapter} aria-labelledby="chapter-compass" data-reveal>
-                <header><span>02</span><h3 id="chapter-compass">From a tool to COMPASS</h3></header>
-                <p>この考えを最初に形にしたのが、現在のCOMPASS Platformにつながる開発です。当初は、学生向け資料を共有するGoogle Driveの招待や名簿管理を自動化する小さな仕組みでした。その後、学生支援団体COMPASSの設立、大学講義支援システムCOMPASS Interactiveの開発へと対象を広げてきました。</p>
-                <p>現在は、生命科学研究を継続しながら、教育・研究支援システムの開発、研究OSの構築、ITベンチャーでのエンジニアリングにも取り組んでいます。研究現場の課題を理解し、それを要件へ落とし込み、実装可能なシステムへ変換することが、現在の私のエンジニアリングの中心です。</p>
-              </section>
+              <EssayContinuation
+                className={styles.essayContinuation}
+                buttonClassName={styles.essayContinuationButton}
+                contentClassName={styles.essayContinuationContent}
+              >
+                <section className={styles.essayChapter} aria-labelledby="chapter-compass">
+                  <header><span>02</span><h3 id="chapter-compass">From a tool to COMPASS</h3></header>
+                  <p>この考えを最初に形にしたのが、現在のCOMPASS Platformにつながる開発です。当初は、学生向け資料を共有するGoogle Driveの招待や名簿管理を自動化する小さな仕組みでした。その後、学生支援団体COMPASSの設立、大学講義支援システムCOMPASS Interactiveの開発へと対象を広げてきました。</p>
+                  <p>現在は、生命科学研究を継続しながら、教育・研究支援システムの開発、研究OSの構築、ITベンチャーでのエンジニアリングにも取り組んでいます。研究現場の課題を理解し、それを要件へ落とし込み、実装可能なシステムへ変換することが、現在の私のエンジニアリングの中心です。</p>
+                </section>
 
-              <section className={styles.essayChapter} aria-labelledby="chapter-themes" data-reveal>
-                <header><span>03</span><h3 id="chapter-themes">Two long-term themes</h3></header>
-                <p>私が長期的に取り組んでいるテーマは、大きく二つあります。</p>
-                <p>一つは、学生が自分の可能性を知り、将来の選択肢を広げられる仕組みをつくることです。能力や意欲があっても、情報や機会へのアクセスによって選択肢は大きく変わります。COMPASSでは、教育やキャリアに関する機会を、偶然だけに左右されにくい構造へ変えていくことを目指しています。</p>
-                <p>もう一つは、AIとソフトウェアによって、生命科学研究の生産性と研究環境そのものを再設計することです。</p>
-                <p>実験研究では、不確実性の高い仮説検証に多くの時間と認知資源が必要です。一方、ソフトウェア開発では、AIによって情報処理、実装、検証の速度が大きく変わりました。私はこの二つの現場を同時に経験してきたからこそ、その間にまだ大きな未開拓領域があると考えています。</p>
-              </section>
+                <section className={styles.essayChapter} aria-labelledby="chapter-themes">
+                  <header><span>03</span><h3 id="chapter-themes">Two long-term themes</h3></header>
+                  <p>私が長期的に取り組んでいるテーマは、大きく二つあります。</p>
+                  <p>一つは、学生が自分の可能性を知り、将来の選択肢を広げられる仕組みをつくることです。能力や意欲があっても、情報や機会へのアクセスによって選択肢は大きく変わります。COMPASSでは、教育やキャリアに関する機会を、偶然だけに左右されにくい構造へ変えていくことを目指しています。</p>
+                  <p>もう一つは、AIとソフトウェアによって、生命科学研究の生産性と研究環境そのものを再設計することです。</p>
+                  <p>実験研究では、不確実性の高い仮説検証に多くの時間と認知資源が必要です。一方、ソフトウェア開発では、AIによって情報処理、実装、検証の速度が大きく変わりました。私はこの二つの現場を同時に経験してきたからこそ、その間にまだ大きな未開拓領域があると考えています。</p>
+                </section>
 
-              <section className={styles.essayChapter} aria-labelledby="chapter-interface" data-reveal>
-                <header><span>04</span><h3 id="chapter-interface">The interface</h3></header>
-                <p>私が目指しているのは、研究者として生命科学の課題を理解し、エンジニアとして、その解決を支えるシステムを実装することです。一人の研究成果だけでなく、多くの研究者の生産性や研究体験を改善することで、より大きなスケールで生命科学に貢献することを目指しています。</p>
-                <p>そのため、生命科学、ソフトウェア開発、AIのいずれか一つに自分を限定するのではなく、研究とエンジニアリングのインターフェースを自分の専門領域として深めることを目指しています。</p>
-              </section>
+                <section className={styles.essayChapter} aria-labelledby="chapter-interface">
+                  <header><span>04</span><h3 id="chapter-interface">The interface</h3></header>
+                  <p>私が目指しているのは、研究者として生命科学の課題を理解し、エンジニアとして、その解決を支えるシステムを実装することです。一人の研究成果だけでなく、多くの研究者の生産性や研究体験を改善することで、より大きなスケールで生命科学に貢献することを目指しています。</p>
+                  <p>そのため、生命科学、ソフトウェア開発、AIのいずれか一つに自分を限定するのではなく、研究とエンジニアリングのインターフェースを自分の専門領域として深めることを目指しています。</p>
+                </section>
 
-              <section className={`${styles.essayChapter} ${styles.essayClosing}`} aria-labelledby="chapter-future" data-reveal>
-                <header><span>05</span><h3 id="chapter-future">Future</h3></header>
-                <p>生命科学研究、ソフトウェア開発、大学教育、英語学習。扱う領域は異なりますが、根底にある考え方は共通しています。</p>
-                <p className={styles.closingPrinciple}>人が持つ能力や知識を、より大きな成果につなげる仕組みをつくること。</p>
-                <p>それを実現することが、私が目標とする未来です。</p>
-              </section>
+                <section className={`${styles.essayChapter} ${styles.essayClosing}`} aria-labelledby="chapter-future">
+                  <header><span>05</span><h3 id="chapter-future">Future</h3></header>
+                  <p>生命科学研究、ソフトウェア開発、大学教育、英語学習。扱う領域は異なりますが、根底にある考え方は共通しています。</p>
+                  <p className={styles.closingPrinciple}>人が持つ能力や知識を、より大きな成果につなげる仕組みをつくること。</p>
+                  <p>それを実現することが、私が目標とする未来です。</p>
+                </section>
+              </EssayContinuation>
             </div>
           </div>
         </section>
@@ -346,6 +400,8 @@ export default function FounderPage() {
                     <h3>
                       {product.key === "interactive" ? (
                         <><span>リアルタイム × AIが、</span><span>講義を次の次元へ。</span></>
+                      ) : product.key === "library" ? (
+                        <><span>北里大学薬学部生のための、</span><span>学生目線の資料ライブラリ。</span></>
                       ) : product.title}
                     </h3>
                     <nav aria-label={`${product.label}へのリンク`}>
@@ -362,13 +418,36 @@ export default function FounderPage() {
           <div className={styles.sectionShell}>
             <header className={styles.compactHeading} data-reveal>
               <p className={styles.sectionKicker}>Credentials</p>
-              <h2 id="credentials-title">取得資格</h2>
+              <h2 id="credentials-title">English Proficiency</h2>
             </header>
             <div className={styles.credentialGrid}>
               {credentials.map((credential) => (
-                <article key={credential.name} className={styles.credentialCard} data-reveal>
+                <article key={credential.name} className={styles.credentialCard} data-credential={credential.kind} data-reveal>
                   <span className={styles.credentialMark} aria-hidden="true">{credential.mark}</span>
                   <div><p>{credential.name}</p><strong>{credential.score}</strong></div>
+                </article>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        <section id="off-hours" className={styles.offHours} aria-labelledby="off-hours-title">
+          <div className={styles.sectionShell}>
+            <header className={styles.offHoursHeading} data-reveal>
+              <p className={styles.sectionKicker}>Away from the desk</p>
+              <h2 id="off-hours-title">OFF HOURS</h2>
+            </header>
+            <div className={styles.offHoursGrid}>
+              {offHours.map((item) => (
+                <article key={item.label} className={styles.offHoursCard}>
+                  <div className={styles.offHoursVisual}>
+                    <Image src={item.image} alt={item.alt} fill sizes="(min-width: 901px) 32vw, 100vw" />
+                    <span aria-hidden="true">{item.id}</span>
+                  </div>
+                  <div className={styles.offHoursCopy}>
+                    <h3>{item.label}</h3>
+                    <p>{item.copy.map((line) => <span key={line}>{line}</span>)}</p>
+                  </div>
                 </article>
               ))}
             </div>
@@ -378,6 +457,7 @@ export default function FounderPage() {
         <section id="contact-cta" className={styles.contact} aria-labelledby="contact-title">
           <div className={styles.contactShell} data-reveal>
             <div>
+              <p className={styles.contactKicker}>お問い合わせ</p>
               <h2 id="contact-title">CONTACT</h2>
             </div>
             <div className={styles.contactCopy}>
@@ -402,8 +482,12 @@ export default function FounderPage() {
           <summary>Image credits</summary>
           <p>
             Life science: <a href="https://unsplash.com/photos/white-and-black-microscope-5HbxyB0_DBg" target="_blank" rel="noopener noreferrer">Jaron Nix / Unsplash</a> ·
-            AI background: <a href="https://unsplash.com/photos/abstract-blue-light-streaks-on-a-dark-background-dOYVMySdXd0" target="_blank" rel="noopener noreferrer">灿雄 邱 / Unsplash</a> ·
-            Software development: <a href="https://unsplash.com/photos/code-appears-on-a-computer-screen-XG5q_aosoPo" target="_blank" rel="noopener noreferrer">Rob Wingate / Unsplash</a>
+            Software development: <a href="https://unsplash.com/photos/code-appears-on-a-computer-screen-XG5q_aosoPo" target="_blank" rel="noopener noreferrer">Rob Wingate / Unsplash</a> ·
+            Education portrait: Yuto Matsui / personal archive ·
+            Manifesto visual: COMPASS visual archive ·
+            Drive: <a href="https://unsplash.com/photos/a-car-drives-along-a-scenic-mountain-road-e6XJTEz5SfA" target="_blank" rel="noopener noreferrer">Zixplore / Unsplash</a> ·
+            Shogi: <a href="https://commons.wikimedia.org/wiki/File:Hulic_Shogi-kaikan_Sendagaya_Building_entrance_2024-09-12.jpg" target="_blank" rel="noopener noreferrer">Asanagi / Wikimedia Commons (CC0)</a> ·
+            Personal portraits &amp; climbing: Yuto Matsui / personal archive
           </p>
         </details>
         <p className={styles.copyright}>© 2026 Yuto Matsui. Personal portfolio hosted within the COMPASS site.</p>

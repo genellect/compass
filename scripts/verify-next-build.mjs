@@ -541,6 +541,7 @@ for (const expected of [
   'id="story"',
   'id="products"',
   'id="credentials"',
+  'id="off-hours"',
   'id="contact-cta"',
   "Yuto Matsui",
   "松井優知",
@@ -548,6 +549,16 @@ for (const expected of [
   "分子生物学研究",
   "AIネイティブ開発",
   "大学教育支援",
+  'href="#message"',
+  'aria-label="Mobile portfolio navigation"',
+  'aria-label="外部リンクを表示"',
+  "/images/founder-portfolio/yuto-matsui-education-support.webp",
+  "/images/founder-portfolio/yuto-matsui-lab-hero.webp",
+  "/images/founder-portfolio/off-hours-drive.webp",
+  "/images/founder-portfolio/off-hours-shogi.webp",
+  "/images/founder-portfolio/off-hours-climbing.webp",
+  "/images/founder-portfolio/source/software-development-unsplash.jpg",
+  "/images/Image4.jpg",
   "/images/founder-portfolio/yuto-matsui-profile-hero.webp",
   "/images/founder-portfolio/yuto-matsui-queens-square.webp",
   "/images/founder-portfolio/yuto-matsui-front.webp",
@@ -557,10 +568,17 @@ for (const expected of [
   "MOVE.",
   "未来戦略ライブラリ",
   "COMPASS Manifesto",
+  "English Proficiency",
   "TOEIC L&amp;R",
   "965",
   "IELTS Academic",
   "7.5",
+  "OFF HOURS",
+  "自然の中で車を走らせるのが好きです。",
+  "棋力はアマチュア三段です。",
+  "高校時代はクライミング部。",
+  "続きを読む",
+  "お問い合わせ",
   "https://www.instagram.com/n.m.w.314/?__pwa=1#",
   "さまざまな方とのご縁を歓迎しています。",
   "CONTACT",
@@ -573,7 +591,9 @@ expectOneH1(founder, "Founder portfolio");
 
 const founderStory = founder.match(/<section id="story"[\s\S]*?<\/section>\s*<\/main>/)?.[0];
 if (!founderStory) throw new Error("Founder portfolio is missing the fixed personal statement.");
-const founderStoryText = normalizeText(founderStory);
+// Chapters 02-05 are serialized as the client continuation slot and mount after expansion.
+// Verify the fixed copy in the complete static document while retaining the section check above.
+const founderStoryText = normalizeText(founder);
 expectOrdered(founderStoryText, [
   "高校時代の2020年頃から趣味でプログラミングを始め、Webフロントエンド開発を中心に学びました。当時は現在のようなLLMやコーディングエージェントはなく、実装、デバッグ、Git操作の多くを手作業で行う時代でした。開発そのものには強く惹かれましたが、大学では、より関心のあった生命科学・薬学を選びました。",
   "大学では学部2年次から実験系研究室に所属し、神経変性疾患に関わる遺伝子変異と分子病態を研究してきました。その一方で、生成AIとコーディングエージェントの急速な進歩をきっかけに、研究支援やデータ解析から再びソフトウェア開発へ軸足を広げました。",
@@ -1260,6 +1280,11 @@ for (const relative of [
   "images/founder-portfolio/yuto-matsui-profile-hero.webp",
   "images/founder-portfolio/yuto-matsui-queens-square.webp",
   "images/founder-portfolio/yuto-matsui-front.webp",
+  "images/founder-portfolio/yuto-matsui-education-support.webp",
+  "images/founder-portfolio/yuto-matsui-lab-hero.webp",
+  "images/founder-portfolio/off-hours-drive.webp",
+  "images/founder-portfolio/off-hours-shogi.webp",
+  "images/founder-portfolio/off-hours-climbing.webp",
   "images/founder-portfolio/source/life-science-unsplash.jpg",
   "images/founder-portfolio/source/ai-abstract-unsplash.jpg",
   "images/founder-portfolio/source/software-development-unsplash.jpg",
