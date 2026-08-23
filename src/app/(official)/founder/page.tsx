@@ -3,7 +3,9 @@ import Image from "next/image";
 import { LectureSignalMatrix } from "../../../interactive/components/hero/LectureSignalMatrix";
 import { ProductExperienceMock } from "../../../interactive/components/ui/ProductExperienceMock";
 import { LegacyInteractions } from "../../../components/LegacyInteractions";
+import { EssayContinuation } from "./EssayContinuation";
 import { FounderHeroGallery } from "./FounderHeroGallery";
+import { MobileExternalMenu } from "./MobileExternalMenu";
 import styles from "./founder.module.css";
 
 export const metadata: Metadata = {
@@ -181,22 +183,6 @@ function CompassIcon() {
   return <Image src="/images/compass-mark.svg" alt="" width={28} height={28} aria-hidden="true" />;
 }
 
-function MoreIcon() {
-  return (
-    <svg viewBox="0 0 24 24" aria-hidden="true">
-      <circle cx="5" cy="5" r="1.6" />
-      <circle cx="12" cy="5" r="1.6" />
-      <circle cx="19" cy="5" r="1.6" />
-      <circle cx="5" cy="12" r="1.6" />
-      <circle cx="12" cy="12" r="1.6" />
-      <circle cx="19" cy="12" r="1.6" />
-      <circle cx="5" cy="19" r="1.6" />
-      <circle cx="12" cy="19" r="1.6" />
-      <circle cx="19" cy="19" r="1.6" />
-    </svg>
-  );
-}
-
 function InteractiveHeroPreview() {
   return (
     <div
@@ -247,14 +233,13 @@ export default function FounderPage() {
           <a href="#message">Message</a>
           <a href="#products">Product</a>
           <a href="#contact-cta">Contact</a>
-          <details className={styles.mobileExternalLinks}>
-            <summary aria-label="外部リンクを表示"><MoreIcon /></summary>
+          <MobileExternalMenu className={styles.mobileExternalLinks}>
             <div className={styles.mobileExternalPopover} aria-label="Yuto Matsuiの外部リンク">
               <a href="https://www.instagram.com/n.m.w.314/?__pwa=1#" target="_blank" rel="noopener noreferrer" aria-label="Instagram"><InstagramIcon /></a>
               <a href="https://github.com/genellect" target="_blank" rel="noopener noreferrer" aria-label="GitHub"><GitHubIcon /></a>
               <a href="/" aria-label="COMPASS公式サイト"><CompassIcon /></a>
             </div>
-          </details>
+          </MobileExternalMenu>
         </nav>
       </header>
 
@@ -355,32 +340,38 @@ export default function FounderPage() {
                 <p>そこで実感したのは、AIの価値は単にコーディングを高速化することではなく、一人の人間が設計・実装できるシステムの規模を拡張することにあるという点です。</p>
               </section>
 
-              <section className={styles.essayChapter} aria-labelledby="chapter-compass" data-reveal>
-                <header><span>02</span><h3 id="chapter-compass">From a tool to COMPASS</h3></header>
-                <p>この考えを最初に形にしたのが、現在のCOMPASS Platformにつながる開発です。当初は、学生向け資料を共有するGoogle Driveの招待や名簿管理を自動化する小さな仕組みでした。その後、学生支援団体COMPASSの設立、大学講義支援システムCOMPASS Interactiveの開発へと対象を広げてきました。</p>
-                <p>現在は、生命科学研究を継続しながら、教育・研究支援システムの開発、研究OSの構築、ITベンチャーでのエンジニアリングにも取り組んでいます。研究現場の課題を理解し、それを要件へ落とし込み、実装可能なシステムへ変換することが、現在の私のエンジニアリングの中心です。</p>
-              </section>
+              <EssayContinuation
+                className={styles.essayContinuation}
+                buttonClassName={styles.essayContinuationButton}
+                contentClassName={styles.essayContinuationContent}
+              >
+                <section className={styles.essayChapter} aria-labelledby="chapter-compass">
+                  <header><span>02</span><h3 id="chapter-compass">From a tool to COMPASS</h3></header>
+                  <p>この考えを最初に形にしたのが、現在のCOMPASS Platformにつながる開発です。当初は、学生向け資料を共有するGoogle Driveの招待や名簿管理を自動化する小さな仕組みでした。その後、学生支援団体COMPASSの設立、大学講義支援システムCOMPASS Interactiveの開発へと対象を広げてきました。</p>
+                  <p>現在は、生命科学研究を継続しながら、教育・研究支援システムの開発、研究OSの構築、ITベンチャーでのエンジニアリングにも取り組んでいます。研究現場の課題を理解し、それを要件へ落とし込み、実装可能なシステムへ変換することが、現在の私のエンジニアリングの中心です。</p>
+                </section>
 
-              <section className={styles.essayChapter} aria-labelledby="chapter-themes" data-reveal>
-                <header><span>03</span><h3 id="chapter-themes">Two long-term themes</h3></header>
-                <p>私が長期的に取り組んでいるテーマは、大きく二つあります。</p>
-                <p>一つは、学生が自分の可能性を知り、将来の選択肢を広げられる仕組みをつくることです。能力や意欲があっても、情報や機会へのアクセスによって選択肢は大きく変わります。COMPASSでは、教育やキャリアに関する機会を、偶然だけに左右されにくい構造へ変えていくことを目指しています。</p>
-                <p>もう一つは、AIとソフトウェアによって、生命科学研究の生産性と研究環境そのものを再設計することです。</p>
-                <p>実験研究では、不確実性の高い仮説検証に多くの時間と認知資源が必要です。一方、ソフトウェア開発では、AIによって情報処理、実装、検証の速度が大きく変わりました。私はこの二つの現場を同時に経験してきたからこそ、その間にまだ大きな未開拓領域があると考えています。</p>
-              </section>
+                <section className={styles.essayChapter} aria-labelledby="chapter-themes">
+                  <header><span>03</span><h3 id="chapter-themes">Two long-term themes</h3></header>
+                  <p>私が長期的に取り組んでいるテーマは、大きく二つあります。</p>
+                  <p>一つは、学生が自分の可能性を知り、将来の選択肢を広げられる仕組みをつくることです。能力や意欲があっても、情報や機会へのアクセスによって選択肢は大きく変わります。COMPASSでは、教育やキャリアに関する機会を、偶然だけに左右されにくい構造へ変えていくことを目指しています。</p>
+                  <p>もう一つは、AIとソフトウェアによって、生命科学研究の生産性と研究環境そのものを再設計することです。</p>
+                  <p>実験研究では、不確実性の高い仮説検証に多くの時間と認知資源が必要です。一方、ソフトウェア開発では、AIによって情報処理、実装、検証の速度が大きく変わりました。私はこの二つの現場を同時に経験してきたからこそ、その間にまだ大きな未開拓領域があると考えています。</p>
+                </section>
 
-              <section className={styles.essayChapter} aria-labelledby="chapter-interface" data-reveal>
-                <header><span>04</span><h3 id="chapter-interface">The interface</h3></header>
-                <p>私が目指しているのは、研究者として生命科学の課題を理解し、エンジニアとして、その解決を支えるシステムを実装することです。一人の研究成果だけでなく、多くの研究者の生産性や研究体験を改善することで、より大きなスケールで生命科学に貢献することを目指しています。</p>
-                <p>そのため、生命科学、ソフトウェア開発、AIのいずれか一つに自分を限定するのではなく、研究とエンジニアリングのインターフェースを自分の専門領域として深めることを目指しています。</p>
-              </section>
+                <section className={styles.essayChapter} aria-labelledby="chapter-interface">
+                  <header><span>04</span><h3 id="chapter-interface">The interface</h3></header>
+                  <p>私が目指しているのは、研究者として生命科学の課題を理解し、エンジニアとして、その解決を支えるシステムを実装することです。一人の研究成果だけでなく、多くの研究者の生産性や研究体験を改善することで、より大きなスケールで生命科学に貢献することを目指しています。</p>
+                  <p>そのため、生命科学、ソフトウェア開発、AIのいずれか一つに自分を限定するのではなく、研究とエンジニアリングのインターフェースを自分の専門領域として深めることを目指しています。</p>
+                </section>
 
-              <section className={`${styles.essayChapter} ${styles.essayClosing}`} aria-labelledby="chapter-future" data-reveal>
-                <header><span>05</span><h3 id="chapter-future">Future</h3></header>
-                <p>生命科学研究、ソフトウェア開発、大学教育、英語学習。扱う領域は異なりますが、根底にある考え方は共通しています。</p>
-                <p className={styles.closingPrinciple}>人が持つ能力や知識を、より大きな成果につなげる仕組みをつくること。</p>
-                <p>それを実現することが、私が目標とする未来です。</p>
-              </section>
+                <section className={`${styles.essayChapter} ${styles.essayClosing}`} aria-labelledby="chapter-future">
+                  <header><span>05</span><h3 id="chapter-future">Future</h3></header>
+                  <p>生命科学研究、ソフトウェア開発、大学教育、英語学習。扱う領域は異なりますが、根底にある考え方は共通しています。</p>
+                  <p className={styles.closingPrinciple}>人が持つ能力や知識を、より大きな成果につなげる仕組みをつくること。</p>
+                  <p>それを実現することが、私が目標とする未来です。</p>
+                </section>
+              </EssayContinuation>
             </div>
           </div>
         </section>

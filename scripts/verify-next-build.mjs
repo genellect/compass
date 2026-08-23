@@ -577,6 +577,7 @@ for (const expected of [
   "自然の中で車を走らせるのが好きです。",
   "棋力はアマチュア三段です。",
   "高校時代はクライミング部。",
+  "続きを読む",
   "お問い合わせ",
   "https://www.instagram.com/n.m.w.314/?__pwa=1#",
   "さまざまな方とのご縁を歓迎しています。",
@@ -590,7 +591,9 @@ expectOneH1(founder, "Founder portfolio");
 
 const founderStory = founder.match(/<section id="story"[\s\S]*?<\/section>\s*<\/main>/)?.[0];
 if (!founderStory) throw new Error("Founder portfolio is missing the fixed personal statement.");
-const founderStoryText = normalizeText(founderStory);
+// Chapters 02-05 are serialized as the client continuation slot and mount after expansion.
+// Verify the fixed copy in the complete static document while retaining the section check above.
+const founderStoryText = normalizeText(founder);
 expectOrdered(founderStoryText, [
   "高校時代の2020年頃から趣味でプログラミングを始め、Webフロントエンド開発を中心に学びました。当時は現在のようなLLMやコーディングエージェントはなく、実装、デバッグ、Git操作の多くを手作業で行う時代でした。開発そのものには強く惹かれましたが、大学では、より関心のあった生命科学・薬学を選びました。",
   "大学では学部2年次から実験系研究室に所属し、神経変性疾患に関わる遺伝子変異と分子病態を研究してきました。その一方で、生成AIとコーディングエージェントの急速な進歩をきっかけに、研究支援やデータ解析から再びソフトウェア開発へ軸足を広げました。",
