@@ -517,12 +517,17 @@ for (const expected of [
   'id="teachers"',
   'id="adoption"',
   'id="developers"',
+  'id="educator-operations"',
   "LET EVERYTHING MOVE.",
   "未来の講義を、いま体験。",
-  "聞き逃しも、疑問も、その場で次の理解へ。",
+  "聞き逃しも、疑問も、",
+  "その場で次の理解へ。",
   "最新AIが、講義中に生まれる「わからない」を拾い、字幕・要点・質問・学術情報へつなぎます。",
   "GPT-Realtime-Whisper｜搭載中",
-  "講義の準備から画面共有まで、ひとつの管理画面で。",
+  "学生の反応が、次の説明を変える。",
+  "講義の準備から",
+  "画面共有まで、",
+  "ひとつの管理画面で。",
   "スライド、コメント、ライブ投票を統合した教室表示を開始。AIが生成した要点や回答も、教員が確認・修正してから学生へ共有できます。",
   "導入に興味のある先生方・大学担当者・企業担当者の方へ",
   'href="/contact/"',
@@ -533,6 +538,19 @@ for (const expected of [
   'rel="canonical" href="https://compass-official.pages.dev/INTRO_Interactive/"',
   parentGaMeasurementId
 ]) expectIncludes(interactive, expected, "Interactive page");
+
+const interactiveSectionOrder = [
+  'id="security"',
+  'id="educator-operations"',
+  'id="adoption"',
+  'id="developers"'
+].map((marker) => interactive.indexOf(marker));
+if (
+  interactiveSectionOrder.some((index) => index < 0)
+  || interactiveSectionOrder.some((index, position) => position > 0 && index <= interactiveSectionOrder[position - 1])
+) {
+  throw new Error("Interactive hierarchy must remain Trust, Educator Operations, Adoption, then Developers.");
+}
 
 if (interactive.includes('<div id="root"></div>')) {
   throw new Error("Interactive page regressed to an empty client-rendered shell.");

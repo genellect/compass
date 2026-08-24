@@ -30,7 +30,12 @@ export function AILearningSupport() {
         <div className="ai-support-heading">
           <SectionHeader
             eyebrow="AI LEARNING SUPPORT"
-            title="聞き逃しも、疑問も、その場で次の理解へ。"
+            title={
+              <>
+                <span className="title-line">聞き逃しも、疑問も、</span>
+                <span className="title-line">その場で次の理解へ。</span>
+              </>
+            }
             lead="最新AIが、講義中に生まれる「わからない」を拾い、字幕・要点・質問・学術情報へつなぎます。"
             align="center"
           />

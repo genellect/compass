@@ -8,6 +8,7 @@ import { StickyCTA } from "./components/ui/StickyCTA";
 import {
   AdoptionContact,
   DeveloperGateway,
+  EducatorOperations,
   LearningTrust,
   LearningUseScenes,
   LectureExperienceTimeline,
@@ -30,8 +31,9 @@ export function App() {
         <AILearningSupport />
         <TeacherLectureJourney />
         <LearningUseScenes />
-        <AdoptionContact />
         <LearningTrust />
+        <EducatorOperations />
+        <AdoptionContact />
         <DeveloperGateway />
         <FinalCTA />
       </main>

@@ -30,6 +30,10 @@
   margin-inline: auto;
 }
 
+.intro-redesign .title-line {
+  display: block;
+}
+
 .intro-redesign .desktop-nav,
 .developer-page .desktop-nav {
   gap: clamp(14px, 1.5vw, 24px);
@@ -712,14 +716,6 @@
   color: #596878;
 }
 
-.intro-redesign .teacher-journey__steps strong {
-  display: block;
-  margin-top: 7px;
-  color: #263a50;
-  font-size: 0.92rem;
-  line-height: 1.55;
-}
-
 .intro-redesign .teacher-journey__dashboard {
   align-self: center;
 }
@@ -737,12 +733,182 @@
   color: #f4fdff;
 }
 
+.intro-redesign .educator-operations {
+  color: #142236;
+  border-top: 1px solid rgba(22, 83, 101, 0.08);
+  background:
+    radial-gradient(circle at 92% 10%, rgba(50, 193, 194, 0.12), transparent 29%),
+    linear-gradient(180deg, #f7fafb, #eef5f7);
+}
+
+.intro-redesign .educator-operations .section-header {
+  max-width: 860px;
+}
+
+.intro-redesign .educator-operations .section-header .lead {
+  color: #526978;
+}
+
+.intro-redesign .educator-operations__layout {
+  display: grid;
+  gap: clamp(42px, 6vw, 78px);
+  align-items: center;
+  margin-top: 58px;
+}
+
+.intro-redesign .educator-operations__steps {
+  display: grid;
+  gap: 0;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.intro-redesign .educator-operations__steps li {
+  position: relative;
+  display: grid;
+  grid-template-columns: 52px minmax(0, 1fr);
+  gap: 18px;
+  padding: 0 0 30px;
+}
+
+.intro-redesign .educator-operations__steps li:not(:last-child)::after {
+  content: "";
+  position: absolute;
+  top: 44px;
+  bottom: 4px;
+  left: 21px;
+  width: 1px;
+  background: linear-gradient(#158d9c, rgba(21, 141, 156, 0.08));
+}
+
+.intro-redesign .educator-operations__steps li > span {
+  position: relative;
+  z-index: 1;
+  width: 44px;
+  height: 44px;
+  display: grid;
+  place-items: center;
+  border: 1px solid rgba(21, 141, 156, 0.28);
+  border-radius: 50%;
+  color: #087788;
+  background: #e9fbfb;
+  font-size: 0.65rem;
+  font-weight: 950;
+}
+
+.intro-redesign .educator-operations__steps h3 {
+  color: #163047;
+  font-size: 1.08rem;
+  line-height: 1.45;
+}
+
+.intro-redesign .educator-operations__steps strong {
+  display: block;
+  margin-top: 7px;
+  color: #2f4b5d;
+  font-size: 0.9rem;
+  line-height: 1.6;
+}
+
+.intro-redesign .educator-operations__steps p {
+  margin-top: 7px;
+  color: #617381;
+  font-size: 0.82rem;
+  line-height: 1.75;
+}
+
+.intro-redesign .educator-operations__preview {
+  min-width: 0;
+}
+
+.intro-redesign .educator-operations__preview > p {
+  margin-top: 14px;
+  color: #687c86;
+  font-size: 0.72rem;
+  text-align: center;
+}
+
 .intro-redesign .educator-control {
   display: grid;
   gap: 16px;
   padding: 22px;
   border: 1px solid rgba(111, 224, 235, 0.18);
   border-radius: 22px;
+  color: rgba(239, 250, 255, 0.92);
+  background:
+    radial-gradient(circle at 88% 8%, rgba(66, 211, 190, 0.18), transparent 32%),
+    linear-gradient(145deg, rgba(16, 45, 67, 0.99), rgba(5, 20, 35, 0.99));
+  box-shadow: 0 28px 64px rgba(17, 42, 62, 0.22);
+}
+
+.intro-redesign .educator-control h3 {
+  color: #f4fdff;
+}
+
+.intro-redesign .educator-control__workflow {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  border: 1px solid rgba(159, 224, 232, 0.13);
+  border-radius: 13px;
+  list-style: none;
+  background: rgba(255, 255, 255, 0.025);
+}
+
+.intro-redesign .educator-control__workflow li {
+  min-width: 0;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  gap: 7px;
+  padding: 10px 8px;
+}
+
+.intro-redesign .educator-control__workflow li + li {
+  border-left: 1px solid rgba(159, 224, 232, 0.1);
+}
+
+.intro-redesign .educator-control__workflow li.is-active {
+  background: rgba(94, 225, 255, 0.09);
+}
+
+.intro-redesign .educator-control__workflow li > span {
+  width: 24px;
+  height: 24px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  color: #8de9ed;
+  background: rgba(94, 225, 255, 0.09);
+  font-size: 0.58rem;
+  font-weight: 900;
+}
+
+.intro-redesign .educator-control__workflow li.is-active > span {
+  color: #052335;
+  background: #8de9ed;
+}
+
+.intro-redesign .educator-control__workflow div {
+  min-width: 0;
+  display: grid;
+  gap: 2px;
+}
+
+.intro-redesign .educator-control__workflow strong {
+  color: #effcff;
+  font-size: 0.62rem;
+}
+
+.intro-redesign .educator-control__workflow small {
+  overflow: hidden;
+  color: rgba(222, 244, 249, 0.46);
+  font-size: 0.48rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .intro-redesign .educator-control__header,
@@ -1066,8 +1232,59 @@
 }
 
 @media (max-width: 680px) {
+  .intro-redesign .title-continuation--mobile {
+    display: block;
+  }
+
+  .intro-redesign .educator-operations__layout {
+    margin-top: 44px;
+  }
+
+  .intro-redesign .educator-operations__steps li {
+    grid-template-columns: 42px minmax(0, 1fr);
+    gap: 13px;
+    padding-bottom: 28px;
+  }
+
+  .intro-redesign .educator-operations__steps li > span {
+    width: 40px;
+    height: 40px;
+  }
+
+  .intro-redesign .educator-operations__steps li:not(:last-child)::after {
+    top: 38px;
+    left: 19px;
+  }
+
+  .intro-redesign .educator-operations__steps h3 {
+    font-size: 1rem;
+  }
+
+  .intro-redesign .educator-operations__steps strong {
+    font-size: 0.86rem;
+  }
+
+  .intro-redesign .educator-operations__steps p {
+    font-size: 0.84rem;
+  }
+
   .intro-redesign .educator-control {
     padding: 16px;
+  }
+
+  .intro-redesign .educator-control__workflow {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .intro-redesign .educator-control__workflow li {
+    grid-template-columns: 1fr;
+    justify-items: center;
+    padding: 9px 4px;
+    text-align: center;
+  }
+
+  .intro-redesign .educator-control__workflow small {
+    display: none;
   }
 
   .intro-redesign .educator-control__context,
@@ -2625,6 +2842,10 @@
   .intro-redesign .teacher-journey__layout {
     grid-template-columns: minmax(0, 0.88fr) minmax(420px, 1.12fr);
     align-items: center;
+  }
+
+  .intro-redesign .educator-operations__layout {
+    grid-template-columns: minmax(0, 0.82fr) minmax(500px, 1.18fr);
   }
 
   .intro-redesign .developer-gateway__layout,
