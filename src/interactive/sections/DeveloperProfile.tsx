@@ -1,7 +1,9 @@
+import Image from "next/image";
 import { GitHubProfileLink } from "../../components/GitHubProfileLink";
 
 type DeveloperProfileProps = {
   id?: string;
+  showWebPortfolio?: boolean;
 };
 
 const focusAreas = [
@@ -21,13 +23,28 @@ const expertise = [
   ["AI・エージェント開発", "OpenAI Codex / Claude Code / MCP / LLM API / Agentic Workflows"]
 ] as const;
 
-export function DeveloperProfile({ id = "developer-profile" }: DeveloperProfileProps) {
+export function DeveloperProfile({ id = "developer-profile", showWebPortfolio = false }: DeveloperProfileProps) {
   return (
     <div id={id} className="developer-credit developer-credit--wide developer-credit--portfolio">
       <span>開発者・プロダクト設計者</span>
       <strong>Yuto Matsui</strong>
       <p>生命科学・教育・AIを横断し、研究・教育現場で自ら見いだした課題を、実装可能なプロダクトへ変換する。</p>
-      <GitHubProfileLink className="developer-credit__github" />
+      {showWebPortfolio ? (
+        <div className="developer-credit__portfolio-links">
+          <a
+            className="github-profile-link developer-credit__portfolio"
+            href="/founder/"
+            aria-label="Yuto MatsuiのWebポートフォリオを開く"
+          >
+            <Image src="/images/compass-mark.svg" alt="" width={19} height={19} aria-hidden="true" />
+            <span><strong>Web Portfolio</strong></span>
+            <i aria-hidden="true">↗</i>
+          </a>
+          <GitHubProfileLink className="developer-credit__github" />
+        </div>
+      ) : (
+        <GitHubProfileLink className="developer-credit__github" />
+      )}
       <div className="developer-credit__grid">
         <div>
           <h3>得意領域</h3>

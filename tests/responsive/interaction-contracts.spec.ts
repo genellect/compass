@@ -186,6 +186,75 @@ for (const path of ["/", "/INTRO_Interactive/", "/INTRO_Interactive/developers/"
   });
 }
 
+test("Interactive introduction shows Web Portfolio before GitHub Portfolio", async ({ page }) => {
+  const runtimeErrors = await openRoute(page, "/INTRO_Interactive/", {
+    name: "interactive-portfolio-links",
+    width: 390,
+    height: 844,
+  });
+  const links = page.locator("#developers .developer-credit__portfolio-links > a");
+  await expect(links).toHaveCount(2);
+  await expect(links.nth(0)).toHaveAttribute("href", "/founder/");
+  await expect(links.nth(0)).toContainText("Web Portfolio");
+  await expect(links.nth(1)).toHaveAttribute("href", "https://github.com/genellect");
+  await expect(page.locator('#adoption a[href="/contact/"]')).toBeVisible();
+  expect(runtimeErrors).toEqual([]);
+});
+
+test("Interactive educator operations follows Trust with deliberate heading lines", async ({ page }) => {
+  let runtimeErrors = await openRoute(page, "/INTRO_Interactive/", {
+    name: "interactive-educator-desktop",
+    width: 1440,
+    height: 900,
+  });
+
+  await expect(page.locator("#teachers h2")).toHaveText("学生の反応が、次の説明を変える。");
+  await expect(page.locator("#educator-operations h2")).toHaveText(
+    "講義の準備から画面共有まで、ひとつの管理画面で。",
+  );
+  await expect(page.locator("#educator-operations .educator-control__workflow li")).toHaveCount(4);
+  await expect(page.locator("#educator-operations .educator-control__live")).toContainText("LIVE");
+  await expect(page.locator("#educator-operations .educator-control__share")).toContainText("画面共有を開始");
+  await expect(page.locator("#educator-operations .ai-review")).toContainText("Reviewed by educator");
+
+  const desktopHierarchy = await page.evaluate(() => {
+    const top = (selector: string) => document.querySelector(selector)?.getBoundingClientRect().top ?? -1;
+    const headingLines = Array.from(
+      document.querySelectorAll<HTMLElement>("#educator-operations h2 > .title-line"),
+      (line) => line.getBoundingClientRect().top,
+    );
+    return {
+      trust: top("#security"),
+      educator: top("#educator-operations"),
+      adoption: top("#adoption"),
+      developers: top("#developers"),
+      headingLines,
+    };
+  });
+  expect(desktopHierarchy.trust).toBeLessThan(desktopHierarchy.educator);
+  expect(desktopHierarchy.educator).toBeLessThan(desktopHierarchy.adoption);
+  expect(desktopHierarchy.adoption).toBeLessThan(desktopHierarchy.developers);
+  expect(desktopHierarchy.headingLines).toHaveLength(2);
+  expect(desktopHierarchy.headingLines[1]).toBeGreaterThan(desktopHierarchy.headingLines[0]);
+  expect(runtimeErrors).toEqual([]);
+
+  runtimeErrors = await openRoute(page, "/INTRO_Interactive/", {
+    name: "interactive-educator-mobile",
+    width: 390,
+    height: 844,
+  });
+  const mobileLineBreak = await page.locator("#educator-operations .title-continuation--mobile").evaluate(
+    (continuation) => ({
+      display: getComputedStyle(continuation).display,
+      top: continuation.getBoundingClientRect().top,
+      previousTop: continuation.previousElementSibling?.getBoundingClientRect().top ?? -1,
+    }),
+  );
+  expect(mobileLineBreak.display).toBe("block");
+  expect(mobileLineBreak.top).toBeGreaterThan(mobileLineBreak.previousTop);
+  expect(runtimeErrors).toEqual([]);
+});
+
 test("Interactive Developer Gateway keeps the product engineering message", async ({ page }) => {
   const runtimeErrors = await openRoute(page, "/INTRO_Interactive/", {
     name: "interactive-developer-gateway",

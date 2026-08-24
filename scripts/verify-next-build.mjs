@@ -216,13 +216,13 @@ for (const unexpected of [
   "@media (min-width: 2400px) and (min-height: 1300px)"
 ]) expectExcludes(libraryStyles, unexpected, "Library continuous Desktop Hero responsiveness");
 for (const expected of [
-  ".compass-v4-page + .site-footer .footer-inner",
+  ".site-footer[data-ui-variant=\"root\"] .footer-inner",
   ".site-footer[data-route-context=\"messages\"] .footer-inner",
   'grid-template-areas:\n      "brand"\n      "cta"\n      "note"\n      "copyright";',
-  ".compass-v4-page + .site-footer .footer-nav",
+  ".site-footer[data-ui-variant=\"root\"] .footer-nav",
   ".site-footer[data-route-context=\"messages\"] .footer-nav",
   "display: none;",
-  ".compass-v4-page + .site-footer .footer-note",
+  ".site-footer[data-ui-variant=\"root\"] .footer-note",
   "grid-template-columns: repeat(2, minmax(0, 1fr));"
 ]) expectIncludes(coreRedesignStyles.replace(/\r\n/g, "\n"), expected, "Parent Footer hierarchy");
 expectIncludes(official, "Don’t Just Learn. Build What’s Next.", "Parent Footer Hero message");
@@ -515,14 +515,42 @@ for (const expected of [
   'id="features"',
   'id="ai-support"',
   'id="teachers"',
+  'id="adoption"',
   'id="developers"',
+  'id="educator-operations"',
   "LET EVERYTHING MOVE.",
   "未来の講義を、いま体験。",
+  "聞き逃しも、疑問も、",
+  "その場で次の理解へ。",
+  "最新AIが、講義中に生まれる「わからない」を拾い、字幕・要点・質問・学術情報へつなぎます。",
+  "GPT-Realtime-Whisper｜搭載中",
+  "学生の反応が、次の説明を変える。",
+  "講義の準備から",
+  "画面共有まで、",
+  "ひとつの管理画面で。",
+  "スライド、コメント、ライブ投票を統合した教室表示を開始。AIが生成した要点や回答も、教員が確認・修正してから学生へ共有できます。",
+  "導入に興味のある先生方・大学担当者・企業担当者の方へ",
+  'href="/contact/"',
+  'href="/founder/"',
+  "Web Portfolio",
   "設計判断をたどる",
   "この体験を、見えない設計から支える。",
   'rel="canonical" href="https://compass-official.pages.dev/INTRO_Interactive/"',
   parentGaMeasurementId
 ]) expectIncludes(interactive, expected, "Interactive page");
+
+const interactiveSectionOrder = [
+  'id="security"',
+  'id="educator-operations"',
+  'id="adoption"',
+  'id="developers"'
+].map((marker) => interactive.indexOf(marker));
+if (
+  interactiveSectionOrder.some((index) => index < 0)
+  || interactiveSectionOrder.some((index, position) => position > 0 && index <= interactiveSectionOrder[position - 1])
+) {
+  throw new Error("Interactive hierarchy must remain Trust, Educator Operations, Adoption, then Developers.");
+}
 
 if (interactive.includes('<div id="root"></div>')) {
   throw new Error("Interactive page regressed to an empty client-rendered shell.");
@@ -530,6 +558,7 @@ if (interactive.includes('<div id="root"></div>')) {
 
 expectOneH1(official, "Official page");
 expectOneH1(interactive, "Interactive page");
+expectExcludes(interactiveDevelopers, 'href="/founder/"', "Interactive developer page Web Portfolio scope");
 expectIncludes(official, 'href="/founder/"', "Official Founder portfolio link");
 expectIncludes(official, "Web Portfolio", "Official Founder Web Portfolio CTA");
 expectIncludes(official, "GitHub Portfolio", "Official Founder GitHub Portfolio CTA");
@@ -693,14 +722,16 @@ expectOneH1(communityJoin, "Community registration page");
 
 for (const expected of [
   '<html lang="ja"',
-  "COMPASS お問い合わせフォーム",
-  "Webサイト、イベント、講演、共同企画、取材、共同開発など、COMPASSに関するお問い合わせを受け付けています。",
-  "学生・教職員・団体・企業の方など、どなたでもお気軽にお問い合わせください。",
+  "お問い合わせ",
+  "COMPASSおよび代表（松井）へのお問い合わせ・ご連絡を受け付けています。",
+  "送信いただいた内容は、代表（松井）が確認し、必要に応じて返信いたします。",
+  "学生・教職員・研究者・団体・企業の方を問わず、どうぞお気軽にご連絡ください。",
   "お名前",
   "学部・学科 / 所属",
   "メールアドレス",
   "メールアドレスの確認",
   "お問い合わせ内容",
+  "ご質問、ご相談、ご依頼、ご提案など、内容を自由にご記入ください。",
   "確認コードを送信",
   "お問い合わせを送信",
   'minLength="2"',
@@ -714,6 +745,12 @@ for (const expected of [
 ]) expectIncludes(contact, expected, "Contact page");
 
 for (const expected of [
+  "Don’t Just Learn. Build What’s Next.",
+  "COMPASS source code on GitHub",
+  'data-ui-variant="root"'
+]) expectIncludes(contact, expected, "Contact root footer UI");
+
+for (const expected of [
   "メールアドレスを確認",
   "メールアドレスの確認が完了しました。",
   'action: "verify_code"',
@@ -724,7 +761,9 @@ for (const unexpected of [
   "@st.kitasato-u.ac.jp",
   "sample@",
   "Googleフォーム",
-  "For testing only."
+  "For testing only.",
+  "COMPASS お問い合わせフォーム",
+  "参加希望、企画のご提案"
 ]) expectExcludes(contact, unexpected, "Contact page");
 
 expectOneH1(contact, "Contact page");

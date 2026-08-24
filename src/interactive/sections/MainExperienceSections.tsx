@@ -4,10 +4,12 @@ import { Reveal } from "../components/ui/Reveal";
 import { Section } from "../components/ui/Section";
 import { SectionHeader } from "../components/ui/SectionHeader";
 import { TeacherDashboardMock } from "../components/ui/TeacherDashboardMock";
+import { EducatorControlPreview } from "../components/ui/EducatorControlPreview";
 import { DeveloperProfile } from "./DeveloperProfile";
 import {
   aiLearningOutcomes,
   developerGatewayPoints,
+  educatorOperations,
   lectureTimeline,
   studentExperienceSteps,
   teacherJourney,
@@ -165,6 +167,25 @@ export function LearningUseScenes() {
   );
 }
 
+export function AdoptionContact() {
+  return (
+    <Section id="adoption" className="adoption-contact section--light">
+      <Reveal>
+        <div className="adoption-contact__panel">
+          <div>
+            <p className="eyebrow">FOR EDUCATORS &amp; ORGANIZATIONS</p>
+            <h2>導入に興味のある先生方・大学担当者・企業担当者の方へ</h2>
+            <p>ご興味があれば、COMPASS問い合わせフォームまでお気軽にご相談ください。</p>
+          </div>
+          <CTAButton className="adoption-contact__cta" href="/contact/">
+            COMPASS問い合わせフォームへ <span aria-hidden="true">→</span>
+          </CTAButton>
+        </div>
+      </Reveal>
+    </Section>
+  );
+}
+
 export function LearningTrust() {
   return (
     <Section id="security" className="learning-trust section--light">
@@ -188,6 +209,47 @@ export function LearningTrust() {
             </Reveal>
           ))}
         </div>
+      </div>
+    </Section>
+  );
+}
+
+export function EducatorOperations() {
+  return (
+    <Section id="educator-operations" className="educator-operations section--light">
+      <Reveal>
+        <SectionHeader
+          eyebrow="EDUCATOR OPERATIONS"
+          title={
+            <>
+              <span className="title-line">
+                <span>講義の準備から</span><span className="title-continuation--mobile">画面共有まで、</span>
+              </span>
+              <span className="title-line">ひとつの管理画面で。</span>
+            </>
+          }
+          lead="許可されたGoogleアカウントでログインし、講義資料の準備から進行、参加機能、AI、教室画面までをひとつの管理画面から操作できます。"
+        />
+      </Reveal>
+      <div className="educator-operations__layout">
+        <Reveal>
+          <ol className="educator-operations__steps">
+            {educatorOperations.map((item) => (
+              <li key={item.step}>
+                <span>{item.step}</span>
+                <div>
+                  <h3>{item.title}</h3>
+                  <strong>{item.headline}</strong>
+                  <p>{item.body}</p>
+                </div>
+              </li>
+            ))}
+          </ol>
+        </Reveal>
+        <Reveal className="educator-operations__preview" delay={100}>
+          <EducatorControlPreview />
+          <p>実際の教員ワークスペースをもとに再構成したデモ表示</p>
+        </Reveal>
       </div>
     </Section>
   );
@@ -220,7 +282,7 @@ export function DeveloperGateway() {
         </Reveal>
       </div>
       <Reveal>
-        <DeveloperProfile />
+        <DeveloperProfile showWebPortfolio />
       </Reveal>
     </Section>
   );

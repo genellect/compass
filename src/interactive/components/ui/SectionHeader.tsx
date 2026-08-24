@@ -1,6 +1,8 @@
+import type { ReactNode } from "react";
+
 type SectionHeaderProps = {
   eyebrow: string;
-  title: string;
+  title: ReactNode;
   lead?: string;
   align?: "left" | "center";
 };
