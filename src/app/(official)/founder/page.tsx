@@ -77,6 +77,10 @@ const products = [
     alt: "DNA、コンパス、ネットワークで構成されたCOMPASS Interactiveのビジュアル",
     links: [
       { label: "紹介サイト", href: "/INTRO_Interactive/" },
+      {
+        label: "ProtoPedia",
+        href: "https://protopedia.net/prototype/private/59f061db-936a-4fa3-abc2-438a98711e9e"
+      },
       { label: "開発者向けポートフォリオ", href: "/INTRO_Interactive/developers/" }
     ]
   },
@@ -405,7 +409,16 @@ export default function FounderPage() {
                       ) : product.title}
                     </h3>
                     <nav aria-label={`${product.label}へのリンク`}>
-                      {product.links.map((link) => <a key={link.href} href={link.href}><span>{link.label}</span><ArrowIcon /></a>)}
+                      {product.links.map((link) => (
+                        <a
+                          key={link.href}
+                          href={link.href}
+                          target={link.href.startsWith("https://") ? "_blank" : undefined}
+                          rel={link.href.startsWith("https://") ? "noopener noreferrer" : undefined}
+                        >
+                          <span>{link.label}</span><ArrowIcon />
+                        </a>
+                      ))}
                     </nav>
                   </div>
                 </article>

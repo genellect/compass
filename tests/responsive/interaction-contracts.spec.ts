@@ -201,6 +201,52 @@ test("Interactive introduction shows Web Portfolio before GitHub Portfolio", asy
   expect(runtimeErrors).toEqual([]);
 });
 
+test("Founder product links include equal-size ProtoPedia CTA in the requested order", async ({ page }) => {
+  const runtimeErrors = await openRoute(page, "/founder/", {
+    name: "founder-product-links",
+    width: 1440,
+    height: 900,
+  });
+  const links = page.locator('[data-product="interactive"] nav a');
+  await expect(links).toHaveCount(3);
+  await expect(links.nth(0)).toContainText("紹介サイト");
+  await expect(links.nth(1)).toHaveAttribute(
+    "href",
+    "https://protopedia.net/prototype/private/59f061db-936a-4fa3-abc2-438a98711e9e",
+  );
+  await expect(links.nth(1)).toContainText("ProtoPedia");
+  await expect(links.nth(2)).toContainText("開発者向けポートフォリオ");
+  const dimensions = await links.evaluateAll((elements) =>
+    elements.map((element) => {
+      const rect = element.getBoundingClientRect();
+      return { width: rect.width, height: rect.height };
+    }),
+  );
+  expect(new Set(dimensions.map(({ width }) => width)).size).toBe(1);
+  expect(new Set(dimensions.map(({ height }) => height)).size).toBe(1);
+  expect(runtimeErrors).toEqual([]);
+});
+
+test("Interactive footer exposes Source and ProtoPedia as compact CTAs", async ({ page }) => {
+  const runtimeErrors = await openRoute(page, "/INTRO_Interactive/", {
+    name: "interactive-footer-links",
+    width: 390,
+    height: 844,
+  });
+  const footer = page.locator("footer.site-footer");
+  const source = footer.getByRole("link", { name: "COMPASS Interactive source code on GitHub" });
+  const protoPedia = footer.getByRole("link", { name: "ProtoPedia", exact: true });
+  await expect(source).toHaveAttribute("href", "https://github.com/genellect/compass-interactive");
+  await expect(source.locator("svg")).toHaveCount(1);
+  await expect(protoPedia).toHaveAttribute(
+    "href",
+    "https://protopedia.net/prototype/private/59f061db-936a-4fa3-abc2-438a98711e9e",
+  );
+  await expect(footer).not.toContainText("疑問が動けば、講義が変わる。");
+  await expect(footer).not.toContainText("https://");
+  expect(runtimeErrors).toEqual([]);
+});
+
 test("Interactive educator operations follows Trust with deliberate heading lines", async ({ page }) => {
   let runtimeErrors = await openRoute(page, "/INTRO_Interactive/", {
     name: "interactive-educator-desktop",
