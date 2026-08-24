@@ -163,6 +163,14 @@
 
 .formHeading > p:not(.formKicker) + p { margin-top: 8px; }
 
+.formHeading > .formIntro:not(.formKicker) {
+  margin-top: 22px;
+  color: #243c54;
+  font-size: 0.98rem;
+  font-weight: 760;
+  line-height: 1.75;
+}
+
 .formCard form {
   min-width: 0;
   display: grid;

@@ -186,6 +186,21 @@ for (const path of ["/", "/INTRO_Interactive/", "/INTRO_Interactive/developers/"
   });
 }
 
+test("Interactive introduction shows Web Portfolio before GitHub Portfolio", async ({ page }) => {
+  const runtimeErrors = await openRoute(page, "/INTRO_Interactive/", {
+    name: "interactive-portfolio-links",
+    width: 390,
+    height: 844,
+  });
+  const links = page.locator("#developers .developer-credit__portfolio-links > a");
+  await expect(links).toHaveCount(2);
+  await expect(links.nth(0)).toHaveAttribute("href", "/founder/");
+  await expect(links.nth(0)).toContainText("Web Portfolio");
+  await expect(links.nth(1)).toHaveAttribute("href", "https://github.com/genellect");
+  await expect(page.locator('#adoption a[href="/contact/"]')).toBeVisible();
+  expect(runtimeErrors).toEqual([]);
+});
+
 test("Interactive Developer Gateway keeps the product engineering message", async ({ page }) => {
   const runtimeErrors = await openRoute(page, "/INTRO_Interactive/", {
     name: "interactive-developer-gateway",

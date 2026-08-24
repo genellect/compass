@@ -35,6 +35,7 @@ export function Footer({ variant = "main" }: FooterProps) {
               <a href={`${mainPrefix}#ai-support`}>AI学習支援</a>
               <a href={`${mainPrefix}#teachers`}>教員の使い方</a>
               <a href={`${mainPrefix}#use-cases`}>こんな場面で</a>
+              <a href="/contact/">導入相談</a>
               <a href="/INTRO_Interactive/developers/">設計・技術</a>
             </>
           )}

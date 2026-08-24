@@ -6,6 +6,7 @@ import { AILearningSupport } from "./sections/AILearningSupport";
 import { FinalCTA } from "./sections/FinalCTA";
 import { StickyCTA } from "./components/ui/StickyCTA";
 import {
+  AdoptionContact,
   DeveloperGateway,
   LearningTrust,
   LearningUseScenes,
@@ -29,6 +30,7 @@ export function App() {
         <AILearningSupport />
         <TeacherLectureJourney />
         <LearningUseScenes />
+        <AdoptionContact />
         <LearningTrust />
         <DeveloperGateway />
         <FinalCTA />

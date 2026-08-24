@@ -8,17 +8,22 @@ const libraryUrl = "/future-strategy-library/";
 
 export function SiteFooter({ routeContext = "root" }: { routeContext?: SiteRouteContext }) {
   const resolveHref = (href: string) => resolveSiteHref(href, routeContext);
+  const usesRootFooterUi = routeContext === "root" || routeContext === "contact";
   const registrationIsExternal = isExternalCompassHref(
     FUTURE_STRATEGY_LIBRARY_REGISTRATION_HREF
   );
 
   return (
     <>
-<footer className="site-footer" data-route-context={routeContext}>
+<footer
+  className="site-footer"
+  data-route-context={routeContext}
+  data-ui-variant={usesRootFooterUi ? "root" : routeContext}
+>
   <div className="container footer-inner">
     <div className="footer-brand">
       <p className="footer-logo">COMPASS</p>
-      <p>{routeContext === "root" ? "Don’t Just Learn. Build What’s Next." : "Better Education. Better Decisions."}</p>
+      <p>{usesRootFooterUi ? "Don’t Just Learn. Build What’s Next." : "Better Education. Better Decisions."}</p>
     </div>
 
     <nav className="footer-nav" aria-label="Footer navigation">
@@ -81,7 +86,7 @@ export function SiteFooter({ routeContext = "root" }: { routeContext?: SiteRoute
 
     <p className="copyright">
       <span>© 2026 COMPASS. All rights reserved.</span>
-      {routeContext === "root" ? (
+      {usesRootFooterUi ? (
         <a
           className="footer-source-link"
           href="https://github.com/genellect/compass"

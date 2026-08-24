@@ -6,12 +6,12 @@ import styles from "./contact.module.css";
 
 export const metadata: Metadata = {
   title: "お問い合わせ | COMPASS",
-  description: "COMPASSの教育活動・講演・共同企画・監修等に関するお問い合わせフォームです。",
+  description: "COMPASSおよび代表（松井）へのお問い合わせ・ご連絡を受け付けています。",
   alternates: { canonical: "/contact/" },
   robots: { index: false, follow: true },
   openGraph: {
     title: "お問い合わせ | COMPASS",
-    description: "COMPASSの教育活動・講演・共同企画・監修等に関するお問い合わせフォームです。",
+    description: "COMPASSおよび代表（松井）へのお問い合わせ・ご連絡を受け付けています。",
     url: "/contact/"
   }
 };

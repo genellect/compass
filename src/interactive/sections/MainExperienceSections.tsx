@@ -118,21 +118,21 @@ export function TeacherLectureJourney() {
         <Reveal>
           <SectionHeader
             eyebrow="FOR TEACHERS"
-            title="学生の反応が、次の説明を変える。"
-            lead="大人数の講義でも、質問と理解の変化をひとつの画面で捉え、その場で補足し、問い直し、深められます。"
+            title="講義の準備から画面共有まで、ひとつの管理画面で。"
+            lead="許可されたGoogleアカウントでログインし、講義資料の準備から進行、参加機能、AI、教室画面までをひとつの管理画面から操作できます。"
           />
           <ol className="teacher-journey__steps">
             {teacherJourney.map((item) => (
               <li key={item.step}>
                 <span>{item.step}</span>
-                <div><h3>{item.title}</h3><p>{item.body}</p></div>
+                <div><h3>{item.title}</h3><strong>{item.headline}</strong><p>{item.body}</p></div>
               </li>
             ))}
           </ol>
         </Reveal>
         <Reveal className="teacher-journey__dashboard" delay={100}>
           <TeacherDashboardMock />
-          <p>質問・投票・理解の変化を、次の説明の手がかりに。</p>
+          <p>ひとつの画面から、講義全体を動かす。</p>
         </Reveal>
       </div>
     </Section>
@@ -161,6 +161,25 @@ export function LearningUseScenes() {
           </Reveal>
         ))}
       </div>
+    </Section>
+  );
+}
+
+export function AdoptionContact() {
+  return (
+    <Section id="adoption" className="adoption-contact section--light">
+      <Reveal>
+        <div className="adoption-contact__panel">
+          <div>
+            <p className="eyebrow">FOR EDUCATORS &amp; ORGANIZATIONS</p>
+            <h2>導入に興味のある先生方・大学担当者・企業担当者の方へ</h2>
+            <p>ご興味があれば、COMPASS問い合わせフォームまでお気軽にご相談ください。</p>
+          </div>
+          <CTAButton className="adoption-contact__cta" href="/contact/">
+            COMPASS問い合わせフォームへ <span aria-hidden="true">→</span>
+          </CTAButton>
+        </div>
+      </Reveal>
     </Section>
   );
 }
@@ -220,7 +239,7 @@ export function DeveloperGateway() {
         </Reveal>
       </div>
       <Reveal>
-        <DeveloperProfile />
+        <DeveloperProfile showWebPortfolio />
       </Reveal>
     </Section>
   );

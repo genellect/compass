@@ -376,9 +376,10 @@ export function ContactForm() {
     <section className={styles.formCard} aria-labelledby="form-title">
       <div className={styles.formHeading}>
         <p className={styles.formKicker}>CONTACT</p>
-        <h1 id="form-title">COMPASS お問い合わせフォーム</h1>
-        <p>Webサイト、イベント、講演、共同企画、取材、共同開発など、COMPASSに関するお問い合わせを受け付けています。</p>
-        <p>学生・教職員・団体・企業の方など、どなたでもお気軽にお問い合わせください。</p>
+        <h1 id="form-title">お問い合わせ</h1>
+        <p className={styles.formIntro}>COMPASSおよび代表（松井）へのお問い合わせ・ご連絡を受け付けています。</p>
+        <p>送信いただいた内容は、代表（松井）が確認し、必要に応じて返信いたします。</p>
+        <p>学生・教職員・研究者・団体・企業の方を問わず、どうぞお気軽にご連絡ください。</p>
       </div>
 
       <form id="contact-form" noValidate aria-busy={status !== "idle"} onSubmit={handleSubmit}>
@@ -527,8 +528,7 @@ export function ContactForm() {
         <div className={styles.fieldGroup}>
           <label htmlFor="details">お問い合わせ内容 <RequiredBadge /></label>
           <div className={styles.helper} id="details-helper">
-            <p>ご質問、ご相談、参加希望、企画のご提案などをご記入ください。</p>
-            <p>時期や対象、実施したい内容などが決まっている場合は、あわせてご記入ください。</p>
+            <p>ご質問、ご相談、ご依頼、ご提案など、内容を自由にご記入ください。</p>
           </div>
           <div className={`${styles.inputWrap} ${styles.textareaWrap}`}>
             <textarea
