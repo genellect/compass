@@ -1180,6 +1180,16 @@
 
 .productCopy nav a:hover { border-color: rgba(61, 111, 220, 0.52); color: #315ec8; transform: translateY(-2px); }
 
+.productCard[data-product="interactive"] .productCopy nav {
+  display: grid;
+  width: min(100%, 270px);
+}
+
+.productCard[data-product="interactive"] .productCopy nav a {
+  width: 100%;
+  min-width: 0;
+}
+
 .credentials {
   background:
     linear-gradient(110deg, rgba(235, 246, 252, 0.86), rgba(246, 249, 255, 0.92)),
