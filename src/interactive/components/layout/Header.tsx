@@ -13,8 +13,8 @@ type HeaderProps = {
 const mainNavItems = [
   { href: "#students", label: "学生の体験" },
   { href: "#ai-support", label: "AI学習支援" },
-  { href: "#teachers", label: "教員の使い方" },
-  { href: "#use-cases", label: "こんな場面で" },
+  { href: "#educator-operations", label: "教員の使い方" },
+  { href: "#adoption", label: "導入・ご相談" },
   { href: "#developers", label: "設計・技術" }
 ];
 
