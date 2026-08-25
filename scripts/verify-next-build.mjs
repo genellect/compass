@@ -529,7 +529,16 @@ for (const expected of [
   "画面共有まで、",
   "ひとつの管理画面で。",
   "スライド、コメント、ライブ投票を統合した教室表示を開始。AIが生成した要点や回答も、教員が確認・修正してから学生へ共有できます。",
-  "導入に興味のある先生方・大学担当者・企業担当者の方へ",
+  "講義や研修への",
+  "導入をご検討の方へ",
+  "COMPASS Interactiveは、",
+  "大学講義や研究室セミナー、",
+  "学会、企業研修など、",
+  "さまざまな教育・学習環境で",
+  "ご利用いただけます。",
+  "続きを読む",
+  "利用環境の設定、操作方法のご案内、講義当日の運用支援まで個別にサポートいたします。",
+  "利用内容に応じて個別にご相談を承ります。",
   'href="/contact/"',
   'href="/founder/"',
   "Web Portfolio",
@@ -538,6 +547,21 @@ for (const expected of [
   'rel="canonical" href="https://compass-official.pages.dev/INTRO_Interactive/"',
   parentGaMeasurementId
 ]) expectIncludes(interactive, expected, "Interactive page");
+
+const interactiveDesktopNav = interactive.match(/<nav class="desktop-nav"[\s\S]*?<\/nav>/)?.[0];
+if (!interactiveDesktopNav) throw new Error("Interactive page is missing its Desktop navigation.");
+for (const [href, label] of [
+  ["#students", "学生の体験"],
+  ["#ai-support", "AI学習支援"],
+  ["#educator-operations", "教員の使い方"],
+  ["#adoption", "導入・ご相談"],
+  ["#developers", "設計・技術"]
+]) {
+  expectIncludes(interactiveDesktopNav, `href="${href}"`, "Interactive Desktop navigation");
+  expectIncludes(interactiveDesktopNav, label, "Interactive Desktop navigation");
+}
+expectExcludes(interactiveDesktopNav, "こんな場面で", "Interactive Desktop navigation");
+expectExcludes(interactiveDesktopNav, 'href="#teachers"', "Interactive Desktop navigation");
 
 const interactiveSectionOrder = [
   'id="security"',

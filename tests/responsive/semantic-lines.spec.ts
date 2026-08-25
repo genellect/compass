@@ -106,6 +106,17 @@ const scenarios: SemanticScenario[] = [
     expectations: [
       { selector: "h1#hero-title", lines: ["LET EVERYTHING", "MOVE."] },
       { selector: ".hero-lead", lines: ["リアルタイム×AIが、", "講義を次の次元へ。"] },
+      { selector: "#adoption h2", lines: ["講義や研修への", "導入をご検討の方へ"] },
+      {
+        selector: ".adoption-contact__lead",
+        lines: [
+          "COMPASS Interactiveは、",
+          "大学講義や研究室セミナー、",
+          "学会、企業研修など、",
+          "さまざまな教育・学習環境で",
+          "ご利用いただけます。",
+        ],
+      },
     ],
   },
   {
@@ -115,8 +126,34 @@ const scenarios: SemanticScenario[] = [
     expectations: [
       { selector: "h1#hero-title", lines: ["LET EVERYTHING MOVE."] },
       { selector: ".hero-lead", lines: ["リアルタイム×AIが、講義を次の次元へ。"] },
+      { selector: "#adoption h2", lines: ["講義や研修への", "導入をご検討の方へ"] },
+      {
+        selector: ".adoption-contact__lead",
+        lines: [
+          "COMPASS Interactiveは、大学講義や研究室セミナー、学会、企業研修など、",
+          "さまざまな教育・学習環境でご利用いただけます。",
+        ],
+      },
     ],
   },
+  ...[
+    { name: "Interactive Laptop adoption copy", width: 1024, height: 768 },
+    { name: "Interactive short Desktop adoption copy", width: 1275, height: 553 },
+  ].map(({ name, width, height }): SemanticScenario => ({
+    name,
+    path: "/INTRO_Interactive/",
+    viewport: { name: name.toLowerCase().replaceAll(" ", "-"), width, height },
+    expectations: [
+      { selector: "#adoption h2", lines: ["講義や研修への", "導入をご検討の方へ"] },
+      {
+        selector: ".adoption-contact__lead",
+        lines: [
+          "COMPASS Interactiveは、大学講義や研究室セミナー、学会、企業研修など、",
+          "さまざまな教育・学習環境でご利用いただけます。",
+        ],
+      },
+    ],
+  })),
   {
     name: "Developer Mobile Hero copy",
     path: "/INTRO_Interactive/developers/",

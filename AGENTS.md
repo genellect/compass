@@ -94,6 +94,10 @@ npm run check
 
 commit、push、PR、Cloudflare設定、GAS deployment、Production公開は、ユーザーが明示的に依頼した場合だけ行う。既存の未関連変更を保持し、破壊的なGit操作で消去しない。
 
+COMPASS Web UIの実装・改装仕様を受けた場合は、実装と検証後にPRを作成し、Cloudflare Previewで確認可能な状態まで進めることを標準フローとする。Production公開は、常にユーザーの明示指示を必要とする。
+
+文言、リンク、CTA、余白、軽微なレスポンシブ調整など、影響範囲が限定された微調整についてユーザーがProduction公開を明示した場合は、Cloudflare Previewを省略し、必要な検証、PR、merge、Production公開、canonical URL確認までを最速経路で完了してよい。Previewを省略した場合は、最終報告にその旨とProduction検証結果を記載する。
+
 ## Cloud Development
 
 - GitHubを正本とし、新規作業は最新`origin/main`からGitHub CodespacesまたはCodex Cloudで開始する。

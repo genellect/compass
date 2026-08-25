@@ -172,14 +172,56 @@ export function AdoptionContact() {
     <Section id="adoption" className="adoption-contact section--light">
       <Reveal>
         <div className="adoption-contact__panel">
-          <div>
-            <p className="eyebrow">FOR EDUCATORS &amp; ORGANIZATIONS</p>
-            <h2>導入に興味のある先生方・大学担当者・企業担当者の方へ</h2>
-            <p>ご興味があれば、COMPASS問い合わせフォームまでお気軽にご相談ください。</p>
+          <div className="adoption-contact__intro">
+            <div>
+              <p className="eyebrow">FOR EDUCATORS &amp; ORGANIZATIONS</p>
+              <h2>
+                <span>講義や研修への</span>
+                <span>導入をご検討の方へ</span>
+              </h2>
+              <p className="adoption-contact__lead">
+                <span className="adoption-contact__lead-line">
+                  <span>COMPASS Interactiveは、</span>
+                  <span>大学講義や研究室セミナー、</span>
+                  <span>学会、企業研修など、</span>
+                </span>
+                <span className="adoption-contact__lead-line">
+                  <span>さまざまな教育・学習環境で</span>
+                  <span>ご利用いただけます。</span>
+                </span>
+              </p>
+            </div>
+            <CTAButton className="adoption-contact__cta" href="/contact/">
+              COMPASS問い合わせフォームへ <span aria-hidden="true">→</span>
+            </CTAButton>
           </div>
-          <CTAButton className="adoption-contact__cta" href="/contact/">
-            COMPASS問い合わせフォームへ <span aria-hidden="true">→</span>
-          </CTAButton>
+          <details className="adoption-contact__disclosure">
+            <summary>
+              <span className="adoption-contact__disclosure-label adoption-contact__disclosure-label--open">続きを読む</span>
+              <span className="adoption-contact__disclosure-label adoption-contact__disclosure-label--close">閉じる</span>
+              <span className="adoption-contact__disclosure-icon" aria-hidden="true" />
+            </summary>
+            <div className="adoption-contact__details">
+              <p>
+                導入にあたっては、講義形式や参加人数、ご利用になりたい機能などを確認したうえで、
+                <strong>利用環境の設定、操作方法のご案内、講義当日の運用支援まで個別にサポートいたします。</strong>
+              </p>
+              <p>
+                また、既存の機能をそのまま使っていただくだけでなく、
+                <strong>実際の講義や研修のニーズに応じた機能の調整・追加開発や、より使いやすい運用方法のご提案にも柔軟に対応いたします。</strong>
+              </p>
+              <p>
+                北里大学薬学部・薬学研究科での利用については、<strong>無償で導入支援を行っています。</strong>
+                北里大学内のその他の部門、ならびに他大学・研究機関・学会・企業での利用については、
+                <strong>利用内容に応じて個別にご相談を承ります。</strong>
+              </p>
+              <p>本格的な導入が決まっていない段階でも構いません。</p>
+              <p>
+                「自分の講義でどのように使えるか」「こんな機能は実現できるか」といったご相談から、導入・運用・開発に関するご相談まで幅広く受け付けています。
+                <strong>ご興味がありましたら、ぜひCOMPASS問い合わせフォームからお気軽にご連絡ください。</strong>
+              </p>
+            </div>
+          </details>
         </div>
       </Reveal>
     </Section>

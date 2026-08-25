@@ -247,6 +247,65 @@ test("Interactive footer exposes Source and ProtoPedia as compact CTAs", async (
   expect(runtimeErrors).toEqual([]);
 });
 
+test("Interactive Desktop navigation and adoption disclosure follow the approved hierarchy", async ({ page }) => {
+  let runtimeErrors = await openRoute(page, "/INTRO_Interactive/", {
+    name: "interactive-adoption-desktop",
+    width: 1440,
+    height: 900,
+  });
+
+  const desktopNav = page.locator(".site-header .desktop-nav");
+  const desktopLinks = desktopNav.locator("a");
+  await expect(desktopLinks).toHaveCount(5);
+  await expect(desktopLinks).toHaveText([
+    "学生の体験",
+    "AI学習支援",
+    "教員の使い方",
+    "導入・ご相談",
+    "設計・技術",
+  ]);
+  await expect(desktopLinks.nth(2)).toHaveAttribute("href", "#educator-operations");
+  await expect(desktopLinks.nth(3)).toHaveAttribute("href", "#adoption");
+  await expect(desktopNav).not.toContainText("こんな場面で");
+
+  const disclosure = page.locator("#adoption details");
+  const detailBody = disclosure.locator(".adoption-contact__details");
+  await expect(disclosure).not.toHaveAttribute("open", "");
+  await expect(detailBody).not.toBeVisible();
+  await expect(page.locator("#adoption .adoption-contact__cta")).toHaveAttribute("href", "/contact/");
+  await disclosure.locator("summary").click();
+  await expect(disclosure).toHaveAttribute("open", "");
+  await expect(detailBody).toBeVisible();
+  await expect(detailBody).toContainText("利用内容に応じて個別にご相談を承ります。");
+  const emphasis = await detailBody.locator("strong").first().evaluate((element) => {
+    const style = getComputedStyle(element);
+    const parentStyle = getComputedStyle(element.parentElement!);
+    return {
+      fontWeight: Number(style.fontWeight),
+      fontSize: style.fontSize,
+      parentFontSize: parentStyle.fontSize,
+    };
+  });
+  expect(emphasis.fontWeight).toBe(600);
+  expect(emphasis.fontSize).toBe(emphasis.parentFontSize);
+  await disclosure.locator("summary").click();
+  await expect(detailBody).not.toBeVisible();
+  expect(runtimeErrors).toEqual([]);
+
+  runtimeErrors = await openRoute(page, "/INTRO_Interactive/", {
+    name: "interactive-adoption-mobile",
+    width: 390,
+    height: 844,
+  });
+  await expect(page.locator(".site-header .desktop-nav")).not.toBeVisible();
+  const mobileDisclosure = page.locator("#adoption details");
+  await expect(mobileDisclosure.locator(".adoption-contact__details")).not.toBeVisible();
+  await mobileDisclosure.locator("summary").click();
+  await expect(mobileDisclosure.locator(".adoption-contact__details")).toBeVisible();
+  expect(await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth)).toBeLessThanOrEqual(1);
+  expect(runtimeErrors).toEqual([]);
+});
+
 test("Interactive educator operations follows Trust with deliberate heading lines", async ({ page }) => {
   let runtimeErrors = await openRoute(page, "/INTRO_Interactive/", {
     name: "interactive-educator-desktop",

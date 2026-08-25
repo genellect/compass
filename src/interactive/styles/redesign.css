@@ -1192,10 +1192,6 @@
 }
 
 .intro-redesign .adoption-contact__panel {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  align-items: center;
-  gap: 32px;
   padding: clamp(28px, 4vw, 44px);
   border: 1px solid rgba(29, 119, 132, 0.15);
   border-radius: 24px;
@@ -1203,6 +1199,13 @@
     radial-gradient(circle at 94% 0, rgba(79, 212, 207, 0.16), transparent 34%),
     linear-gradient(135deg, #f2fbfa, #fffaf0);
   box-shadow: 0 20px 52px rgba(20, 58, 75, 0.08);
+}
+
+.intro-redesign .adoption-contact__intro {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: end;
+  gap: 32px;
 }
 
 .intro-redesign .adoption-contact__panel .eyebrow {
@@ -1218,10 +1221,21 @@
   text-wrap: balance;
 }
 
-.intro-redesign .adoption-contact__panel h2 + p {
-  margin-top: 13px;
+.intro-redesign .adoption-contact__panel h2 > span,
+.intro-redesign .adoption-contact__lead-line {
+  display: block;
+}
+
+.intro-redesign .adoption-contact__lead {
+  max-width: 820px;
+  margin-top: 16px;
   color: #536b78;
-  line-height: 1.8;
+  font-size: clamp(0.94rem, 1.15vw, 1.04rem);
+  line-height: 1.9;
+}
+
+.intro-redesign .adoption-contact__lead-line > span {
+  display: inline;
 }
 
 .intro-redesign .adoption-contact__cta {
@@ -1229,6 +1243,114 @@
   color: #f7feff;
   background: linear-gradient(135deg, #0b7181, #12556f);
   box-shadow: 0 16px 36px rgba(11, 94, 113, 0.2);
+}
+
+.intro-redesign .adoption-contact__disclosure {
+  margin-top: 28px;
+  border-top: 1px solid rgba(29, 119, 132, 0.15);
+}
+
+.intro-redesign .adoption-contact__disclosure summary {
+  display: inline-flex;
+  min-height: 48px;
+  align-items: center;
+  gap: 10px;
+  padding-top: 16px;
+  color: #175f6d;
+  cursor: pointer;
+  font-size: 0.86rem;
+  font-weight: 800;
+  list-style: none;
+}
+
+.intro-redesign .adoption-contact__disclosure summary::-webkit-details-marker {
+  display: none;
+}
+
+.intro-redesign .adoption-contact__disclosure summary:focus-visible {
+  border-radius: 6px;
+  outline: 2px solid rgba(23, 95, 109, 0.58);
+  outline-offset: 4px;
+}
+
+.intro-redesign .adoption-contact__disclosure:not([open]) > .adoption-contact__details {
+  display: none;
+}
+
+.intro-redesign .adoption-contact__disclosure-label--close {
+  display: none;
+}
+
+.intro-redesign .adoption-contact__disclosure[open] .adoption-contact__disclosure-label--open {
+  display: none;
+}
+
+.intro-redesign .adoption-contact__disclosure[open] .adoption-contact__disclosure-label--close {
+  display: inline;
+}
+
+.intro-redesign .adoption-contact__disclosure-icon {
+  position: relative;
+  width: 24px;
+  height: 24px;
+  flex: 0 0 auto;
+  border: 1px solid rgba(23, 95, 109, 0.24);
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.58);
+  transition: transform 180ms ease, border-color 180ms ease;
+}
+
+.intro-redesign .adoption-contact__disclosure-icon::before,
+.intro-redesign .adoption-contact__disclosure-icon::after {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 8px;
+  height: 1px;
+  content: "";
+  background: currentColor;
+  transform: translate(-50%, -50%);
+}
+
+.intro-redesign .adoption-contact__disclosure-icon::after {
+  transform: translate(-50%, -50%) rotate(90deg);
+}
+
+.intro-redesign .adoption-contact__disclosure[open] .adoption-contact__disclosure-icon {
+  border-color: rgba(23, 95, 109, 0.4);
+  transform: rotate(45deg);
+}
+
+.intro-redesign .adoption-contact__details {
+  display: grid;
+  max-width: 980px;
+  gap: 18px;
+  padding-top: 20px;
+  color: #465f6d;
+  font-size: 0.94rem;
+  line-height: 1.9;
+  text-wrap: pretty;
+}
+
+.intro-redesign .adoption-contact__details p {
+  margin: 0;
+}
+
+.intro-redesign .adoption-contact__details strong {
+  color: #365561;
+  font-weight: 600;
+}
+
+@media (max-width: 1050px) {
+  .intro-redesign .adoption-contact__intro {
+    grid-template-columns: minmax(0, 1fr);
+    align-items: start;
+    gap: 24px;
+  }
+
+  .intro-redesign .adoption-contact__cta {
+    justify-self: start;
+  }
 }
 
 @media (max-width: 680px) {
@@ -1301,13 +1423,39 @@
     flex-direction: column;
   }
 
-  .intro-redesign .adoption-contact__panel {
+  .intro-redesign .adoption-contact__intro {
     grid-template-columns: minmax(0, 1fr);
     gap: 24px;
   }
 
+  .intro-redesign .adoption-contact__panel h2 {
+    font-size: clamp(1.52rem, 7.3vw, 1.88rem);
+    line-height: 1.42;
+  }
+
+  .intro-redesign .adoption-contact__lead {
+    font-size: 0.93rem;
+    line-height: 1.82;
+  }
+
+  .intro-redesign .adoption-contact__lead-line > span {
+    display: block;
+  }
+
+  .intro-redesign .adoption-contact__details {
+    gap: 16px;
+    font-size: 0.88rem;
+    line-height: 1.88;
+  }
+
   .intro-redesign .adoption-contact__cta {
     width: 100%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .intro-redesign .adoption-contact__disclosure-icon {
+    transition: none;
   }
 }
 
