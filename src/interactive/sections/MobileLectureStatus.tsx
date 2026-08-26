@@ -1,5 +1,5 @@
 import { links } from "../content/interactiveContent";
-import { ProductExperienceMock } from "../components/ui/ProductExperienceMock";
+import { ProductFilm } from "../components/ui/ProductFilm";
 import { Reveal } from "../components/ui/Reveal";
 
 export function MobileLectureStatus() {
@@ -21,8 +21,8 @@ export function MobileLectureStatus() {
           <a className="experience-inline-cta" data-cta-location="experience-demo" href={links.demo}>実際の講義を3分で体験 <span aria-hidden="true">→</span></a>
         </Reveal>
         <Reveal className="experience-preview" delay={120}>
-          <ProductExperienceMock compact />
-          <p className="experience-preview__caption"><span aria-hidden="true" /> 実プロダクトに基づくライブ講義画面</p>
+          <ProductFilm />
+          <p className="experience-preview__caption"><span aria-hidden="true" /> 実際の講義で動作するCOMPASS Interactive</p>
         </Reveal>
       </div>
     </section>
