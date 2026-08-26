@@ -52,6 +52,16 @@ const fragmentSpreads: readonly (readonly FragmentPhoto[])[] = [
       sizes: "(max-width: 900px) 46vw, 25vw"
     },
     {
+      key: "microfluidic",
+      src: `${assetRoot}/microfluidic-1920.webp`,
+      srcSet: `${assetRoot}/microfluidic-640.webp 640w, ${assetRoot}/microfluidic-1280.webp 1280w, ${assetRoot}/microfluidic-1920.webp 1920w`,
+      width: 1920,
+      height: 1280,
+      alt: "研究開発に用いられる精密なマイクロ流体デバイス",
+      role: "research",
+      sizes: "(max-width: 900px) 46vw, 17vw"
+    },
+    {
       key: "code-terminal",
       src: `${assetRoot}/code-terminal-1920.webp`,
       srcSet: `${assetRoot}/code-terminal-640.webp 640w, ${assetRoot}/code-terminal-1280.webp 1280w, ${assetRoot}/code-terminal-1920.webp 1920w`,
@@ -108,6 +118,17 @@ const fragmentSpreads: readonly (readonly FragmentPhoto[])[] = [
       role: "engineering",
       tone: "tech",
       sizes: "(max-width: 900px) calc(100vw - 34px), 58vw"
+    },
+    {
+      key: "yuto-703",
+      src: `${assetRoot}/yuto-703-1044.webp`,
+      srcSet: `${assetRoot}/yuto-703-640.webp 640w, ${assetRoot}/yuto-703-1044.webp 1044w`,
+      width: 1044,
+      height: 1566,
+      alt: "柔らかな光のテラスに座るYuto Matsui",
+      role: "atmosphere",
+      tone: "warm",
+      sizes: "(max-width: 900px) 58vw, 17vw"
     }
   ],
   [
@@ -152,6 +173,17 @@ const fragmentSpreads: readonly (readonly FragmentPhoto[])[] = [
       alt: "夜の横浜駅周辺に広がる都市建築",
       role: "atmosphere",
       sizes: "(max-width: 900px) 46vw, 42vw"
+    },
+    {
+      key: "silicon-wafer",
+      src: `${assetRoot}/silicon-wafer-1920.webp`,
+      srcSet: `${assetRoot}/silicon-wafer-640.webp 640w, ${assetRoot}/silicon-wafer-1280.webp 1280w, ${assetRoot}/silicon-wafer-1920.webp 1920w`,
+      width: 1920,
+      height: 1278,
+      alt: "成膜装置の前で保持されるシリコンウェハー",
+      role: "engineering",
+      tone: "warm",
+      sizes: "(max-width: 900px) 62vw, 42vw"
     }
   ],
   [
@@ -200,40 +232,60 @@ const fragmentSpreads: readonly (readonly FragmentPhoto[])[] = [
   ]
 ] as const;
 
-function FragmentAmbientGraphic({ variant }: { variant: number }) {
+function FragmentSignalField() {
   return (
     <svg
-      className={styles.fragmentAmbient}
-      data-fragment-ambient={variant}
-      viewBox="0 0 520 220"
+      className={styles.fragmentSignalField}
+      data-fragment-ambient="signal-field"
+      viewBox="0 0 1440 3600"
+      preserveAspectRatio="none"
       aria-hidden="true"
       focusable="false"
     >
-      <g className={styles.fragmentAmbientDrift}>
-        <g className={styles.fragmentAmbientHelix}>
-          <path d="M18 68C74 20 132 116 189 68S303 20 360 68s114 48 142 4" />
-          <path d="M18 72c56 48 114-48 171 0s114 48 171 0 114-48 142-4" />
-          <path d="M51 48v44M98 45v50M145 49v42M214 47v47M262 45v50M309 49v42M378 48v44M426 46v48M474 51v38" />
-        </g>
+      <defs>
+        <linearGradient id="fragment-signal-cool" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0" stopColor="#45a7bb" />
+          <stop offset="0.52" stopColor="#477fae" />
+          <stop offset="1" stopColor="#5f759f" />
+        </linearGradient>
+        <linearGradient id="fragment-signal-warm" x1="1" y1="0" x2="0" y2="1">
+          <stop offset="0" stopColor="#d0a76d" />
+          <stop offset="0.58" stopColor="#97a68a" />
+          <stop offset="1" stopColor="#54a0ae" />
+        </linearGradient>
+        <pattern id="fragment-field-grid" width="72" height="72" patternUnits="userSpaceOnUse">
+          <path d="M72 0H0V72" fill="none" stroke="#7392a7" strokeWidth="0.7" />
+          <circle cx="0" cy="0" r="2.2" fill="#7392a7" />
+        </pattern>
+      </defs>
 
-        <g className={styles.fragmentAmbientCircuit}>
-          <path d="M20 176h70v-38h72v27h61v-58h71v21h69V80h132" />
-          <path d="M90 176v22h96M294 128v48h92M363 80V52h72" />
-          <circle cx="20" cy="176" r="4" />
-          <circle cx="90" cy="138" r="4" />
-          <circle cx="162" cy="165" r="4" />
-          <circle cx="223" cy="107" r="4" />
-          <circle cx="294" cy="128" r="4" />
-          <circle cx="363" cy="80" r="4" />
-          <circle cx="495" cy="80" r="4" />
-        </g>
+      <rect className={styles.fragmentFieldGrid} width="1440" height="3600" fill="url(#fragment-field-grid)" />
+      <g className={styles.fragmentFieldDrift}>
+        <path className={styles.fragmentFieldPath} d="M-90 310C250 110 460 620 770 390S1200 40 1530 300" />
+        <path className={styles.fragmentFieldSignal} pathLength="100" d="M-90 310C250 110 460 620 770 390S1200 40 1530 300" />
 
-        <g className={styles.fragmentAmbientCell} transform="translate(432 152)">
-          <circle r="31" />
-          <circle r="18" />
-          <circle cx="-8" cy="-5" r="3" />
-          <circle cx="9" cy="7" r="2" />
-          <path d="M-22 11c9-7 15-8 24-4s14 2 21-3" />
+        <path className={styles.fragmentFieldPath} d="M1540 950C1180 730 1010 1230 660 1060S150 760-100 1140" />
+        <path className={styles.fragmentFieldSignalWarm} pathLength="100" d="M1540 950C1180 730 1010 1230 660 1060S150 760-100 1140" />
+
+        <path className={styles.fragmentFieldPath} d="M-120 1730C250 1480 530 2070 850 1810S1210 1510 1540 1880" />
+        <path className={styles.fragmentFieldSignal} pathLength="100" d="M-120 1730C250 1480 530 2070 850 1810S1210 1510 1540 1880" />
+
+        <path className={styles.fragmentFieldPath} d="M1510 2660C1210 2380 990 2910 660 2710S200 2380-120 2800" />
+        <path className={styles.fragmentFieldSignalWarm} pathLength="100" d="M1510 2660C1210 2380 990 2910 660 2710S200 2380-120 2800" />
+
+        <g className={styles.fragmentFieldNodes}>
+          <circle cx="180" cy="242" r="11" />
+          <circle cx="768" cy="390" r="17" />
+          <circle cx="1240" cy="176" r="9" />
+          <circle cx="1186" cy="898" r="14" />
+          <circle cx="658" cy="1060" r="20" />
+          <circle cx="224" cy="1012" r="10" />
+          <circle cx="298" cy="1660" r="13" />
+          <circle cx="852" cy="1810" r="19" />
+          <circle cx="1274" cy="1688" r="9" />
+          <circle cx="1160" cy="2560" r="16" />
+          <circle cx="660" cy="2710" r="21" />
+          <circle cx="184" cy="2654" r="10" />
         </g>
       </g>
     </svg>
@@ -243,6 +295,7 @@ function FragmentAmbientGraphic({ variant }: { variant: number }) {
 export function FounderFragments() {
   return (
     <section id="fragments" className={styles.fragments} aria-labelledby="fragments-title">
+      <FragmentSignalField />
       <div className={styles.sectionShell}>
         <header className={styles.fragmentsHeader}>
           <h2 id="fragments-title">FRAGMENTS</h2>
@@ -255,7 +308,6 @@ export function FounderFragments() {
               className={styles.fragmentSpread}
               data-spread={spreadIndex + 1}
             >
-              <FragmentAmbientGraphic variant={spreadIndex + 1} />
               {spread.map((photo) => (
                 <figure
                   key={photo.key}

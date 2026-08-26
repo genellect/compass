@@ -619,9 +619,12 @@ for (const expected of [
   "/images/founder-portfolio/yuto-matsui-front.webp",
   "/images/founder-portfolio/fragments/yuto-696-1566.webp",
   "/images/founder-portfolio/fragments/dna-automation-1920.webp",
+  "/images/founder-portfolio/fragments/microfluidic-1920.webp",
   "/images/founder-portfolio/fragments/code-terminal-1920.webp",
   "/images/founder-portfolio/fragments/yuto-698-1566.webp",
   "/images/founder-portfolio/fragments/code-data-1920.webp",
+  "/images/founder-portfolio/fragments/yuto-703-1044.webp",
+  "/images/founder-portfolio/fragments/silicon-wafer-1920.webp",
   "/images/founder-portfolio/fragments/yuto-704-1372.webp",
   'data-library-hero-preview="true"',
   "FSL / KNOWLEDGE HORIZON",
@@ -654,13 +657,13 @@ for (const expected of [
 expectOrdered(founder, ['id="expertise"', 'id="fragments"', 'id="story"'], "Founder FRAGMENTS section order");
 
 const founderFragmentPhotoCount = (founder.match(/data-slot=/g) ?? []).length;
-if (founderFragmentPhotoCount !== 16) {
-  throw new Error(`Founder FRAGMENTS must contain exactly 16 photos, found ${founderFragmentPhotoCount}.`);
+if (founderFragmentPhotoCount !== 19) {
+  throw new Error(`Founder FRAGMENTS must contain exactly 19 photos, found ${founderFragmentPhotoCount}.`);
 }
 
 const founderFragmentAmbientCount = (founder.match(/data-fragment-ambient=/g) ?? []).length;
-if (founderFragmentAmbientCount !== 4) {
-  throw new Error(`Founder FRAGMENTS must contain exactly 4 ambient graphics, found ${founderFragmentAmbientCount}.`);
+if (founderFragmentAmbientCount !== 1) {
+  throw new Error(`Founder FRAGMENTS must contain exactly 1 continuous signal field, found ${founderFragmentAmbientCount}.`);
 }
 
 expectExcludes(
@@ -1389,6 +1392,7 @@ for (const relative of [
   "images/founder-portfolio/fragments/yuto-699-1044.webp",
   "images/founder-portfolio/fragments/yuto-700-1477.webp",
   "images/founder-portfolio/fragments/yuto-701-1108.webp",
+  "images/founder-portfolio/fragments/yuto-703-1044.webp",
   "images/founder-portfolio/fragments/yuto-704-1372.webp",
   "images/founder-portfolio/fragments/yuto-706-1044.webp",
   "images/founder-portfolio/fragments/yuto-707-1477.webp",
@@ -1398,6 +1402,8 @@ for (const relative of [
   "images/founder-portfolio/fragments/code-terminal-1920.webp",
   "images/founder-portfolio/fragments/code-data-1920.webp",
   "images/founder-portfolio/fragments/servers-1920.webp",
+  "images/founder-portfolio/fragments/microfluidic-1920.webp",
+  "images/founder-portfolio/fragments/silicon-wafer-1920.webp",
   "images/founder-portfolio/source/life-science-unsplash.jpg",
   "images/founder-portfolio/source/ai-abstract-unsplash.jpg",
   "images/founder-portfolio/source/software-development-unsplash.jpg",
