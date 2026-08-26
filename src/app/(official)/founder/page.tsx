@@ -488,8 +488,8 @@ export default function FounderPage() {
                     <span>Researcher &amp; Engineer</span>
                   </p>
                   <div className={styles.contactEmailAddresses}>
-                    <p><span>Personal：</span><a href="mailto:my270yuto0413@gmail.com">my270yuto0413@gmail.com</a></p>
-                    <p><span>Univ.：</span><a href="mailto:matsui.yuto@st.kitasato-u.ac.jp">matsui.yuto@st.kitasato-u.ac.jp</a></p>
+                    <p><span>Personal：</span><span className={styles.contactEmailValue}>my270yuto0413@gmail.com</span></p>
+                    <p><span>Univ.：</span><span className={styles.contactEmailValue}>matsui.yuto@st.kitasato-u.ac.jp</span></p>
                   </div>
                 </div>
               </details>

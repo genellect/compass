@@ -2139,7 +2139,7 @@
   width: min(1120px, calc(100% - clamp(44px, 10vw, 160px)));
   grid-template-columns: minmax(0, 0.82fr) minmax(320px, 0.68fr);
   gap: clamp(48px, 8vw, 118px);
-  align-items: end;
+  align-items: start;
   margin-inline: auto;
 }
 
@@ -2262,11 +2262,10 @@
   line-height: 1.6;
 }
 
-.contactEmailAddresses a {
+.contactEmailValue {
   color: #294e60;
   overflow-wrap: anywhere;
-  text-decoration-color: rgba(39, 139, 150, 0.26);
-  text-underline-offset: 3px;
+  user-select: text;
 }
 
 .footer {
