@@ -40,8 +40,6 @@ const mainMobileGroups = [
     items: [
       { href: "#teachers", label: "学生の反応を活かす", note: "Teaching Flow" },
       { href: "#educator-operations", label: "教員の使い方", note: "Operations" },
-      { href: "#use-cases", label: "こんな場面で", note: "Use Scenes" },
-      { href: "#security", label: "安心して使える理由", note: "Trust & Privacy" },
       { href: "#adoption", label: "導入・ご相談", note: "Adoption" }
     ]
   },
@@ -49,7 +47,7 @@ const mainMobileGroups = [
     label: "PRODUCT",
     items: [
       { href: "#developers", label: "設計・技術", note: "Architecture" },
-      { href: "/INTRO_Interactive/developers/#developer-profile", label: "開発者・プロダクト設計者", note: "Profile" }
+      { href: "/founder/", label: "開発者・プロダクト設計者", note: "Profile" }
     ]
   }
 ];
