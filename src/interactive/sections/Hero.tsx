@@ -1,16 +1,25 @@
+import { Manrope } from "next/font/google";
 import { hero, links } from "../content/interactiveContent";
 import { CTAButton } from "../components/ui/CTAButton";
 import { FeatureChip } from "../components/ui/FeatureChip";
 import { HeroIntelligenceField } from "../components/hero/HeroIntelligenceField";
 import { LectureSignalMatrix } from "../components/hero/LectureSignalMatrix";
+import { MobileLearningSignal } from "../components/hero/MobileLearningSignal";
 import { ProductExperienceMock } from "../components/ui/ProductExperienceMock";
+
+const mobileDisplay = Manrope({
+  subsets: ["latin"],
+  display: "swap",
+  variable: "--font-interactive-mobile-display",
+});
 
 export function Hero() {
   return (
-    <section id="top" className="hero-section hero-section--signal" aria-labelledby="hero-title">
+    <section id="top" className={`hero-section hero-section--signal ${mobileDisplay.variable}`} aria-labelledby="hero-title">
       <div className="hero-visual" aria-hidden="true" />
       <div className="hero-shade" aria-hidden="true" />
       <HeroIntelligenceField />
+      <MobileLearningSignal />
       <div className="hero-grid section__inner">
         <div className="hero-copy">
           <p className="eyebrow">{hero.eyebrow}</p>

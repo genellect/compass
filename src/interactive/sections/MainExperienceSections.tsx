@@ -120,7 +120,11 @@ export function TeacherLectureJourney() {
         <Reveal>
           <SectionHeader
             eyebrow="FOR TEACHERS"
-            title="学生の反応が、次の説明を変える。"
+            title={
+              <>
+                <span className="teacher-title-line">学生の反応が、</span><span className="teacher-title-line">次の説明を変える。</span>
+              </>
+            }
             lead="大人数の講義でも、質問と理解の変化をひとつの画面で捉え、その場で補足し、問い直し、深められます。"
           />
           <ol className="teacher-journey__steps">

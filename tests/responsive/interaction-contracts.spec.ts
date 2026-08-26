@@ -278,8 +278,20 @@ test("Interactive mobile navigation follows the real page hierarchy", async ({ p
   await page.getByRole("button", { name: "メニューを開く" }).click();
   const menu = page.locator("#mobile-menu");
   await expect(menu).toBeVisible();
-  await expect(menu.locator('a[href="#educator-operations"]')).toContainText("教員の使い方");
-  await expect(menu.locator('a[href="#adoption"]')).toContainText("導入・ご相談");
+  const educatorGroup = menu.locator(".mobile-nav-group").filter({ hasText: "FOR EDUCATORS" });
+  const educatorLinks = educatorGroup.locator("a");
+  await expect(educatorLinks).toHaveCount(3);
+  await expect(educatorLinks).toHaveText([
+    "学生の反応を活かすTeaching Flow",
+    "教員の使い方Operations",
+    "導入・ご相談Adoption",
+  ]);
+  await expect(educatorLinks.nth(0)).toHaveAttribute("href", "#teachers");
+  await expect(educatorLinks.nth(1)).toHaveAttribute("href", "#educator-operations");
+  await expect(educatorLinks.nth(2)).toHaveAttribute("href", "#adoption");
+  await expect(educatorGroup.locator('a[href="#use-cases"]')).toHaveCount(0);
+  await expect(educatorGroup.locator('a[href="#security"]')).toHaveCount(0);
+  await expect(menu.getByRole("link", { name: /開発者・プロダクト設計者/ })).toHaveAttribute("href", "/founder/");
   await expect(menu.getByRole("button", { name: "メニューを閉じる" })).toHaveCount(1);
   expect(runtimeErrors).toEqual([]);
 });
@@ -431,6 +443,17 @@ test("Interactive educator operations follows Trust with deliberate heading line
     width: 390,
     height: 844,
   });
+  const teacherTitle = page.locator("#teachers h2");
+  const teacherLines = await teacherTitle.locator(".teacher-title-line").evaluateAll((lines) =>
+    lines.map((line) => ({ display: getComputedStyle(line).display, top: line.getBoundingClientRect().top })),
+  );
+  expect(teacherLines).toHaveLength(2);
+  expect(teacherLines[0].display).toBe("block");
+  expect(teacherLines[1].top).toBeGreaterThan(teacherLines[0].top);
+  await expect(teacherTitle).toHaveCSS("text-align", "center");
+  await expect(page.locator("#teachers .section-header .lead")).toHaveCSS("text-align", "center");
+  await expect(page.locator("#security .section-header")).toHaveCSS("text-align", "center");
+  await expect(page.locator("#security .section-header .lead")).toHaveCSS("text-align", "center");
   const mobileLineBreak = await page.locator("#educator-operations .title-continuation--mobile").evaluate(
     (continuation) => ({
       display: getComputedStyle(continuation).display,

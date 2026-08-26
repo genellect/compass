@@ -83,6 +83,13 @@ export function HeroIntelligenceField() {
     const hero = canvas?.closest<HTMLElement>(".hero-section--signal");
     if (!canvas || !hero) return;
 
+    if (window.matchMedia("(max-width: 680px)").matches) {
+      canvas.dataset.renderState = "ready";
+      canvas.dataset.renderer = "inactive";
+      canvas.dataset.motionState = "paused";
+      return;
+    }
+
     const context = canvas.getContext("2d", { alpha: true }) as CanvasRenderingContext2D | null;
     const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
     let cssWidth = 1;

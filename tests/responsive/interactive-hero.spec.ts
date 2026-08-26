@@ -112,6 +112,7 @@ for (const viewport of heroViewports) {
     const stage = page.locator(".hero-signal-stage");
     const canvas = stage.locator("canvas.hero-signal-matrix");
     const ambientCanvas = page.locator("canvas.hero-ai-field");
+    const mobileLearningField = page.locator("canvas.hero-mobile-learning-field");
     const origin = title.locator(".hero-title__core[data-signal-origin]");
 
     await expect(hero).toHaveCount(1);
@@ -149,20 +150,43 @@ for (const viewport of heroViewports) {
     await expect(origin).toHaveText(".");
     await expect(origin).toBeVisible();
     await expect(ambientCanvas).toHaveCount(1);
-    await expect(ambientCanvas).toBeVisible();
-    await expect(ambientCanvas).toHaveAttribute("data-render-state", "ready");
-    await expect(ambientCanvas).toHaveAttribute("data-renderer", "canvas2d");
-    await expect(ambientCanvas).toHaveAttribute("data-motion-state", "reduced");
-    const ambientBudget = await ambientCanvas.evaluate((element) => {
-      const canvasElement = element as HTMLCanvasElement;
-      return {
-        pixels: canvasElement.width * canvasElement.height,
-        pixelRatio: Number.parseFloat(canvasElement.dataset.pixelRatio ?? "0"),
-      };
-    });
-    expect(ambientBudget.pixels).toBeLessThanOrEqual(1_510_000);
-    expect(ambientBudget.pixelRatio).toBeGreaterThanOrEqual(0.33);
-    expect(ambientBudget.pixelRatio).toBeLessThanOrEqual(1.25);
+    await expect(mobileLearningField).toHaveCount(1);
+
+    if (viewport.width <= 680) {
+      await expect(ambientCanvas).toBeHidden();
+      await expect(ambientCanvas).toHaveAttribute("data-render-state", "ready");
+      await expect(ambientCanvas).toHaveAttribute("data-renderer", "inactive");
+      await expect(mobileLearningField).toBeVisible();
+      await expect(mobileLearningField).toHaveAttribute("data-render-state", "ready");
+      await expect(mobileLearningField).toHaveAttribute("data-renderer", "canvas2d");
+      await expect(mobileLearningField).toHaveAttribute("data-motion-state", "reduced");
+      const mobileBudget = await mobileLearningField.evaluate((element) => {
+        const canvasElement = element as HTMLCanvasElement;
+        return {
+          pixels: canvasElement.width * canvasElement.height,
+          pixelRatio: Number.parseFloat(canvasElement.dataset.pixelRatio ?? "0"),
+        };
+      });
+      expect(mobileBudget.pixels).toBeLessThanOrEqual(710_000);
+      expect(mobileBudget.pixelRatio).toBeGreaterThanOrEqual(0.59);
+      expect(mobileBudget.pixelRatio).toBeLessThanOrEqual(1.4);
+    } else {
+      await expect(ambientCanvas).toBeVisible();
+      await expect(ambientCanvas).toHaveAttribute("data-render-state", "ready");
+      await expect(ambientCanvas).toHaveAttribute("data-renderer", "canvas2d");
+      await expect(ambientCanvas).toHaveAttribute("data-motion-state", "reduced");
+      await expect(mobileLearningField).toBeHidden();
+      const ambientBudget = await ambientCanvas.evaluate((element) => {
+        const canvasElement = element as HTMLCanvasElement;
+        return {
+          pixels: canvasElement.width * canvasElement.height,
+          pixelRatio: Number.parseFloat(canvasElement.dataset.pixelRatio ?? "0"),
+        };
+      });
+      expect(ambientBudget.pixels).toBeLessThanOrEqual(1_510_000);
+      expect(ambientBudget.pixelRatio).toBeGreaterThanOrEqual(0.33);
+      expect(ambientBudget.pixelRatio).toBeLessThanOrEqual(1.25);
+    }
 
     const productProofIsIntentionallyHidden = viewport.width <= 680;
     if (productProofIsIntentionallyHidden) {
@@ -199,14 +223,54 @@ test("Interactive signal field provides a complete reduced-motion frame", async 
 
   const canvas = page.locator("canvas.hero-signal-matrix");
   const ambientCanvas = page.locator("canvas.hero-ai-field");
+  const mobileLearningField = page.locator("canvas.hero-mobile-learning-field");
   await expect(canvas).toHaveAttribute("data-render-state", "ready");
   await expect(canvas).toHaveAttribute("data-motion-state", "reduced");
   await expect(ambientCanvas).toHaveAttribute("data-render-state", "ready");
-  await expect(ambientCanvas).toHaveAttribute("data-motion-state", "reduced");
+  await expect(ambientCanvas).toHaveAttribute("data-renderer", "inactive");
+  await expect(ambientCanvas).toHaveAttribute("data-motion-state", "paused");
+  await expect(mobileLearningField).toBeVisible();
+  await expect(mobileLearningField).toHaveAttribute("data-render-state", "ready");
+  await expect(mobileLearningField).toHaveAttribute("data-renderer", "canvas2d");
+  await expect(mobileLearningField).toHaveAttribute("data-motion-state", "reduced");
   await expect(page.locator(".hero-signal-stage")).toBeHidden();
   await expect(page.locator(".hero-mobile-product-proof")).toBeHidden();
   await expect(page.locator("h1#hero-title")).toBeVisible();
   await expect(page.locator("#hero-primary-cta")).toBeVisible();
+});
+
+test("Interactive Mobile learning signal advances when motion is allowed", async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.emulateMedia({ reducedMotion: "no-preference" });
+  await page.goto("/INTRO_Interactive/", { waitUntil: "domcontentloaded" });
+
+  const field = page.locator("canvas.hero-mobile-learning-field");
+  await expect(field).toBeVisible();
+  await expect(field).toHaveAttribute("data-render-state", "ready");
+  await expect(field).toHaveAttribute("data-motion-state", "running");
+  const initialFrame = await field.evaluate((element) =>
+    Number.parseInt((element as HTMLCanvasElement).dataset.frameCount ?? "0", 10),
+  );
+  await page.waitForTimeout(360);
+  const laterFrame = await field.evaluate((element) =>
+    Number.parseInt((element as HTMLCanvasElement).dataset.frameCount ?? "0", 10),
+  );
+  expect(laterFrame).toBeGreaterThan(initialFrame);
+});
+
+test("Interactive Mobile learning signal has a CSS fallback", async ({ page }) => {
+  await page.addInitScript(() => {
+    HTMLCanvasElement.prototype.getContext = () => null;
+  });
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await page.goto("/INTRO_Interactive/", { waitUntil: "domcontentloaded" });
+
+  const field = page.locator("canvas.hero-mobile-learning-field");
+  await expect(field).toBeVisible();
+  await expect(field).toHaveAttribute("data-render-state", "ready");
+  await expect(field).toHaveAttribute("data-renderer", "css");
+  await expect(field).toHaveAttribute("data-motion-state", "paused");
 });
 
 test("Interactive ambient AI field advances when motion is allowed", async ({ page }) => {
