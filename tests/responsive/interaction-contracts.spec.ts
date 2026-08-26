@@ -128,6 +128,50 @@ for (const viewport of [
   });
 }
 
+test("Founder FRAGMENTS preserves its editorial order, ambient motion, and shared Library hero", async ({ page }) => {
+  const runtimeErrors = collectRuntimeErrors(page);
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.emulateMedia({ reducedMotion: "no-preference" });
+  const response = await page.goto("/founder/", { waitUntil: "domcontentloaded" });
+  expect(response?.status()).toBe(200);
+
+  const fragments = page.locator("#fragments");
+  await expect(fragments.locator("[data-slot]")).toHaveCount(16);
+  await expect(fragments.locator("[data-fragment-ambient]")).toHaveCount(4);
+  await expect(page.locator('[data-product="library"] [data-library-hero-preview="true"]')).toHaveCount(1);
+  await expect(page.locator('[data-product="library"] img')).toHaveCount(0);
+
+  const report = await page.evaluate(() => ({
+    order: [...document.querySelectorAll("#fragments [data-slot]")]
+      .map((element) => element.getAttribute("data-slot")),
+    pictureAnimation: getComputedStyle(document.querySelector("#fragments picture")!).animationName,
+    ambientAnimation: getComputedStyle(document.querySelector("#fragments [data-fragment-ambient] > g")!).animationName,
+    overflow: document.documentElement.scrollWidth - window.innerWidth,
+    copyright: document.querySelector("footer > p:last-of-type")?.textContent?.trim(),
+  }));
+
+  expect(report.order).toEqual([
+    "yuto-696", "dna-automation", "yuto-706", "code-terminal",
+    "yuto-701", "pipette", "yuto-698", "code-data",
+    "code-window", "yuto-695", "servers", "yuto-707",
+    "yuto-697", "yuto-700", "yuto-699", "yuto-704",
+  ]);
+  expect(report.pictureAnimation).not.toBe("none");
+  expect(report.ambientAnimation).not.toBe("none");
+  expect(report.overflow).toBeLessThanOrEqual(1);
+  expect(report.copyright).toBe(
+    "© 2026 Yuto Matsui. Designed and developed by Yuto Matsui. All rights reserved.",
+  );
+
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  const reducedMotion = await page.evaluate(() => ({
+    picture: getComputedStyle(document.querySelector("#fragments picture")!).animationName,
+    ambient: getComputedStyle(document.querySelector("#fragments [data-fragment-ambient] > g")!).animationName,
+  }));
+  expect(reducedMotion).toEqual({ picture: "none", ambient: "none" });
+  expect(runtimeErrors).toEqual([]);
+});
+
 for (const scenario of [
   {
     name: "FSL scaled browser",

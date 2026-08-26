@@ -671,6 +671,499 @@
   line-height: 1.72;
 }
 
+.fragments {
+  position: relative;
+  overflow: hidden;
+  padding: clamp(96px, 10vw, 152px) 0 clamp(112px, 12vw, 184px);
+  background:
+    radial-gradient(circle at 8% 12%, rgba(69, 167, 187, 0.16), transparent 25%),
+    radial-gradient(circle at 94% 38%, rgba(207, 164, 104, 0.14), transparent 27%),
+    radial-gradient(circle at 12% 69%, rgba(91, 126, 166, 0.13), transparent 29%),
+    linear-gradient(180deg, #fbfdfd 0%, #f2f7f7 28%, #f6f5f0 52%, #f1f6f8 76%, #fff 100%);
+}
+
+.fragments::before {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: min(1240px, calc(100% - 48px));
+  height: 1px;
+  content: "";
+  background: linear-gradient(90deg, transparent, rgba(65, 125, 182, 0.2), transparent);
+  transform: translateX(-50%);
+}
+
+.fragments::after {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  content: "";
+  background:
+    repeating-linear-gradient(90deg, transparent 0 71px, rgba(62, 106, 136, 0.042) 71px 72px),
+    repeating-linear-gradient(0deg, transparent 0 71px, rgba(62, 106, 136, 0.032) 71px 72px);
+  pointer-events: none;
+  mask-image: linear-gradient(180deg, transparent, #000 8%, #000 92%, transparent);
+}
+
+.fragments > .sectionShell {
+  position: relative;
+  z-index: 2;
+}
+
+.fragmentSignalField {
+  position: absolute;
+  inset: 1.5% -4% 1.5%;
+  z-index: 1;
+  display: block;
+  width: 108%;
+  height: 97%;
+  overflow: visible;
+  pointer-events: none;
+}
+
+.fragmentFieldGrid {
+  opacity: 0.18;
+}
+
+.fragmentFieldPath,
+.fragmentFieldSignal,
+.fragmentFieldSignalWarm {
+  fill: none;
+  vector-effect: non-scaling-stroke;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.fragmentFieldPath {
+  opacity: 0.3;
+  stroke: url(#fragment-signal-cool);
+  stroke-width: 1.35;
+}
+
+.fragmentFieldSignal,
+.fragmentFieldSignalWarm {
+  stroke-width: 2.4;
+  stroke-dasharray: 10 90;
+  stroke-dashoffset: 0;
+}
+
+.fragmentFieldSignal { stroke: url(#fragment-signal-cool); }
+.fragmentFieldSignalWarm { stroke: url(#fragment-signal-warm); }
+
+.fragmentFieldNodes circle {
+  fill: rgba(250, 253, 253, 0.88);
+  stroke: #5593a5;
+  stroke-width: 1.4;
+  vector-effect: non-scaling-stroke;
+}
+
+.fragmentsHeader {
+  margin-bottom: clamp(42px, 5vw, 68px);
+}
+
+.fragmentsHeader h2 {
+  margin: 0;
+  color: #4a6275;
+  font-size: 0.66rem;
+  font-weight: 760;
+  letter-spacing: 0.2em;
+  line-height: 1.4;
+}
+
+.fragmentsEssay {
+  display: grid;
+  gap: clamp(72px, 8vw, 112px);
+}
+
+.fragmentSpread {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  min-width: 0;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  gap: 14px;
+  align-items: end;
+  isolation: isolate;
+}
+
+.fragmentSpread::before {
+  position: absolute;
+  inset: -34px -28px;
+  z-index: -1;
+  content: "";
+  background:
+    radial-gradient(circle at var(--fragment-wash-x, 16%) var(--fragment-wash-y, 54%), rgba(255, 255, 255, 0.94), transparent 34%),
+    linear-gradient(112deg, rgba(255, 255, 255, 0.62), rgba(226, 238, 239, 0.36) 48%, rgba(248, 245, 235, 0.52));
+  border-block: 1px solid rgba(75, 117, 142, 0.1);
+  box-shadow: 0 24px 80px rgba(46, 78, 96, 0.045);
+}
+
+.fragmentSpread::after {
+  position: absolute;
+  top: var(--fragment-rail-y, 52%);
+  left: -9%;
+  z-index: 0;
+  width: 38%;
+  height: 1px;
+  content: "";
+  background: linear-gradient(90deg, transparent, rgba(62, 137, 158, 0.72), rgba(202, 161, 104, 0.58), transparent);
+  box-shadow: 0 -8px 0 rgba(68, 129, 151, 0.08), 0 8px 0 rgba(68, 129, 151, 0.06);
+  opacity: 0.78;
+  pointer-events: none;
+}
+
+.fragmentSpread[data-spread="2"] { --fragment-wash-x: 86%; --fragment-wash-y: 42%; --fragment-rail-y: 72%; }
+.fragmentSpread[data-spread="3"] { --fragment-wash-x: 12%; --fragment-wash-y: 72%; --fragment-rail-y: 61%; }
+.fragmentSpread[data-spread="4"] { --fragment-wash-x: 78%; --fragment-wash-y: 58%; --fragment-rail-y: 67%; }
+
+.fragmentPhoto {
+  position: relative;
+  z-index: 1;
+  min-width: 0;
+  margin: 0;
+  overflow: hidden;
+  background: #edf2f4;
+  isolation: isolate;
+}
+
+.fragmentPicture,
+.fragmentImage {
+  display: block;
+  width: 100%;
+}
+
+.fragmentImage {
+  height: auto;
+  color: transparent;
+}
+
+.fragmentPhoto[data-crop] .fragmentPicture,
+.fragmentPhoto[data-crop] .fragmentImage {
+  height: 100%;
+}
+
+.fragmentPhoto[data-crop] .fragmentImage {
+  object-fit: cover;
+}
+
+.fragmentPhoto[data-crop="anchor"] {
+  aspect-ratio: 8 / 5;
+}
+
+.fragmentPhoto[data-crop="anchor"] .fragmentImage {
+  object-position: 50% 58%;
+}
+
+.fragmentPhoto[data-slot="yuto-698"] .fragmentImage {
+  object-position: 52% 54%;
+}
+
+.fragmentPhoto[data-crop="lab"] {
+  aspect-ratio: 4 / 5;
+}
+
+.fragmentPhoto[data-crop="lab"] .fragmentImage {
+  object-position: 50% 58%;
+}
+
+.fragmentPhoto[data-crop="pipette"] {
+  aspect-ratio: 3 / 4;
+}
+
+.fragmentPhoto[data-crop="pipette"] .fragmentImage {
+  object-position: 50% 50%;
+}
+
+.fragmentPhoto[data-crop="code-window"] {
+  aspect-ratio: 2 / 3;
+}
+
+.fragmentPhoto[data-crop="code-window"] .fragmentImage {
+  object-position: 50% 100%;
+}
+
+.fragmentPhoto[data-tone="warm"] .fragmentImage {
+  filter: saturate(0.91) contrast(0.98);
+}
+
+.fragmentPhoto[data-tone="lift"] .fragmentImage {
+  filter: brightness(1.03) saturate(0.94);
+}
+
+.fragmentPhoto[data-tone="tech"] .fragmentImage {
+  filter: saturate(0.9) contrast(1.02);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .fragmentPicture {
+    transform-origin: 48% 52%;
+    animation: fragmentPhotoDrift 21s ease-in-out infinite alternate;
+  }
+
+  .fragmentSpread:nth-child(even) .fragmentPicture {
+    transform-origin: 52% 48%;
+    animation-name: fragmentPhotoDriftReverse;
+    animation-duration: 24s;
+  }
+
+  .fragmentPhoto:nth-of-type(2n) .fragmentPicture {
+    animation-delay: -9s;
+  }
+
+  .fragmentPhoto:nth-of-type(3n) .fragmentPicture {
+    animation-delay: -16s;
+  }
+
+  .fragmentPhoto[data-role="anchor"] .fragmentPicture {
+    animation-duration: 26s;
+  }
+
+  .fragmentPhoto[data-role="atmosphere"] .fragmentPicture {
+    animation-duration: 18s;
+  }
+
+  .fragmentFieldDrift {
+    transform-origin: center;
+    animation: fragmentFieldDrift 18s ease-in-out infinite alternate;
+  }
+
+  .fragmentFieldSignal,
+  .fragmentFieldSignalWarm {
+    animation: fragmentSignalTravel 11s linear infinite;
+  }
+
+  .fragmentFieldSignalWarm {
+    animation-duration: 15s;
+    animation-direction: reverse;
+  }
+
+  .fragmentFieldNodes circle {
+    transform-box: fill-box;
+    transform-origin: center;
+    animation: fragmentNodePulse 7s ease-in-out infinite alternate;
+  }
+
+  .fragmentFieldNodes circle:nth-child(3n) { animation-delay: -3.5s; }
+  .fragmentFieldNodes circle:nth-child(2n) { animation-duration: 9s; }
+
+  .fragmentSpread::after {
+    animation: fragmentRailTravel 10s ease-in-out infinite alternate;
+  }
+}
+
+@keyframes fragmentPhotoDrift {
+  from { transform: scale(1.018) translate3d(-1.1%, 0.8%, 0); }
+  to { transform: scale(1.068) translate3d(1.45%, -1.05%, 0); }
+}
+
+@keyframes fragmentPhotoDriftReverse {
+  from { transform: scale(1.02) translate3d(1.15%, -0.8%, 0); }
+  to { transform: scale(1.072) translate3d(-1.5%, 1.05%, 0); }
+}
+
+@keyframes fragmentFieldDrift {
+  from { transform: translate3d(-18px, 8px, 0) scale(1); opacity: 0.78; }
+  to { transform: translate3d(24px, -14px, 0) scale(1.012); opacity: 1; }
+}
+
+@keyframes fragmentSignalTravel {
+  to { stroke-dashoffset: -100; }
+}
+
+@keyframes fragmentNodePulse {
+  from { opacity: 0.38; transform: scale(0.72); }
+  to { opacity: 0.94; transform: scale(1.28); }
+}
+
+@keyframes fragmentRailTravel {
+  from { transform: translate3d(-4%, 0, 0); opacity: 0.48; }
+  to { transform: translate3d(214%, 0, 0); opacity: 0.86; }
+}
+
+@media (min-width: 901px) {
+  .fragmentSpread[data-spread="1"] .fragmentPhoto[data-slot="yuto-696"] {
+    grid-column: 1 / span 8;
+    grid-row: 1;
+  }
+
+  .fragmentSpread[data-spread="1"] .fragmentPhoto[data-slot="dna-automation"] {
+    grid-column: 9 / span 4;
+    grid-row: 1;
+  }
+
+  .fragmentSpread[data-spread="1"] .fragmentPhoto[data-slot="yuto-706"] {
+    grid-column: 2 / span 3;
+    grid-row: 2;
+  }
+
+  .fragmentSpread[data-spread="1"] .fragmentPhoto[data-slot="microfluidic"] {
+    grid-column: 5 / span 2;
+    grid-row: 2;
+  }
+
+  .fragmentSpread[data-spread="1"] .fragmentPhoto[data-slot="code-terminal"] {
+    grid-column: 7 / span 6;
+    grid-row: 2;
+  }
+
+  .fragmentSpread[data-spread="2"] .fragmentPhoto[data-slot="yuto-701"] {
+    grid-column: 1 / span 2;
+    grid-row: 1;
+  }
+
+  .fragmentSpread[data-spread="2"] .fragmentPhoto[data-slot="pipette"] {
+    grid-column: 3 / span 3;
+    grid-row: 1;
+  }
+
+  .fragmentSpread[data-spread="2"] .fragmentPhoto[data-slot="yuto-698"] {
+    grid-column: 6 / span 7;
+    grid-row: 1;
+  }
+
+  .fragmentSpread[data-spread="2"] .fragmentPhoto[data-slot="code-data"] {
+    grid-column: 4 / span 7;
+    grid-row: 2;
+  }
+
+  .fragmentSpread[data-spread="2"] .fragmentPhoto[data-slot="yuto-703"] {
+    grid-column: 11 / span 2;
+    grid-row: 2;
+  }
+
+  .fragmentSpread[data-spread="3"] .fragmentPhoto[data-slot="code-window"] {
+    grid-column: 1 / span 3;
+    grid-row: 1;
+  }
+
+  .fragmentSpread[data-spread="3"] .fragmentPhoto[data-slot="yuto-695"] {
+    grid-column: 4 / span 5;
+    grid-row: 1;
+  }
+
+  .fragmentSpread[data-spread="3"] .fragmentPhoto[data-slot="servers"] {
+    grid-column: 9 / span 4;
+    grid-row: 1;
+  }
+
+  .fragmentSpread[data-spread="3"] .fragmentPhoto[data-slot="yuto-707"] {
+    grid-column: 6 / span 5;
+    grid-row: 2;
+  }
+
+  .fragmentSpread[data-spread="3"] .fragmentPhoto[data-slot="silicon-wafer"] {
+    grid-column: 1 / span 5;
+    grid-row: 2;
+  }
+
+  .fragmentSpread[data-spread="4"] .fragmentPhoto[data-slot="yuto-697"] {
+    grid-column: 1 / span 3;
+    grid-row: 1;
+  }
+
+  .fragmentSpread[data-spread="4"] .fragmentPhoto[data-slot="yuto-700"] {
+    grid-column: 5 / span 7;
+    grid-row: 1;
+  }
+
+  .fragmentSpread[data-spread="4"] .fragmentPhoto[data-slot="yuto-699"] {
+    grid-column: 3 / span 3;
+    grid-row: 2;
+  }
+
+  .fragmentSpread[data-spread="4"] .fragmentPhoto[data-slot="yuto-704"] {
+    grid-column: 8 / span 4;
+    grid-row: 2;
+  }
+}
+
+@media (max-width: 900px) {
+  .fragments {
+    padding: 88px 0 116px;
+  }
+
+  .fragmentsEssay {
+    gap: 64px;
+  }
+
+  .fragmentSpread {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+    align-items: start;
+  }
+
+  .fragmentSpread::before {
+    inset: -24px -18px;
+  }
+
+  .fragmentSpread .fragmentPhoto {
+    grid-column: auto;
+    grid-row: auto;
+  }
+
+  .fragmentPhoto[data-slot="yuto-696"],
+  .fragmentPhoto[data-slot="code-terminal"],
+  .fragmentPhoto[data-slot="yuto-698"],
+  .fragmentPhoto[data-slot="code-data"] {
+    grid-column: 1 / -1;
+  }
+
+  .fragmentPhoto[data-crop="anchor"] {
+    aspect-ratio: 4 / 3;
+  }
+
+  .fragmentPhoto[data-slot="yuto-704"] {
+    width: 74%;
+    grid-column: 1 / -1;
+    justify-self: center;
+  }
+
+  .fragmentPhoto[data-slot="microfluidic"] {
+    width: 58%;
+    grid-column: 1 / -1;
+    justify-self: end;
+  }
+
+  .fragmentPhoto[data-slot="yuto-703"] {
+    width: 54%;
+    grid-column: 1 / -1;
+    justify-self: start;
+  }
+
+  .fragmentPhoto[data-slot="silicon-wafer"] {
+    width: 66%;
+    grid-column: 1 / -1;
+    justify-self: end;
+  }
+}
+
+@media (max-width: 640px) {
+  .fragments {
+    padding: 82px 0 98px;
+  }
+
+  .fragmentsHeader {
+    margin-bottom: 40px;
+  }
+
+  .fragmentsEssay {
+    gap: 44px;
+  }
+
+  .fragmentSpread {
+    gap: 8px;
+  }
+
+  .fragmentSignalField {
+    inset-inline: -24%;
+    width: 148%;
+  }
+
+  .fragmentSpread::before {
+    inset: -18px -10px;
+  }
+}
+
 .story {
   padding: clamp(86px, 8vw, 132px) 0;
   color: var(--ink);
@@ -910,6 +1403,7 @@
 }
 
 .productCard[data-product="interactive"] .productVisual { min-height: 390px; }
+.productCard[data-product="library"] .productVisual { background: #020812; }
 .productVisual > img:first-child { object-fit: cover; transition: transform 800ms ease, filter 420ms ease; }
 .productCard:hover .productVisual > img:first-child { filter: saturate(1.06); transform: scale(1.025); }
 
@@ -1557,8 +2051,7 @@
   .productGrid { grid-template-columns: 1fr; }
   .productCard[data-product="interactive"] { grid-column: auto; }
   .productVisual, .productCard[data-product="interactive"] .productVisual { min-height: 240px; }
-  .productCard[data-product="library"] .productVisual { min-height: 0; aspect-ratio: 1200 / 630; }
-  .productCard[data-product="library"] .productVisual > img:first-child { object-fit: contain; object-position: center; }
+  .productCard[data-product="library"] .productVisual { min-height: 0; aspect-ratio: 16 / 10; }
   .productCopy { min-height: 220px; }
 
   .interactiveHeroGrid { grid-template-columns: 0.86fr 1.14fr; gap: 11px; padding: 18px 16px; }
@@ -1657,6 +2150,15 @@
   .photoDots button[data-active="true"] span { width: 100%; }
   .interfaceGraphic path { stroke-dasharray: none; stroke-dashoffset: 0; }
   .interfaceGraphic circle { opacity: 1; }
+  .fragmentPicture,
+  .fragmentFieldDrift,
+  .fragmentFieldSignal,
+  .fragmentFieldSignalWarm,
+  .fragmentFieldNodes circle,
+  .fragmentSpread::after {
+    animation: none !important;
+    transform: none !important;
+  }
   .fieldImage img, .productVisual img, .offHoursVisual img, .navigation a::after, .socialLinks a, .productCopy nav a { transition: none !important; }
   .interactiveHeroStage :global(.hero-signal-matrix) { display: none; }
 }
