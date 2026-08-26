@@ -49,7 +49,7 @@ const fragmentSpreads: readonly (readonly FragmentPhoto[])[] = [
       alt: "夜の都市を背景に立つYuto Matsui",
       role: "atmosphere",
       tone: "warm",
-      sizes: "(max-width: 900px) 46vw, 25vw"
+      sizes: "(max-width: 900px) calc(100vw - 34px), 25vw"
     },
     {
       key: "microfluidic",
@@ -128,7 +128,7 @@ const fragmentSpreads: readonly (readonly FragmentPhoto[])[] = [
       alt: "柔らかな光のテラスに座るYuto Matsui",
       role: "atmosphere",
       tone: "warm",
-      sizes: "(max-width: 900px) 58vw, 17vw"
+      sizes: "(max-width: 900px) calc(100vw - 34px), 17vw"
     }
   ],
   [
@@ -141,7 +141,7 @@ const fragmentSpreads: readonly (readonly FragmentPhoto[])[] = [
       alt: "窓辺の自然光に置かれたコード表示中のノートPC",
       role: "engineering",
       crop: "code-window",
-      sizes: "(max-width: 900px) 46vw, 25vw"
+      sizes: "(max-width: 900px) calc(100vw - 34px), 25vw"
     },
     {
       key: "yuto-695",
@@ -206,7 +206,7 @@ const fragmentSpreads: readonly (readonly FragmentPhoto[])[] = [
       height: 1108,
       alt: "青空の下に連なる山々と富士山",
       role: "atmosphere",
-      sizes: "(max-width: 900px) 46vw, 58vw"
+      sizes: "(max-width: 900px) calc(100vw - 34px), 58vw"
     },
     {
       key: "yuto-699",
@@ -227,7 +227,7 @@ const fragmentSpreads: readonly (readonly FragmentPhoto[])[] = [
       height: 1192,
       alt: "松の木を背景に横を向くYuto Matsui",
       role: "closing",
-      sizes: "(max-width: 900px) 74vw, 33vw"
+      sizes: "(max-width: 900px) calc(100vw - 34px), 33vw"
     }
   ]
 ] as const;

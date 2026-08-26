@@ -1079,75 +1079,101 @@
 
 @media (max-width: 900px) {
   .fragments {
-    padding: 88px 0 116px;
+    padding: 72px 0 82px;
+  }
+
+  .fragmentsHeader {
+    margin-bottom: 28px;
   }
 
   .fragmentsEssay {
-    gap: 64px;
+    gap: 24px;
   }
 
   .fragmentSpread {
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 12px;
+    gap: 10px;
     align-items: start;
   }
 
   .fragmentSpread::before {
-    inset: -24px -18px;
+    inset: -12px -10px;
   }
 
   .fragmentSpread .fragmentPhoto {
+    width: 100%;
     grid-column: auto;
     grid-row: auto;
-  }
-
-  .fragmentPhoto[data-slot="yuto-696"],
-  .fragmentPhoto[data-slot="code-terminal"],
-  .fragmentPhoto[data-slot="yuto-698"],
-  .fragmentPhoto[data-slot="code-data"] {
-    grid-column: 1 / -1;
+    justify-self: stretch;
   }
 
   .fragmentPhoto[data-crop="anchor"] {
     aspect-ratio: 4 / 3;
   }
 
-  .fragmentPhoto[data-slot="yuto-704"] {
-    width: 74%;
-    grid-column: 1 / -1;
-    justify-self: center;
+  .fragmentPhoto[data-slot="yuto-706"],
+  .fragmentPhoto[data-slot="yuto-703"],
+  .fragmentPhoto[data-slot="code-window"] {
+    aspect-ratio: 4 / 5;
   }
 
-  .fragmentPhoto[data-slot="microfluidic"] {
-    width: 58%;
-    grid-column: 1 / -1;
-    justify-self: end;
+  .fragmentPhoto[data-slot="yuto-706"] .fragmentPicture,
+  .fragmentPhoto[data-slot="yuto-706"] .fragmentImage,
+  .fragmentPhoto[data-slot="yuto-703"] .fragmentPicture,
+  .fragmentPhoto[data-slot="yuto-703"] .fragmentImage {
+    height: 100%;
   }
 
-  .fragmentPhoto[data-slot="yuto-703"] {
-    width: 54%;
-    grid-column: 1 / -1;
-    justify-self: start;
+  .fragmentPhoto[data-slot="yuto-706"] .fragmentImage,
+  .fragmentPhoto[data-slot="yuto-703"] .fragmentImage {
+    object-fit: cover;
   }
 
-  .fragmentPhoto[data-slot="silicon-wafer"] {
-    width: 66%;
+  .fragmentPhoto[data-slot="yuto-703"] .fragmentImage {
+    object-position: 50% 64%;
+  }
+
+  .fragmentSpread[data-spread="1"] .fragmentPhoto[data-slot="yuto-696"] { grid-column: 1 / -1; grid-row: 1; }
+  .fragmentSpread[data-spread="1"] .fragmentPhoto[data-slot="dna-automation"] { grid-column: 1; grid-row: 2; }
+  .fragmentSpread[data-spread="1"] .fragmentPhoto[data-slot="microfluidic"] { grid-column: 2; grid-row: 2; }
+  .fragmentSpread[data-spread="1"] .fragmentPhoto[data-slot="yuto-706"] { grid-column: 1 / -1; grid-row: 3; }
+  .fragmentSpread[data-spread="1"] .fragmentPhoto[data-slot="code-terminal"] { grid-column: 1 / -1; grid-row: 4; }
+
+  .fragmentSpread[data-spread="2"] .fragmentPhoto[data-slot="yuto-701"] { grid-column: 1; grid-row: 1; }
+  .fragmentSpread[data-spread="2"] .fragmentPhoto[data-slot="pipette"] { grid-column: 2; grid-row: 1; }
+  .fragmentSpread[data-spread="2"] .fragmentPhoto[data-slot="yuto-698"] { grid-column: 1 / -1; grid-row: 2; }
+  .fragmentSpread[data-spread="2"] .fragmentPhoto[data-slot="code-data"] { grid-column: 1 / -1; grid-row: 3; }
+  .fragmentSpread[data-spread="2"] .fragmentPhoto[data-slot="yuto-703"] { grid-column: 1 / -1; grid-row: 4; }
+
+  .fragmentSpread[data-spread="3"] .fragmentPhoto[data-slot="code-window"] { grid-column: 1 / -1; grid-row: 1; }
+  .fragmentSpread[data-spread="3"] .fragmentPhoto[data-slot="yuto-695"] { grid-column: 1; grid-row: 2; }
+  .fragmentSpread[data-spread="3"] .fragmentPhoto[data-slot="servers"] { grid-column: 2; grid-row: 2; }
+  .fragmentSpread[data-spread="3"] .fragmentPhoto[data-slot="yuto-707"] { grid-column: 1; grid-row: 3; }
+  .fragmentSpread[data-spread="3"] .fragmentPhoto[data-slot="silicon-wafer"] { grid-column: 2; grid-row: 3; aspect-ratio: 4 / 3; }
+  .fragmentSpread[data-spread="3"] .fragmentPhoto[data-slot="silicon-wafer"] .fragmentPicture,
+  .fragmentSpread[data-spread="3"] .fragmentPhoto[data-slot="silicon-wafer"] .fragmentImage { height: 100%; }
+  .fragmentSpread[data-spread="3"] .fragmentPhoto[data-slot="silicon-wafer"] .fragmentImage { object-fit: cover; }
+
+  .fragmentSpread[data-spread="4"] .fragmentPhoto[data-slot="yuto-697"] { grid-column: 1; grid-row: 1; }
+  .fragmentSpread[data-spread="4"] .fragmentPhoto[data-slot="yuto-699"] { grid-column: 2; grid-row: 1; }
+  .fragmentSpread[data-spread="4"] .fragmentPhoto[data-slot="yuto-700"] { grid-column: 1 / -1; grid-row: 2; }
+  .fragmentSpread[data-spread="4"] .fragmentPhoto[data-slot="yuto-704"] {
     grid-column: 1 / -1;
-    justify-self: end;
+    grid-row: 3;
   }
 }
 
 @media (max-width: 640px) {
   .fragments {
-    padding: 82px 0 98px;
+    padding: 64px 0 72px;
   }
 
   .fragmentsHeader {
-    margin-bottom: 40px;
+    margin-bottom: 20px;
   }
 
   .fragmentsEssay {
-    gap: 44px;
+    gap: 16px;
   }
 
   .fragmentSpread {
@@ -1160,7 +1186,7 @@
   }
 
   .fragmentSpread::before {
-    inset: -18px -10px;
+    inset: -8px -6px;
   }
 }
 
