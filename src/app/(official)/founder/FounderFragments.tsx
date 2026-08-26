@@ -200,6 +200,46 @@ const fragmentSpreads: readonly (readonly FragmentPhoto[])[] = [
   ]
 ] as const;
 
+function FragmentAmbientGraphic({ variant }: { variant: number }) {
+  return (
+    <svg
+      className={styles.fragmentAmbient}
+      data-fragment-ambient={variant}
+      viewBox="0 0 520 220"
+      aria-hidden="true"
+      focusable="false"
+    >
+      <g className={styles.fragmentAmbientDrift}>
+        <g className={styles.fragmentAmbientHelix}>
+          <path d="M18 68C74 20 132 116 189 68S303 20 360 68s114 48 142 4" />
+          <path d="M18 72c56 48 114-48 171 0s114 48 171 0 114-48 142-4" />
+          <path d="M51 48v44M98 45v50M145 49v42M214 47v47M262 45v50M309 49v42M378 48v44M426 46v48M474 51v38" />
+        </g>
+
+        <g className={styles.fragmentAmbientCircuit}>
+          <path d="M20 176h70v-38h72v27h61v-58h71v21h69V80h132" />
+          <path d="M90 176v22h96M294 128v48h92M363 80V52h72" />
+          <circle cx="20" cy="176" r="4" />
+          <circle cx="90" cy="138" r="4" />
+          <circle cx="162" cy="165" r="4" />
+          <circle cx="223" cy="107" r="4" />
+          <circle cx="294" cy="128" r="4" />
+          <circle cx="363" cy="80" r="4" />
+          <circle cx="495" cy="80" r="4" />
+        </g>
+
+        <g className={styles.fragmentAmbientCell} transform="translate(432 152)">
+          <circle r="31" />
+          <circle r="18" />
+          <circle cx="-8" cy="-5" r="3" />
+          <circle cx="9" cy="7" r="2" />
+          <path d="M-22 11c9-7 15-8 24-4s14 2 21-3" />
+        </g>
+      </g>
+    </svg>
+  );
+}
+
 export function FounderFragments() {
   return (
     <section id="fragments" className={styles.fragments} aria-labelledby="fragments-title">
@@ -215,6 +255,7 @@ export function FounderFragments() {
               className={styles.fragmentSpread}
               data-spread={spreadIndex + 1}
             >
+              <FragmentAmbientGraphic variant={spreadIndex + 1} />
               {spread.map((photo) => (
                 <figure
                   key={photo.key}

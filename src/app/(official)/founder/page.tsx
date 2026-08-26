@@ -3,6 +3,7 @@ import Image from "next/image";
 import { LectureSignalMatrix } from "../../../interactive/components/hero/LectureSignalMatrix";
 import { ProductExperienceMock } from "../../../interactive/components/ui/ProductExperienceMock";
 import { LegacyInteractions } from "../../../components/LegacyInteractions";
+import { FutureStrategyHero } from "../future-strategy-library/components/FutureStrategyHero";
 import { EssayContinuation } from "./EssayContinuation";
 import { FounderFragments } from "./FounderFragments";
 import { FounderHeroGallery } from "./FounderHeroGallery";
@@ -89,8 +90,6 @@ const products = [
     key: "library",
     label: "未来戦略ライブラリ",
     title: "北里大学薬学部生のための、学生目線の資料ライブラリ。",
-    image: "/images/future-strategy-library/knowledge-horizon-og.png",
-    alt: "未来戦略ライブラリのBeyond the Syllabusビジュアル",
     links: [{ label: "ライブラリを見る", href: "/future-strategy-library/" }]
   },
   {
@@ -343,7 +342,7 @@ export default function FounderPage() {
               <section className={styles.essayChapter} aria-labelledby="chapter-origin" data-reveal>
                 <header><span>01</span><h3 id="chapter-origin">Origin</h3></header>
                 <p>高校時代の2020年頃から趣味でプログラミングを始め、Webフロントエンド開発を中心に学びました。当時は現在のようなLLMやコーディングエージェントはなく、実装、デバッグ、Git操作の多くを手作業で行う時代でした。開発そのものには強く惹かれましたが、大学では、より関心のあった生命科学・薬学を選びました。</p>
-                <p>大学では学部2年次から実験系研究室に所属し、神経変性疾患に関わる遺伝子変異と分子病態を研究してきました。その一方で、生成AIとコーディングエージェントの急速な進歩をきっかけに、研究支援やデータ解析から再びソフトウェア開発へ軸足を広げました。</p>
+                <p>大学では学部2年次から実験系研究室に所属し、神経変性疾患に関わる遺伝子変異と分子病態を研究してきました。その一方で、生成AIとコーディングエージェントの急速な進歩をきっかけに、研究データ解析からフルスタック開発へと領域を広げ、ソフトウェア開発にも再び軸足を置くようになりました。</p>
                 <p>そこで実感したのは、AIの価値は単にコーディングを高速化することではなく、一人の人間が設計・実装できるシステムの規模を拡張することにあるという点です。</p>
               </section>
 
@@ -394,6 +393,8 @@ export default function FounderPage() {
                   <div className={styles.productVisual}>
                     {product.key === "interactive" ? (
                       <InteractiveHeroPreview />
+                    ) : product.key === "library" ? (
+                      <FutureStrategyHero variant="preview" />
                     ) : (
                       <>
                         <Image src={product.image} alt={product.alt} fill sizes="(min-width: 901px) 32vw, 100vw" />
@@ -512,7 +513,7 @@ export default function FounderPage() {
             Personal portraits, FRAGMENTS &amp; climbing: Yuto Matsui / personal archive
           </p>
         </details>
-        <p className={styles.copyright}>© 2026 Yuto Matsui. Personal portfolio hosted within the COMPASS site.</p>
+        <p className={styles.copyright}>© 2026 Yuto Matsui. Designed and developed by Yuto Matsui. All rights reserved.</p>
       </footer>
 
       <LegacyInteractions />

@@ -707,19 +707,96 @@
 }
 
 .fragmentSpread {
+  position: relative;
   display: grid;
   min-width: 0;
   grid-template-columns: repeat(12, minmax(0, 1fr));
   gap: 14px;
   align-items: end;
+  isolation: isolate;
 }
 
 .fragmentPhoto {
+  position: relative;
+  z-index: 1;
   min-width: 0;
   margin: 0;
   overflow: hidden;
   background: #edf2f4;
   isolation: isolate;
+}
+
+.fragmentAmbient {
+  position: absolute;
+  z-index: 0;
+  display: block;
+  width: 32%;
+  height: auto;
+  overflow: visible;
+  color: rgba(47, 131, 158, 0.25);
+  pointer-events: none;
+}
+
+.fragmentAmbientDrift {
+  transform-origin: center;
+}
+
+.fragmentAmbientHelix,
+.fragmentAmbientCircuit,
+.fragmentAmbientCell {
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.15;
+}
+
+.fragmentAmbientHelix path:last-child,
+.fragmentAmbientCircuit path,
+.fragmentAmbientCell > circle:first-child {
+  opacity: 0.58;
+}
+
+.fragmentAmbientCircuit circle {
+  fill: #fff;
+  stroke-width: 1.25;
+}
+
+.fragmentAmbientCell > circle:nth-child(2) {
+  stroke-dasharray: 4 6;
+}
+
+.fragmentAmbientCell > circle:nth-child(3),
+.fragmentAmbientCell > circle:nth-child(4) {
+  fill: currentColor;
+  stroke: none;
+}
+
+.fragmentSpread[data-spread="1"] .fragmentAmbient {
+  top: 0;
+  right: 0;
+  width: 31%;
+}
+
+.fragmentSpread[data-spread="2"] .fragmentAmbient {
+  bottom: 2%;
+  left: 0;
+  width: 27%;
+  transform: rotate(180deg);
+}
+
+.fragmentSpread[data-spread="3"] .fragmentAmbient {
+  top: 0;
+  right: 0;
+  width: 34%;
+  transform: scaleX(-1);
+}
+
+.fragmentSpread[data-spread="4"] .fragmentAmbient {
+  bottom: 0;
+  left: 39%;
+  width: 30%;
+  transform: rotate(180deg) scaleX(-1);
 }
 
 .fragmentPicture,
@@ -788,6 +865,64 @@
 
 .fragmentPhoto[data-tone="tech"] .fragmentImage {
   filter: saturate(0.9) contrast(1.02);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .fragmentPicture {
+    transform-origin: 48% 52%;
+    animation: fragmentPhotoDrift 38s ease-in-out infinite alternate;
+  }
+
+  .fragmentSpread:nth-child(even) .fragmentPicture {
+    transform-origin: 52% 48%;
+    animation-name: fragmentPhotoDriftReverse;
+    animation-duration: 42s;
+  }
+
+  .fragmentPhoto:nth-of-type(2n) .fragmentPicture {
+    animation-delay: -17s;
+  }
+
+  .fragmentPhoto:nth-of-type(3n) .fragmentPicture {
+    animation-delay: -29s;
+  }
+
+  .fragmentAmbientDrift {
+    animation: fragmentAmbientDrift 26s ease-in-out infinite alternate;
+  }
+
+  .fragmentAmbientCircuit > path:first-child {
+    stroke-dasharray: 7 9;
+    animation: fragmentAmbientTrace 34s linear infinite;
+  }
+
+  .fragmentAmbientCell > circle:nth-child(2) {
+    animation: fragmentAmbientPulse 18s ease-in-out infinite alternate;
+  }
+}
+
+@keyframes fragmentPhotoDrift {
+  from { transform: scale(1.0015) translate3d(-0.04%, 0.03%, 0); }
+  to { transform: scale(1.005) translate3d(0.08%, -0.06%, 0); }
+}
+
+@keyframes fragmentPhotoDriftReverse {
+  from { transform: scale(1.0015) translate3d(0.04%, -0.03%, 0); }
+  to { transform: scale(1.005) translate3d(-0.08%, 0.06%, 0); }
+}
+
+@keyframes fragmentAmbientDrift {
+  from { transform: translate3d(-1px, 1px, 0); opacity: 0.78; }
+  to { transform: translate3d(2px, -1px, 0); opacity: 1; }
+}
+
+@keyframes fragmentAmbientTrace {
+  to { stroke-dashoffset: -160; }
+}
+
+@keyframes fragmentAmbientPulse {
+  from { opacity: 0.38; transform: scale(0.985); transform-origin: center; }
+  to { opacity: 0.72; transform: scale(1.015); transform-origin: center; }
 }
 
 @media (min-width: 901px) {
@@ -887,6 +1022,22 @@
     align-items: start;
   }
 
+  .fragmentSpread .fragmentAmbient {
+    top: auto;
+    right: auto;
+    bottom: -57px;
+    left: 0;
+    width: min(52%, 280px);
+    height: 76px;
+    transform: none;
+  }
+
+  .fragmentSpread:nth-child(even) .fragmentAmbient {
+    right: 0;
+    left: auto;
+    transform: scaleX(-1);
+  }
+
   .fragmentSpread .fragmentPhoto {
     grid-column: auto;
     grid-row: auto;
@@ -925,6 +1076,12 @@
 
   .fragmentSpread {
     gap: 8px;
+  }
+
+  .fragmentSpread .fragmentAmbient {
+    bottom: -45px;
+    width: min(62%, 230px);
+    height: 60px;
   }
 }
 
@@ -1167,6 +1324,7 @@
 }
 
 .productCard[data-product="interactive"] .productVisual { min-height: 390px; }
+.productCard[data-product="library"] .productVisual { background: #020812; }
 .productVisual > img:first-child { object-fit: cover; transition: transform 800ms ease, filter 420ms ease; }
 .productCard:hover .productVisual > img:first-child { filter: saturate(1.06); transform: scale(1.025); }
 
@@ -1814,8 +1972,7 @@
   .productGrid { grid-template-columns: 1fr; }
   .productCard[data-product="interactive"] { grid-column: auto; }
   .productVisual, .productCard[data-product="interactive"] .productVisual { min-height: 240px; }
-  .productCard[data-product="library"] .productVisual { min-height: 0; aspect-ratio: 1200 / 630; }
-  .productCard[data-product="library"] .productVisual > img:first-child { object-fit: contain; object-position: center; }
+  .productCard[data-product="library"] .productVisual { min-height: 0; aspect-ratio: 16 / 10; }
   .productCopy { min-height: 220px; }
 
   .interactiveHeroGrid { grid-template-columns: 0.86fr 1.14fr; gap: 11px; padding: 18px 16px; }
@@ -1914,6 +2071,13 @@
   .photoDots button[data-active="true"] span { width: 100%; }
   .interfaceGraphic path { stroke-dasharray: none; stroke-dashoffset: 0; }
   .interfaceGraphic circle { opacity: 1; }
+  .fragmentPicture,
+  .fragmentAmbientDrift,
+  .fragmentAmbientCircuit > path:first-child,
+  .fragmentAmbientCell > circle:nth-child(2) {
+    animation: none !important;
+    transform: none !important;
+  }
   .fieldImage img, .productVisual img, .offHoursVisual img, .navigation a::after, .socialLinks a, .productCopy nav a { transition: none !important; }
   .interactiveHeroStage :global(.hero-signal-matrix) { display: none; }
 }
