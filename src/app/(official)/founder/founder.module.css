@@ -742,8 +742,8 @@
 
 .fragmentFieldSignal,
 .fragmentFieldSignalWarm {
-  stroke-width: 2.4;
-  stroke-dasharray: 10 90;
+  stroke-width: 3;
+  stroke-dasharray: 8 92;
   stroke-dashoffset: 0;
 }
 
@@ -758,32 +758,93 @@
 }
 
 .fragmentsHeader {
-  margin-bottom: clamp(42px, 5vw, 68px);
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 28px;
+  margin-bottom: 34px;
 }
 
 .fragmentsHeader h2 {
-  margin: 0;
-  color: #4a6275;
-  font-size: 0.66rem;
-  font-weight: 760;
-  letter-spacing: 0.2em;
-  line-height: 1.4;
+  margin: 8px 0 0;
+  color: var(--ink);
+  font-size: clamp(1.8rem, 3vw, 2.65rem);
+  font-weight: 670;
+  letter-spacing: -0.055em;
+  line-height: 1.1;
+}
+
+.fragmentSequence {
+  display: flex;
+  width: min(280px, 28vw);
+  gap: 7px;
+  padding-bottom: 5px;
+}
+
+.fragmentSequence span {
+  position: relative;
+  height: 2px;
+  flex: 1;
+  overflow: hidden;
+  background: rgba(55, 101, 130, 0.16);
+}
+
+.fragmentSequence span::after {
+  position: absolute;
+  inset: 0;
+  content: "";
+  background: linear-gradient(90deg, #3c97aa, #6a7fab 58%, #c7a36c);
+  opacity: 0;
+  transform: scaleX(0);
+  transform-origin: left;
 }
 
 .fragmentsEssay {
+  position: relative;
   display: grid;
-  gap: clamp(72px, 8vw, 112px);
+  isolation: isolate;
+}
+
+.fragmentsEssay::after {
+  position: absolute;
+  top: -4%;
+  bottom: -4%;
+  left: -22%;
+  z-index: 5;
+  width: 22%;
+  content: "";
+  background:
+    linear-gradient(90deg, transparent, rgba(72, 155, 176, 0.07) 54%, rgba(106, 139, 184, 0.2) 80%, rgba(240, 211, 159, 0.42) 96%, transparent),
+    linear-gradient(90deg, transparent 94%, rgba(65, 147, 168, 0.72) 97%, transparent 100%);
+  opacity: 0;
+  pointer-events: none;
+  transform: translate3d(0, 0, 0) skewX(-7deg);
 }
 
 .fragmentSpread {
   position: relative;
+  grid-area: 1 / 1;
   z-index: 1;
   display: grid;
   min-width: 0;
   grid-template-columns: repeat(12, minmax(0, 1fr));
   gap: 14px;
   align-items: end;
+  visibility: hidden;
+  opacity: 0;
+  pointer-events: none;
+  transform: translate3d(2.8%, 0, 0) scale(0.992);
   isolation: isolate;
+}
+
+.fragmentSpread:first-child {
+  visibility: visible;
+  opacity: 1;
+  transform: none;
+}
+
+.fragmentMobileReel {
+  display: none;
 }
 
 .fragmentSpread::before {
@@ -949,6 +1010,100 @@
   .fragmentSpread::after {
     animation: fragmentRailTravel 10s ease-in-out infinite alternate;
   }
+
+  .fragmentSpread {
+    animation: fragmentSpreadCycle 36s cubic-bezier(0.45, 0, 0.2, 1) infinite;
+  }
+
+  .fragmentSpread:nth-child(2) { animation-delay: -27s; }
+  .fragmentSpread:nth-child(3) { animation-delay: -18s; }
+  .fragmentSpread:nth-child(4) { animation-delay: -9s; }
+
+  .fragmentsEssay::after {
+    animation: fragmentSwitchScan 9s cubic-bezier(0.45, 0, 0.2, 1) infinite;
+  }
+
+  .fragmentSequence span::after {
+    animation: fragmentSequenceProgress 36s linear infinite;
+  }
+
+  .fragmentSequence span:nth-child(2)::after { animation-delay: -27s; }
+  .fragmentSequence span:nth-child(3)::after { animation-delay: -18s; }
+  .fragmentSequence span:nth-child(4)::after { animation-delay: -9s; }
+
+  .fragmentReelTrack[data-reel-row="1"] {
+    animation: fragmentReelForward 46s linear infinite;
+  }
+
+  .fragmentReelTrack[data-reel-row="2"] {
+    animation: fragmentReelReverse 52s linear infinite;
+  }
+
+  .fragmentReelPhoto::before {
+    animation: fragmentCardScan 4.8s linear infinite;
+  }
+
+  .fragmentReelViewport::after {
+    animation: fragmentDataRail 2.8s linear infinite;
+  }
+}
+
+@keyframes fragmentSpreadCycle {
+  0%, 20% {
+    visibility: visible;
+    z-index: 2;
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  24%, 95% {
+    visibility: hidden;
+    z-index: 1;
+    opacity: 0;
+    transform: translate3d(-2.8%, 0, 0) scale(0.992);
+  }
+  96% {
+    visibility: visible;
+    opacity: 0;
+    transform: translate3d(2.8%, 0, 0) scale(0.992);
+  }
+  100% {
+    visibility: visible;
+    z-index: 2;
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+}
+
+@keyframes fragmentReelForward {
+  to { transform: translate3d(-50%, 0, 0); }
+}
+
+@keyframes fragmentReelReverse {
+  from { transform: translate3d(-50%, 0, 0); }
+  to { transform: translate3d(0, 0, 0); }
+}
+
+@keyframes fragmentSwitchScan {
+  0%, 70% { opacity: 0; transform: translate3d(0, 0, 0) skewX(-7deg); }
+  76% { opacity: 0.9; }
+  96% { opacity: 0; transform: translate3d(660%, 0, 0) skewX(-7deg); }
+  100% { opacity: 0; transform: translate3d(660%, 0, 0) skewX(-7deg); }
+}
+
+@keyframes fragmentSequenceProgress {
+  0% { opacity: 1; transform: scaleX(0); }
+  20% { opacity: 1; transform: scaleX(1); }
+  24%, 95% { opacity: 0; transform: scaleX(1); }
+  96%, 100% { opacity: 0; transform: scaleX(0); }
+}
+
+@keyframes fragmentCardScan {
+  from { transform: translate3d(-160%, 0, 0); }
+  to { transform: translate3d(520%, 0, 0); }
+}
+
+@keyframes fragmentDataRail {
+  to { background-position: 52px 0; }
 }
 
 @keyframes fragmentPhotoDrift {
@@ -1079,15 +1234,150 @@
 
 @media (max-width: 900px) {
   .fragments {
-    padding: 72px 0 82px;
+    padding: 72px 0 76px;
   }
 
   .fragmentsHeader {
     margin-bottom: 28px;
   }
 
+  .fragmentSequence {
+    display: none;
+  }
+
   .fragmentsEssay {
-    gap: 24px;
+    display: none;
+  }
+
+  .fragmentMobileReel {
+    position: relative;
+    display: grid;
+    gap: 10px;
+    overflow: hidden;
+    padding-block: 2px;
+    isolation: isolate;
+  }
+
+  .fragmentMobileReel::before,
+  .fragmentMobileReel::after {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    z-index: 3;
+    width: clamp(24px, 8vw, 70px);
+    content: "";
+    pointer-events: none;
+  }
+
+  .fragmentMobileReel::before {
+    left: 0;
+    background: linear-gradient(90deg, rgba(244, 248, 248, 0.96), transparent);
+  }
+
+  .fragmentMobileReel::after {
+    right: 0;
+    background: linear-gradient(270deg, rgba(245, 247, 245, 0.96), transparent);
+  }
+
+  .fragmentReelViewport {
+    position: relative;
+    min-width: 0;
+    overflow: hidden;
+  }
+
+  .fragmentReelViewport::after {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 2;
+    height: 2px;
+    content: "";
+    background:
+      radial-gradient(circle, rgba(222, 182, 119, 0.92) 0 1.4px, transparent 1.6px) 0 0 / 26px 2px repeat-x,
+      linear-gradient(90deg, transparent, rgba(61, 150, 170, 0.72), transparent);
+    pointer-events: none;
+  }
+
+  .fragmentReelTrack,
+  .fragmentReelGroup {
+    display: flex;
+    width: max-content;
+    align-items: stretch;
+  }
+
+  .fragmentReelTrack {
+    will-change: transform;
+  }
+
+  .fragmentReelGroup {
+    flex: none;
+    gap: 10px;
+    padding-right: 10px;
+  }
+
+  .fragmentReelPhoto {
+    position: relative;
+    flex: none;
+    height: clamp(190px, 28vw, 248px);
+    margin: 0;
+    overflow: hidden;
+    background: #e9eff1;
+  }
+
+  .fragmentReelPhoto::before {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 2;
+    width: 24%;
+    content: "";
+    background: linear-gradient(90deg, transparent, rgba(75, 177, 194, 0.24), rgba(240, 208, 151, 0.54), transparent);
+    pointer-events: none;
+    transform: translate3d(-160%, 0, 0);
+  }
+
+  .fragmentReelPhoto::after {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    content: "";
+    border: 1px solid rgba(130, 185, 194, 0.2);
+    background:
+      linear-gradient(90deg, rgba(113, 192, 203, 0.74), transparent 38%) 0 0 / 42px 1px no-repeat,
+      linear-gradient(180deg, rgba(113, 192, 203, 0.74), transparent 42%) 0 0 / 1px 42px no-repeat,
+      linear-gradient(270deg, rgba(215, 176, 113, 0.68), transparent 38%) 100% 100% / 42px 1px no-repeat,
+      linear-gradient(0deg, rgba(215, 176, 113, 0.68), transparent 42%) 100% 100% / 1px 42px no-repeat;
+    pointer-events: none;
+  }
+
+  .fragmentReelTrack[data-reel-row="2"] .fragmentReelPhoto {
+    height: clamp(164px, 25vw, 220px);
+  }
+
+  .fragmentReelPicture,
+  .fragmentReelImage {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+
+  .fragmentReelImage {
+    object-fit: cover;
+    color: transparent;
+  }
+
+  .fragmentReelPhoto[data-tone="warm"] .fragmentReelImage {
+    filter: saturate(0.91) contrast(0.98);
+  }
+
+  .fragmentReelPhoto[data-tone="lift"] .fragmentReelImage {
+    filter: brightness(1.03) saturate(0.94);
+  }
+
+  .fragmentReelPhoto[data-tone="tech"] .fragmentReelImage {
+    filter: saturate(0.9) contrast(1.02);
   }
 
   .fragmentSpread {
@@ -1165,19 +1455,28 @@
 
 @media (max-width: 640px) {
   .fragments {
-    padding: 64px 0 72px;
+    padding: 62px 0 68px;
   }
 
   .fragmentsHeader {
-    margin-bottom: 20px;
+    margin-bottom: 24px;
   }
 
-  .fragmentsEssay {
-    gap: 16px;
-  }
-
-  .fragmentSpread {
+  .fragmentMobileReel {
     gap: 8px;
+  }
+
+  .fragmentReelGroup {
+    gap: 8px;
+    padding-right: 8px;
+  }
+
+  .fragmentReelPhoto {
+    height: clamp(176px, 48vw, 216px);
+  }
+
+  .fragmentReelTrack[data-reel-row="2"] .fragmentReelPhoto {
+    height: clamp(150px, 41vw, 188px);
   }
 
   .fragmentSignalField {
@@ -2181,10 +2480,18 @@
   .fragmentFieldSignal,
   .fragmentFieldSignalWarm,
   .fragmentFieldNodes circle,
-  .fragmentSpread::after {
+  .fragmentSpread,
+  .fragmentSpread::after,
+  .fragmentsEssay::after,
+  .fragmentSequence span::after,
+  .fragmentReelTrack,
+  .fragmentReelPhoto::before,
+  .fragmentReelViewport::after {
     animation: none !important;
     transform: none !important;
   }
+  .fragmentReelGroup[aria-hidden="true"] { display: none; }
+  .fragmentReelViewport { overflow-x: auto; scrollbar-width: none; }
   .fieldImage img, .productVisual img, .offHoursVisual img, .navigation a::after, .socialLinks a, .productCopy nav a { transition: none !important; }
   .interactiveHeroStage :global(.hero-signal-matrix) { display: none; }
 }
