@@ -232,6 +232,12 @@ const fragmentSpreads: readonly (readonly FragmentPhoto[])[] = [
   ]
 ] as const;
 
+const fragmentPhotos = fragmentSpreads.flat();
+const mobileFragmentRows = [
+  fragmentPhotos.filter((_, index) => index % 2 === 0),
+  fragmentPhotos.filter((_, index) => index % 2 === 1)
+] as const;
+
 function FragmentSignalField() {
   return (
     <svg
@@ -292,6 +298,55 @@ function FragmentSignalField() {
   );
 }
 
+function FragmentMobileReel() {
+  return (
+    <div className={styles.fragmentMobileReel} aria-label="FRAGMENTS photo reel">
+      {mobileFragmentRows.map((row, rowIndex) => (
+        <div key={rowIndex} className={styles.fragmentReelViewport}>
+          <div className={styles.fragmentReelTrack} data-reel-row={rowIndex + 1}>
+            {[false, true].map((duplicate) => (
+              <div
+                key={duplicate ? "duplicate" : "primary"}
+                className={styles.fragmentReelGroup}
+                aria-hidden={duplicate || undefined}
+              >
+                {row.map((photo) => (
+                  <figure
+                    key={`${photo.key}-${duplicate ? "duplicate" : "primary"}`}
+                    className={styles.fragmentReelPhoto}
+                    data-reel-slot={photo.key}
+                    data-reel-role={photo.role}
+                    data-tone={photo.tone}
+                    style={{ aspectRatio: `${photo.width} / ${photo.height}` }}
+                  >
+                    <picture className={styles.fragmentReelPicture}>
+                      <source
+                        type="image/webp"
+                        srcSet={photo.srcSet}
+                        sizes="(max-width: 640px) 54vw, (max-width: 900px) 38vw, 1px"
+                      />
+                      <Image
+                        className={styles.fragmentReelImage}
+                        src={photo.src}
+                        alt={duplicate ? "" : photo.alt}
+                        width={photo.width}
+                        height={photo.height}
+                        sizes="(max-width: 640px) 54vw, (max-width: 900px) 38vw, 1px"
+                        loading="lazy"
+                        decoding="async"
+                      />
+                    </picture>
+                  </figure>
+                ))}
+              </div>
+            ))}
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
 export function FounderFragments() {
   return (
     <section id="fragments" className={styles.fragments} aria-labelledby="fragments-title">
@@ -299,6 +354,9 @@ export function FounderFragments() {
       <div className={styles.sectionShell}>
         <header className={styles.fragmentsHeader}>
           <h2 id="fragments-title">FRAGMENTS</h2>
+          <div className={styles.fragmentSequence} aria-hidden="true">
+            {fragmentSpreads.map((_, index) => <span key={index} />)}
+          </div>
         </header>
 
         <div className={styles.fragmentsEssay}>
@@ -335,6 +393,8 @@ export function FounderFragments() {
             </div>
           ))}
         </div>
+
+        <FragmentMobileReel />
       </div>
     </section>
   );
