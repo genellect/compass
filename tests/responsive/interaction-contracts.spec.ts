@@ -245,6 +245,45 @@ test("Interactive introduction shows Web Portfolio before GitHub Portfolio", asy
   expect(runtimeErrors).toEqual([]);
 });
 
+test("Interactive product film is visible, privacy-gated, and links to YouTube", async ({ page }) => {
+  const runtimeErrors = await openRoute(page, "/INTRO_Interactive/", {
+    name: "interactive-product-film",
+    width: 390,
+    height: 844,
+  });
+
+  const film = page.locator(".product-film");
+  const youtubeLink = film.getByRole("link", { name: "COMPASS Interactive紹介動画をYouTubeで見る" });
+  await film.scrollIntoViewIfNeeded();
+  await expect(film).toBeVisible();
+  await expect(film.locator("iframe")).toHaveCount(0);
+  await expect(youtubeLink).toHaveAttribute("href", "https://www.youtube.com/watch?v=BL-9TVJ-ph8");
+  await expect(youtubeLink).toHaveAttribute("target", "_blank");
+
+  await film.getByRole("button", { name: "90秒のCOMPASS Interactive紹介動画を再生" }).click();
+  await expect(film.locator("iframe")).toHaveAttribute(
+    "src",
+    /youtube-nocookie\.com\/embed\/BL-9TVJ-ph8\?autoplay=1/,
+  );
+  expect(runtimeErrors).toEqual([]);
+});
+
+test("Interactive mobile navigation follows the real page hierarchy", async ({ page }) => {
+  const runtimeErrors = await openRoute(page, "/INTRO_Interactive/", {
+    name: "interactive-mobile-navigation",
+    width: 390,
+    height: 844,
+  });
+
+  await page.getByRole("button", { name: "メニューを開く" }).click();
+  const menu = page.locator("#mobile-menu");
+  await expect(menu).toBeVisible();
+  await expect(menu.locator('a[href="#educator-operations"]')).toContainText("教員の使い方");
+  await expect(menu.locator('a[href="#adoption"]')).toContainText("導入・ご相談");
+  await expect(menu.getByRole("button", { name: "メニューを閉じる" })).toHaveCount(1);
+  expect(runtimeErrors).toEqual([]);
+});
+
 test("Founder product links include equal-size ProtoPedia CTA in the requested order", async ({ page }) => {
   const runtimeErrors = await openRoute(page, "/founder/", {
     name: "founder-product-links",

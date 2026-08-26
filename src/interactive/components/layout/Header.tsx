@@ -28,7 +28,7 @@ const developerNavItems = [
 
 const mainMobileGroups = [
   {
-    label: "STUDENT",
+    label: "EXPERIENCE",
     items: [
       { href: "#students", label: "講義の体験", note: "Experience" },
       { href: "#features", label: "講義の流れ", note: "Learning Journey" },
@@ -36,15 +36,17 @@ const mainMobileGroups = [
     ]
   },
   {
-    label: "TEACHER",
+    label: "FOR EDUCATORS",
     items: [
-      { href: "#teachers", label: "教員の使い方", note: "Teaching Flow" },
+      { href: "#teachers", label: "学生の反応を活かす", note: "Teaching Flow" },
+      { href: "#educator-operations", label: "教員の使い方", note: "Operations" },
       { href: "#use-cases", label: "こんな場面で", note: "Use Scenes" },
-      { href: "#security", label: "安心して使える理由", note: "Trust & Privacy" }
+      { href: "#security", label: "安心して使える理由", note: "Trust & Privacy" },
+      { href: "#adoption", label: "導入・ご相談", note: "Adoption" }
     ]
   },
   {
-    label: "DEVELOPER",
+    label: "PRODUCT",
     items: [
       { href: "#developers", label: "設計・技術", note: "Architecture" },
       { href: "/INTRO_Interactive/developers/#developer-profile", label: "開発者・プロダクト設計者", note: "Profile" }
@@ -152,11 +154,13 @@ export function Header({ variant = "main" }: HeaderProps) {
 
         <button
           ref={toggleRef}
-          className="menu-toggle"
+          className={`menu-toggle ${open ? "is-menu-open" : ""}`}
           type="button"
           aria-label={open ? "メニューを閉じる" : "メニューを開く"}
+          aria-hidden={open}
           aria-controls="mobile-menu"
           aria-expanded={open}
+          tabIndex={open ? -1 : 0}
           onClick={() => setOpen((current) => !current)}
         >
           <span /><span />

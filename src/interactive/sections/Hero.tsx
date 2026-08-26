@@ -56,23 +56,6 @@ export function Hero() {
           <div className="hero-mock-stage hero-signal-stage">
             <LectureSignalMatrix />
             <ProductExperienceMock className="hero-product-experience" />
-            <div className="hero-mobile-product-proof" aria-label="COMPASS Interactiveのライブ講義体験">
-              <div className="hero-mobile-product-proof__status">
-                <strong><i aria-hidden="true" /> LIVE LECTURE</strong>
-                <small>221人参加</small>
-              </div>
-              <div className="hero-mobile-product-proof__flow">
-                <p className="hero-mobile-product-proof__caption">
-                  <small>LIVE CAPTION</small>
-                  <strong>AIが講義の言葉を、理解へつないでいます。</strong>
-                </p>
-                <span aria-hidden="true">→</span>
-                <p className="hero-mobile-product-proof__recap">
-                  <small>5 MINUTE AI RECAP</small>
-                  <strong>いま生まれた気づきが、次の問いにつながる。</strong>
-                </p>
-              </div>
-            </div>
           </div>
         </div>
       </div>

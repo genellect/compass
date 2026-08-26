@@ -11,6 +11,7 @@ import "../../interactive/styles/animations.css";
 import "../../interactive/styles/experience.css";
 import "../../interactive/styles/redesign.css";
 import "../../interactive/styles/signal-hero.css";
+import "../../interactive/styles/mobile-recompose.css";
 import "../../styles/github-profile-link.css";
 
 export const metadata: Metadata = {
