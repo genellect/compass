@@ -591,6 +591,7 @@ for (const expected of [
   '<html lang="ja"',
   'id="founder-title"',
   'id="expertise"',
+  'id="fragments"',
   'id="story"',
   'id="products"',
   'id="credentials"',
@@ -602,6 +603,7 @@ for (const expected of [
   "分子生物学研究",
   "AIネイティブ開発",
   "大学教育支援",
+  "FRAGMENTS",
   'href="#message"',
   'aria-label="Mobile portfolio navigation"',
   'aria-label="外部リンクを表示"',
@@ -615,6 +617,12 @@ for (const expected of [
   "/images/founder-portfolio/yuto-matsui-profile-hero.webp",
   "/images/founder-portfolio/yuto-matsui-queens-square.webp",
   "/images/founder-portfolio/yuto-matsui-front.webp",
+  "/images/founder-portfolio/fragments/yuto-696-1566.webp",
+  "/images/founder-portfolio/fragments/dna-automation-1920.webp",
+  "/images/founder-portfolio/fragments/code-terminal-1920.webp",
+  "/images/founder-portfolio/fragments/yuto-698-1566.webp",
+  "/images/founder-portfolio/fragments/code-data-1920.webp",
+  "/images/founder-portfolio/fragments/yuto-704-1372.webp",
   "境界を越え、新しい可能性へ。",
   "COMPASS Interactive",
   "LET EVERYTHING",
@@ -639,6 +647,13 @@ for (const expected of [
   'rel="canonical" href="https://compass-official.pages.dev/founder/"',
   parentGaMeasurementId
 ]) expectIncludes(founder, expected, "Founder portfolio");
+
+expectOrdered(founder, ['id="expertise"', 'id="fragments"', 'id="story"'], "Founder FRAGMENTS section order");
+
+const founderFragmentPhotoCount = (founder.match(/data-slot=/g) ?? []).length;
+if (founderFragmentPhotoCount !== 16) {
+  throw new Error(`Founder FRAGMENTS must contain exactly 16 photos, found ${founderFragmentPhotoCount}.`);
+}
 
 expectOneH1(founder, "Founder portfolio");
 
@@ -1348,6 +1363,22 @@ for (const relative of [
   "images/founder-portfolio/off-hours-drive.webp",
   "images/founder-portfolio/off-hours-shogi.webp",
   "images/founder-portfolio/off-hours-climbing.webp",
+  "images/founder-portfolio/fragments/yuto-695-1566.webp",
+  "images/founder-portfolio/fragments/yuto-696-1566.webp",
+  "images/founder-portfolio/fragments/yuto-697-1044.webp",
+  "images/founder-portfolio/fragments/yuto-698-1566.webp",
+  "images/founder-portfolio/fragments/yuto-699-1044.webp",
+  "images/founder-portfolio/fragments/yuto-700-1477.webp",
+  "images/founder-portfolio/fragments/yuto-701-1108.webp",
+  "images/founder-portfolio/fragments/yuto-704-1372.webp",
+  "images/founder-portfolio/fragments/yuto-706-1044.webp",
+  "images/founder-portfolio/fragments/yuto-707-1477.webp",
+  "images/founder-portfolio/fragments/dna-automation-1920.webp",
+  "images/founder-portfolio/fragments/pipette-1920.webp",
+  "images/founder-portfolio/fragments/code-window-1920.webp",
+  "images/founder-portfolio/fragments/code-terminal-1920.webp",
+  "images/founder-portfolio/fragments/code-data-1920.webp",
+  "images/founder-portfolio/fragments/servers-1920.webp",
   "images/founder-portfolio/source/life-science-unsplash.jpg",
   "images/founder-portfolio/source/ai-abstract-unsplash.jpg",
   "images/founder-portfolio/source/software-development-unsplash.jpg",
