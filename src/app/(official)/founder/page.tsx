@@ -480,6 +480,19 @@ export default function FounderPage() {
             <div className={styles.contactCopy}>
               <p>ご興味を持っていただけましたら、下記のフォームからお気軽にご連絡ください。学生・教職員・団体・企業の方を問わず、さまざまな方とのご縁を歓迎しています。</p>
               <a href="/contact/">Contact form <ArrowIcon /></a>
+              <details className={styles.contactEmail}>
+                <summary>メールでのご連絡</summary>
+                <div className={styles.contactEmailPanel}>
+                  <p className={styles.contactEmailIdentity}>
+                    <strong>Yuto Matsui</strong>
+                    <span>Researcher &amp; Engineer</span>
+                  </p>
+                  <div className={styles.contactEmailAddresses}>
+                    <p><span>Personal：</span><a href="mailto:my270yuto0413@gmail.com">my270yuto0413@gmail.com</a></p>
+                    <p><span>Univ.：</span><a href="mailto:matsui.yuto@st.kitasato-u.ac.jp">matsui.yuto@st.kitasato-u.ac.jp</a></p>
+                  </div>
+                </div>
+              </details>
             </div>
           </div>
         </section>

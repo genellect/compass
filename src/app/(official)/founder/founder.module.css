@@ -1032,19 +1032,19 @@
   .fragmentSequence span:nth-child(4)::after { animation-delay: -9s; }
 
   .fragmentReelTrack[data-reel-row="1"] {
-    animation: fragmentReelForward 46s linear infinite;
+    animation: fragmentReelForward 82s linear infinite;
   }
 
   .fragmentReelTrack[data-reel-row="2"] {
-    animation: fragmentReelReverse 52s linear infinite;
+    animation: fragmentReelReverse 94s linear infinite;
   }
 
   .fragmentReelPhoto::before {
-    animation: fragmentCardScan 4.8s linear infinite;
+    animation: fragmentCardScan 15s linear infinite;
   }
 
   .fragmentReelViewport::after {
-    animation: fragmentDataRail 2.8s linear infinite;
+    animation: fragmentDataRail 8s linear infinite;
   }
 }
 
@@ -1258,27 +1258,6 @@
     isolation: isolate;
   }
 
-  .fragmentMobileReel::before,
-  .fragmentMobileReel::after {
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    z-index: 3;
-    width: clamp(24px, 8vw, 70px);
-    content: "";
-    pointer-events: none;
-  }
-
-  .fragmentMobileReel::before {
-    left: 0;
-    background: linear-gradient(90deg, rgba(244, 248, 248, 0.96), transparent);
-  }
-
-  .fragmentMobileReel::after {
-    right: 0;
-    background: linear-gradient(270deg, rgba(245, 247, 245, 0.96), transparent);
-  }
-
   .fragmentReelViewport {
     position: relative;
     min-width: 0;
@@ -1291,11 +1270,11 @@
     bottom: 0;
     left: 0;
     z-index: 2;
-    height: 2px;
+    height: 1px;
     content: "";
     background:
-      radial-gradient(circle, rgba(222, 182, 119, 0.92) 0 1.4px, transparent 1.6px) 0 0 / 26px 2px repeat-x,
-      linear-gradient(90deg, transparent, rgba(61, 150, 170, 0.72), transparent);
+      radial-gradient(circle, rgba(222, 182, 119, 0.62) 0 1px, transparent 1.2px) 0 0 / 32px 1px repeat-x,
+      linear-gradient(90deg, transparent, rgba(61, 150, 170, 0.48), transparent);
     pointer-events: none;
   }
 
@@ -1331,9 +1310,9 @@
     bottom: 0;
     left: 0;
     z-index: 2;
-    width: 24%;
+    width: 18%;
     content: "";
-    background: linear-gradient(90deg, transparent, rgba(75, 177, 194, 0.24), rgba(240, 208, 151, 0.54), transparent);
+    background: linear-gradient(90deg, transparent, rgba(75, 177, 194, 0.11), rgba(240, 208, 151, 0.22), transparent);
     pointer-events: none;
     transform: translate3d(-160%, 0, 0);
   }
@@ -2213,6 +2192,81 @@
   border-color: rgba(38, 139, 150, 0.55);
   background: rgba(255, 255, 255, 0.96);
   transform: translateY(-2px);
+}
+
+.contactEmail {
+  width: fit-content;
+  max-width: 100%;
+  margin-top: 18px;
+}
+
+.contactEmail > summary {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  color: #42616f;
+  cursor: pointer;
+  font-size: 0.66rem;
+  font-weight: 650;
+  letter-spacing: 0.035em;
+  list-style: none;
+  text-decoration: underline;
+  text-decoration-color: rgba(39, 139, 150, 0.24);
+  text-underline-offset: 4px;
+}
+
+.contactEmail > summary::-webkit-details-marker { display: none; }
+
+.contactEmail > summary::before {
+  color: #278b96;
+  content: "▶";
+  font-size: 0.52rem;
+  transition: transform 180ms ease;
+}
+
+.contactEmail[open] > summary::before { transform: rotate(90deg); }
+
+.contactEmailPanel {
+  display: grid;
+  gap: 13px;
+  width: min(100%, 390px);
+  margin-top: 13px;
+  padding: 15px 17px;
+  border: 1px solid rgba(43, 108, 136, 0.14);
+  border-radius: 2px 11px 2px 2px;
+  background: rgba(255, 255, 255, 0.68);
+  box-shadow: 0 12px 30px rgba(45, 91, 108, 0.06);
+}
+
+.contactEmailIdentity {
+  display: grid;
+  gap: 2px;
+  margin: 0;
+  color: #183246;
+  font-size: 0.73rem;
+  line-height: 1.55;
+}
+
+.contactEmailIdentity strong { font-weight: 650; }
+.contactEmailIdentity span { color: #627984; font-size: 0.63rem; }
+
+.contactEmailAddresses {
+  display: grid;
+  gap: 5px;
+}
+
+.contactEmailAddresses p {
+  margin: 0;
+  color: #607580;
+  font-size: 0.64rem;
+  line-height: 1.6;
+}
+
+.contactEmailAddresses a {
+  color: #294e60;
+  overflow-wrap: anywhere;
+  text-decoration-color: rgba(39, 139, 150, 0.26);
+  text-underline-offset: 3px;
 }
 
 .footer {
