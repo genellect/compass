@@ -2,7 +2,7 @@
 
 Status: Canonical
 Scope: `genellect/compass`公開repositoryと接続systemの境界
-Last source verification: 2026-08-03 (`origin/main` `7d65cfa230e5d20acbe4b72f971b07b8325827f1`)
+Last source verification: 2026-08-28
 
 未来戦略ライブラリの公開リポジトリ前提の認証・PII・artifact境界は
 `docs/library-registration/public-repository-security-boundary.md` を正本とする。
@@ -32,7 +32,7 @@ Last source verification: 2026-08-03 (`origin/main` `7d65cfa230e5d20acbe4b72f971
 | `/library-registration/admin/` | `src/app/(library)/library-registration/admin/page.tsx` | 公開導線からリンクしない管理者画面（Access外部設定pending） |
 | `/library-registration/admin/api/*` | `functions/library-registration/admin/api/[[path]].ts` | Cloudflare Access配下の同一origin管理API proxy |
 | `/messages/` | `src/app/(official)/messages/page.tsx` | COMPASS Manifesto |
-| `/founder/` | `src/app/(official)/founder/page.tsx` | Founder個人ポートフォリオ |
+| `https://yuto-matsui.com/` | `src/app/(official)/founder/page.tsx` + `functions/index.ts` | Founder個人ポートフォリオ。static exportは同じPages成果物の`/founder/`に保持 |
 | `/community/join/` | `src/app/(official)/community/join/page.tsx` | Community参加form |
 | `/contact/` | `src/app/(official)/contact/page.tsx` | Contact form |
 | `/INTRO_Interactive/` | `src/app/(interactive)/INTRO_Interactive/page.tsx` | Interactive紹介 |
@@ -82,6 +82,12 @@ npm run check
 ```
 
 `scripts/assemble-next-export.mjs`は`.nojekyll`、`_headers`、`_redirects`、Search Console verification、`robots.txt`、`sitemap.xml`を`out/`へ組み込む。
+
+Founderの正式URLは`https://yuto-matsui.com/`である。同じ`compass-official` Pages成果物内の
+`/founder/`を`functions/index.ts`がCustom Domainのrootへ内部配信する。旧Pages hostの
+`/founder`、`/founder/`、`/founder/index.html`はCloudflare Bulk Redirectで新rootへ恒久301とし、
+旧hostのsitemapにはFounderを含めない。Custom Domainの`robots.txt`と`sitemap.xml`は
+host-aware Pages Functionsが返し、新sitemapはroot一件だけを掲載する。
 
 `npm run check`（cloud aliasは`npm run cloud:check`）はrepository内のcode・export contractを検証する。Production email delivery、Cloudflare dashboard設定、GAS deployment、Interactive本体の挙動、教育効果を証明しない。
 
@@ -141,7 +147,9 @@ secret値はGit、chat、screenshot、logへ出さない。
 
 ## 8. Analytics Boundary
 
-公式Pages project内のofficial routeとInteractive紹介routeは、parent-site GA4 measurementを共有する。別deploymentの`compass-interactive.pages.dev`は対象外である。
+公式Pages project内のofficial route、Interactive紹介route、`yuto-matsui.com`のFounder rootは、
+parent-site GA4 measurementを共有する。二つのhostは同じGA4 Webデータストリームの
+クロスドメイン対象として管理する。別deploymentの`compass-interactive.pages.dev`は対象外である。
 
 Cloudflare Web AnalyticsはPages側の設定・injectionで管理する。site tokenやaccount credentialをsourceへcommitしない。詳細は`analytics-monitoring-operations.md`を参照する。
 

@@ -38,7 +38,9 @@ async function requireExactProductionFunctions(root) {
     "api/community-registration.ts",
     "api/contact.ts",
     "index.ts",
-    "library-registration/admin/api/[[path]].ts"
+    "library-registration/admin/api/[[path]].ts",
+    "robots.txt.ts",
+    "sitemap.xml.ts"
   ];
   if (JSON.stringify(files.sort()) !== JSON.stringify(expected)) {
     throw new Error(

@@ -33,7 +33,7 @@ export function DeveloperProfile({ id = "developer-profile", showWebPortfolio = 
         <div className="developer-credit__portfolio-links">
           <a
             className="github-profile-link developer-credit__portfolio"
-            href="/founder/"
+            href="https://yuto-matsui.com/"
             aria-label="Yuto MatsuiのWebポートフォリオを開く"
           >
             <Image src="/images/compass-mark.svg" alt="" width={19} height={19} aria-hidden="true" />
