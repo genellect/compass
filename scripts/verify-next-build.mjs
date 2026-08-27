@@ -116,6 +116,7 @@ const deployedRobots = await readFile(path.join(out, "robots.txt"), "utf8");
 const deployedSitemap = await readFile(path.join(out, "sitemap.xml"), "utf8");
 const founderRobots = await readFile(path.join(out, "founder-robots.txt"), "utf8");
 const founderSitemap = await readFile(path.join(out, "founder-sitemap.xml"), "utf8");
+const indexNowKey = await readFile(path.join(out, "1692e67b895d46c0b6124bd047f73fcd.txt"), "utf8");
 const messageSource = await readFile(
   path.join(root, "src", "app", "(official)", "messages", "message.md"),
   "utf8"
@@ -1441,8 +1442,13 @@ for (const relative of [
   "robots.txt",
   "sitemap.xml",
   "founder-robots.txt",
-  "founder-sitemap.xml"
+  "founder-sitemap.xml",
+  "1692e67b895d46c0b6124bd047f73fcd.txt"
 ]) await access(path.join(out, relative));
+
+if (indexNowKey.trim() !== "1692e67b895d46c0b6124bd047f73fcd") {
+  throw new Error("IndexNow ownership key does not match its public filename.");
+}
 
 await access(path.join(out, "_next", "static"));
 const expectedFunctionRoutes = [
