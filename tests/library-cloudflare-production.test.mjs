@@ -367,7 +367,7 @@ test("Cloudflare Git production finalization retains the protected administrator
     await access(join(root, "out", "library-registration", "admin", "index.html"));
     const worker = await readFile(join(root, "out", "_worker.js"), "utf8");
     assert.match(worker, /\/library-registration\/admin\/api/);
-    assert.ok(worker.includes("yuto-matsui.com"));
+    assert.ok(worker.includes("/founder/"));
     assert.match(worker, /env\["ASSETS"\]\.fetch/);
     await access(join(root, "functions", "api", "community-registration.ts"));
     await access(join(root, "functions", "api", "contact.ts"));
