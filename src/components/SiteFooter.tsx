@@ -35,7 +35,7 @@ export function SiteFooter({ routeContext = "root" }: { routeContext?: SiteRoute
         Resources
       </a>
       <a href={resolveHref("#community")}>Community</a>
-      <a href={resolveHref("#founder")}>Founder</a>
+      <a href="https://yuto-matsui.com/">Founder</a>
       <a href="/contact/">Contact</a>
     </nav>
 

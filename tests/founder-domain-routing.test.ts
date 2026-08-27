@@ -1,5 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
 import {
+  COMPASS_PAGES_DOMAIN,
   FOUNDER_DOMAIN,
   onRequest,
   type FounderDomainEnv
@@ -64,6 +65,25 @@ describe("Founder custom-domain Pages Function", () => {
       expect(next).toHaveBeenCalledOnce();
       expect(assetsFetch).not.toHaveBeenCalled();
     }
+  });
+
+  it.each([
+    "/founder",
+    "/founder/",
+    "/founder/index.html"
+  ])("redirects the legacy Founder path %s in one permanent hop", async (path) => {
+    const { context, assetsFetch, next } = createContext(
+      `https://${COMPASS_PAGES_DOMAIN}${path}?utm_source=legacy`
+    );
+
+    const response = await onRequest(context);
+
+    expect(response.status).toBe(301);
+    expect(response.headers.get("Location")).toBe(
+      `https://${FOUNDER_DOMAIN}/?utm_source=legacy`
+    );
+    expect(assetsFetch).not.toHaveBeenCalled();
+    expect(next).not.toHaveBeenCalled();
   });
 
   it("uses the original Host header when Pages normalizes the request URL", async () => {

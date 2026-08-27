@@ -95,7 +95,7 @@ const navGroups: NavGroup[] = [
 const directNavItems: DirectNavItem[] = [
   {
     activeId: "founder",
-    href: "#founder",
+    href: "https://yuto-matsui.com/",
     label: "Founder",
     mobileLabel: "代表について",
     description: "COMPASSを始めた人を知る"

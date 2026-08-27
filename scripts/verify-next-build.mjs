@@ -591,6 +591,7 @@ expectOneH1(interactive, "Interactive page");
 expectExcludes(interactiveDevelopers, 'href="/founder/"', "Interactive developer page Web Portfolio scope");
 expectIncludes(official, 'href="https://yuto-matsui.com/"', "Official Founder portfolio link");
 expectExcludes(official, 'href="/founder/"', "Official legacy Founder portfolio link");
+expectExcludes(official, 'href="#founder"', "Official legacy Founder section navigation");
 expectIncludes(interactive, 'href="https://yuto-matsui.com/"', "Interactive Founder portfolio link");
 expectIncludes(official, "Web Portfolio", "Official Founder Web Portfolio CTA");
 expectIncludes(official, "GitHub Portfolio", "Official Founder GitHub Portfolio CTA");
@@ -1440,6 +1441,9 @@ for (const relative of [
 await access(path.join(out, "_next", "static"));
 const expectedFunctionRoutes = [
   "/",
+  "/founder",
+  "/founder/",
+  "/founder/index.html",
   "/robots.txt",
   "/sitemap.xml",
   "/api/community-registration",
