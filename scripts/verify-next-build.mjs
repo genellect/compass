@@ -116,6 +116,7 @@ const deployedRobots = await readFile(path.join(out, "robots.txt"), "utf8");
 const deployedSitemap = await readFile(path.join(out, "sitemap.xml"), "utf8");
 const founderRobots = await readFile(path.join(out, "founder-robots.txt"), "utf8");
 const founderSitemap = await readFile(path.join(out, "founder-sitemap.xml"), "utf8");
+const indexNowKey = await readFile(path.join(out, "1692e67b895d46c0b6124bd047f73fcd.txt"), "utf8");
 const messageSource = await readFile(
   path.join(root, "src", "app", "(official)", "messages", "message.md"),
   "utf8"
@@ -659,8 +660,10 @@ for (const expected of [
   "お問い合わせ",
   "メールでのご連絡",
   "Researcher &amp; Engineer",
-  "my270yuto0413@gmail.com",
+  "contact@yuto-matsui.com",
   "matsui.yuto@st.kitasato-u.ac.jp",
+  "founder-linker-url-cleanup",
+  "url.searchParams.delete('_gl')",
   "https://www.instagram.com/n.m.w.314/?__pwa=1#",
   "さまざまな方とのご縁を歓迎しています。",
   "CONTACT",
@@ -1439,8 +1442,13 @@ for (const relative of [
   "robots.txt",
   "sitemap.xml",
   "founder-robots.txt",
-  "founder-sitemap.xml"
+  "founder-sitemap.xml",
+  "1692e67b895d46c0b6124bd047f73fcd.txt"
 ]) await access(path.join(out, relative));
+
+if (indexNowKey.trim() !== "1692e67b895d46c0b6124bd047f73fcd") {
+  throw new Error("IndexNow ownership key does not match its public filename.");
+}
 
 await access(path.join(out, "_next", "static"));
 const expectedFunctionRoutes = [
