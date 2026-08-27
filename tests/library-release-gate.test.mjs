@@ -264,6 +264,9 @@ test("Cloudflare routes execute only the reviewed Founder, public API and admini
     version: 1,
     include: [
       "/",
+      "/founder",
+      "/founder/",
+      "/founder/index.html",
       "/robots.txt",
       "/sitemap.xml",
       "/api/community-registration",

@@ -97,6 +97,10 @@ for (const route of officialDesktopRoutes) {
     for (const label of ["Founder", "Contact"]) {
       await expect(nav.getByRole("link", { name: label, exact: true })).toBeVisible();
     }
+    await expect(nav.getByRole("link", { name: "Founder", exact: true })).toHaveAttribute(
+      "href",
+      "https://yuto-matsui.com/",
+    );
     if (route.active) {
       const current = nav.locator('[aria-current="page"]');
       await expect(current).toHaveCount(1);
@@ -105,6 +109,28 @@ for (const route of officialDesktopRoutes) {
     expect(runtimeErrors, `runtime errors while checking ${route.path} Desktop navigation`).toEqual([]);
   });
 }
+
+test("Every parent Founder entry point uses the new portfolio URL", async ({ page }) => {
+  const runtimeErrors = await openRoute(page, "/", {
+    name: "founder-entry-points",
+    width: 390,
+    height: 844,
+  });
+  const expected = "https://yuto-matsui.com/";
+
+  await expect(page.locator("#founder .v4-founder__web-portfolio")).toHaveAttribute("href", expected);
+  await expect(page.locator(".site-footer .footer-nav").getByRole("link", { name: "Founder" })).toHaveAttribute(
+    "href",
+    expected,
+  );
+
+  await page.locator("button.menu-toggle").first().click();
+  await expect(page.locator("#mobile-menu").getByRole("link", { name: /代表について/ })).toHaveAttribute(
+    "href",
+    expected,
+  );
+  expect(runtimeErrors).toEqual([]);
+});
 
 for (const viewport of [
   { name: "community-mobile", width: 390, height: 844 },

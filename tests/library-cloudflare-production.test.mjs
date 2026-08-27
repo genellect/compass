@@ -208,6 +208,9 @@ async function createProductionFixture(root) {
       version: 1,
       include: [
         "/",
+        "/founder",
+        "/founder/",
+        "/founder/index.html",
         "/robots.txt",
         "/sitemap.xml",
         "/api/community-registration",

@@ -11,6 +11,13 @@ type PagesContext = {
 };
 
 export const FOUNDER_DOMAIN = "yuto-matsui.com";
+export const COMPASS_PAGES_DOMAIN = "compass-official.pages.dev";
+
+const LEGACY_FOUNDER_PATHS = new Set([
+  "/founder",
+  "/founder/",
+  "/founder/index.html"
+]);
 
 function requestHostname(request: Request) {
   const hostHeader = request.headers.get("host")?.split(":", 1)[0]?.trim().toLowerCase();
@@ -19,8 +26,18 @@ function requestHostname(request: Request) {
 
 export async function onRequest(context: PagesContext): Promise<Response> {
   const url = new URL(context.request.url);
+  const hostname = requestHostname(context.request);
 
-  if (requestHostname(context.request) !== FOUNDER_DOMAIN) {
+  if (
+    hostname === COMPASS_PAGES_DOMAIN
+    && LEGACY_FOUNDER_PATHS.has(url.pathname)
+  ) {
+    const target = new URL(`https://${FOUNDER_DOMAIN}/`);
+    target.search = url.search;
+    return Response.redirect(target, 301);
+  }
+
+  if (hostname !== FOUNDER_DOMAIN) {
     return context.next();
   }
 
