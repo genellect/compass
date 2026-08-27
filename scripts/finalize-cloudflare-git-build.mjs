@@ -37,11 +37,12 @@ async function requireExactProductionFunctions(root) {
   const expected = [
     "api/community-registration.ts",
     "api/contact.ts",
+    "index.ts",
     "library-registration/admin/api/[[path]].ts"
   ];
   if (JSON.stringify(files.sort()) !== JSON.stringify(expected)) {
     throw new Error(
-      `Cloudflare production Functions are not the exact reviewed pair: ${files.join(", ")}.`
+      `Cloudflare production Functions are not the exact reviewed set: ${files.join(", ")}.`
     );
   }
 }
