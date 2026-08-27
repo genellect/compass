@@ -126,7 +126,7 @@ export const routeContracts: RouteContract[] = [
       "#expertise h2",
       "#expertise article",
       "#fragments h2",
-      "#fragments figure[data-slot]",
+      "#fragments figure[data-slot], #fragments figure[data-reel-slot]",
       "#story h2",
       "#story aside img",
       "#products h2",

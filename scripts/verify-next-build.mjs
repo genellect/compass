@@ -1424,6 +1424,7 @@ for (const relative of [
 
 await access(path.join(out, "_next", "static"));
 const expectedFunctionRoutes = [
+  "/",
   "/api/community-registration",
   "/api/contact",
   "/library-registration/admin/api/*"
