@@ -132,6 +132,25 @@ test("Every parent Founder entry point uses the new portfolio URL", async ({ pag
   expect(runtimeErrors).toEqual([]);
 });
 
+test("Founder consumes the GA linker parameter without changing other URL state or CONTACT UI", async ({ page }) => {
+  const runtimeErrors = collectRuntimeErrors(page);
+  const response = await page.goto("/founder/?_gl=linker-test&utm_source=compass#contact-cta", {
+    waitUntil: "domcontentloaded",
+  });
+  expect(response?.status()).toBe(200);
+
+  await expect.poll(() => page.url()).not.toContain("_gl=");
+  expect(page.url()).toContain("utm_source=compass");
+  expect(page.url().endsWith("#contact-cta")).toBe(true);
+
+  const emailDetails = page.locator("#contact-cta details");
+  await expect(emailDetails).not.toHaveAttribute("open", "");
+  await expect(emailDetails).toContainText("contact@yuto-matsui.com");
+  await expect(emailDetails).toContainText("matsui.yuto@st.kitasato-u.ac.jp");
+  await expect(emailDetails).not.toContainText("my270yuto0413@gmail.com");
+  expect(runtimeErrors).toEqual([]);
+});
+
 for (const viewport of [
   { name: "community-mobile", width: 390, height: 844 },
   { name: "community-desktop", width: 1363, height: 936 },

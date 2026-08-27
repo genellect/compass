@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Image from "next/image";
+import Script from "next/script";
 import { LectureSignalMatrix } from "../../../interactive/components/hero/LectureSignalMatrix";
 import { ProductExperienceMock } from "../../../interactive/components/ui/ProductExperienceMock";
 import { LegacyInteractions } from "../../../components/LegacyInteractions";
@@ -546,6 +547,15 @@ export default function FounderPage() {
       </footer>
 
       <LegacyInteractions />
+      <Script id="founder-linker-url-cleanup" strategy="lazyOnload">
+        {`try {
+  const url = new URL(window.location.href);
+  if (url.searchParams.has('_gl')) {
+    url.searchParams.delete('_gl');
+    window.history.replaceState(window.history.state, '', url.pathname + url.search + url.hash);
+  }
+} catch {}`}
+      </Script>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(personSchema) }} />
     </div>
   );

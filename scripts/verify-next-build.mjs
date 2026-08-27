@@ -661,6 +661,8 @@ for (const expected of [
   "Researcher &amp; Engineer",
   "contact@yuto-matsui.com",
   "matsui.yuto@st.kitasato-u.ac.jp",
+  "founder-linker-url-cleanup",
+  "url.searchParams.delete('_gl')",
   "https://www.instagram.com/n.m.w.314/?__pwa=1#",
   "さまざまな方とのご縁を歓迎しています。",
   "CONTACT",
