@@ -168,6 +168,14 @@ function ArrowIcon() {
   return <span aria-hidden="true">↗</span>;
 }
 
+function opensInNewTab(href: string) {
+  try {
+    return new URL(href, COMPASS_ORIGIN).origin !== COMPASS_ORIGIN;
+  } catch {
+    return false;
+  }
+}
+
 function InstagramIcon() {
   return (
     <svg viewBox="0 0 24 24" role="presentation">
@@ -417,8 +425,7 @@ export default function FounderPage() {
                     </h3>
                     <nav aria-label={`${product.label}へのリンク`}>
                       {product.links.map((link) => {
-                        const opensNewTab = link.href.startsWith("https://")
-                          && !link.href.startsWith(COMPASS_ORIGIN);
+                        const opensNewTab = opensInNewTab(link.href);
                         return (
                           <a
                             key={link.href}
