@@ -36,20 +36,20 @@
     "dev:doctor": "bash .devcontainer/doctor.sh"
   },
   "dependencies": {
-    "next": "16.2.11",
-    "react": "^19.2.7",
-    "react-dom": "^19.2.7",
+    "next": "16.3.2",
+    "react": "^19.2.8",
+    "react-dom": "^19.2.8",
     "zod": "^4.4.3"
   },
   "devDependencies": {
     "@playwright/test": "^1.62.1",
     "@types/node": "^24.0.0",
-    "@types/react": "^19.2.17",
-    "@types/react-dom": "^19.2.3",
+    "@types/react": "^19.2.18",
+    "@types/react-dom": "^19.2.5",
     "sharp": "0.35.3",
     "typescript": "5.9.3",
-    "vitest": "^4.1.10",
-    "wrangler": "^4.114.0"
+    "vitest": "^4.1.11",
+    "wrangler": "^4.125.0"
   },
   "overrides": {
     "postcss": "8.5.25",
