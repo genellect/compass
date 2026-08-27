@@ -258,11 +258,12 @@ test("public site surfaces never link to the administrator route", async () => {
   }
 });
 
-test("Cloudflare routes execute only the reviewed public functions and administrator proxy", async () => {
+test("Cloudflare routes execute only the reviewed Founder, public API and administrator proxy functions", async () => {
   const routes = JSON.parse(await readFile(join(repositoryRoot, "public", "_routes.json"), "utf8"));
   assert.deepEqual(routes, {
     version: 1,
     include: [
+      "/",
       "/api/community-registration",
       "/api/contact",
       "/library-registration/admin/api/*"

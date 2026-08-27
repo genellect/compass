@@ -207,6 +207,7 @@ async function createProductionFixture(root) {
     JSON.stringify({
       version: 1,
       include: [
+        "/",
         "/api/community-registration",
         "/api/contact",
         "/library-registration/admin/api/*"
@@ -249,6 +250,11 @@ async function createProductionFixture(root) {
   await writeFile(
     join(root, "functions", "api", "contact.ts"),
     "export async function onRequest(){return new Response('contact')}",
+    "utf8"
+  );
+  await writeFile(
+    join(root, "functions", "index.ts"),
+    "export async function onRequest({env,request,next}){const url=new URL(request.url);return url.hostname==='yuto-matsui.com'?env.ASSETS.fetch(new Request(new URL('/founder/',url),request)):next()}",
     "utf8"
   );
   await writeFile(
@@ -361,9 +367,11 @@ test("Cloudflare Git production finalization retains the protected administrator
     await access(join(root, "out", "library-registration", "admin", "index.html"));
     const worker = await readFile(join(root, "out", "_worker.js"), "utf8");
     assert.match(worker, /\/library-registration\/admin\/api/);
+    assert.ok(worker.includes("/founder/"));
     assert.match(worker, /env\["ASSETS"\]\.fetch/);
     await access(join(root, "functions", "api", "community-registration.ts"));
     await access(join(root, "functions", "api", "contact.ts"));
+    await access(join(root, "functions", "index.ts"));
     await access(join(
       root,
       "functions",

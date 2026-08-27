@@ -136,8 +136,8 @@ test("Founder FRAGMENTS preserves its editorial order, ambient motion, and share
   expect(response?.status()).toBe(200);
 
   const fragments = page.locator("#fragments");
-  await expect(fragments.locator("[data-slot]")).toHaveCount(16);
-  await expect(fragments.locator("[data-fragment-ambient]")).toHaveCount(4);
+  await expect(fragments.locator("[data-slot]")).toHaveCount(19);
+  await expect(fragments.locator("[data-fragment-ambient]")).toHaveCount(1);
   await expect(page.locator('[data-product="library"] [data-library-hero-preview="true"]')).toHaveCount(1);
   await expect(page.locator('[data-product="library"] img')).toHaveCount(0);
 
@@ -151,9 +151,9 @@ test("Founder FRAGMENTS preserves its editorial order, ambient motion, and share
   }));
 
   expect(report.order).toEqual([
-    "yuto-696", "dna-automation", "yuto-706", "code-terminal",
-    "yuto-701", "pipette", "yuto-698", "code-data",
-    "code-window", "yuto-695", "servers", "yuto-707",
+    "yuto-696", "dna-automation", "yuto-706", "microfluidic", "code-terminal",
+    "yuto-701", "pipette", "yuto-698", "code-data", "yuto-703",
+    "code-window", "yuto-695", "servers", "yuto-707", "silicon-wafer",
     "yuto-697", "yuto-700", "yuto-699", "yuto-704",
   ]);
   expect(report.pictureAnimation).not.toBe("none");
