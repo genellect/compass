@@ -1,7 +1,7 @@
 # COMPASS Canonical Links
 
 Status: Canonical
-Last source verification: 2026-08-01
+Last source verification: 2026-08-28
 Reference: `origin/main`
 
 `Join`、`Register`、`Get Started`等の一般ラベルだけから遷移先を推測しない。利用者の目的とroute-specific contractに対応するURLを選ぶ。
@@ -15,7 +15,7 @@ Reference: `origin/main`
 | COMPASS Interactive Developer紹介 | <https://compass-official.pages.dev/INTRO_Interactive/developers/> | Same tab |
 | 未来戦略ライブラリ紹介 | <https://compass-official.pages.dev/future-strategy-library/> | Same tab |
 | COMPASS Manifesto | <https://compass-official.pages.dev/messages/> | Same tab |
-| Yuto Matsui 個人ポートフォリオ | <https://compass-official.pages.dev/founder/> | Same tab |
+| Yuto Matsui 個人ポートフォリオ | <https://yuto-matsui.com/> | Same tab |
 | Community参加 | <https://compass-official.pages.dev/community/join/> | Same tab |
 | Contact | <https://compass-official.pages.dev/contact/> | Same tab |
 

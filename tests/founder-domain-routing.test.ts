@@ -4,8 +4,10 @@ import {
   onRequest,
   type FounderDomainEnv
 } from "../functions/index";
+import { onRequest as onRobotsRequest } from "../functions/robots.txt";
+import { onRequest as onSitemapRequest } from "../functions/sitemap.xml";
 
-function createContext(url: string, method = "GET") {
+function createContext(url: string, method = "GET", host?: string) {
   const assetsFetch = vi.fn(async (
     _input: RequestInfo | URL,
     _init?: RequestInit
@@ -22,7 +24,7 @@ function createContext(url: string, method = "GET") {
   return {
     context: {
       env,
-      request: new Request(url, { method }),
+      request: new Request(url, { method, headers: host ? { Host: host } : undefined }),
       next
     },
     assetsFetch,
@@ -43,7 +45,7 @@ describe("Founder custom-domain Pages Function", () => {
     expect(await response.text()).toBe("founder page");
     expect(response.headers.get("Content-Type")).toBe("text/html; charset=utf-8");
     expect(response.headers.get("X-Asset-Header")).toBe("preserved");
-    expect(response.headers.get("X-Robots-Tag")).toBe("noindex, nofollow");
+    expect(response.headers.get("X-Robots-Tag")).toBeNull();
     expect(assetRequest.url).toBe(
       `https://${FOUNDER_DOMAIN}/founder/?utm_source=portfolio`
     );
@@ -62,6 +64,22 @@ describe("Founder custom-domain Pages Function", () => {
       expect(next).toHaveBeenCalledOnce();
       expect(assetsFetch).not.toHaveBeenCalled();
     }
+  });
+
+  it("uses the original Host header when Pages normalizes the request URL", async () => {
+    const { context, assetsFetch, next } = createContext(
+      "https://compass-official.pages.dev/?source=custom-domain",
+      "GET",
+      FOUNDER_DOMAIN
+    );
+
+    const response = await onRequest(context);
+    const assetRequest = assetsFetch.mock.calls[0]?.[0] as Request;
+
+    expect(response.status).toBe(200);
+    expect(new URL(assetRequest.url).pathname).toBe("/founder/");
+    expect(new URL(assetRequest.url).search).toBe("?source=custom-domain");
+    expect(next).not.toHaveBeenCalled();
   });
 
   it("supports HEAD without changing the asset route", async () => {
@@ -88,8 +106,34 @@ describe("Founder custom-domain Pages Function", () => {
 
     expect(response.status).toBe(405);
     expect(response.headers.get("Allow")).toBe("GET, HEAD");
-    expect(response.headers.get("X-Robots-Tag")).toBe("noindex, nofollow");
+    expect(response.headers.get("X-Robots-Tag")).toBeNull();
     expect(assetsFetch).not.toHaveBeenCalled();
     expect(next).not.toHaveBeenCalled();
+  });
+
+  it("serves a one-URL robots and sitemap contract on the Founder domain only", async () => {
+    const next = vi.fn(async () => new Response("legacy control file"));
+
+    const robots = await onRobotsRequest({
+      request: new Request(`https://${FOUNDER_DOMAIN}/robots.txt`),
+      next
+    });
+    const sitemap = await onSitemapRequest({
+      request: new Request(`https://${FOUNDER_DOMAIN}/sitemap.xml`),
+      next
+    });
+
+    expect(robots.headers.get("Content-Type")).toBe("text/plain; charset=utf-8");
+    expect(await robots.text()).toContain("Sitemap: https://yuto-matsui.com/sitemap.xml");
+    expect(sitemap.headers.get("Content-Type")).toBe("application/xml; charset=utf-8");
+    expect(await sitemap.text()).toContain("<loc>https://yuto-matsui.com/</loc>");
+    expect(next).not.toHaveBeenCalled();
+
+    const legacy = await onSitemapRequest({
+      request: new Request("https://compass-official.pages.dev/sitemap.xml"),
+      next
+    });
+    expect(await legacy.text()).toBe("legacy control file");
+    expect(next).toHaveBeenCalledOnce();
   });
 });

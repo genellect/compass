@@ -208,6 +208,8 @@ async function createProductionFixture(root) {
       version: 1,
       include: [
         "/",
+        "/robots.txt",
+        "/sitemap.xml",
         "/api/community-registration",
         "/api/contact",
         "/library-registration/admin/api/*"
@@ -255,6 +257,16 @@ async function createProductionFixture(root) {
   await writeFile(
     join(root, "functions", "index.ts"),
     "export async function onRequest({env,request,next}){const url=new URL(request.url);return url.hostname==='yuto-matsui.com'?env.ASSETS.fetch(new Request(new URL('/founder/',url),request)):next()}",
+    "utf8"
+  );
+  await writeFile(
+    join(root, "functions", "robots.txt.ts"),
+    "export async function onRequest({request,next}){return new URL(request.url).hostname==='yuto-matsui.com'?new Response('Sitemap: https://yuto-matsui.com/sitemap.xml'):next()}",
+    "utf8"
+  );
+  await writeFile(
+    join(root, "functions", "sitemap.xml.ts"),
+    "export async function onRequest({request,next}){return new URL(request.url).hostname==='yuto-matsui.com'?new Response('<loc>https://yuto-matsui.com/</loc>'):next()}",
     "utf8"
   );
   await writeFile(
@@ -368,10 +380,14 @@ test("Cloudflare Git production finalization retains the protected administrator
     const worker = await readFile(join(root, "out", "_worker.js"), "utf8");
     assert.match(worker, /\/library-registration\/admin\/api/);
     assert.ok(worker.includes("/founder/"));
+    assert.ok(worker.includes("https://yuto-matsui.com/sitemap.xml"));
+    assert.ok(worker.includes("<loc>https://yuto-matsui.com/</loc>"));
     assert.match(worker, /env\["ASSETS"\]\.fetch/);
     await access(join(root, "functions", "api", "community-registration.ts"));
     await access(join(root, "functions", "api", "contact.ts"));
     await access(join(root, "functions", "index.ts"));
+    await access(join(root, "functions", "robots.txt.ts"));
+    await access(join(root, "functions", "sitemap.xml.ts"));
     await access(join(
       root,
       "functions",

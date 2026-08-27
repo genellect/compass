@@ -238,7 +238,7 @@ test("Interactive introduction shows Web Portfolio before GitHub Portfolio", asy
   });
   const links = page.locator("#developers .developer-credit__portfolio-links > a");
   await expect(links).toHaveCount(2);
-  await expect(links.nth(0)).toHaveAttribute("href", "/founder/");
+  await expect(links.nth(0)).toHaveAttribute("href", "https://yuto-matsui.com/");
   await expect(links.nth(0)).toContainText("Web Portfolio");
   await expect(links.nth(1)).toHaveAttribute("href", "https://github.com/genellect");
   await expect(page.locator('#adoption a[href="/contact/"]')).toBeVisible();
@@ -291,7 +291,7 @@ test("Interactive mobile navigation follows the real page hierarchy", async ({ p
   await expect(educatorLinks.nth(2)).toHaveAttribute("href", "#adoption");
   await expect(educatorGroup.locator('a[href="#use-cases"]')).toHaveCount(0);
   await expect(educatorGroup.locator('a[href="#security"]')).toHaveCount(0);
-  await expect(menu.getByRole("link", { name: /開発者・プロダクト設計者/ })).toHaveAttribute("href", "/founder/");
+  await expect(menu.getByRole("link", { name: /開発者・プロダクト設計者/ })).toHaveAttribute("href", "https://yuto-matsui.com/");
   await expect(menu.getByRole("button", { name: "メニューを閉じる" })).toHaveCount(1);
   expect(runtimeErrors).toEqual([]);
 });

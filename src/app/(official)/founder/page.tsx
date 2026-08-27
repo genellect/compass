@@ -10,11 +10,14 @@ import { FounderHeroGallery } from "./FounderHeroGallery";
 import { MobileExternalMenu } from "./MobileExternalMenu";
 import styles from "./founder.module.css";
 
+const FOUNDER_URL = "https://yuto-matsui.com/";
+const COMPASS_ORIGIN = "https://compass-official.pages.dev";
+
 export const metadata: Metadata = {
   title: "Yuto Matsui / 松井優知 | Life Science, AI & Education",
   description:
     "ライフサイエンス研究、AIネイティブ開発、大学教育支援を横断するYuto Matsui / 松井優知の個人ポートフォリオ。",
-  alternates: { canonical: "/founder/" },
+  alternates: { canonical: FOUNDER_URL },
   authors: [{ name: "Yuto Matsui / 松井優知" }],
   openGraph: {
     locale: "ja_JP",
@@ -22,10 +25,10 @@ export const metadata: Metadata = {
     siteName: "Yuto Matsui",
     title: "Yuto Matsui / 松井優知",
     description: "ライフサイエンス研究・AIネイティブ開発・大学教育支援。",
-    url: "/founder/",
+    url: FOUNDER_URL,
     images: [
       {
-        url: "/images/founder-portfolio/yuto-matsui-profile-hero.webp",
+        url: `${FOUNDER_URL}images/founder-portfolio/yuto-matsui-profile-hero.webp`,
         width: 1600,
         height: 2400,
         alt: "Yuto Matsui / 松井優知"
@@ -36,7 +39,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Yuto Matsui / 松井優知",
     description: "ライフサイエンス研究・AIネイティブ開発・大学教育支援。",
-    images: ["/images/founder-portfolio/yuto-matsui-profile-hero.webp"]
+    images: [`${FOUNDER_URL}images/founder-portfolio/yuto-matsui-profile-hero.webp`]
   }
 };
 
@@ -78,19 +81,19 @@ const products = [
     image: "/images/hero.desktop.highlight.webp",
     alt: "DNA、コンパス、ネットワークで構成されたCOMPASS Interactiveのビジュアル",
     links: [
-      { label: "紹介サイト", href: "/INTRO_Interactive/" },
+      { label: "紹介サイト", href: `${COMPASS_ORIGIN}/INTRO_Interactive/` },
       {
         label: "ProtoPedia",
         href: "https://protopedia.net/prototype/private/59f061db-936a-4fa3-abc2-438a98711e9e"
       },
-      { label: "開発者向けポートフォリオ", href: "/INTRO_Interactive/developers/" }
+      { label: "開発者向けポートフォリオ", href: `${COMPASS_ORIGIN}/INTRO_Interactive/developers/` }
     ]
   },
   {
     key: "library",
     label: "未来戦略ライブラリ",
     title: "北里大学薬学部生のための、学生目線の資料ライブラリ。",
-    links: [{ label: "ライブラリを見る", href: "/future-strategy-library/" }]
+    links: [{ label: "ライブラリを見る", href: `${COMPASS_ORIGIN}/future-strategy-library/` }]
   },
   {
     key: "manifesto",
@@ -98,7 +101,7 @@ const products = [
     title: "AI時代をどう生きるか。",
     image: "/images/Image4.jpg",
     alt: "AI時代の可能性を象徴する光に包まれた未来都市",
-    links: [{ label: "Manifestoを読む", href: "/messages/" }]
+    links: [{ label: "Manifestoを読む", href: `${COMPASS_ORIGIN}/messages/` }]
   }
 ] as const;
 
@@ -146,8 +149,8 @@ const personSchema = {
   "@type": "Person",
   name: "Yuto Matsui",
   alternateName: "松井優知",
-  url: "https://compass-official.pages.dev/founder/",
-  image: "https://compass-official.pages.dev/images/founder-portfolio/yuto-matsui-profile-hero.webp",
+  url: FOUNDER_URL,
+  image: `${FOUNDER_URL}images/founder-portfolio/yuto-matsui-profile-hero.webp`,
   knowsAbout: [
     "Life science research",
     "AI-native software development",
@@ -241,7 +244,7 @@ export default function FounderPage() {
             <div className={styles.mobileExternalPopover} aria-label="Yuto Matsuiの外部リンク">
               <a href="https://www.instagram.com/n.m.w.314/?__pwa=1#" target="_blank" rel="noopener noreferrer" aria-label="Instagram"><InstagramIcon /></a>
               <a href="https://github.com/genellect" target="_blank" rel="noopener noreferrer" aria-label="GitHub"><GitHubIcon /></a>
-              <a href="/" aria-label="COMPASS公式サイト"><CompassIcon /></a>
+              <a href={`${COMPASS_ORIGIN}/`} aria-label="COMPASS公式サイト"><CompassIcon /></a>
             </div>
           </MobileExternalMenu>
         </nav>
@@ -271,7 +274,7 @@ export default function FounderPage() {
               <a href="https://github.com/genellect" target="_blank" rel="noopener noreferrer" aria-label="GitHub" title="GitHub">
                 <GitHubIcon />
               </a>
-              <a href="/" aria-label="COMPASS公式サイト" title="COMPASS公式サイト">
+              <a href={`${COMPASS_ORIGIN}/`} aria-label="COMPASS公式サイト" title="COMPASS公式サイト">
                 <CompassIcon />
               </a>
             </nav>
@@ -413,16 +416,20 @@ export default function FounderPage() {
                       ) : product.title}
                     </h3>
                     <nav aria-label={`${product.label}へのリンク`}>
-                      {product.links.map((link) => (
-                        <a
-                          key={link.href}
-                          href={link.href}
-                          target={link.href.startsWith("https://") ? "_blank" : undefined}
-                          rel={link.href.startsWith("https://") ? "noopener noreferrer" : undefined}
-                        >
-                          <span>{link.label}</span><ArrowIcon />
-                        </a>
-                      ))}
+                      {product.links.map((link) => {
+                        const opensNewTab = link.href.startsWith("https://")
+                          && !link.href.startsWith(COMPASS_ORIGIN);
+                        return (
+                          <a
+                            key={link.href}
+                            href={link.href}
+                            target={opensNewTab ? "_blank" : undefined}
+                            rel={opensNewTab ? "noopener noreferrer" : undefined}
+                          >
+                            <span>{link.label}</span><ArrowIcon />
+                          </a>
+                        );
+                      })}
                     </nav>
                   </div>
                 </article>
@@ -479,7 +486,7 @@ export default function FounderPage() {
             </div>
             <div className={styles.contactCopy}>
               <p>ご興味を持っていただけましたら、下記のフォームからお気軽にご連絡ください。学生・教職員・団体・企業の方を問わず、さまざまな方とのご縁を歓迎しています。</p>
-              <a href="/contact/">Contact form <ArrowIcon /></a>
+              <a href={`${COMPASS_ORIGIN}/contact/`}>Contact form <ArrowIcon /></a>
               <details className={styles.contactEmail}>
                 <summary>メールでのご連絡</summary>
                 <div className={styles.contactEmailPanel}>
@@ -504,7 +511,7 @@ export default function FounderPage() {
           <nav aria-label="Personal links">
             <a href="https://www.instagram.com/n.m.w.314/?__pwa=1#" target="_blank" rel="noopener noreferrer">Instagram <ArrowIcon /></a>
             <a href="https://github.com/genellect" target="_blank" rel="noopener noreferrer">GitHub <ArrowIcon /></a>
-            <a href="/">COMPASS <ArrowIcon /></a>
+            <a href={`${COMPASS_ORIGIN}/`}>COMPASS <ArrowIcon /></a>
             <a href="#top">Back to top ↑</a>
           </nav>
         </div>

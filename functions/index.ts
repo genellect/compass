@@ -12,29 +12,23 @@ type PagesContext = {
 
 export const FOUNDER_DOMAIN = "yuto-matsui.com";
 
-function noindex(response: Response) {
-  const headers = new Headers(response.headers);
-  headers.set("X-Robots-Tag", "noindex, nofollow");
-
-  return new Response(response.body, {
-    status: response.status,
-    statusText: response.statusText,
-    headers
-  });
+function requestHostname(request: Request) {
+  const hostHeader = request.headers.get("host")?.split(":", 1)[0]?.trim().toLowerCase();
+  return hostHeader || new URL(request.url).hostname.toLowerCase();
 }
 
 export async function onRequest(context: PagesContext): Promise<Response> {
   const url = new URL(context.request.url);
 
-  if (url.hostname !== FOUNDER_DOMAIN) {
+  if (requestHostname(context.request) !== FOUNDER_DOMAIN) {
     return context.next();
   }
 
   if (context.request.method !== "GET" && context.request.method !== "HEAD") {
-    return noindex(new Response("Method Not Allowed", {
+    return new Response("Method Not Allowed", {
       status: 405,
       headers: { Allow: "GET, HEAD" }
-    }));
+    });
   }
 
   const founderAssetUrl = new URL(context.request.url);
@@ -44,5 +38,5 @@ export async function onRequest(context: PagesContext): Promise<Response> {
     new Request(founderAssetUrl, context.request)
   );
 
-  return noindex(response);
+  return response;
 }

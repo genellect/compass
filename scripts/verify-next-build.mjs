@@ -112,6 +112,8 @@ const libraryAdmin = await readFile(
   "utf8"
 );
 const deploymentRoutes = JSON.parse(await readFile(path.join(out, "_routes.json"), "utf8"));
+const deployedRobots = await readFile(path.join(out, "robots.txt"), "utf8");
+const deployedSitemap = await readFile(path.join(out, "sitemap.xml"), "utf8");
 const messageSource = await readFile(
   path.join(root, "src", "app", "(official)", "messages", "message.md"),
   "utf8"
@@ -544,7 +546,7 @@ for (const expected of [
   "利用環境の設定、操作方法のご案内、講義当日の運用支援まで個別にサポートいたします。",
   "利用内容に応じて個別にご相談を承ります。",
   'href="/contact/"',
-  'href="/founder/"',
+  'href="https://yuto-matsui.com/"',
   "Web Portfolio",
   "設計判断をたどる",
   "この体験を、見えない設計から支える。",
@@ -587,7 +589,9 @@ if (interactive.includes('<div id="root"></div>')) {
 expectOneH1(official, "Official page");
 expectOneH1(interactive, "Interactive page");
 expectExcludes(interactiveDevelopers, 'href="/founder/"', "Interactive developer page Web Portfolio scope");
-expectIncludes(official, 'href="/founder/"', "Official Founder portfolio link");
+expectIncludes(official, 'href="https://yuto-matsui.com/"', "Official Founder portfolio link");
+expectExcludes(official, 'href="/founder/"', "Official legacy Founder portfolio link");
+expectIncludes(interactive, 'href="https://yuto-matsui.com/"', "Interactive Founder portfolio link");
 expectIncludes(official, "Web Portfolio", "Official Founder Web Portfolio CTA");
 expectIncludes(official, "GitHub Portfolio", "Official Founder GitHub Portfolio CTA");
 
@@ -657,10 +661,21 @@ for (const expected of [
   "https://www.instagram.com/n.m.w.314/?__pwa=1#",
   "さまざまな方とのご縁を歓迎しています。",
   "CONTACT",
-  'href="/contact/"',
-  'rel="canonical" href="https://compass-official.pages.dev/founder/"',
+  'href="https://compass-official.pages.dev/contact/"',
+  'href="https://compass-official.pages.dev/INTRO_Interactive/"',
+  'href="https://compass-official.pages.dev/future-strategy-library/"',
+  'href="https://compass-official.pages.dev/messages/"',
+  'rel="canonical" href="https://yuto-matsui.com"',
+  'property="og:url" content="https://yuto-matsui.com"',
+  '"url":"https://yuto-matsui.com/"',
   parentGaMeasurementId
 ]) expectIncludes(founder, expected, "Founder portfolio");
+
+expectExcludes(
+  founder,
+  'rel="canonical" href="https://compass-official.pages.dev/founder/"',
+  "Founder legacy canonical"
+);
 
 expectOrdered(founder, ['id="expertise"', 'id="fragments"', 'id="story"'], "Founder FRAGMENTS section order");
 
@@ -1425,6 +1440,8 @@ for (const relative of [
 await access(path.join(out, "_next", "static"));
 const expectedFunctionRoutes = [
   "/",
+  "/robots.txt",
+  "/sitemap.xml",
   "/api/community-registration",
   "/api/contact",
   "/library-registration/admin/api/*"
@@ -1437,4 +1454,14 @@ if (
 ) {
   throw new Error("Cloudflare _routes.json does not match the reviewed exact Function boundary.");
 }
+expectIncludes(
+  deployedRobots,
+  "Sitemap: https://compass-official.pages.dev/sitemap.xml",
+  "COMPASS robots sitemap"
+);
+expectExcludes(
+  deployedSitemap,
+  "https://compass-official.pages.dev/founder/",
+  "COMPASS legacy Founder sitemap entry"
+);
 console.log("Verified Next routes, the library gateway, registration and administrator previews, and deployment assets.");

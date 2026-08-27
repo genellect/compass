@@ -1,13 +1,15 @@
 # COMPASS static-site analytics operations
 
 Status: Operational Runbook
-Scope: `compass-official.pages.dev`の公開Pages project
-Last source verification: 2026-08-01 (`origin/main`)
+Scope: `compass-official.pages.dev`と`yuto-matsui.com`を配信する公開Pages project
+Last source verification: 2026-08-28
 External configuration: Operator verification required
 Owner: COMPASS representative / designated operator
 Data classification: Public-safe procedure; no secret values
 
-This runbook covers visitor analytics for `compass-official.pages.dev` only. It does not cover the separate `compass-interactive.pages.dev` product.
+This runbook covers visitor analytics for the shared `compass-official` Pages project, including
+`compass-official.pages.dev` and the Founder canonical host `yuto-matsui.com`. It does not cover the
+separate `compass-interactive.pages.dev` product.
 
 ## Data boundaries
 
@@ -21,10 +23,22 @@ This runbook covers visitor analytics for `compass-official.pages.dev` only. It 
 All deployed routes in the static Pages project use the parent-site measurement ID:
 
 - Parent-site measurement ID: `G-EHKJ8B8N0Y`
-- Included: the home page, Future Strategy Library, Manifesto, Interactive introduction, Community join, Contact, and developer introduction.
+- Included: the home page, Future Strategy Library, Manifesto, Interactive introduction, Community join, Contact, developer introduction, and `https://yuto-matsui.com/`.
 - Excluded: the separate `compass-interactive.pages.dev` product.
 
 The old Future Strategy Library and Interactive-introduction GA4 properties may be retained for historical reporting, but their measurement IDs must not be emitted by the deployed static-site routes after this release. Do not delete the old properties as part of this setup.
+
+### Cross-domain configuration
+
+Use the existing `COMPASS Official Website` property and existing Web data stream. Do not create a
+second Founder property or measurement ID.
+
+1. Open the Web data stream for measurement ID `G-EHKJ8B8N0Y`.
+2. Under tag settings, open cross-domain configuration.
+3. Keep `compass-official.pages.dev` and add `yuto-matsui.com` as exact domain matches.
+4. Verify navigation between the two hosts decorates the destination with `_gl` where applicable and
+   that GA4 records the new hostname in the same property without generating self-referrals.
+5. Do not add `compass-interactive.pages.dev`; it is a separate deployment and analytics boundary.
 
 ## Looker Studio connection
 
@@ -50,7 +64,8 @@ Use the Pages one-click integration rather than committing a site token to sourc
 6. Verify that the rendered HTML contains `https://static.cloudflareinsights.com/beacon.min.js` and a `data-cf-beacon` attribute.
 7. Visit the home page, Future Strategy Library, Manifesto, Interactive introduction, Community join, and Contact once each without submitting any form.
 8. Confirm that the browser sends `POST /cdn-cgi/rum` and that no Content Security Policy error is logged.
-9. Confirm that the Cloudflare dashboard begins reporting the `compass-official.pages.dev` host.
+9. Confirm that the Cloudflare dashboard begins reporting both `compass-official.pages.dev` and
+   `yuto-matsui.com` under the same Pages project.
 
 Community join and Contact use route-specific Content Security Policy headers. They explicitly allow the Cloudflare beacon origin; the build verifier prevents that allowance from being removed accidentally.
 
@@ -58,6 +73,7 @@ Community join and Contact use route-specific Content Security Policy headers. T
 
 - Run `npm.cmd run check`.
 - Confirm the existing GA4 scripts are still present on the official and Interactive introduction layouts.
+- Confirm the Founder root emits the same `G-EHKJ8B8N0Y` tag and no additional measurement ID.
 - Confirm no Cloudflare site token or account credential was committed.
 - Verify the production HTML and `POST /cdn-cgi/rum` after Cloudflare Web Analytics is enabled and a deployment completes.
 - Compare GA4 and Cloudflare totals as separate measurement systems; do not expect exact equality.

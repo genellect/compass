@@ -47,7 +47,7 @@ const mainMobileGroups = [
     label: "PRODUCT",
     items: [
       { href: "#developers", label: "設計・技術", note: "Architecture" },
-      { href: "/founder/", label: "開発者・プロダクト設計者", note: "Profile" }
+      { href: "https://yuto-matsui.com/", label: "開発者・プロダクト設計者", note: "Profile" }
     ]
   }
 ];

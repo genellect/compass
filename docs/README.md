@@ -1,7 +1,7 @@
 # COMPASS Documentation Index
 
 Status: Canonical Index
-Last verified: 2026-08-02
+Last verified: 2026-08-28
 
 ## 文書の優先順位
 
@@ -31,6 +31,7 @@ Productionと`origin/main`が食い違う場合は差分を報告し、どちら
 | Document | Scope |
 |---|---|
 | [`analytics-monitoring-operations.md`](analytics-monitoring-operations.md) | 公式Pages projectのGA4 / Cloudflare Web Analytics |
+| [`founder-domain-operations.md`](founder-domain-operations.md) | Founder独自ドメイン、301、検索エンジン登録、公開後監視 |
 | [`community-registration-operations.md`](community-registration-operations.md) | Community form、Pages Function、Turnstile、GAS |
 | [`contact-form-operations.md`](contact-form-operations.md) | Contact form、email verification、Pages Function、Turnstile、GAS |
 | [`library-registration/phase9-legacy-migration-runbook.md`](library-registration/phase9-legacy-migration-runbook.md) | 旧Form/Sheet/Drive snapshotのprivate移行、承認、rollback、purge |

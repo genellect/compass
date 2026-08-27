@@ -266,7 +266,7 @@ export function FounderPortfolioSection() {
               {background.map(([term, description]) => <div key={term}><dt>{term}</dt><dd>{description}</dd></div>)}
             </dl>
             <div className="v4-founder__portfolio-actions" aria-label="Yuto Matsuiのポートフォリオ">
-              <a className="github-profile-link v4-founder__web-portfolio" href="/founder/">
+              <a className="github-profile-link v4-founder__web-portfolio" href="https://yuto-matsui.com/">
                 <svg viewBox="0 0 20 20" aria-hidden="true" focusable="false">
                   <rect x="2.25" y="3.25" width="15.5" height="13.5" rx="2.25" />
                   <path d="M2.8 7.1h14.4M6.1 5.2h.1M8.15 5.2h.1" />
