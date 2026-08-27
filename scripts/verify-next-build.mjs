@@ -114,6 +114,8 @@ const libraryAdmin = await readFile(
 const deploymentRoutes = JSON.parse(await readFile(path.join(out, "_routes.json"), "utf8"));
 const deployedRobots = await readFile(path.join(out, "robots.txt"), "utf8");
 const deployedSitemap = await readFile(path.join(out, "sitemap.xml"), "utf8");
+const founderRobots = await readFile(path.join(out, "founder-robots.txt"), "utf8");
+const founderSitemap = await readFile(path.join(out, "founder-sitemap.xml"), "utf8");
 const messageSource = await readFile(
   path.join(root, "src", "app", "(official)", "messages", "message.md"),
   "utf8"
@@ -1435,7 +1437,9 @@ for (const relative of [
   "_headers",
   "_redirects",
   "robots.txt",
-  "sitemap.xml"
+  "sitemap.xml",
+  "founder-robots.txt",
+  "founder-sitemap.xml"
 ]) await access(path.join(out, relative));
 
 await access(path.join(out, "_next", "static"));
@@ -1468,4 +1472,7 @@ expectExcludes(
   "https://compass-official.pages.dev/founder/",
   "COMPASS legacy Founder sitemap entry"
 );
+expectIncludes(founderRobots, "Sitemap: https://yuto-matsui.com/sitemap.xml", "Founder robots sitemap");
+expectIncludes(founderSitemap, "<loc>https://yuto-matsui.com/</loc>", "Founder sitemap root");
+expectExcludes(founderSitemap, "compass-official.pages.dev", "Founder sitemap boundary");
 console.log("Verified Next routes, the library gateway, registration and administrator previews, and deployment assets.");
