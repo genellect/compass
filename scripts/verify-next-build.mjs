@@ -659,7 +659,7 @@ for (const expected of [
   "お問い合わせ",
   "メールでのご連絡",
   "Researcher &amp; Engineer",
-  "my270yuto0413@gmail.com",
+  "contact@yuto-matsui.com",
   "matsui.yuto@st.kitasato-u.ac.jp",
   "https://www.instagram.com/n.m.w.314/?__pwa=1#",
   "さまざまな方とのご縁を歓迎しています。",
