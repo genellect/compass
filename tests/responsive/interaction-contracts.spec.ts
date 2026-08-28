@@ -205,9 +205,9 @@ test("Founder EXPERIENCE leads English Proficiency and owns the Desktop Credenti
   expect(report.heights.experience).toBeLessThan(report.heights.offHours);
   expect(report.cards).toHaveLength(3);
   expect(report.cards.map((card) => card.focusLines)).toEqual([
-    ["分子生物学・細胞生物学", "神経科学"],
+    ["分子生物学", "細胞生物学", "神経科学"],
     ["フルスタックWeb開発", "クラウドエンジニアリング", "Agentic Workflows"],
-    ["英語教育・生命科学教育", "AIリテラシー"],
+    ["英語教育", "生命科学教育", "AIリテラシー"],
   ]);
   for (const card of report.cards) {
     expect(card.areaSize).toBeGreaterThan(card.focusSize);

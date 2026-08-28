@@ -116,7 +116,7 @@ const experience = [
   {
     area: "Life Science",
     years: "3+ years",
-    focus: ["分子生物学・細胞生物学", "神経科学"],
+    focus: ["分子生物学", "細胞生物学", "神経科学"],
     image: "/images/founder-portfolio/source/experience-life-science.webp",
     alt: "分子生物学・細胞生物学の実験に用いる機器と器具が並ぶ研究室",
     accent: "bio"
@@ -132,7 +132,7 @@ const experience = [
   {
     area: "Education",
     years: "4+ years",
-    focus: ["英語教育・生命科学教育", "AIリテラシー"],
+    focus: ["英語教育", "生命科学教育", "AIリテラシー"],
     image: "/images/founder-portfolio/source/experience-education.webp",
     alt: "スクリーンと階段状の座席がある大学の講義室",
     accent: "education"
