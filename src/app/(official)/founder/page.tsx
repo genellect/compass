@@ -112,6 +112,33 @@ const credentials = [
   { kind: "ielts", mark: "IELTS", name: "IELTS Academic", score: "7.5" }
 ] as const;
 
+const experience = [
+  {
+    area: "Life Science",
+    years: "3+ years",
+    focus: "分子生物学・細胞生物学・神経科学",
+    image: "/images/founder-portfolio/source/experience-life-science.webp",
+    alt: "分子生物学・細胞生物学の実験に用いる機器と器具が並ぶ研究室",
+    accent: "bio"
+  },
+  {
+    area: "Development",
+    years: "4+ years",
+    focus: "フルスタックWeb開発・クラウドエンジニアリング・Agentic Workflows",
+    image: "/images/founder-portfolio/source/experience-development.webp",
+    alt: "ソースコードを表示したモニター",
+    accent: "ai"
+  },
+  {
+    area: "Education",
+    years: "4+ years",
+    focus: "英語教育・生命科学教育・AIリテラシー",
+    image: "/images/founder-portfolio/source/experience-education.webp",
+    alt: "スクリーンと階段状の座席がある大学の講義室",
+    accent: "education"
+  }
+] as const;
+
 const offHours = [
   {
     id: "01",
@@ -241,7 +268,7 @@ export default function FounderPage() {
           <a href="#expertise">Expertise</a>
           <a href="#story">Story</a>
           <a href="#products">Products</a>
-          <a href="#credentials">Credentials</a>
+          <a href="#experience">Credentials</a>
           <a href="#off-hours">Off Hours</a>
           <a href="#contact-cta">Contact</a>
         </nav>
@@ -446,6 +473,39 @@ export default function FounderPage() {
           </div>
         </section>
 
+        <section id="experience" className={styles.experience} aria-labelledby="experience-title">
+          <div className={styles.sectionShell}>
+            <header className={styles.compactHeading} data-reveal>
+              <p className={styles.sectionKicker}>Area / Experience / Focus</p>
+              <div className={styles.experienceHeading}>
+                <h2 id="experience-title">EXPERIENCE</h2>
+                <p>2026年8月現在</p>
+              </div>
+            </header>
+            <div className={styles.experienceGrid}>
+              {experience.map((item) => (
+                <article key={item.area} className={styles.experienceCard} data-accent={item.accent} data-reveal>
+                  <div className={styles.experienceVisual}>
+                    <Image src={item.image} alt={item.alt} fill sizes="(min-width: 901px) 96px, 82px" />
+                  </div>
+                  <div className={styles.experienceArea}>
+                    <span className={styles.experienceLabel}>Area</span>
+                    <h3>{item.area}</h3>
+                  </div>
+                  <div className={styles.experienceTenure}>
+                    <span className={styles.experienceLabel}>Experience</span>
+                    <strong>{item.years}</strong>
+                  </div>
+                  <div className={styles.experienceFocus}>
+                    <span className={styles.experienceLabel}>Focus</span>
+                    <p>{item.focus}</p>
+                  </div>
+                </article>
+              ))}
+            </div>
+          </div>
+        </section>
+
         <section id="credentials" className={styles.credentials} aria-labelledby="credentials-title">
           <div className={styles.sectionShell}>
             <header className={styles.compactHeading} data-reveal>
@@ -529,6 +589,9 @@ export default function FounderPage() {
             Life science: <a href="https://unsplash.com/photos/white-and-black-microscope-5HbxyB0_DBg" target="_blank" rel="noopener noreferrer">Jaron Nix / Unsplash</a> ·
             Software development: <a href="https://unsplash.com/photos/code-appears-on-a-computer-screen-XG5q_aosoPo" target="_blank" rel="noopener noreferrer">Rob Wingate / Unsplash</a> ·
             Education portrait: Yuto Matsui / personal archive ·
+            Experience — Life science: Yuto Matsui / personal archive ·
+            Experience — Development: <a href="https://www.pexels.com/photo/monitor-displaying-lines-of-code-6424583/" target="_blank" rel="noopener noreferrer">Nemuel Sereti / Pexels</a> ·
+            Experience — Education: <a href="https://unsplash.com/photos/empty-lecture-hall-with-tiered-seating-and-projector-screen-L5GTAFIeKNA" target="_blank" rel="noopener noreferrer">Fabio Sasso / Unsplash</a> ·
             Manifesto visual: COMPASS visual archive ·
             Drive: <a href="https://unsplash.com/photos/a-car-drives-along-a-scenic-mountain-road-e6XJTEz5SfA" target="_blank" rel="noopener noreferrer">Zixplore / Unsplash</a> ·
             Shogi: <a href="https://commons.wikimedia.org/wiki/File:Hulic_Shogi-kaikan_Sendagaya_Building_entrance_2024-09-12.jpg" target="_blank" rel="noopener noreferrer">Asanagi / Wikimedia Commons (CC0)</a> ·

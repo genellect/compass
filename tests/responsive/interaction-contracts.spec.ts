@@ -151,6 +151,64 @@ test("Founder consumes the GA linker parameter without changing other URL state 
   expect(runtimeErrors).toEqual([]);
 });
 
+test("Founder EXPERIENCE leads English Proficiency and owns the Desktop Credentials destination", async ({ page }) => {
+  const runtimeErrors = await openRoute(page, "/founder/", {
+    name: "founder-experience-desktop",
+    width: 1440,
+    height: 900,
+  });
+  const credentialsLink = page
+    .getByRole("navigation", { name: "Portfolio navigation" })
+    .getByRole("link", { name: "Credentials", exact: true });
+
+  await expect(credentialsLink).toHaveAttribute("href", "#experience");
+  await credentialsLink.click();
+  await expect(page).toHaveURL(/#experience$/);
+
+  const report = await page.evaluate(() => {
+    const experience = document.querySelector<HTMLElement>("#experience")!;
+    const proficiency = document.querySelector<HTMLElement>("#credentials")!;
+    const offHours = document.querySelector<HTMLElement>("#off-hours")!;
+    const cards = [...experience.querySelectorAll<HTMLElement>("article")];
+    return {
+      order: [experience, proficiency, offHours].map((element) => element.offsetTop),
+      heights: {
+        experience: experience.offsetHeight,
+        proficiency: proficiency.offsetHeight,
+        offHours: offHours.offsetHeight,
+      },
+      cards: cards.map((card) => {
+        const area = card.querySelector<HTMLElement>("h3")!;
+        const tenure = card.querySelector<HTMLElement>("strong")!;
+        const focus = card.querySelector<HTMLElement>("[class*='experienceFocus'] p")!;
+        const image = card.querySelector<HTMLElement>("[class*='experienceVisual']")!;
+        return {
+          areaSize: Number.parseFloat(getComputedStyle(area).fontSize),
+          tenureSize: Number.parseFloat(getComputedStyle(tenure).fontSize),
+          focusSize: Number.parseFloat(getComputedStyle(focus).fontSize),
+          focusWeight: Number.parseInt(getComputedStyle(focus).fontWeight, 10),
+          imageWidth: image.getBoundingClientRect().width,
+        };
+      }),
+      overflow: document.documentElement.scrollWidth - window.innerWidth,
+    };
+  });
+
+  expect(report.order[0]).toBeLessThan(report.order[1]);
+  expect(report.order[1]).toBeLessThan(report.order[2]);
+  expect(report.heights.experience).toBeGreaterThan(report.heights.proficiency);
+  expect(report.heights.experience).toBeLessThan(report.heights.offHours);
+  expect(report.cards).toHaveLength(3);
+  for (const card of report.cards) {
+    expect(card.focusSize).toBeGreaterThan(card.areaSize);
+    expect(card.focusSize).toBeGreaterThan(card.tenureSize);
+    expect(card.focusWeight).toBeGreaterThanOrEqual(700);
+    expect(card.imageWidth).toBeLessThanOrEqual(96);
+  }
+  expect(report.overflow).toBeLessThanOrEqual(1);
+  expect(runtimeErrors).toEqual([]);
+});
+
 for (const viewport of [
   { name: "community-mobile", width: 390, height: 844 },
   { name: "community-desktop", width: 1363, height: 936 },
