@@ -595,6 +595,8 @@ expectExcludes(interactiveDevelopers, 'href="/founder/"', "Interactive developer
 expectIncludes(official, 'href="https://yuto-matsui.com/"', "Official Founder portfolio link");
 expectExcludes(official, 'href="/founder/"', "Official legacy Founder portfolio link");
 expectExcludes(official, 'href="#founder"', "Official legacy Founder section navigation");
+expectIncludes(founder, 'href="#experience"', "Founder Desktop Credentials navigation");
+expectExcludes(founder, 'href="#credentials"', "Founder legacy Credentials navigation");
 expectIncludes(interactive, 'href="https://yuto-matsui.com/"', "Interactive Founder portfolio link");
 expectIncludes(official, "Web Portfolio", "Official Founder Web Portfolio CTA");
 expectIncludes(official, "GitHub Portfolio", "Official Founder GitHub Portfolio CTA");
@@ -607,6 +609,7 @@ for (const expected of [
   'id="story"',
   'id="products"',
   'id="credentials"',
+  'id="experience"',
   'id="off-hours"',
   'id="contact-cta"',
   "Yuto Matsui",
@@ -648,6 +651,25 @@ for (const expected of [
   "未来戦略ライブラリ",
   "COMPASS Manifesto",
   "English Proficiency",
+  "Area / Experience / Focus",
+  "EXPERIENCE",
+  "2026年8月現在",
+  "Life Science",
+  "3+ years",
+  "Development",
+  "4+ years",
+  "分子生物学",
+  "細胞生物学",
+  "神経科学",
+  "フルスタックWeb開発",
+  "クラウドエンジニアリング",
+  "Agentic Workflows",
+  "英語教育",
+  "生命科学教育",
+  "AIリテラシー",
+  "/images/founder-portfolio/source/experience-life-science.webp",
+  "/images/founder-portfolio/source/experience-development.webp",
+  "/images/founder-portfolio/source/experience-education.webp",
   "TOEIC L&amp;R",
   "965",
   "IELTS Academic",
@@ -684,6 +706,7 @@ expectExcludes(
 );
 
 expectOrdered(founder, ['id="expertise"', 'id="fragments"', 'id="story"'], "Founder FRAGMENTS section order");
+expectOrdered(founder, ['id="experience"', 'id="credentials"', 'id="off-hours"'], "Founder EXPERIENCE section order");
 
 const founderFragmentPhotoCount = (founder.match(/data-slot=/g) ?? []).length;
 if (founderFragmentPhotoCount !== 19) {

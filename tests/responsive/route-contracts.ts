@@ -119,7 +119,7 @@ export const routeContracts: RouteContract[] = [
     name: "founder",
     path: "/founder/",
     h1Lines: { min: 1, max: 2 },
-    requiredSelectors: ["#top", "#expertise", "#fragments", "#story", "#products", "#credentials", "#contact-cta"],
+    requiredSelectors: ["#top", "#expertise", "#fragments", "#story", "#products", "#credentials", "#experience", "#contact-cta"],
     criticalSelectors: [
       "h1#founder-title",
       '[aria-label="専門領域"]',
@@ -132,6 +132,8 @@ export const routeContracts: RouteContract[] = [
       "#products h2",
       "#products article",
       "#credentials h2",
+      "#experience h2",
+      "#experience article",
       "#contact-cta h2",
       "#contact-cta a",
     ],

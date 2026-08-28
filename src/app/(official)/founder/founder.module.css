@@ -550,7 +550,8 @@
 
 .expertise,
 .products,
-.credentials { padding: clamp(84px, 8vw, 126px) 0; }
+.credentials,
+.experience { padding: clamp(84px, 8vw, 126px) 0; }
 
 .expertise {
   position: relative;
@@ -2040,6 +2041,127 @@
 .credentialCard p { margin: 0; color: #557084; font-size: 0.66rem; font-weight: 720; letter-spacing: 0.04em; }
 .credentialCard strong { display: block; margin-top: 5px; color: #142b3c; font-size: 1.35rem; font-weight: 700; letter-spacing: -0.035em; }
 
+.experience {
+  position: relative;
+  padding: clamp(96px, 9vw, 142px) 0;
+  border-top: 1px solid rgba(54, 113, 137, 0.09);
+  background:
+    radial-gradient(circle at 10% 22%, rgba(75, 190, 184, 0.07), transparent 28%),
+    linear-gradient(112deg, #fbfdfc, #f6f9fd 72%, #fbfaf6);
+}
+
+.experienceGrid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.experienceHeading { text-align: right; }
+
+.experienceHeading p {
+  margin: 7px 0 0;
+  color: #71899a;
+  font-size: 0.58rem;
+  font-weight: 650;
+  letter-spacing: 0.06em;
+}
+
+.experienceCard {
+  display: grid;
+  min-width: 0;
+  grid-template-rows: auto 1fr;
+  overflow: hidden;
+  border: 1px solid rgba(36, 80, 117, 0.13);
+  border-radius: 4px 18px 4px 4px;
+  background: rgba(255, 255, 255, 0.86);
+  box-shadow: 0 12px 34px rgba(40, 80, 114, 0.055);
+}
+
+.experienceCard[data-accent="bio"] { --experience-accent: #279c8c; --experience-tint: rgba(39, 156, 140, 0.075); }
+.experienceCard[data-accent="ai"] { --experience-accent: #4a68c8; --experience-tint: rgba(74, 104, 200, 0.075); }
+.experienceCard[data-accent="education"] { --experience-accent: #bc7751; --experience-tint: rgba(188, 119, 81, 0.075); }
+
+.experienceVisual {
+  position: relative;
+  width: 100%;
+  height: clamp(110px, 8.5vw, 126px);
+  overflow: hidden;
+  border-bottom: 1px solid rgba(58, 111, 164, 0.13);
+  background: #dfe8ec;
+}
+
+.experienceVisual img { object-fit: cover; }
+.experienceCard[data-accent="bio"] .experienceVisual img { object-position: 50% 54%; }
+.experienceCard[data-accent="ai"] .experienceVisual img { object-position: 57% 50%; }
+.experienceCard[data-accent="education"] .experienceVisual img { object-position: 50% 56%; }
+
+.experienceBody {
+  display: grid;
+  grid-template-rows: auto 1fr;
+  gap: 17px;
+  padding: 21px 21px 23px;
+}
+
+.experienceMeta {
+  display: flex;
+  min-width: 0;
+  align-items: end;
+  justify-content: space-between;
+  gap: 18px;
+}
+
+.experienceArea { min-width: 0; }
+.experienceTenure { min-width: max-content; text-align: right; }
+.experienceFocus {
+  min-width: 0;
+  padding: 13px 15px 14px 17px;
+  border-left: 3px solid var(--experience-accent);
+  border-radius: 0 10px 10px 0;
+  background: var(--experience-tint);
+}
+
+.experienceLabel {
+  display: block;
+  margin-bottom: 3px;
+  color: #71899a;
+  font-size: 0.52rem;
+  font-weight: 780;
+  letter-spacing: 0.11em;
+  line-height: 1.2;
+  text-transform: uppercase;
+}
+
+.experienceArea h3,
+.experienceFocus p { margin: 0; }
+
+.experienceArea h3 {
+  overflow-wrap: anywhere;
+  color: #142b3c;
+  font-size: 1.1rem;
+  font-weight: 700;
+  letter-spacing: -0.035em;
+  line-height: 1.2;
+}
+
+.experienceTenure strong {
+  display: block;
+  color: #365365;
+  font-size: 0.9rem;
+  font-weight: 700;
+  letter-spacing: -0.035em;
+  line-height: 1.2;
+}
+
+.experienceFocus p {
+  color: #142b3c;
+  font-size: 0.82rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  line-height: 1.55;
+}
+
+.experienceFocus p span { display: block; }
+
 .offHours {
   padding: clamp(112px, 10vw, 164px) 0 clamp(82px, 7vw, 112px);
   background:
@@ -2402,6 +2524,7 @@
   .sectionShell,
   .storyShell { width: min(100% - 34px, 1240px); }
   .expertise, .products, .credentials { padding: 76px 0; }
+  .experience { padding: 88px 0; }
   .offHours { padding: 90px 0 72px; }
   .contact { padding: 48px 0 64px; }
   .compactHeading { margin-bottom: 28px; }
@@ -2440,6 +2563,9 @@
   .interactiveHeroStage :global(.founder-interactive-product-preview) { width: 112%; padding: 6px; transform: scale(0.8); }
 
   .credentialGrid { grid-template-columns: 1fr; }
+  .experienceGrid { grid-template-columns: 1fr; }
+  .experienceVisual { height: min(32vw, 138px); }
+  .experienceBody { gap: 15px; padding: 19px 19px 21px; }
   .offHoursGrid { grid-template-columns: 1fr; gap: 48px; }
   .offHoursHeading { margin-bottom: 34px; }
   .offHoursVisual { aspect-ratio: 16 / 11; }
