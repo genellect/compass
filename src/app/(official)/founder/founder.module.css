@@ -2053,7 +2053,7 @@
 .experienceGrid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 14px;
+  gap: 18px;
 }
 
 .experienceHeading { text-align: right; }
@@ -2069,14 +2069,7 @@
 .experienceCard {
   display: grid;
   min-width: 0;
-  grid-template-columns: 82px minmax(0, 1fr);
-  grid-template-areas:
-    "visual area"
-    "visual tenure"
-    "focus focus";
-  gap: 8px 16px;
-  align-items: center;
-  padding: 22px;
+  grid-template-rows: auto 1fr;
   overflow: hidden;
   border: 1px solid rgba(36, 80, 117, 0.13);
   border-radius: 4px 18px 4px 4px;
@@ -2084,14 +2077,16 @@
   box-shadow: 0 12px 34px rgba(40, 80, 114, 0.055);
 }
 
+.experienceCard[data-accent="bio"] { --experience-accent: #279c8c; --experience-tint: rgba(39, 156, 140, 0.075); }
+.experienceCard[data-accent="ai"] { --experience-accent: #4a68c8; --experience-tint: rgba(74, 104, 200, 0.075); }
+.experienceCard[data-accent="education"] { --experience-accent: #bc7751; --experience-tint: rgba(188, 119, 81, 0.075); }
+
 .experienceVisual {
   position: relative;
-  grid-area: visual;
-  width: 82px;
-  height: 72px;
+  width: 100%;
+  height: clamp(110px, 8.5vw, 126px);
   overflow: hidden;
-  border: 1px solid rgba(58, 111, 164, 0.16);
-  border-radius: 15px 4px 15px 4px;
+  border-bottom: 1px solid rgba(58, 111, 164, 0.13);
   background: #dfe8ec;
 }
 
@@ -2100,14 +2095,29 @@
 .experienceCard[data-accent="ai"] .experienceVisual img { object-position: 57% 50%; }
 .experienceCard[data-accent="education"] .experienceVisual img { object-position: 50% 56%; }
 
-.experienceArea { grid-area: area; min-width: 0; }
-.experienceTenure { grid-area: tenure; min-width: 0; }
-.experienceFocus {
-  grid-area: focus;
+.experienceBody {
+  display: grid;
+  grid-template-rows: auto 1fr;
+  gap: 17px;
+  padding: 21px 21px 23px;
+}
+
+.experienceMeta {
+  display: flex;
   min-width: 0;
-  margin-top: 5px;
-  padding-top: 11px;
-  border-top: 1px solid rgba(41, 85, 120, 0.1);
+  align-items: end;
+  justify-content: space-between;
+  gap: 18px;
+}
+
+.experienceArea { min-width: 0; }
+.experienceTenure { min-width: max-content; text-align: right; }
+.experienceFocus {
+  min-width: 0;
+  padding: 13px 15px 14px 17px;
+  border-left: 3px solid var(--experience-accent);
+  border-radius: 0 10px 10px 0;
+  background: var(--experience-tint);
 }
 
 .experienceLabel {
@@ -2126,29 +2136,31 @@
 
 .experienceArea h3 {
   overflow-wrap: anywhere;
-  color: #587184;
-  font-size: 0.72rem;
-  font-weight: 650;
-  letter-spacing: -0.02em;
-  line-height: 1.3;
+  color: #142b3c;
+  font-size: 1.1rem;
+  font-weight: 700;
+  letter-spacing: -0.035em;
+  line-height: 1.2;
 }
 
 .experienceTenure strong {
   display: block;
   color: #365365;
-  font-size: 0.88rem;
-  font-weight: 650;
+  font-size: 0.9rem;
+  font-weight: 700;
   letter-spacing: -0.035em;
   line-height: 1.2;
 }
 
 .experienceFocus p {
   color: #142b3c;
-  font-size: 1rem;
-  font-weight: 700;
-  letter-spacing: -0.018em;
-  line-height: 1.68;
+  font-size: 0.82rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  line-height: 1.55;
 }
+
+.experienceFocus p span { display: block; }
 
 .offHours {
   padding: clamp(112px, 10vw, 164px) 0 clamp(82px, 7vw, 112px);
@@ -2552,12 +2564,8 @@
 
   .credentialGrid { grid-template-columns: 1fr; }
   .experienceGrid { grid-template-columns: 1fr; }
-  .experienceCard {
-    grid-template-columns: 82px minmax(0, 0.86fr) minmax(0, 0.72fr);
-    grid-template-areas: "visual area tenure" "visual focus focus";
-    gap: 9px 16px;
-  }
-  .experienceFocus { margin-top: 0; }
+  .experienceVisual { height: min(32vw, 138px); }
+  .experienceBody { gap: 15px; padding: 19px 19px 21px; }
   .offHoursGrid { grid-template-columns: 1fr; gap: 48px; }
   .offHoursHeading { margin-bottom: 34px; }
   .offHoursVisual { aspect-ratio: 16 / 11; }

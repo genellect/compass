@@ -182,12 +182,17 @@ test("Founder EXPERIENCE leads English Proficiency and owns the Desktop Credenti
         const tenure = card.querySelector<HTMLElement>("strong")!;
         const focus = card.querySelector<HTMLElement>("[class*='experienceFocus'] p")!;
         const image = card.querySelector<HTMLElement>("[class*='experienceVisual']")!;
+        const focusBox = card.querySelector<HTMLElement>("[class*='experienceFocus']")!;
         return {
           areaSize: Number.parseFloat(getComputedStyle(area).fontSize),
           tenureSize: Number.parseFloat(getComputedStyle(tenure).fontSize),
           focusSize: Number.parseFloat(getComputedStyle(focus).fontSize),
           focusWeight: Number.parseInt(getComputedStyle(focus).fontWeight, 10),
+          focusLines: [...focus.querySelectorAll("span")].map((line) => line.textContent),
+          focusBackground: getComputedStyle(focusBox).backgroundColor,
+          focusBorderWidth: Number.parseFloat(getComputedStyle(focusBox).borderLeftWidth),
           imageWidth: image.getBoundingClientRect().width,
+          cardWidth: card.getBoundingClientRect().width,
         };
       }),
       overflow: document.documentElement.scrollWidth - window.innerWidth,
@@ -199,11 +204,18 @@ test("Founder EXPERIENCE leads English Proficiency and owns the Desktop Credenti
   expect(report.heights.experience).toBeGreaterThan(report.heights.proficiency);
   expect(report.heights.experience).toBeLessThan(report.heights.offHours);
   expect(report.cards).toHaveLength(3);
+  expect(report.cards.map((card) => card.focusLines)).toEqual([
+    ["分子生物学・細胞生物学", "神経科学"],
+    ["フルスタックWeb開発", "クラウドエンジニアリング", "Agentic Workflows"],
+    ["英語教育・生命科学教育", "AIリテラシー"],
+  ]);
   for (const card of report.cards) {
-    expect(card.focusSize).toBeGreaterThan(card.areaSize);
-    expect(card.focusSize).toBeGreaterThan(card.tenureSize);
-    expect(card.focusWeight).toBeGreaterThanOrEqual(700);
-    expect(card.imageWidth).toBeLessThanOrEqual(96);
+    expect(card.areaSize).toBeGreaterThan(card.focusSize);
+    expect(card.areaSize).toBeGreaterThan(card.tenureSize);
+    expect(card.focusWeight).toBe(600);
+    expect(card.focusBackground).not.toBe("rgba(0, 0, 0, 0)");
+    expect(card.focusBorderWidth).toBeGreaterThanOrEqual(3);
+    expect(card.imageWidth / card.cardWidth).toBeGreaterThan(0.95);
   }
   expect(report.overflow).toBeLessThanOrEqual(1);
   expect(runtimeErrors).toEqual([]);

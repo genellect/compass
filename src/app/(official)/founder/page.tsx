@@ -116,7 +116,7 @@ const experience = [
   {
     area: "Life Science",
     years: "3+ years",
-    focus: "分子生物学・細胞生物学・神経科学",
+    focus: ["分子生物学・細胞生物学", "神経科学"],
     image: "/images/founder-portfolio/source/experience-life-science.webp",
     alt: "分子生物学・細胞生物学の実験に用いる機器と器具が並ぶ研究室",
     accent: "bio"
@@ -124,7 +124,7 @@ const experience = [
   {
     area: "Development",
     years: "4+ years",
-    focus: "フルスタックWeb開発・クラウドエンジニアリング・Agentic Workflows",
+    focus: ["フルスタックWeb開発", "クラウドエンジニアリング", "Agentic Workflows"],
     image: "/images/founder-portfolio/source/experience-development.webp",
     alt: "ソースコードを表示したモニター",
     accent: "ai"
@@ -132,7 +132,7 @@ const experience = [
   {
     area: "Education",
     years: "4+ years",
-    focus: "英語教育・生命科学教育・AIリテラシー",
+    focus: ["英語教育・生命科学教育", "AIリテラシー"],
     image: "/images/founder-portfolio/source/experience-education.webp",
     alt: "スクリーンと階段状の座席がある大学の講義室",
     accent: "education"
@@ -486,19 +486,23 @@ export default function FounderPage() {
               {experience.map((item) => (
                 <article key={item.area} className={styles.experienceCard} data-accent={item.accent} data-reveal>
                   <div className={styles.experienceVisual}>
-                    <Image src={item.image} alt={item.alt} fill sizes="(min-width: 901px) 96px, 82px" />
+                    <Image src={item.image} alt={item.alt} fill sizes="(min-width: 901px) 31vw, (min-width: 641px) 31vw, 100vw" />
                   </div>
-                  <div className={styles.experienceArea}>
-                    <span className={styles.experienceLabel}>Area</span>
-                    <h3>{item.area}</h3>
-                  </div>
-                  <div className={styles.experienceTenure}>
-                    <span className={styles.experienceLabel}>Experience</span>
-                    <strong>{item.years}</strong>
-                  </div>
-                  <div className={styles.experienceFocus}>
-                    <span className={styles.experienceLabel}>Focus</span>
-                    <p>{item.focus}</p>
+                  <div className={styles.experienceBody}>
+                    <div className={styles.experienceMeta}>
+                      <div className={styles.experienceArea}>
+                        <span className={styles.experienceLabel}>Area</span>
+                        <h3>{item.area}</h3>
+                      </div>
+                      <div className={styles.experienceTenure}>
+                        <span className={styles.experienceLabel}>Experience</span>
+                        <strong>{item.years}</strong>
+                      </div>
+                    </div>
+                    <div className={styles.experienceFocus}>
+                      <span className={styles.experienceLabel}>Focus</span>
+                      <p>{item.focus.map((line) => <span key={line}>{line}</span>)}</p>
+                    </div>
                   </div>
                 </article>
               ))}
