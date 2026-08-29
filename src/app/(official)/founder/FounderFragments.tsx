@@ -102,7 +102,7 @@ const fragmentSpreads: readonly (readonly FragmentPhoto[])[] = [
       srcSet: `${assetRoot}/yuto-698-640.webp 640w, ${assetRoot}/yuto-698-1566.webp 1566w`,
       width: 1566,
       height: 1044,
-      alt: "松の木のそばに立つYuto Matsui",
+      alt: "花の咲く木立で木にもたれるYuto Matsui",
       role: "anchor",
       crop: "anchor",
       tone: "lift",
@@ -125,7 +125,7 @@ const fragmentSpreads: readonly (readonly FragmentPhoto[])[] = [
       srcSet: `${assetRoot}/yuto-703-640.webp 640w, ${assetRoot}/yuto-703-1044.webp 1044w`,
       width: 1044,
       height: 1566,
-      alt: "柔らかな光のテラスに座るYuto Matsui",
+      alt: "雨の中、傘を差して車を見つめるYuto Matsui",
       role: "atmosphere",
       tone: "warm",
       sizes: "(max-width: 900px) calc(100vw - 34px), 17vw"
@@ -170,7 +170,7 @@ const fragmentSpreads: readonly (readonly FragmentPhoto[])[] = [
       srcSet: `${assetRoot}/yuto-707-640.webp 640w, ${assetRoot}/yuto-707-1477.webp 1477w`,
       width: 1477,
       height: 1108,
-      alt: "夜の横浜駅周辺に広がる都市建築",
+      alt: "霧に包まれたリフト乗り場に立つYuto Matsui",
       role: "atmosphere",
       sizes: "(max-width: 900px) 46vw, 42vw"
     },
@@ -204,7 +204,7 @@ const fragmentSpreads: readonly (readonly FragmentPhoto[])[] = [
       srcSet: `${assetRoot}/yuto-700-640.webp 640w, ${assetRoot}/yuto-700-1477.webp 1477w`,
       width: 1477,
       height: 1108,
-      alt: "青空の下に連なる山々と富士山",
+      alt: "松の木のそばに立つYuto Matsui",
       role: "atmosphere",
       sizes: "(max-width: 900px) calc(100vw - 34px), 58vw"
     },
