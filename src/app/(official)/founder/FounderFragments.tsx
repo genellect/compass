@@ -98,8 +98,8 @@ const fragmentSpreads: readonly (readonly FragmentPhoto[])[] = [
     },
     {
       key: "yuto-698",
-      src: `${assetRoot}/yuto-698-1566.webp`,
-      srcSet: `${assetRoot}/yuto-698-640.webp 640w, ${assetRoot}/yuto-698-1566.webp 1566w`,
+      src: `${assetRoot}/yuto-2360-anchor-1566.webp`,
+      srcSet: `${assetRoot}/yuto-2360-anchor-640.webp 640w, ${assetRoot}/yuto-2360-anchor-1566.webp 1566w`,
       width: 1566,
       height: 1044,
       alt: "花の咲く木立で木にもたれるYuto Matsui",
@@ -121,8 +121,8 @@ const fragmentSpreads: readonly (readonly FragmentPhoto[])[] = [
     },
     {
       key: "yuto-703",
-      src: `${assetRoot}/yuto-703-1044.webp`,
-      srcSet: `${assetRoot}/yuto-703-640.webp 640w, ${assetRoot}/yuto-703-1044.webp 1044w`,
+      src: `${assetRoot}/yuto-2339-rain-1044.webp`,
+      srcSet: `${assetRoot}/yuto-2339-rain-640.webp 640w, ${assetRoot}/yuto-2339-rain-1044.webp 1044w`,
       width: 1044,
       height: 1566,
       alt: "雨の中、傘を差して車を見つめるYuto Matsui",
@@ -166,8 +166,8 @@ const fragmentSpreads: readonly (readonly FragmentPhoto[])[] = [
     },
     {
       key: "yuto-707",
-      src: `${assetRoot}/yuto-707-1477.webp`,
-      srcSet: `${assetRoot}/yuto-707-640.webp 640w, ${assetRoot}/yuto-707-1477.webp 1477w`,
+      src: `${assetRoot}/yuto-mist-lift-1477.webp`,
+      srcSet: `${assetRoot}/yuto-mist-lift-640.webp 640w, ${assetRoot}/yuto-mist-lift-1477.webp 1477w`,
       width: 1477,
       height: 1108,
       alt: "霧に包まれたリフト乗り場に立つYuto Matsui",
@@ -200,8 +200,8 @@ const fragmentSpreads: readonly (readonly FragmentPhoto[])[] = [
     },
     {
       key: "yuto-700",
-      src: `${assetRoot}/yuto-700-1477.webp`,
-      srcSet: `${assetRoot}/yuto-700-640.webp 640w, ${assetRoot}/yuto-700-1477.webp 1477w`,
+      src: `${assetRoot}/yuto-698-atmosphere-1477.webp`,
+      srcSet: `${assetRoot}/yuto-698-atmosphere-640.webp 640w, ${assetRoot}/yuto-698-atmosphere-1477.webp 1477w`,
       width: 1477,
       height: 1108,
       alt: "松の木のそばに立つYuto Matsui",
