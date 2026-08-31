@@ -272,6 +272,16 @@ async function createProductionFixture(root) {
     "utf8"
   );
   await writeFile(
+    join(root, "functions", "_middleware.ts"),
+    "export async function onRequest(context){return context.next()}",
+    "utf8"
+  );
+  await writeFile(
+    join(root, "functions", "en", "index.ts"),
+    "export { onRequest } from './[[path]]'",
+    "utf8"
+  );
+  await writeFile(
     join(root, "functions", "robots.txt.ts"),
     "export async function onRequest({request,next}){return new URL(request.url).hostname==='yuto-matsui.com'?new Response('Sitemap: https://yuto-matsui.com/sitemap.xml'):next()}",
     "utf8"
@@ -400,7 +410,9 @@ test("Cloudflare Git production finalization retains the protected administrator
     await access(join(root, "functions", "index.ts"));
     await access(join(root, "functions", "robots.txt.ts"));
     await access(join(root, "functions", "sitemap.xml.ts"));
+    await access(join(root, "functions", "_middleware.ts"));
     await access(join(root, "functions", "en", "[[path]].ts"));
+    await access(join(root, "functions", "en", "index.ts"));
     await access(join(
       root,
       "functions",
