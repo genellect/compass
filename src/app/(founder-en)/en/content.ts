@@ -188,6 +188,3 @@ export const fragmentPhotos: readonly FragmentPhoto[] = [
   { key: "yuto-704", src: `${fragmentRoot}/yuto-704-1372.webp`, width: 1372, height: 1192, alt: "A quiet profile of Yuto Matsui in front of pine branches" }
 ];
 
-const previewKeys = new Set(["yuto-696", "dna-automation", "yuto-2360", "code-data", "yuto-704"]);
-export const fragmentPreview = fragmentPhotos.filter((photo) => previewKeys.has(photo.key));
-

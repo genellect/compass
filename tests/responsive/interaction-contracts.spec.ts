@@ -490,7 +490,7 @@ test("Founder language controls connect the Japanese and English portfolio route
   expect(runtimeErrors).toEqual([]);
 });
 
-test("English Founder keeps the full statement and 19-photo archive in accessible inline disclosures", async ({ page }) => {
+test("English Founder keeps the full statement disclosure and a continuously scrollable 19-photo archive", async ({ page }) => {
   const runtimeErrors = await openRoute(page, "/en/", {
     name: "founder-english-disclosures",
     width: 1440,
@@ -508,18 +508,17 @@ test("English Founder keeps the full statement and 19-photo archive in accessibl
   await page.getByRole("button", { name: "Close statement" }).click();
   await expect(continuation).toBeHidden();
 
-  const archiveButton = page.getByRole("button", { name: "Open the full archive — 19 images" });
-  await expect(page.locator("[data-preview-photo]")).toHaveCount(5);
-  await expect(page.locator("[data-archive-photo]")).toHaveCount(19);
-  await expect(page.locator("#english-fragments-archive")).toBeHidden();
-  await archiveButton.click();
-  await expect(page.locator("#english-fragments-archive")).toBeVisible();
-  await expect(page.getByRole("button", { name: "Close archive" })).toBeFocused();
-  await page.getByRole("button", { name: "Close archive" }).click();
-  await expect(page.locator("#english-fragments-preview")).toBeVisible();
+  const archive = page.getByRole("region", { name: "Scrollable photo archive" });
+  await expect(archive).toBeVisible();
+  await expect(page.locator("[data-fragment-photo]")).toHaveCount(19);
+  const railDimensions = await archive.evaluate((node) => ({
+    clientWidth: node.clientWidth,
+    scrollWidth: node.scrollWidth
+  }));
+  expect(railDimensions.scrollWidth).toBeGreaterThan(railDimensions.clientWidth);
   const englishFooterLanguage = page.locator("footer").locator('[aria-label="Language"]');
   await expect(englishFooterLanguage).toBeVisible();
-  await expect(englishFooterLanguage.getByRole("link", { name: "JP", exact: true })).toHaveAttribute("href", "/");
+  await expect(englishFooterLanguage.getByRole("link", { name: "JP", exact: true })).toHaveAttribute("href", "/founder/");
   expect(runtimeErrors).toEqual([]);
 });
 

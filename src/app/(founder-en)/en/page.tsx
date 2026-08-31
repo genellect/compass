@@ -155,7 +155,6 @@ export default function EnglishFounderPage() {
             <h1 id="english-founder-title">Yuto Matsui</h1>
             <p className={styles.heroThesis}>Advancing Science,<br />Transforming Education.</p>
             <p className={styles.heroDomains}>Life Science Research · AI-Native Engineering · Higher Education</p>
-            <a className={styles.heroAnchor} href="#expertise"><span>Explore the evidence</span><span aria-hidden="true">↓</span></a>
           </div>
           <EnglishHeroGallery />
           <div className={styles.heroCoordinate} aria-hidden="true">

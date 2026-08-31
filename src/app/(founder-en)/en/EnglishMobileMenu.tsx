@@ -59,6 +59,11 @@ export function EnglishMobileMenu() {
 
   return (
     <div className={styles.mobileMenuRoot}>
+      <span className={styles.mobileHeaderLanguage} aria-label="Language">
+        <FounderJapaneseLink>JP</FounderJapaneseLink>
+        <span>/</span>
+        <a href="/en/" aria-current="page">EN</a>
+      </span>
       <button
         ref={triggerRef}
         type="button"

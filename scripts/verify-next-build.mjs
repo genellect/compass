@@ -757,7 +757,6 @@ for (const expected of [
   "Selected Work",
   "Between Life Science and Engineering",
   "Read the full statement",
-  "Open the full archive — 19 images",
   "EXPERIENCE",
   "EIKEN Grade 1",
   "TOEIC Listening &amp; Reading",
@@ -775,7 +774,7 @@ for (const expected of [
   'href="/"',
   'href="/en/"',
   'aria-controls="english-statement-continuation"',
-  'aria-controls="english-fragments-archive"',
+  'aria-label="Scrollable photo archive"',
   parentGaMeasurementId
 ]) expectIncludes(founderEnglish, expected, "English Founder portfolio");
 
@@ -800,17 +799,9 @@ expectOrdered(normalizeText(founderEnglish), [
   "If that foundation can help science move faster, researchers go further, and ultimately more patients, then that is work worth devoting a life to."
 ], "English Founder final personal statement");
 
-const englishPreviewCount = (founderEnglish.match(/data-preview-photo=/g) ?? []).length;
-if (englishPreviewCount !== 5) {
-  throw new Error(`English FRAGMENTS preview must contain exactly 5 photos, found ${englishPreviewCount}.`);
-}
-const englishArchiveCount = (founderEnglish.match(/data-archive-photo=/g) ?? []).length;
-if (englishArchiveCount !== 19) {
-  throw new Error(`English FRAGMENTS desktop archive must contain exactly 19 primary photos, found ${englishArchiveCount}.`);
-}
-const englishMobileArchiveCount = (founderEnglish.match(/data-mobile-archive-photo=/g) ?? []).length;
-if (englishMobileArchiveCount !== 19) {
-  throw new Error(`English FRAGMENTS mobile archive must contain exactly 19 primary photos, found ${englishMobileArchiveCount}.`);
+const englishFragmentCount = (founderEnglish.match(/data-fragment-photo=/g) ?? []).length;
+if (englishFragmentCount !== 19) {
+  throw new Error(`English FRAGMENTS rail must contain exactly 19 primary photos, found ${englishFragmentCount}.`);
 }
 
 const founderStory = founder.match(/<section id="story"[\s\S]*?<\/section>\s*<\/main>/)?.[0];

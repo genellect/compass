@@ -155,7 +155,7 @@ export const routeContracts: RouteContract[] = [
       "#experience h2",
       "#experience article",
       "#fragments h2",
-      "#fragments figure[data-preview-photo]",
+      "#fragments figure[data-fragment-photo]",
       "#off-hours h2",
       "#contact h2",
       "#contact a",
