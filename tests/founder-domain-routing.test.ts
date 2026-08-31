@@ -9,6 +9,7 @@ import { onRequest as onRobotsRequest } from "../functions/robots.txt";
 import { onRequest as onSitemapRequest } from "../functions/sitemap.xml";
 import { onRequest as onEnglishRequest } from "../functions/en/[[path]]";
 import { onRequest as onEnglishIndexRequest } from "../functions/en/index";
+import { onRequest as onPagesMiddlewareRequest } from "../functions/_middleware";
 
 function createContext(url: string, method = "GET", host?: string) {
   const assetsFetch = vi.fn(async (
@@ -85,6 +86,20 @@ describe("Founder custom-domain Pages Function", () => {
       `https://${FOUNDER_DOMAIN}/?utm_source=legacy`
     );
     expect(assetsFetch).not.toHaveBeenCalled();
+    expect(next).not.toHaveBeenCalled();
+  });
+
+  it.each([
+    `https://${COMPASS_PAGES_DOMAIN}/en`,
+    `https://${COMPASS_PAGES_DOMAIN}/en/`,
+    `https://${COMPASS_PAGES_DOMAIN}/en/index.html`,
+    `https://${FOUNDER_DOMAIN}/en`
+  ])("canonicalizes English entries in the top-level middleware for %s", async (url) => {
+    const next = vi.fn(async () => new Response("next route"));
+    const response = await onPagesMiddlewareRequest({ request: new Request(url), next });
+
+    expect(response.status).toBe(301);
+    expect(response.headers.get("Location")).toBe(`https://${FOUNDER_DOMAIN}/en/`);
     expect(next).not.toHaveBeenCalled();
   });
 
