@@ -37,6 +37,7 @@ async function requireExactProductionFunctions(root) {
   const expected = [
     "api/community-registration.ts",
     "api/contact.ts",
+    "en/[[path]].ts",
     "index.ts",
     "library-registration/admin/api/[[path]].ts",
     "robots.txt.ts",

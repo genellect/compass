@@ -7,6 +7,7 @@ import {
 } from "../functions/index";
 import { onRequest as onRobotsRequest } from "../functions/robots.txt";
 import { onRequest as onSitemapRequest } from "../functions/sitemap.xml";
+import { onRequest as onEnglishRequest } from "../functions/en/[[path]]";
 
 function createContext(url: string, method = "GET", host?: string) {
   const assetsFetch = vi.fn(async (
@@ -146,7 +147,12 @@ describe("Founder custom-domain Pages Function", () => {
     expect(robots.headers.get("Content-Type")).toBe("text/plain; charset=utf-8");
     expect(await robots.text()).toContain("Sitemap: https://yuto-matsui.com/sitemap.xml");
     expect(sitemap.headers.get("Content-Type")).toBe("application/xml; charset=utf-8");
-    expect(await sitemap.text()).toContain("<loc>https://yuto-matsui.com/</loc>");
+    const sitemapText = await sitemap.text();
+    expect(sitemapText).toContain("<loc>https://yuto-matsui.com/</loc>");
+    expect(sitemapText).toContain("<loc>https://yuto-matsui.com/en/</loc>");
+    expect(sitemapText).toContain('hreflang="ja"');
+    expect(sitemapText).toContain('hreflang="en"');
+    expect(sitemapText).toContain('hreflang="x-default"');
     expect(next).not.toHaveBeenCalled();
 
     const legacy = await onSitemapRequest({
@@ -155,5 +161,51 @@ describe("Founder custom-domain Pages Function", () => {
     });
     expect(await legacy.text()).toBe("legacy control file");
     expect(next).toHaveBeenCalledOnce();
+  });
+
+  it.each(["/en", "/en/", "/en/index.html"])(
+    "redirects the Pages-host English entry %s to the custom domain",
+    async (path) => {
+      const next = vi.fn(async () => new Response("next route"));
+      const response = await onEnglishRequest({
+        request: new Request(`https://${COMPASS_PAGES_DOMAIN}${path}?utm_source=preview`),
+        next
+      });
+
+      expect(response.status).toBe(301);
+      expect(response.headers.get("Location")).toBe(
+        `https://${FOUNDER_DOMAIN}/en/?utm_source=preview`
+      );
+      expect(next).not.toHaveBeenCalled();
+    }
+  );
+
+  it.each(["/en", "/en/index.html"])(
+    "normalizes the custom-domain English path %s in one permanent hop",
+    async (path) => {
+      const next = vi.fn(async () => new Response("next route"));
+      const response = await onEnglishRequest({
+        request: new Request(`https://${FOUNDER_DOMAIN}${path}?source=language-switch`),
+        next
+      });
+
+      expect(response.status).toBe(301);
+      expect(response.headers.get("Location")).toBe(
+        `https://${FOUNDER_DOMAIN}/en/?source=language-switch`
+      );
+      expect(next).not.toHaveBeenCalled();
+    }
+  );
+
+  it("serves the English static export on the canonical custom-domain path and preview hosts", async () => {
+    for (const url of [
+      `https://${FOUNDER_DOMAIN}/en/`,
+      "https://feature.compass-official.pages.dev/en/"
+    ]) {
+      const next = vi.fn(async () => new Response("english page"));
+      const response = await onEnglishRequest({ request: new Request(url), next });
+      expect(await response.text()).toBe("english page");
+      expect(next).toHaveBeenCalledOnce();
+    }
   });
 });

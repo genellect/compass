@@ -21,6 +21,8 @@ Last verified: 2026-08-02
 - `/INTRO_Interactive/developers/`
 - `/community/join/`
 - `/contact/`
+- `https://yuto-matsui.com/`
+- `https://yuto-matsui.com/en/`
 
 フォーム監査は表示・keyboard・layoutに限定し、確認コード送信、実メール、実登録、Production API mutationを行いません。
 
