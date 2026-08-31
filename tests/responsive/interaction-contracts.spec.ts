@@ -451,6 +451,106 @@ test("Founder product links include equal-size ProtoPedia CTA in the requested o
   expect(runtimeErrors).toEqual([]);
 });
 
+test("Founder language controls connect the Japanese and English portfolio routes", async ({ page }) => {
+  let runtimeErrors = await openRoute(page, "/founder/", {
+    name: "founder-language-desktop",
+    width: 1440,
+    height: 900,
+  });
+  const language = page.locator('[aria-label="言語切替"]').first();
+  await expect(language.getByRole("link", { name: "JP", exact: true })).toHaveAttribute("href", "/founder/");
+  await expect(language.getByRole("link", { name: "EN", exact: true })).toHaveAttribute("href", "/en/");
+  const footerLanguage = page.locator("footer").locator('[aria-label="言語切替"]');
+  await expect(footerLanguage).toBeVisible();
+  await expect(footerLanguage.getByRole("link", { name: "EN", exact: true })).toHaveAttribute("href", "/en/");
+  expect(runtimeErrors).toEqual([]);
+
+  runtimeErrors = await openRoute(page, "/founder/", {
+    name: "founder-language-mobile",
+    width: 390,
+    height: 844,
+  });
+  await page.getByRole("button", { name: "外部リンクを表示" }).click();
+  const mobileLanguage = page.locator('[class*="mobileLanguagePanel"]');
+  await expect(mobileLanguage).toContainText("Language");
+  await expect(mobileLanguage.getByRole("link", { name: "EN", exact: true })).toHaveAttribute("href", "/en/");
+  await page.locator("footer").scrollIntoViewIfNeeded();
+  await expect(page.locator("footer").locator('[aria-label="言語切替"]')).toBeVisible();
+  expect(runtimeErrors).toEqual([]);
+
+  runtimeErrors = await openRoute(page, "/en/", {
+    name: "founder-language-preview-host",
+    width: 390,
+    height: 844,
+  });
+  const englishFooterLanguage = page.locator("footer").locator('[aria-label="Language"]');
+  await englishFooterLanguage.scrollIntoViewIfNeeded();
+  await englishFooterLanguage.getByRole("link", { name: "JP", exact: true }).click();
+  await expect(page).toHaveURL(/\/founder\/$/);
+  expect(runtimeErrors).toEqual([]);
+});
+
+test("English Founder keeps the full statement disclosure and a continuously scrollable 19-photo archive", async ({ page }) => {
+  const runtimeErrors = await openRoute(page, "/en/", {
+    name: "founder-english-disclosures",
+    width: 1440,
+    height: 900,
+  });
+
+  const statementButton = page.getByRole("button", { name: "Read the full statement" });
+  const continuation = page.locator("#english-statement-continuation");
+  await expect(statementButton).toHaveAttribute("aria-expanded", "false");
+  await expect(continuation).toBeHidden();
+  await expect(continuation).toContainText("If that foundation can help science move faster");
+  await statementButton.click();
+  await expect(continuation).toBeVisible();
+  await expect(page.getByRole("button", { name: "Close statement" })).toBeFocused();
+  await page.getByRole("button", { name: "Close statement" }).click();
+  await expect(continuation).toBeHidden();
+
+  const archive = page.getByRole("region", { name: "Scrollable photo archive" });
+  await expect(archive).toBeVisible();
+  await expect(page.locator("[data-fragment-photo]")).toHaveCount(19);
+  const railDimensions = await archive.evaluate((node) => ({
+    clientWidth: node.clientWidth,
+    scrollWidth: node.scrollWidth
+  }));
+  expect(railDimensions.scrollWidth).toBeGreaterThan(railDimensions.clientWidth);
+  const englishFooterLanguage = page.locator("footer").locator('[aria-label="Language"]');
+  await expect(englishFooterLanguage).toBeVisible();
+  await expect(englishFooterLanguage.getByRole("link", { name: "JP", exact: true })).toHaveAttribute("href", "/founder/");
+  expect(runtimeErrors).toEqual([]);
+});
+
+test("English Founder remains overflow-free at the approved responsive viewports", async ({ page }) => {
+  const viewports = [
+    { width: 320, height: 568 },
+    { width: 360, height: 800 },
+    { width: 390, height: 844 },
+    { width: 430, height: 932 },
+    { width: 768, height: 1024 },
+    { width: 1024, height: 768 },
+    { width: 1280, height: 800 },
+    { width: 1440, height: 900 },
+  ];
+
+  for (const viewport of viewports) {
+    await page.setViewportSize(viewport);
+    const response = await page.goto("/en/", { waitUntil: "domcontentloaded" });
+    expect(response?.status(), `${viewport.width}x${viewport.height}`).toBe(200);
+    const geometry = await page.evaluate(() => ({
+      overflow: document.documentElement.scrollWidth - document.documentElement.clientWidth,
+      heroName: document.querySelector("#english-founder-title")?.getBoundingClientRect(),
+      thesis: document.querySelector('[class*="heroThesis"]')?.getBoundingClientRect(),
+      domains: document.querySelector('[class*="heroDomains"]')?.getBoundingClientRect(),
+    }));
+    expect(geometry.overflow, `${viewport.width}x${viewport.height} overflow`).toBeLessThanOrEqual(1);
+    expect(geometry.heroName?.width, `${viewport.width}x${viewport.height} hero name`).toBeGreaterThan(0);
+    expect(geometry.thesis?.width, `${viewport.width}x${viewport.height} thesis`).toBeGreaterThan(0);
+    expect(geometry.domains?.width, `${viewport.width}x${viewport.height} domains`).toBeGreaterThan(0);
+  }
+});
+
 test("Interactive footer exposes Source and ProtoPedia as compact CTAs", async ({ page }) => {
   const runtimeErrors = await openRoute(page, "/INTRO_Interactive/", {
     name: "interactive-footer-links",

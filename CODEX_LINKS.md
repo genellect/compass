@@ -16,6 +16,7 @@ Reference: `origin/main`
 | 未来戦略ライブラリ紹介 | <https://compass-official.pages.dev/future-strategy-library/> | Same tab |
 | COMPASS Manifesto | <https://compass-official.pages.dev/messages/> | Same tab |
 | Yuto Matsui 個人ポートフォリオ | <https://yuto-matsui.com/> | Same tab |
+| Yuto Matsui English Portfolio | <https://yuto-matsui.com/en/> | Same tab |
 | Community参加 | <https://compass-official.pages.dev/community/join/> | Same tab |
 | Contact | <https://compass-official.pages.dev/contact/> | Same tab |
 

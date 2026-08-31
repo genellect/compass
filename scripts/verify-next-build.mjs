@@ -102,6 +102,7 @@ const communityJoin = await readFile(path.join(out, "community", "join", "index.
 const contact = await readFile(path.join(out, "contact", "index.html"), "utf8");
 const messages = await readFile(path.join(out, "messages", "index.html"), "utf8");
 const founder = await readFile(path.join(out, "founder", "index.html"), "utf8");
+const founderEnglish = await readFile(path.join(out, "en", "index.html"), "utf8");
 const library = await readFile(path.join(out, "future-strategy-library", "index.html"), "utf8");
 const libraryRegistration = await readFile(
   path.join(out, "library-registration", "index.html"),
@@ -732,6 +733,76 @@ expectExcludes(
 );
 
 expectOneH1(founder, "Founder portfolio");
+expectOneH1(founderEnglish, "English Founder portfolio");
+
+for (const expected of [
+  '<html lang="en"',
+  'data-english-founder-page="true"',
+  'id="english-founder-title"',
+  'id="expertise"',
+  'id="work"',
+  'id="statement"',
+  'id="experience"',
+  'id="fragments"',
+  'id="off-hours"',
+  'id="contact"',
+  "Yuto Matsui",
+  "Researcher &amp; Engineer",
+  "Advancing Science,",
+  "Transforming Education.",
+  "Life Science Research · AI-Native Engineering · Higher Education",
+  "Understanding the molecular mechanisms of neurodegenerative disease through experimental research.",
+  "Expanding the scale of systems one person can design and build with AI.",
+  "Turning challenges in higher education into systems that work in the real world.",
+  "Selected Work",
+  "Between Life Science and Engineering",
+  "Read the full statement",
+  "EXPERIENCE",
+  "EIKEN Grade 1",
+  "TOEIC Listening &amp; Reading",
+  "IELTS Academic",
+  "OFF HOURS",
+  "Get in touch.",
+  "I’m always open to thoughtful conversations, collaborations, and new opportunities.",
+  "Please include your name, affiliation, and a brief introduction when contacting me.",
+  "contact@yuto-matsui.com",
+  "matsui.yuto@st.kitasato-u.ac.jp",
+  'rel="canonical" href="https://yuto-matsui.com/en/"',
+  'hrefLang="ja" href="https://yuto-matsui.com/"',
+  'hrefLang="en" href="https://yuto-matsui.com/en/"',
+  'hrefLang="x-default" href="https://yuto-matsui.com/"',
+  'href="/"',
+  'href="/en/"',
+  'aria-controls="english-statement-continuation"',
+  'aria-label="Scrollable photo archive"',
+  parentGaMeasurementId
+]) expectIncludes(founderEnglish, expected, "English Founder portfolio");
+
+expectOrdered(
+  founderEnglish,
+  ['id="expertise"', 'id="work"', 'id="statement"', 'id="experience"', 'id="fragments"', 'id="off-hours"', 'id="contact"'],
+  "English Founder evidence-first section order"
+);
+
+expectOrdered(normalizeText(founderEnglish), [
+  "I began programming in high school, around 2020. At university, I chose pharmaceutical science and entered molecular biology, where I began studying the mechanisms of neurodegenerative disease.",
+  "Those two paths now define how I see the future.",
+  "Research taught me how difficult it is to turn knowledge into progress. Engineering gave me another way to contribute: not only by generating knowledge, but by building the tools and systems that help people use it better.",
+  "As AI advanced, I began bringing those two worlds together. I continued experimental research while expanding into full-stack development, cloud systems, and AI-native engineering. The combination changed what I believed one person could build—and the scale of problems I was prepared to take on.",
+  "I first applied that approach to education.",
+  "I saw useful academic opportunities and resources scattered across departments, personal networks, and chance encounters. So I built a platform to bring them together, formed a student team around it, and later developed a real-time learning system that was adopted in university lectures. What began as a student project grew into a working system used in real educational settings.",
+  "In the laboratory, I see a different problem with much larger consequences. Scientific progress depends on the time and attention researchers can devote to thinking, experimenting, and interpreting results. Too much of both is still consumed by fragmented information, repetitive work, and tools that do not reflect how research is actually done.",
+  "Today, I continue my work in experimental research while building at the intersection of life science and engineering.",
+  "For me, that intersection is not simply about applying technology to science. It is about redesigning the ecosystem in which life science happens—how knowledge is created, connected, tested, and turned into discovery.",
+  "Better systems can do more than make science more efficient. They can expand the questions researchers are able to ask, accelerate what they are able to discover, and bring more discoveries closer to the patients who need them.",
+  "That is the scale at which I intend to contribute to life science—not through a single experiment, product, or company, but by helping build a better foundation for discovery itself.",
+  "If that foundation can help science move faster, researchers go further, and ultimately more patients, then that is work worth devoting a life to."
+], "English Founder final personal statement");
+
+const englishFragmentCount = (founderEnglish.match(/data-fragment-photo=/g) ?? []).length;
+if (englishFragmentCount !== 19) {
+  throw new Error(`English FRAGMENTS rail must contain exactly 19 primary photos, found ${englishFragmentCount}.`);
+}
 
 const founderStory = founder.match(/<section id="story"[\s\S]*?<\/section>\s*<\/main>/)?.[0];
 if (!founderStory) throw new Error("Founder portfolio is missing the fixed personal statement.");
@@ -1423,6 +1494,7 @@ if (productionRelease && !registrationOnlyProductionRelease) {
 for (const relative of [
   "messages/index.html",
   "founder/index.html",
+  "en/index.html",
   "future-strategy-library/index.html",
   "library-registration/index.html",
   "library-registration/admin/index.html",
@@ -1481,6 +1553,9 @@ const expectedFunctionRoutes = [
   "/founder",
   "/founder/",
   "/founder/index.html",
+  "/en",
+  "/en/",
+  "/en/index.html",
   "/robots.txt",
   "/sitemap.xml",
   "/api/community-registration",
@@ -1507,5 +1582,9 @@ expectExcludes(
 );
 expectIncludes(founderRobots, "Sitemap: https://yuto-matsui.com/sitemap.xml", "Founder robots sitemap");
 expectIncludes(founderSitemap, "<loc>https://yuto-matsui.com/</loc>", "Founder sitemap root");
+expectIncludes(founderSitemap, "<loc>https://yuto-matsui.com/en/</loc>", "Founder English sitemap entry");
+expectIncludes(founderSitemap, 'hreflang="ja"', "Founder sitemap Japanese alternate");
+expectIncludes(founderSitemap, 'hreflang="en"', "Founder sitemap English alternate");
+expectIncludes(founderSitemap, 'hreflang="x-default"', "Founder sitemap default alternate");
 expectExcludes(founderSitemap, "compass-official.pages.dev", "Founder sitemap boundary");
 console.log("Verified Next routes, the library gateway, registration and administrator previews, and deployment assets.");

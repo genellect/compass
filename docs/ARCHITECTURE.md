@@ -33,6 +33,7 @@ Last source verification: 2026-08-28
 | `/library-registration/admin/api/*` | `functions/library-registration/admin/api/[[path]].ts` | Cloudflare Access配下の同一origin管理API proxy |
 | `/messages/` | `src/app/(official)/messages/page.tsx` | COMPASS Manifesto |
 | `https://yuto-matsui.com/` | `src/app/(official)/founder/page.tsx` + `functions/index.ts` | Founder個人ポートフォリオ。static exportは同じPages成果物の`/founder/`に保持 |
+| `https://yuto-matsui.com/en/` | `src/app/(founder-en)/en/page.tsx` + `functions/en/[[path]].ts` | Founder英語ポートフォリオ。独立した英語layoutとvisual systemを使用 |
 | `/community/join/` | `src/app/(official)/community/join/page.tsx` | Community参加form |
 | `/contact/` | `src/app/(official)/contact/page.tsx` | Contact form |
 | `/INTRO_Interactive/` | `src/app/(interactive)/INTRO_Interactive/page.tsx` | Interactive紹介 |
@@ -83,11 +84,12 @@ npm run check
 
 `scripts/assemble-next-export.mjs`は`.nojekyll`、`_headers`、`_redirects`、Search Console verification、`robots.txt`、`sitemap.xml`を`out/`へ組み込む。
 
-Founderの正式URLは`https://yuto-matsui.com/`である。同じ`compass-official` Pages成果物内の
+Founderの正式URLは日本語`https://yuto-matsui.com/`、英語`https://yuto-matsui.com/en/`である。同じ`compass-official` Pages成果物内の
 `/founder/`を`functions/index.ts`がCustom Domainのrootへ内部配信する。旧Pages hostの
 `/founder`、`/founder/`、`/founder/index.html`はCloudflare Bulk Redirectで新rootへ恒久301とし、
-旧hostのsitemapにはFounderを含めない。Custom Domainの`robots.txt`と`sitemap.xml`は
-host-aware Pages Functionsが返し、新sitemapはroot一件だけを掲載する。
+Pages Production hostの`/en/`はCustom Domainの英語routeへ恒久301とする。旧hostのsitemapにはFounderを含めない。
+Custom Domainの`robots.txt`と`sitemap.xml`はhost-aware Pages Functionsが返し、Founder sitemapは
+日本語・英語の2 URLと`ja`、`en`、`x-default`のhreflangを掲載する。
 
 `npm run check`（cloud aliasは`npm run cloud:check`）はrepository内のcode・export contractを検証する。Production email delivery、Cloudflare dashboard設定、GAS deployment、Interactive本体の挙動、教育効果を証明しない。
 

@@ -188,6 +188,7 @@ async function createProductionFixture(root) {
   await mkdir(join(source, "future-strategy-library"), { recursive: true });
   await mkdir(join(source, "_next", "static", "chunks"), { recursive: true });
   await mkdir(join(root, "functions", "api"), { recursive: true });
+  await mkdir(join(root, "functions", "en"), { recursive: true });
   await mkdir(join(root, "src", "lib"), { recursive: true });
 
   const config = requireLibraryRegistrationProductionReleaseConfig(
@@ -211,6 +212,9 @@ async function createProductionFixture(root) {
         "/founder",
         "/founder/",
         "/founder/index.html",
+        "/en",
+        "/en/",
+        "/en/index.html",
         "/robots.txt",
         "/sitemap.xml",
         "/api/community-registration",
@@ -260,6 +264,11 @@ async function createProductionFixture(root) {
   await writeFile(
     join(root, "functions", "index.ts"),
     "export async function onRequest({env,request,next}){const url=new URL(request.url);return url.hostname==='yuto-matsui.com'?env.ASSETS.fetch(new Request(new URL('/founder/',url),request)):next()}",
+    "utf8"
+  );
+  await writeFile(
+    join(root, "functions", "en", "[[path]].ts"),
+    "export async function onRequest({request,next}){const url=new URL(request.url);return url.hostname==='compass-official.pages.dev'?Response.redirect('https://yuto-matsui.com/en/',301):next()}",
     "utf8"
   );
   await writeFile(
@@ -391,6 +400,7 @@ test("Cloudflare Git production finalization retains the protected administrator
     await access(join(root, "functions", "index.ts"));
     await access(join(root, "functions", "robots.txt.ts"));
     await access(join(root, "functions", "sitemap.xml.ts"));
+    await access(join(root, "functions", "en", "[[path]].ts"));
     await access(join(
       root,
       "functions",

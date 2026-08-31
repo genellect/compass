@@ -4,6 +4,7 @@ import Script from "next/script";
 import { LectureSignalMatrix } from "../../../interactive/components/hero/LectureSignalMatrix";
 import { ProductExperienceMock } from "../../../interactive/components/ui/ProductExperienceMock";
 import { LegacyInteractions } from "../../../components/LegacyInteractions";
+import { FounderJapaneseLink } from "../../../components/FounderJapaneseLink";
 import { FutureStrategyHero } from "../future-strategy-library/components/FutureStrategyHero";
 import { EssayContinuation } from "./EssayContinuation";
 import { FounderFragments } from "./FounderFragments";
@@ -12,13 +13,17 @@ import { MobileExternalMenu } from "./MobileExternalMenu";
 import styles from "./founder.module.css";
 
 const FOUNDER_URL = "https://yuto-matsui.com/";
+const FOUNDER_EN_URL = "https://yuto-matsui.com/en/";
 const COMPASS_ORIGIN = "https://compass-official.pages.dev";
 
 export const metadata: Metadata = {
   title: "Yuto Matsui / 松井優知 | Life Science, AI & Education",
   description:
     "ライフサイエンス研究、AIネイティブ開発、大学教育支援を横断するYuto Matsui / 松井優知の個人ポートフォリオ。",
-  alternates: { canonical: FOUNDER_URL },
+  alternates: {
+    canonical: FOUNDER_URL,
+    languages: { ja: FOUNDER_URL, en: FOUNDER_EN_URL, "x-default": FOUNDER_URL }
+  },
   authors: [{ name: "Yuto Matsui / 松井優知" }],
   openGraph: {
     locale: "ja_JP",
@@ -271,6 +276,9 @@ export default function FounderPage() {
           <a href="#experience">Credentials</a>
           <a href="#off-hours">Off Hours</a>
           <a href="#contact-cta">Contact</a>
+          <span className={styles.desktopLanguageSwitch} aria-label="言語切替">
+            <FounderJapaneseLink aria-current="page">JP</FounderJapaneseLink><span>/</span><a href="/en/">EN</a>
+          </span>
         </nav>
         <nav className={styles.mobileNavigation} aria-label="Mobile portfolio navigation">
           <a href="#message">Message</a>
@@ -278,9 +286,15 @@ export default function FounderPage() {
           <a href="#contact-cta">Contact</a>
           <MobileExternalMenu className={styles.mobileExternalLinks}>
             <div className={styles.mobileExternalPopover} aria-label="Yuto Matsuiの外部リンク">
-              <a href="https://www.instagram.com/n.m.w.314/?__pwa=1#" target="_blank" rel="noopener noreferrer" aria-label="Instagram"><InstagramIcon /></a>
-              <a href="https://github.com/genellect" target="_blank" rel="noopener noreferrer" aria-label="GitHub"><GitHubIcon /></a>
-              <a href={`${COMPASS_ORIGIN}/`} aria-label="COMPASS公式サイト"><CompassIcon /></a>
+              <div className={styles.mobileExternalIcons}>
+                <a href="https://www.instagram.com/n.m.w.314/?__pwa=1#" target="_blank" rel="noopener noreferrer" aria-label="Instagram"><InstagramIcon /></a>
+                <a href="https://github.com/genellect" target="_blank" rel="noopener noreferrer" aria-label="GitHub"><GitHubIcon /></a>
+                <a href={`${COMPASS_ORIGIN}/`} aria-label="COMPASS公式サイト"><CompassIcon /></a>
+              </div>
+              <div className={styles.mobileLanguagePanel}>
+                <span>Language</span>
+                <div><FounderJapaneseLink aria-current="page">JP</FounderJapaneseLink><span>/</span><a href="/en/">EN</a></div>
+              </div>
             </div>
           </MobileExternalMenu>
         </nav>
@@ -586,6 +600,10 @@ export default function FounderPage() {
             <a href={`${COMPASS_ORIGIN}/`}>COMPASS <ArrowIcon /></a>
             <a href="#top">Back to top ↑</a>
           </nav>
+        </div>
+        <div className={styles.footerLanguageSwitch} aria-label="言語切替">
+          <span>Language</span>
+          <div><FounderJapaneseLink aria-current="page">JP</FounderJapaneseLink><a href="/en/">EN</a></div>
         </div>
         <details className={styles.credits}>
           <summary>Image credits</summary>
