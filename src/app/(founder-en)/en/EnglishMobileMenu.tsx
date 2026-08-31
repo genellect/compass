@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { FounderJapaneseLink } from "../../../components/FounderJapaneseLink";
 import { founderOrigin } from "./content";
+import { GitHubIcon, InstagramIcon } from "./EnglishSocialIcons";
 import styles from "./english-founder.module.css";
 
 const links = [
@@ -90,7 +91,7 @@ export function EnglishMobileMenu() {
           <span>YUTO MATSUI</span>
           <button type="button" onClick={() => setOpen(false)} aria-label="Close navigation">Close</button>
         </div>
-        <nav aria-label="Mobile portfolio navigation">
+        <nav className={styles.mobileMenuLinks} aria-label="Mobile portfolio navigation">
           {links.map((link, index) => (
             <a key={link.href} href={link.href} onClick={() => setOpen(false)}>
               <span>{String(index + 1).padStart(2, "0")}</span>{link.label}
@@ -98,8 +99,14 @@ export function EnglishMobileMenu() {
           ))}
         </nav>
         <div className={styles.mobileMenuFooter}>
-          <span>Language</span>
-          <div><FounderJapaneseLink>JP</FounderJapaneseLink><span>/</span><a href={englishPortfolioUrl} aria-current="page">EN</a></div>
+          <nav className={styles.mobileMenuSocials} aria-label="Social profiles">
+            <a href="https://www.instagram.com/n.m.w.314/?__pwa=1#" target="_blank" rel="noopener noreferrer" aria-label="Instagram"><InstagramIcon /></a>
+            <a href="https://github.com/genellect" target="_blank" rel="noopener noreferrer" aria-label="GitHub"><GitHubIcon /></a>
+          </nav>
+          <div className={styles.mobileMenuLanguage}>
+            <span>Language</span>
+            <div><FounderJapaneseLink>JP</FounderJapaneseLink><span>/</span><a href={englishPortfolioUrl} aria-current="page">EN</a></div>
+          </div>
         </div>
       </div>
     </div>

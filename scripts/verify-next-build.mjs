@@ -9,6 +9,7 @@ import { verifyLibraryProductionArtifacts } from
 
 const root = process.cwd();
 const out = path.join(root, "out");
+const compassOrigin = "https://compass-official.pages.dev";
 const {
   productionRelease,
   registrationOnlyProductionRelease,
@@ -775,8 +776,34 @@ for (const expected of [
   'href="https://yuto-matsui.com/en/"',
   'aria-controls="english-statement-continuation"',
   'aria-label="Scrollable photo archive"',
+  'aria-label="Yuto Matsui social profiles"',
+  'aria-label="Social profiles"',
+  "/images/founder-portfolio/yuto-matsui-nagano-lake-hero-20260831.webp",
+  "/images/founder-portfolio/yuto-matsui-tree-hero-20260901.webp",
+  "/images/founder-portfolio/yuto-matsui-nagano-mountain-hero-20260901.webp",
   parentGaMeasurementId
 ]) expectIncludes(founderEnglish, expected, "English Founder portfolio");
+
+const englishHero = founderEnglish.match(/<section id="top"[\s\S]*?<\/section>/)?.[0];
+if (!englishHero) throw new Error("English Founder portfolio is missing its Hero section.");
+expectOrdered(englishHero, [
+  "/images/founder-portfolio/yuto-matsui-nagano-lake-hero-20260831.webp",
+  "/images/founder-portfolio/yuto-matsui-tree-hero-20260901.webp",
+  "/images/founder-portfolio/yuto-matsui-nagano-mountain-hero-20260901.webp"
+], "English Founder Hero photo order");
+expectIncludes(englishHero, 'href="https://www.instagram.com/n.m.w.314/?__pwa=1#"', "English Founder Hero Instagram CTA");
+expectIncludes(englishHero, 'href="https://github.com/genellect"', "English Founder Hero GitHub CTA");
+expectExcludes(englishHero, `href="${compassOrigin}/"`, "English Founder Hero COMPASS CTA");
+
+const englishMobileMenuStart = founderEnglish.indexOf('id="english-mobile-menu"');
+const englishMobileMenuEnd = founderEnglish.indexOf("</header>", englishMobileMenuStart);
+if (englishMobileMenuStart < 0 || englishMobileMenuEnd < 0) {
+  throw new Error("English Founder portfolio is missing its Mobile navigation panel.");
+}
+const englishMobileMenu = founderEnglish.slice(englishMobileMenuStart, englishMobileMenuEnd);
+expectIncludes(englishMobileMenu, 'href="https://www.instagram.com/n.m.w.314/?__pwa=1#"', "English Founder Mobile Instagram CTA");
+expectIncludes(englishMobileMenu, 'href="https://github.com/genellect"', "English Founder Mobile GitHub CTA");
+expectExcludes(englishMobileMenu, `href="${compassOrigin}/"`, "English Founder Mobile COMPASS CTA");
 
 expectOrdered(
   founderEnglish,
@@ -1505,6 +1532,8 @@ for (const relative of [
   "images/future-strategy-library/research-career.webp",
   "images/founder-portfolio/yuto-matsui-profile-hero.webp",
   "images/founder-portfolio/yuto-matsui-nagano-lake-hero-20260831.webp",
+  "images/founder-portfolio/yuto-matsui-tree-hero-20260901.webp",
+  "images/founder-portfolio/yuto-matsui-nagano-mountain-hero-20260901.webp",
   "images/founder-portfolio/yuto-matsui-front.webp",
   "images/founder-portfolio/yuto-matsui-education-support.webp",
   "images/founder-portfolio/yuto-matsui-lab-hero.webp",

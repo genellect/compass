@@ -15,6 +15,7 @@ import {
 import { EnglishFragments } from "./EnglishFragments";
 import { EnglishHeroGallery } from "./EnglishHeroGallery";
 import { EnglishMobileMenu } from "./EnglishMobileMenu";
+import { GitHubIcon, InstagramIcon } from "./EnglishSocialIcons";
 import { EnglishStatement } from "./EnglishStatement";
 import styles from "./english-founder.module.css";
 
@@ -155,6 +156,14 @@ export default function EnglishFounderPage() {
             <h1 id="english-founder-title">Yuto Matsui</h1>
             <p className={styles.heroThesis}>Advancing Science,<br />Transforming Education.</p>
             <p className={styles.heroDomains}>Life Science Research · AI-Native Engineering · Higher Education</p>
+            <nav className={styles.heroSocialLinks} aria-label="Yuto Matsui social profiles">
+              <a href="https://www.instagram.com/n.m.w.314/?__pwa=1#" target="_blank" rel="noopener noreferrer" aria-label="Instagram" title="Instagram">
+                <InstagramIcon />
+              </a>
+              <a href="https://github.com/genellect" target="_blank" rel="noopener noreferrer" aria-label="GitHub" title="GitHub">
+                <GitHubIcon />
+              </a>
+            </nav>
           </div>
           <EnglishHeroGallery />
           <div className={styles.heroCoordinate} aria-hidden="true">
