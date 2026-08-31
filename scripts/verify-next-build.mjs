@@ -772,7 +772,7 @@ for (const expected of [
   'hrefLang="en" href="https://yuto-matsui.com/en/"',
   'hrefLang="x-default" href="https://yuto-matsui.com/"',
   'href="/"',
-  'href="/en/"',
+  'href="https://yuto-matsui.com/en/"',
   'aria-controls="english-statement-continuation"',
   'aria-label="Scrollable photo archive"',
   parentGaMeasurementId
@@ -780,8 +780,8 @@ for (const expected of [
 
 expectOrdered(
   founderEnglish,
-  ['id="expertise"', 'id="work"', 'id="statement"', 'id="experience"', 'id="fragments"', 'id="off-hours"', 'id="contact"'],
-  "English Founder evidence-first section order"
+  ['id="expertise"', 'id="statement"', 'id="work"', 'id="experience"', 'id="fragments"', 'id="off-hours"', 'id="contact"'],
+  "English Founder statement-first section order"
 );
 
 expectOrdered(normalizeText(founderEnglish), [

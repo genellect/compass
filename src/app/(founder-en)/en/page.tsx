@@ -135,13 +135,13 @@ export default function EnglishFounderPage() {
         </a>
         <nav className={styles.desktopNav} aria-label="Portfolio navigation">
           <a href="#expertise">Expertise</a>
-          <a href="#work">Work</a>
           <a href="#statement">Statement</a>
+          <a href="#work">Work</a>
           <a href="#experience">Evidence</a>
           <a href="#fragments">Fragments</a>
           <a href="#contact">Contact</a>
           <span className={styles.languageSwitch} aria-label="Language">
-            <FounderJapaneseLink>JP</FounderJapaneseLink><span>/</span><a href="/en/" aria-current="page">EN</a>
+            <FounderJapaneseLink>JP</FounderJapaneseLink><span>/</span><a href={canonicalUrl} aria-current="page">EN</a>
           </span>
         </nav>
         <EnglishMobileMenu />
@@ -185,10 +185,28 @@ export default function EnglishFounderPage() {
           </div>
         </section>
 
+        <section id="statement" className={styles.statement} aria-labelledby="statement-title">
+          <div className={styles.statementShell}>
+            <aside className={styles.statementIdentity}>
+              <p className={styles.sectionIndex}>03 / Personal Statement</p>
+              <h2 id="statement-title">Between Life Science and Engineering</h2>
+              <div className={styles.statementPortrait}>
+                <Image
+                  src="/images/founder-portfolio/yuto-matsui-front.webp"
+                  alt="Yuto Matsui facing the camera"
+                  fill
+                  sizes="(min-width: 901px) 35vw, 92vw"
+                />
+              </div>
+            </aside>
+            <EnglishStatement />
+          </div>
+        </section>
+
         <section id="work" className={styles.work} aria-labelledby="work-title">
           <div className={styles.sectionShell}>
             <header className={styles.workHeading}>
-              <div><p className={styles.sectionIndex}>03 / Selected Work</p><h2 id="work-title">Selected Work</h2></div>
+              <div><p className={styles.sectionIndex}>04 / Selected Work</p><h2 id="work-title">Selected Work</h2></div>
               <p>Ideas become evidence when they work beyond the prototype.</p>
             </header>
 
@@ -218,24 +236,6 @@ export default function EnglishFounderPage() {
                 </article>
               ))}
             </div>
-          </div>
-        </section>
-
-        <section id="statement" className={styles.statement} aria-labelledby="statement-title">
-          <div className={styles.statementShell}>
-            <aside className={styles.statementIdentity}>
-              <p className={styles.sectionIndex}>04 / Personal Statement</p>
-              <h2 id="statement-title">Between Life Science and Engineering</h2>
-              <div className={styles.statementPortrait}>
-                <Image
-                  src="/images/founder-portfolio/yuto-matsui-front.webp"
-                  alt="Yuto Matsui facing the camera"
-                  fill
-                  sizes="(min-width: 901px) 35vw, 92vw"
-                />
-              </div>
-            </aside>
-            <EnglishStatement />
           </div>
         </section>
 
@@ -324,7 +324,7 @@ export default function EnglishFounderPage() {
         </div>
         <div className={styles.footerLanguageSwitch} aria-label="Language">
           <span>Language</span>
-          <div><FounderJapaneseLink>JP</FounderJapaneseLink><a href="/en/" aria-current="page">EN</a></div>
+          <div><FounderJapaneseLink>JP</FounderJapaneseLink><a href={canonicalUrl} aria-current="page">EN</a></div>
         </div>
         <details className={styles.credits}>
           <summary>Image credits</summary>

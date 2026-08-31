@@ -2,17 +2,20 @@
 
 import { useEffect, useRef, useState } from "react";
 import { FounderJapaneseLink } from "../../../components/FounderJapaneseLink";
+import { founderOrigin } from "./content";
 import styles from "./english-founder.module.css";
 
 const links = [
   { label: "Expertise", href: "#expertise" },
-  { label: "Selected Work", href: "#work" },
   { label: "Statement", href: "#statement" },
+  { label: "Selected Work", href: "#work" },
   { label: "Experience", href: "#experience" },
   { label: "Fragments", href: "#fragments" },
   { label: "Off Hours", href: "#off-hours" },
   { label: "Contact", href: "#contact" }
 ] as const;
+
+const englishPortfolioUrl = `${founderOrigin}/en/`;
 
 export function EnglishMobileMenu() {
   const [open, setOpen] = useState(false);
@@ -62,7 +65,7 @@ export function EnglishMobileMenu() {
       <span className={styles.mobileHeaderLanguage} aria-label="Language">
         <FounderJapaneseLink>JP</FounderJapaneseLink>
         <span>/</span>
-        <a href="/en/" aria-current="page">EN</a>
+        <a href={englishPortfolioUrl} aria-current="page">EN</a>
       </span>
       <button
         ref={triggerRef}
@@ -96,7 +99,7 @@ export function EnglishMobileMenu() {
         </nav>
         <div className={styles.mobileMenuFooter}>
           <span>Language</span>
-          <div><FounderJapaneseLink>JP</FounderJapaneseLink><span>/</span><a href="/en/" aria-current="page">EN</a></div>
+          <div><FounderJapaneseLink>JP</FounderJapaneseLink><span>/</span><a href={englishPortfolioUrl} aria-current="page">EN</a></div>
         </div>
       </div>
     </div>

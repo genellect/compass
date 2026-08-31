@@ -531,11 +531,11 @@
   .expertisePlate, .expertisePlate[data-order="2"] { display: grid; min-height: 0; grid-template-columns: 1fr; }
   .expertisePlate[data-order="2"] .expertiseImage { order: 0; }
   .expertiseImage { min-height: 0; aspect-ratio: 4 / 3; }
-  .expertiseCopy { gap: 22px; padding: 38px 8px 4px; }
+  .expertiseCopy { gap: 24px; padding: 38px 24px 30px; }
   .expertiseCopy h3 { font-size: 2.35rem; }
   .expertiseCopy p { font-size: 0.88rem; }
 
-  .workHeading h2, .evidenceHeading h2 { font-size: clamp(3.3rem, 16vw, 5rem); }
+  .workHeading h2 { font-size: clamp(3.3rem, 16vw, 5rem); }
   .workGrid { grid-template-columns: 1fr; }
   .workCard[data-product="interactive"] { grid-column: auto; }
   .workCard[data-product="interactive"] .workVisual { height: 330px; padding: 20px; }
@@ -552,10 +552,14 @@
   .statementText p { font-size: 1.27rem; line-height: 1.55; }
   .statementOpening p:nth-child(2), .statementContinuation p:nth-child(2), .statementContinuation p:nth-child(5), .statementContinuation p:nth-child(8) { font-size: 1.78rem; }
 
-  .evidenceHeading { grid-template-columns: 1fr; }
-  .experienceItem { display: block; padding: 18px 0 36px; }
+  .evidence { padding-block: 84px 96px; }
+  .evidenceHeading { grid-template-columns: 1fr; gap: 14px; margin-bottom: 42px; }
+  .evidenceHeading h2 { margin-top: 14px; font-size: clamp(2.65rem, 12vw, 3.5rem); }
+  .experienceGrid { row-gap: 28px; }
+  .experienceItem { display: block; padding: 16px 0 32px; }
   .experienceImage { aspect-ratio: 16 / 10; margin-bottom: 24px; }
-  .experienceMeta span { font-size: 1.9rem; }
+  .experienceMeta span { font-size: 1.72rem; }
+  .credentialsGrid { margin-top: 68px; }
   .credentialItem { padding-inline: 8px; }
 
   .fragmentsHeading { grid-template-columns: 1fr; gap: 22px; }

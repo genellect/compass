@@ -277,7 +277,7 @@ export default function FounderPage() {
           <a href="#off-hours">Off Hours</a>
           <a href="#contact-cta">Contact</a>
           <span className={styles.desktopLanguageSwitch} aria-label="言語切替">
-            <FounderJapaneseLink aria-current="page">JP</FounderJapaneseLink><span>/</span><a href="/en/">EN</a>
+            <FounderJapaneseLink aria-current="page">JP</FounderJapaneseLink><span>/</span><a href={FOUNDER_EN_URL}>EN</a>
           </span>
         </nav>
         <nav className={styles.mobileNavigation} aria-label="Mobile portfolio navigation">
@@ -293,7 +293,7 @@ export default function FounderPage() {
               </div>
               <div className={styles.mobileLanguagePanel}>
                 <span>Language</span>
-                <div><FounderJapaneseLink aria-current="page">JP</FounderJapaneseLink><span>/</span><a href="/en/">EN</a></div>
+                <div><FounderJapaneseLink aria-current="page">JP</FounderJapaneseLink><span>/</span><a href={FOUNDER_EN_URL}>EN</a></div>
               </div>
             </div>
           </MobileExternalMenu>
@@ -603,7 +603,7 @@ export default function FounderPage() {
         </div>
         <div className={styles.footerLanguageSwitch} aria-label="言語切替">
           <span>Language</span>
-          <div><FounderJapaneseLink aria-current="page">JP</FounderJapaneseLink><a href="/en/">EN</a></div>
+          <div><FounderJapaneseLink aria-current="page">JP</FounderJapaneseLink><a href={FOUNDER_EN_URL}>EN</a></div>
         </div>
         <details className={styles.credits}>
           <summary>Image credits</summary>
