@@ -380,7 +380,7 @@ export default function FounderPage() {
 
               <section className={styles.essayChapter} aria-labelledby="chapter-origin" data-reveal>
                 <header><span>01</span><h3 id="chapter-origin">Origin</h3></header>
-                <p>高校時代の2020年頃から趣味でプログラミングを始め、Webフロントエンド開発を中心に学びました。当時は現在のようなLLMやコーディングエージェントはなく、実装、デバッグ、Git操作の多くを手作業で行う時代でした。開発そのものには強く惹かれましたが、大学では、より関心のあった生命科学・薬学を選びました。</p>
+                <p>高校時代の2020年頃から趣味でプログラミングを始め、Webフロントエンド開発を中心に学びました。当時は現在のようなLLMやコーディングエージェントはなく、実装、デバッグ、Git操作の多くを手作業で行う時代でした。開発そのものにも強く惹かれていましたが、科学によって生命の仕組みを解き明かし、新しい治療につなげることにも魅力を感じ、大学では薬学部へ進学しました。</p>
                 <p>大学では学部2年次から実験系研究室に所属し、神経変性疾患に関わる遺伝子変異と分子病態を研究してきました。その一方で、生成AIとコーディングエージェントの急速な進歩をきっかけに、研究データ解析からフルスタック開発へと領域を広げ、ソフトウェア開発にも再び軸足を置くようになりました。</p>
                 <p>そこで実感したのは、AIの価値は単にコーディングを高速化することではなく、一人の人間が設計・実装できるシステムの規模を拡張することにあるという点です。</p>
               </section>
@@ -601,7 +601,6 @@ export default function FounderPage() {
             Shogi: <a href="https://commons.wikimedia.org/wiki/File:Hulic_Shogi-kaikan_Sendagaya_Building_entrance_2024-09-12.jpg" target="_blank" rel="noopener noreferrer">Asanagi / Wikimedia Commons (CC0)</a> ·
             FRAGMENTS — DNA automation: <a href="https://unsplash.com/photos/gray-laboratory-machine-to8o0bqOA6Q" target="_blank" rel="noopener noreferrer">National Cancer Institute / Unsplash</a> ·
             Pipetting: <a href="https://unsplash.com/photos/person-using-pipette-in-laboratory-wDxFn_dBEC0" target="_blank" rel="noopener noreferrer">CDC / Unsplash</a> ·
-            Code by window: <a href="https://unsplash.com/photos/laptop-displaying-code-on-a-wooden-table-by-window-FhWWzP6LAkY" target="_blank" rel="noopener noreferrer">Alen Kuriakose / Unsplash</a> ·
             Code and terminal: <a href="https://unsplash.com/photos/computer-screen-displaying-code-and-terminal-prompts-N4pwMINNNL8" target="_blank" rel="noopener noreferrer">Bernd Dittrich / Unsplash</a> ·
             Development analysis: <a href="https://unsplash.com/photos/laptop-screen-displaying-code-and-data-charts-GQOylIn892U" target="_blank" rel="noopener noreferrer">Daniil Komov / Unsplash</a> ·
             Servers: <a href="https://unsplash.com/photos/a-rack-of-servers-in-a-server-room-2JJ3wBHu4_0" target="_blank" rel="noopener noreferrer">Kevin Ache / Unsplash</a> ·

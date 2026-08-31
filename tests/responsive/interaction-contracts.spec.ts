@@ -278,6 +278,20 @@ test("Founder FRAGMENTS preserves its editorial order, ambient motion, and share
     "© 2026 Yuto Matsui. Designed and developed by Yuto Matsui. All rights reserved.",
   );
 
+  const mobileReel = fragments.locator("[class*='fragmentReelViewport']").first();
+  const mobileReelContract = await mobileReel.evaluate((element) => ({
+    overflowX: getComputedStyle(element).overflowX,
+    hasScrollableContent: element.scrollWidth > element.clientWidth,
+  }));
+  expect(mobileReelContract).toEqual({ overflowX: "auto", hasScrollableContent: true });
+
+  await page.setViewportSize({ width: 1440, height: 900 });
+  const spreadButtons = fragments.getByRole("button", { name: /写真セット/ });
+  await expect(spreadButtons).toHaveCount(4);
+  await spreadButtons.nth(2).click();
+  await expect(spreadButtons.nth(2)).toHaveAttribute("aria-pressed", "true");
+  await expect(fragments.locator('[data-spread="3"]')).toHaveAttribute("data-active", "true");
+
   await page.emulateMedia({ reducedMotion: "reduce" });
   const reducedMotion = await page.evaluate(() => ({
     picture: getComputedStyle(document.querySelector("#fragments picture")!).animationName,
