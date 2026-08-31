@@ -8,6 +8,7 @@ import {
 import { onRequest as onRobotsRequest } from "../functions/robots.txt";
 import { onRequest as onSitemapRequest } from "../functions/sitemap.xml";
 import { onRequest as onEnglishRequest } from "../functions/en/[[path]]";
+import { onRequest as onEnglishIndexRequest } from "../functions/en/index";
 
 function createContext(url: string, method = "GET", host?: string) {
   const assetsFetch = vi.fn(async (
@@ -179,6 +180,18 @@ describe("Founder custom-domain Pages Function", () => {
       expect(next).not.toHaveBeenCalled();
     }
   );
+
+  it.each([
+    `https://${COMPASS_PAGES_DOMAIN}/en/`,
+    `https://${FOUNDER_DOMAIN}/en`
+  ])("uses the exact English entry route for %s", async (url) => {
+    const next = vi.fn(async () => new Response("next route"));
+    const response = await onEnglishIndexRequest({ request: new Request(url), next });
+
+    expect(response.status).toBe(301);
+    expect(response.headers.get("Location")).toBe(`https://${FOUNDER_DOMAIN}/en/`);
+    expect(next).not.toHaveBeenCalled();
+  });
 
   it.each(["/en", "/en/index.html"])(
     "normalizes the custom-domain English path %s in one permanent hop",
