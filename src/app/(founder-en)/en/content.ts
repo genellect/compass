@@ -3,22 +3,22 @@ export const compassOrigin = "https://compass-official.pages.dev";
 
 export const heroSlides = [
   {
-    src: "/images/founder-portfolio/yuto-matsui-profile-hero.webp",
-    alt: "Yuto Matsui in a quiet side portrait",
-    label: "Portrait / Perspective",
-    position: "50% 44%"
-  },
-  {
     src: "/images/founder-portfolio/yuto-matsui-nagano-lake-hero-20260831.webp",
     alt: "Yuto Matsui standing by a lake with the mountains of Nagano beyond",
-    label: "Nagano / Nature",
-    position: "50% 52%"
+    label: "Nagano / Lake",
+    position: "50% 50%"
   },
   {
-    src: "/images/founder-portfolio/yuto-matsui-lab-hero.webp",
-    alt: "Yuto Matsui in a life science laboratory",
-    label: "Laboratory / Life Science",
-    position: "50% 50%"
+    src: "/images/founder-portfolio/yuto-matsui-tree-hero-20260901.webp",
+    alt: "Yuto Matsui standing against a tree among summer flowers",
+    label: "Nagano / Trees",
+    position: "50% 45%"
+  },
+  {
+    src: "/images/founder-portfolio/yuto-matsui-nagano-mountain-hero-20260901.webp",
+    alt: "Yuto Matsui standing in the Nagano highlands with mountains beyond",
+    label: "Nagano / Highlands",
+    position: "50% 48%"
   }
 ] as const;
 
@@ -187,4 +187,3 @@ export const fragmentPhotos: readonly FragmentPhoto[] = [
   { key: "yuto-699", src: `${fragmentRoot}/yuto-699-1044.webp`, width: 1044, height: 1566, alt: "Yuto Matsui seated within curved architectural forms", tone: "warm" },
   { key: "yuto-704", src: `${fragmentRoot}/yuto-704-1372.webp`, width: 1372, height: 1192, alt: "A quiet profile of Yuto Matsui in front of pine branches" }
 ];
-

@@ -218,6 +218,21 @@
   letter-spacing: 0.015em;
   line-height: 1.7;
 }
+.heroSocialLinks { display: flex; gap: 10px; margin-top: 25px; }
+.heroSocialLinks a, .mobileMenuSocials a {
+  display: grid;
+  width: 42px;
+  height: 42px;
+  place-items: center;
+  color: rgba(237, 245, 239, 0.78);
+  border: 1px solid rgba(237, 245, 239, 0.2);
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.035);
+  transition: color 220ms ease, border-color 220ms ease, background 220ms ease;
+}
+.heroSocialLinks a:hover, .mobileMenuSocials a:hover { color: var(--ink); border-color: var(--biotic); background: var(--biotic); }
+.heroSocialLinks svg, .mobileMenuSocials svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 1.7; }
+.heroSocialLinks .socialIconFill, .mobileMenuSocials .socialIconFill { fill: currentColor; stroke: none; }
 .heroGallery {
   position: relative;
   z-index: 2;
@@ -463,13 +478,16 @@
   .mobileMenuHeader { display: flex; align-items: center; justify-content: space-between; padding-bottom: 20px; border-bottom: 1px solid rgba(237, 245, 239, 0.16); }
   .mobileMenuHeader span { font-size: 0.68rem; font-weight: 800; letter-spacing: 0.14em; }
   .mobileMenuHeader button { padding: 8px 0; color: rgba(237, 245, 239, 0.66); border: 0; background: transparent; font-size: 0.65rem; cursor: pointer; }
-  .mobileMenuPanel nav { display: grid; align-content: center; }
-  .mobileMenuPanel nav a { display: grid; grid-template-columns: 40px 1fr; align-items: baseline; padding: 10px 0; color: #edf5ef; border-bottom: 1px solid rgba(237, 245, 239, 0.11); text-decoration: none; font-family: var(--font-en-editorial), Georgia, serif; font-size: clamp(2rem, 7vw, 3.2rem); letter-spacing: -0.035em; }
-  .mobileMenuPanel nav a span { color: var(--biotic); font-family: ui-monospace, SFMono-Regular, Consolas, monospace; font-size: 0.56rem; letter-spacing: 0.08em; }
-  .mobileMenuFooter { display: flex; align-items: center; justify-content: space-between; padding-top: 20px; border-top: 1px solid rgba(237, 245, 239, 0.16); color: rgba(237, 245, 239, 0.48); font-size: 0.65rem; letter-spacing: 0.08em; text-transform: uppercase; }
-  .mobileMenuFooter div { display: flex; gap: 10px; }
-  .mobileMenuFooter a { color: rgba(237, 245, 239, 0.52); text-decoration: none; }
-  .mobileMenuFooter a[aria-current="page"] { color: var(--biotic); }
+  .mobileMenuLinks { display: grid; align-content: center; }
+  .mobileMenuLinks a { display: grid; grid-template-columns: 40px 1fr; align-items: baseline; padding: 10px 0; color: #edf5ef; border-bottom: 1px solid rgba(237, 245, 239, 0.11); text-decoration: none; font-family: var(--font-en-editorial), Georgia, serif; font-size: clamp(2rem, 7vw, 3.2rem); letter-spacing: -0.035em; }
+  .mobileMenuLinks a span { color: var(--biotic); font-family: ui-monospace, SFMono-Regular, Consolas, monospace; font-size: 0.56rem; letter-spacing: 0.08em; }
+  .mobileMenuFooter { display: grid; grid-template-columns: auto 1fr; align-items: center; gap: 20px; padding-top: 20px; border-top: 1px solid rgba(237, 245, 239, 0.16); color: rgba(237, 245, 239, 0.48); font-size: 0.65rem; letter-spacing: 0.08em; text-transform: uppercase; }
+  .mobileMenuSocials { display: flex; gap: 10px; }
+  .mobileMenuSocials a { width: 40px; height: 40px; color: rgba(237, 245, 239, 0.72); text-decoration: none; }
+  .mobileMenuLanguage { display: flex; align-items: center; justify-content: flex-end; gap: 16px; }
+  .mobileMenuLanguage > div { display: flex; gap: 10px; }
+  .mobileMenuLanguage a { color: rgba(237, 245, 239, 0.52); text-decoration: none; }
+  .mobileMenuLanguage a[aria-current="page"] { color: var(--biotic); }
 
   .hero { grid-template-columns: minmax(0, 48fr) minmax(350px, 52fr); }
   .heroCopy { padding-left: 32px; }
@@ -515,6 +533,7 @@
   .heroCopy h1 { font-size: clamp(3.95rem, 19vw, 5.5rem); line-height: 0.8; }
   .heroThesis { margin-top: 30px; font-size: clamp(2.25rem, 10vw, 3.15rem); line-height: 0.96; }
   .heroDomains { max-width: 34ch; margin-top: 22px; font-size: 0.71rem; line-height: 1.65; }
+  .heroSocialLinks { margin-top: 18px; }
   .heroGallery { grid-row: 2; width: calc(100% - 34px); padding-top: 0; align-self: stretch; }
   .heroAperture { width: 84%; height: calc(50svh - 70px); min-height: 330px; margin-left: auto; border-radius: 42% 42% 2px 2px / 16% 16% 2px 2px; }
   .heroGalleryControls { width: 84%; margin-left: auto; }
@@ -591,7 +610,7 @@
   .heroGallery { width: calc(100% - 26px); }
   .sectionShell, .statementShell, .contactShell { width: calc(100% - 26px); }
   .mobileMenuPanel { padding: 16px; }
-  .mobileMenuPanel nav a { font-size: 1.85rem; padding-block: 8px; }
+  .mobileMenuLinks a { font-size: 1.85rem; padding-block: 8px; }
   .mobileMenuRoot { gap: 6px; }
   .mobileHeaderLanguage { gap: 4px; padding-inline: 4px; }
   .mobileHeaderLanguage a { min-width: 24px; padding-inline: 4px; }
@@ -612,6 +631,6 @@
 
 @media (prefers-reduced-motion: reduce) {
   .hero::before, .fieldBiotic, .fieldSignal, .fieldNodes circle, .fieldPulseOne, .fieldPulseTwo, .fieldPulseThree, .contactField span { animation: none !important; }
-  .heroSlide, .expertiseImage img, .offHoursImage img, .mobileMenuPanel { transition: none !important; }
+  .heroSlide, .heroSocialLinks a, .mobileMenuSocials a, .expertiseImage img, .offHoursImage img, .mobileMenuPanel { transition: none !important; }
   .heroSlide { transform: none !important; }
 }

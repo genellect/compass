@@ -522,6 +522,32 @@ test("English Founder keeps the full statement disclosure and a continuously scr
   expect(runtimeErrors).toEqual([]);
 });
 
+test("English Founder Hero and Mobile navigation expose only Instagram and GitHub social CTAs", async ({ page }) => {
+  let runtimeErrors = await openRoute(page, "/en/", {
+    name: "founder-english-social-desktop",
+    width: 1440,
+    height: 900,
+  });
+
+  const heroSocials = page.getByRole("navigation", { name: "Yuto Matsui social profiles" });
+  await expect(heroSocials.getByRole("link", { name: "Instagram" })).toHaveAttribute("href", "https://www.instagram.com/n.m.w.314/?__pwa=1#");
+  await expect(heroSocials.getByRole("link", { name: "GitHub" })).toHaveAttribute("href", "https://github.com/genellect");
+  await expect(heroSocials.getByRole("link", { name: /COMPASS/i })).toHaveCount(0);
+  expect(runtimeErrors).toEqual([]);
+
+  runtimeErrors = await openRoute(page, "/en/", {
+    name: "founder-english-social-mobile",
+    width: 390,
+    height: 844,
+  });
+  await page.getByRole("button", { name: "Open navigation" }).click();
+  const mobileSocials = page.getByRole("navigation", { name: "Social profiles", exact: true });
+  await expect(mobileSocials.getByRole("link", { name: "Instagram" })).toBeVisible();
+  await expect(mobileSocials.getByRole("link", { name: "GitHub" })).toBeVisible();
+  await expect(mobileSocials.getByRole("link", { name: /COMPASS/i })).toHaveCount(0);
+  expect(runtimeErrors).toEqual([]);
+});
+
 test("English Founder remains overflow-free at the approved responsive viewports", async ({ page }) => {
   const viewports = [
     { width: 320, height: 568 },
