@@ -35,9 +35,11 @@ async function requireExactProductionFunctions(root) {
   }
   await visit(functionsRoot);
   const expected = [
+    "_middleware.ts",
     "api/community-registration.ts",
     "api/contact.ts",
     "en/[[path]].ts",
+    "en/index.ts",
     "index.ts",
     "library-registration/admin/api/[[path]].ts",
     "robots.txt.ts",
