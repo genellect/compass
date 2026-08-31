@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import { ProductExperienceMock } from "../../../interactive/components/ui/ProductExperienceMock";
+import { FounderJapaneseLink } from "../../../components/FounderJapaneseLink";
 import { FutureStrategyHero } from "../../(official)/future-strategy-library/components/FutureStrategyHero";
 import {
   compassOrigin,
@@ -140,7 +141,7 @@ export default function EnglishFounderPage() {
           <a href="#fragments">Fragments</a>
           <a href="#contact">Contact</a>
           <span className={styles.languageSwitch} aria-label="Language">
-            <a href="/">JP</a><span>/</span><a href="/en/" aria-current="page">EN</a>
+            <FounderJapaneseLink>JP</FounderJapaneseLink><span>/</span><a href="/en/" aria-current="page">EN</a>
           </span>
         </nav>
         <EnglishMobileMenu />
@@ -188,7 +189,7 @@ export default function EnglishFounderPage() {
         <section id="work" className={styles.work} aria-labelledby="work-title">
           <div className={styles.sectionShell}>
             <header className={styles.workHeading}>
-              <div><p className={styles.sectionIndex}>03 / Selected Work</p><h2 id="work-title">Systems in use.</h2></div>
+              <div><p className={styles.sectionIndex}>03 / Selected Work</p><h2 id="work-title">Selected Work</h2></div>
               <p>Ideas become evidence when they work beyond the prototype.</p>
             </header>
 
@@ -242,7 +243,7 @@ export default function EnglishFounderPage() {
         <section id="experience" className={styles.evidence} aria-labelledby="experience-title">
           <div className={styles.sectionShell}>
             <header className={styles.evidenceHeading}>
-              <div><p className={styles.sectionIndex}>05 / Experience &amp; Credentials</p><h2 id="experience-title">Evidence, over claims.</h2></div>
+              <div><p className={styles.sectionIndex}>05 / Experience &amp; Credentials</p><h2 id="experience-title">EXPERIENCE</h2></div>
               <p>As of August 2026</p>
             </header>
             <div className={styles.experienceGrid}>
@@ -324,7 +325,7 @@ export default function EnglishFounderPage() {
         </div>
         <div className={styles.footerLanguageSwitch} aria-label="Language">
           <span>Language</span>
-          <div><a href="/">JP</a><a href="/en/" aria-current="page">EN</a></div>
+          <div><FounderJapaneseLink>JP</FounderJapaneseLink><a href="/en/" aria-current="page">EN</a></div>
         </div>
         <details className={styles.credits}>
           <summary>Image credits</summary>

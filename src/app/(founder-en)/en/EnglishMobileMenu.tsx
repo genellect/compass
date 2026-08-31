@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { FounderJapaneseLink } from "../../../components/FounderJapaneseLink";
 import styles from "./english-founder.module.css";
 
 const links = [
@@ -90,10 +91,9 @@ export function EnglishMobileMenu() {
         </nav>
         <div className={styles.mobileMenuFooter}>
           <span>Language</span>
-          <div><a href="/">JP</a><span>/</span><a href="/en/" aria-current="page">EN</a></div>
+          <div><FounderJapaneseLink>JP</FounderJapaneseLink><span>/</span><a href="/en/" aria-current="page">EN</a></div>
         </div>
       </div>
     </div>
   );
 }
-

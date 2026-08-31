@@ -4,6 +4,7 @@ import Script from "next/script";
 import { LectureSignalMatrix } from "../../../interactive/components/hero/LectureSignalMatrix";
 import { ProductExperienceMock } from "../../../interactive/components/ui/ProductExperienceMock";
 import { LegacyInteractions } from "../../../components/LegacyInteractions";
+import { FounderJapaneseLink } from "../../../components/FounderJapaneseLink";
 import { FutureStrategyHero } from "../future-strategy-library/components/FutureStrategyHero";
 import { EssayContinuation } from "./EssayContinuation";
 import { FounderFragments } from "./FounderFragments";
@@ -276,7 +277,7 @@ export default function FounderPage() {
           <a href="#off-hours">Off Hours</a>
           <a href="#contact-cta">Contact</a>
           <span className={styles.desktopLanguageSwitch} aria-label="言語切替">
-            <a href="/" aria-current="page">JP</a><span>/</span><a href="/en/">EN</a>
+            <FounderJapaneseLink aria-current="page">JP</FounderJapaneseLink><span>/</span><a href="/en/">EN</a>
           </span>
         </nav>
         <nav className={styles.mobileNavigation} aria-label="Mobile portfolio navigation">
@@ -292,7 +293,7 @@ export default function FounderPage() {
               </div>
               <div className={styles.mobileLanguagePanel}>
                 <span>Language</span>
-                <div><a href="/" aria-current="page">JP</a><span>/</span><a href="/en/">EN</a></div>
+                <div><FounderJapaneseLink aria-current="page">JP</FounderJapaneseLink><span>/</span><a href="/en/">EN</a></div>
               </div>
             </div>
           </MobileExternalMenu>
@@ -602,7 +603,7 @@ export default function FounderPage() {
         </div>
         <div className={styles.footerLanguageSwitch} aria-label="言語切替">
           <span>Language</span>
-          <div><a href="/" aria-current="page">JP</a><a href="/en/">EN</a></div>
+          <div><FounderJapaneseLink aria-current="page">JP</FounderJapaneseLink><a href="/en/">EN</a></div>
         </div>
         <details className={styles.credits}>
           <summary>Image credits</summary>

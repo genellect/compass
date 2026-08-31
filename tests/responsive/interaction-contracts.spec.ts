@@ -458,7 +458,7 @@ test("Founder language controls connect the Japanese and English portfolio route
     height: 900,
   });
   const language = page.locator('[aria-label="言語切替"]').first();
-  await expect(language.getByRole("link", { name: "JP", exact: true })).toHaveAttribute("href", "/");
+  await expect(language.getByRole("link", { name: "JP", exact: true })).toHaveAttribute("href", "/founder/");
   await expect(language.getByRole("link", { name: "EN", exact: true })).toHaveAttribute("href", "/en/");
   const footerLanguage = page.locator("footer").locator('[aria-label="言語切替"]');
   await expect(footerLanguage).toBeVisible();
@@ -476,6 +476,17 @@ test("Founder language controls connect the Japanese and English portfolio route
   await expect(mobileLanguage.getByRole("link", { name: "EN", exact: true })).toHaveAttribute("href", "/en/");
   await page.locator("footer").scrollIntoViewIfNeeded();
   await expect(page.locator("footer").locator('[aria-label="言語切替"]')).toBeVisible();
+  expect(runtimeErrors).toEqual([]);
+
+  runtimeErrors = await openRoute(page, "/en/", {
+    name: "founder-language-preview-host",
+    width: 390,
+    height: 844,
+  });
+  const englishFooterLanguage = page.locator("footer").locator('[aria-label="Language"]');
+  await englishFooterLanguage.scrollIntoViewIfNeeded();
+  await englishFooterLanguage.getByRole("link", { name: "JP", exact: true }).click();
+  await expect(page).toHaveURL(/\/founder\/$/);
   expect(runtimeErrors).toEqual([]);
 });
 
