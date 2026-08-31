@@ -1,4 +1,7 @@
+"use client";
+
 import Image from "next/image";
+import { useEffect, useState } from "react";
 import styles from "./founder.module.css";
 
 type FragmentPhoto = {
@@ -15,6 +18,7 @@ type FragmentPhoto = {
 };
 
 const assetRoot = "/images/founder-portfolio/fragments";
+const spreadDurationMs = 9_000;
 
 const fragmentSpreads: readonly (readonly FragmentPhoto[])[] = [
   [
@@ -134,22 +138,22 @@ const fragmentSpreads: readonly (readonly FragmentPhoto[])[] = [
   [
     {
       key: "code-window",
-      src: `${assetRoot}/code-window-1920.webp`,
-      srcSet: `${assetRoot}/code-window-640.webp 640w, ${assetRoot}/code-window-1280.webp 1280w, ${assetRoot}/code-window-1920.webp 1920w`,
-      width: 1920,
-      height: 3413,
-      alt: "窓辺の自然光に置かれたコード表示中のノートPC",
-      role: "engineering",
+      src: `${assetRoot}/yuto-yokohama-city-1600.webp`,
+      srcSet: `${assetRoot}/yuto-yokohama-city-640.webp 640w, ${assetRoot}/yuto-yokohama-city-1280.webp 1280w, ${assetRoot}/yuto-yokohama-city-1600.webp 1600w`,
+      width: 1600,
+      height: 2400,
+      alt: "横浜の街角でベンチに座るYuto Matsui",
+      role: "atmosphere",
       crop: "code-window",
       sizes: "(max-width: 900px) calc(100vw - 34px), 25vw"
     },
     {
       key: "yuto-695",
-      src: `${assetRoot}/yuto-695-1566.webp`,
-      srcSet: `${assetRoot}/yuto-695-640.webp 640w, ${assetRoot}/yuto-695-1566.webp 1566w`,
+      src: `${assetRoot}/yuto-nagano-highland-1566.webp`,
+      srcSet: `${assetRoot}/yuto-nagano-highland-640.webp 640w, ${assetRoot}/yuto-nagano-highland-1566.webp 1566w`,
       width: 1566,
       height: 1044,
-      alt: "横浜港と橋を背景に立つYuto Matsui",
+      alt: "長野の高原と山並みを背景に立つYuto Matsui",
       role: "atmosphere",
       sizes: "(max-width: 900px) 46vw, 42vw"
     },
@@ -348,14 +352,35 @@ function FragmentMobileReel() {
 }
 
 export function FounderFragments() {
+  const [activeSpread, setActiveSpread] = useState(0);
+
+  useEffect(() => {
+    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+    if (reducedMotion.matches) return;
+
+    const timer = window.setTimeout(() => {
+      setActiveSpread((current) => (current + 1) % fragmentSpreads.length);
+    }, spreadDurationMs);
+
+    return () => window.clearTimeout(timer);
+  }, [activeSpread]);
+
   return (
     <section id="fragments" className={styles.fragments} aria-labelledby="fragments-title">
       <FragmentSignalField />
       <div className={styles.sectionShell}>
         <header className={styles.fragmentsHeader}>
           <h2 id="fragments-title">FRAGMENTS</h2>
-          <div className={styles.fragmentSequence} aria-hidden="true">
-            {fragmentSpreads.map((_, index) => <span key={index} />)}
+          <div className={styles.fragmentSequence} aria-label="FRAGMENTSの表示セット">
+            {fragmentSpreads.map((_, index) => (
+              <button
+                key={index}
+                type="button"
+                aria-label={`写真セット ${index + 1} を表示`}
+                aria-pressed={activeSpread === index}
+                onClick={() => setActiveSpread(index)}
+              />
+            ))}
           </div>
         </header>
 
@@ -365,6 +390,8 @@ export function FounderFragments() {
               key={spreadIndex}
               className={styles.fragmentSpread}
               data-spread={spreadIndex + 1}
+              data-active={activeSpread === spreadIndex}
+              aria-hidden={activeSpread !== spreadIndex}
             >
               {spread.map((photo) => (
                 <figure

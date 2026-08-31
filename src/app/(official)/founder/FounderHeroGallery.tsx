@@ -12,9 +12,9 @@ const SLIDES = [
     motion: "from-left"
   },
   {
-    src: "/images/founder-portfolio/yuto-matsui-queens-square.webp",
-    alt: "横浜の街角でベンチに座るYuto Matsui / 松井優知",
-    location: "YOKOHAMA / CITY",
+    src: "/images/founder-portfolio/yuto-matsui-nagano-lake-hero-20260831.webp",
+    alt: "長野の湖と山々を背景に立つYuto Matsui / 松井優知",
+    location: "NAGANO / NATURE",
     motion: "from-right"
   },
   {

@@ -782,22 +782,33 @@
   padding-bottom: 5px;
 }
 
-.fragmentSequence span {
+.fragmentSequence button {
   position: relative;
-  height: 2px;
+  height: 18px;
   flex: 1;
+  padding: 0;
   overflow: hidden;
-  background: rgba(55, 101, 130, 0.16);
+  border: 0;
+  background: linear-gradient(rgba(55, 101, 130, 0.16), rgba(55, 101, 130, 0.16)) center / 100% 2px no-repeat;
+  cursor: pointer;
 }
 
-.fragmentSequence span::after {
+.fragmentSequence button::after {
   position: absolute;
-  inset: 0;
+  top: 8px;
+  right: 0;
+  left: 0;
+  height: 2px;
   content: "";
   background: linear-gradient(90deg, #3c97aa, #6a7fab 58%, #c7a36c);
   opacity: 0;
   transform: scaleX(0);
   transform-origin: left;
+}
+
+.fragmentSequence button:focus-visible {
+  outline: 2px solid rgba(60, 151, 170, 0.72);
+  outline-offset: 5px;
 }
 
 .fragmentsEssay {
@@ -838,8 +849,9 @@
   isolation: isolate;
 }
 
-.fragmentSpread:first-child {
+.fragmentSpread[data-active="true"] {
   visibility: visible;
+  z-index: 2;
   opacity: 1;
   transform: none;
 }
@@ -1013,24 +1025,23 @@
   }
 
   .fragmentSpread {
-    animation: fragmentSpreadCycle 36s cubic-bezier(0.45, 0, 0.2, 1) infinite;
+    transition:
+      opacity 900ms cubic-bezier(0.45, 0, 0.2, 1),
+      transform 900ms cubic-bezier(0.45, 0, 0.2, 1),
+      visibility 0s linear 900ms;
   }
 
-  .fragmentSpread:nth-child(2) { animation-delay: -27s; }
-  .fragmentSpread:nth-child(3) { animation-delay: -18s; }
-  .fragmentSpread:nth-child(4) { animation-delay: -9s; }
+  .fragmentSpread[data-active="true"] {
+    transition-delay: 0s;
+  }
 
   .fragmentsEssay::after {
     animation: fragmentSwitchScan 9s cubic-bezier(0.45, 0, 0.2, 1) infinite;
   }
 
-  .fragmentSequence span::after {
-    animation: fragmentSequenceProgress 36s linear infinite;
+  .fragmentSequence button[aria-pressed="true"]::after {
+    animation: fragmentSequenceProgress 9s linear forwards;
   }
-
-  .fragmentSequence span:nth-child(2)::after { animation-delay: -27s; }
-  .fragmentSequence span:nth-child(3)::after { animation-delay: -18s; }
-  .fragmentSequence span:nth-child(4)::after { animation-delay: -9s; }
 
   .fragmentReelTrack[data-reel-row="1"] {
     animation: fragmentReelForward 82s linear infinite;
@@ -1046,32 +1057,6 @@
 
   .fragmentReelViewport::after {
     animation: fragmentDataRail 8s linear infinite;
-  }
-}
-
-@keyframes fragmentSpreadCycle {
-  0%, 20% {
-    visibility: visible;
-    z-index: 2;
-    opacity: 1;
-    transform: translate3d(0, 0, 0) scale(1);
-  }
-  24%, 95% {
-    visibility: hidden;
-    z-index: 1;
-    opacity: 0;
-    transform: translate3d(-2.8%, 0, 0) scale(0.992);
-  }
-  96% {
-    visibility: visible;
-    opacity: 0;
-    transform: translate3d(2.8%, 0, 0) scale(0.992);
-  }
-  100% {
-    visibility: visible;
-    z-index: 2;
-    opacity: 1;
-    transform: translate3d(0, 0, 0) scale(1);
   }
 }
 
@@ -1092,10 +1077,8 @@
 }
 
 @keyframes fragmentSequenceProgress {
-  0% { opacity: 1; transform: scaleX(0); }
-  20% { opacity: 1; transform: scaleX(1); }
-  24%, 95% { opacity: 0; transform: scaleX(1); }
-  96%, 100% { opacity: 0; transform: scaleX(0); }
+  from { opacity: 1; transform: scaleX(0); }
+  to { opacity: 1; transform: scaleX(1); }
 }
 
 @keyframes fragmentCardScan {
@@ -1262,7 +1245,18 @@
   .fragmentReelViewport {
     position: relative;
     min-width: 0;
-    overflow: hidden;
+    overflow-x: auto;
+    overflow-y: hidden;
+    overscroll-behavior-inline: contain;
+    scrollbar-width: none;
+    touch-action: pan-x;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .fragmentReelViewport::-webkit-scrollbar { display: none; }
+
+  .fragmentReelViewport:active .fragmentReelTrack {
+    animation-play-state: paused;
   }
 
   .fragmentReelViewport::after {
@@ -2406,7 +2400,7 @@
 .credits { margin-top: 25px; color: rgba(220, 232, 239, 0.56); font-size: 0.63rem; line-height: 1.7; }
 .credits summary { width: fit-content; cursor: pointer; font-weight: 750; letter-spacing: 0.06em; }
 .credits p { max-width: 940px; margin: 11px 0 0; }
-.copyright { margin: 22px 0 0; color: rgba(220, 232, 239, 0.34); font-size: 0.57rem; letter-spacing: 0.04em; }
+.copyright { margin: 22px 0 0; color: rgba(247, 251, 253, 0.82); font-size: 0.57rem; font-weight: 560; letter-spacing: 0.04em; }
 
 @keyframes ambientOrbit { to { transform: rotate(360deg); } }
 @keyframes photoScan { 0%, 12% { transform: translateY(0); opacity: 0; } 28% { opacity: 1; } 72% { opacity: 0.8; } 88%, 100% { transform: translateY(680%); opacity: 0; } }
@@ -2662,7 +2656,7 @@
   .fragmentSpread,
   .fragmentSpread::after,
   .fragmentsEssay::after,
-  .fragmentSequence span::after,
+  .fragmentSequence button::after,
   .fragmentReelTrack,
   .fragmentReelPhoto::before,
   .fragmentReelViewport::after {
