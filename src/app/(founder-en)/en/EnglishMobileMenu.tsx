@@ -8,9 +8,9 @@ import styles from "./english-founder.module.css";
 
 const links = [
   { label: "Expertise", href: "#expertise" },
+  { label: "Experience", href: "#experience" },
   { label: "Statement", href: "#statement" },
   { label: "Selected Work", href: "#work" },
-  { label: "Experience", href: "#experience" },
   { label: "Fragments", href: "#fragments" },
   { label: "Off Hours", href: "#off-hours" },
   { label: "Contact", href: "#contact" }
