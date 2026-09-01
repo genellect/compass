@@ -9,10 +9,10 @@ export const heroSlides = [
     position: "50% 50%"
   },
   {
-    src: "/images/founder-portfolio/yuto-matsui-tree-hero-20260901.webp",
-    alt: "Yuto Matsui standing against a tree among summer flowers",
-    label: "Nagano / Trees",
-    position: "50% 45%"
+    src: "/images/founder-portfolio/yuto-matsui-illuminated-steps-hero-20260901.jpg",
+    alt: "Yuto Matsui seated on illuminated steps at night",
+    label: "Tokyo / Light",
+    position: "50% 50%"
   },
   {
     src: "/images/founder-portfolio/yuto-matsui-nagano-mountain-hero-20260901.webp",
@@ -122,9 +122,9 @@ export const experience = [
 ] as const;
 
 export const credentials = [
-  { mark: "EIKEN", name: "EIKEN Grade 1", score: "Grade 1" },
-  { mark: "TOEIC", name: "TOEIC Listening & Reading", score: "965" },
-  { mark: "IELTS", name: "IELTS Academic", score: "7.5" }
+  { mark: "IELTS", name: "IELTS Academic", score: "7.5", cefr: "Aligned with CEFR C1" },
+  { mark: "TOEIC", name: "TOEIC Listening & Reading", score: "965", cefr: "Equivalent to CEFR C1" },
+  { mark: "EIKEN", name: "EIKEN Grade 1", score: "Grade 1", cefr: "Equivalent to CEFR C1" }
 ] as const;
 
 export const offHours = [

@@ -136,9 +136,9 @@ export default function EnglishFounderPage() {
         </a>
         <nav className={styles.desktopNav} aria-label="Portfolio navigation">
           <a href="#expertise">Expertise</a>
+          <a href="#experience">Experience</a>
           <a href="#statement">Statement</a>
           <a href="#work">Work</a>
-          <a href="#experience">Evidence</a>
           <a href="#fragments">Fragments</a>
           <a href="#contact">Contact</a>
           <span className={styles.languageSwitch} aria-label="Language">
@@ -194,10 +194,38 @@ export default function EnglishFounderPage() {
           </div>
         </section>
 
+        <section id="experience" className={styles.evidence} aria-labelledby="experience-title">
+          <div className={styles.sectionShell}>
+            <header className={styles.evidenceHeading}>
+              <div><p className={styles.sectionIndex}>03 / Experience &amp; Credentials</p><h2 id="experience-title">EXPERIENCE</h2></div>
+              <p>As of August 2026</p>
+            </header>
+            <div className={styles.experienceGrid}>
+              {experience.map((item) => (
+                <article key={item.area} className={styles.experienceItem}>
+                  <div className={styles.experienceImage}>
+                    <Image src={item.image} alt={item.alt} fill sizes="(min-width: 901px) 31vw, 92vw" />
+                  </div>
+                  <div className={styles.experienceMeta}><span>{item.area}</span><strong>{item.years}</strong></div>
+                  <p>{item.focus.map((focus) => <span key={focus}>{focus}</span>)}</p>
+                </article>
+              ))}
+            </div>
+            <div className={styles.credentialsGrid} aria-label="English language credentials">
+              {credentials.map((credential) => (
+                <article key={credential.name} className={styles.credentialItem}>
+                  <span>{credential.mark}</span>
+                  <div><p>{credential.name}</p><strong>{credential.score}</strong><small>{credential.cefr}</small></div>
+                </article>
+              ))}
+            </div>
+          </div>
+        </section>
+
         <section id="statement" className={styles.statement} aria-labelledby="statement-title">
           <div className={styles.statementShell}>
             <aside className={styles.statementIdentity}>
-              <p className={styles.sectionIndex}>03 / Personal Statement</p>
+              <p className={styles.sectionIndex}>04 / Personal Statement</p>
               <h2 id="statement-title">Between Life Science and Engineering</h2>
               <div className={styles.statementPortrait}>
                 <Image
@@ -215,7 +243,7 @@ export default function EnglishFounderPage() {
         <section id="work" className={styles.work} aria-labelledby="work-title">
           <div className={styles.sectionShell}>
             <header className={styles.workHeading}>
-              <div><p className={styles.sectionIndex}>04 / Selected Work</p><h2 id="work-title">Selected Work</h2></div>
+              <div><p className={styles.sectionIndex}>05 / Selected Work</p><h2 id="work-title">Selected Work</h2></div>
               <p>Ideas become evidence when they work beyond the prototype.</p>
             </header>
 
@@ -242,34 +270,6 @@ export default function EnglishFounderPage() {
                       ))}
                     </nav>
                   </div>
-                </article>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        <section id="experience" className={styles.evidence} aria-labelledby="experience-title">
-          <div className={styles.sectionShell}>
-            <header className={styles.evidenceHeading}>
-              <div><p className={styles.sectionIndex}>05 / Experience &amp; Credentials</p><h2 id="experience-title">EXPERIENCE</h2></div>
-              <p>As of August 2026</p>
-            </header>
-            <div className={styles.experienceGrid}>
-              {experience.map((item) => (
-                <article key={item.area} className={styles.experienceItem}>
-                  <div className={styles.experienceImage}>
-                    <Image src={item.image} alt={item.alt} fill sizes="(min-width: 901px) 31vw, 92vw" />
-                  </div>
-                  <div className={styles.experienceMeta}><span>{item.area}</span><strong>{item.years}</strong></div>
-                  <p>{item.focus.map((focus) => <span key={focus}>{focus}</span>)}</p>
-                </article>
-              ))}
-            </div>
-            <div className={styles.credentialsGrid} aria-label="English language credentials">
-              {credentials.map((credential) => (
-                <article key={credential.name} className={styles.credentialItem}>
-                  <span>{credential.mark}</span>
-                  <div><p>{credential.name}</p><strong>{credential.score}</strong></div>
                 </article>
               ))}
             </div>

@@ -762,6 +762,8 @@ for (const expected of [
   "EIKEN Grade 1",
   "TOEIC Listening &amp; Reading",
   "IELTS Academic",
+  "Aligned with CEFR C1",
+  "Equivalent to CEFR C1",
   "OFF HOURS",
   "Get in touch.",
   "I’m always open to thoughtful conversations, collaborations, and new opportunities.",
@@ -779,7 +781,7 @@ for (const expected of [
   'aria-label="Yuto Matsui social profiles"',
   'aria-label="Social profiles"',
   "/images/founder-portfolio/yuto-matsui-nagano-lake-hero-20260831.webp",
-  "/images/founder-portfolio/yuto-matsui-tree-hero-20260901.webp",
+  "/images/founder-portfolio/yuto-matsui-illuminated-steps-hero-20260901.jpg",
   "/images/founder-portfolio/yuto-matsui-nagano-mountain-hero-20260901.webp",
   parentGaMeasurementId
 ]) expectIncludes(founderEnglish, expected, "English Founder portfolio");
@@ -788,7 +790,7 @@ const englishHero = founderEnglish.match(/<section id="top"[\s\S]*?<\/section>/)
 if (!englishHero) throw new Error("English Founder portfolio is missing its Hero section.");
 expectOrdered(englishHero, [
   "/images/founder-portfolio/yuto-matsui-nagano-lake-hero-20260831.webp",
-  "/images/founder-portfolio/yuto-matsui-tree-hero-20260901.webp",
+  "/images/founder-portfolio/yuto-matsui-illuminated-steps-hero-20260901.jpg",
   "/images/founder-portfolio/yuto-matsui-nagano-mountain-hero-20260901.webp"
 ], "English Founder Hero photo order");
 expectIncludes(englishHero, 'href="https://www.instagram.com/n.m.w.314/?__pwa=1#"', "English Founder Hero Instagram CTA");
@@ -807,8 +809,13 @@ expectExcludes(englishMobileMenu, `href="${compassOrigin}/"`, "English Founder M
 
 expectOrdered(
   founderEnglish,
-  ['id="expertise"', 'id="statement"', 'id="work"', 'id="experience"', 'id="fragments"', 'id="off-hours"', 'id="contact"'],
-  "English Founder statement-first section order"
+  ['id="expertise"', 'id="experience"', 'id="statement"', 'id="work"', 'id="fragments"', 'id="off-hours"', 'id="contact"'],
+  "English Founder experience-first section order"
+);
+expectOrdered(
+  founderEnglish,
+  ["IELTS Academic", "TOEIC Listening &amp; Reading", "EIKEN Grade 1"],
+  "English Founder credential order"
 );
 
 expectOrdered(normalizeText(founderEnglish), [
@@ -1532,7 +1539,7 @@ for (const relative of [
   "images/future-strategy-library/research-career.webp",
   "images/founder-portfolio/yuto-matsui-profile-hero.webp",
   "images/founder-portfolio/yuto-matsui-nagano-lake-hero-20260831.webp",
-  "images/founder-portfolio/yuto-matsui-tree-hero-20260901.webp",
+  "images/founder-portfolio/yuto-matsui-illuminated-steps-hero-20260901.jpg",
   "images/founder-portfolio/yuto-matsui-nagano-mountain-hero-20260901.webp",
   "images/founder-portfolio/yuto-matsui-front.webp",
   "images/founder-portfolio/yuto-matsui-education-support.webp",
