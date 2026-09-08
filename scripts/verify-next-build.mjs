@@ -334,8 +334,8 @@ for (const expected of [
   'class="v4-technology__interactive"',
   "次の1歩は、",
   "ここから始まる。",
-  "わからないが、",
-  "動き出す。",
+  "LET EVERYTHING",
+  "MOVE.",
   "あなたが飲み込んだその疑問を、誰かも同じように抱えているかもしれない。",
   "未来の講義を、いま体験。",
   "ひとりでは見えない、",
@@ -372,7 +372,7 @@ for (const expected of [
   "ストーリーを読む",
   "お問い合わせフォーム",
   "Web開発・プログラミング 4年",
-  "/images/founder/yuto-matsui-portrait-800.jpg",
+  "/images/founder/yuto-matsui-parent-20260908-800.jpg",
   "学生主導の教育・テクノロジープラットフォーム",
   "COMPASS Interactive紹介サイト",
   "未来戦略ライブラリ紹介サイト",
@@ -461,6 +461,12 @@ if (visionLineCount !== 2) throw new Error(`Official page must contain exactly t
 const interactiveCard = official.match(/<article class="v4-technology__interactive"[\s\S]*?<\/article>/)?.[0];
 if (!interactiveCard) throw new Error("Official page is missing the Interactive card.");
 expectIncludes(interactiveCard, "未来の講義を、いま体験。", "Interactive card");
+expectIncludes(interactiveCard, "あなたが飲み込んだその疑問を、誰かも同じように抱えているかもしれない。", "Interactive card preserved body");
+expectIncludes(interactiveCard, "問いも、迷いも、ひらめきも。その場にいる全員の思考が重なったとき、講義はただの説明ではなく、自分たちの学びに変わります。", "Interactive card preserved body");
+expectExcludes(interactiveCard, "わからないが、", "Retired parent Interactive heading");
+const parentHeader = official.match(/<header[\s\S]*?<\/header>/)?.[0] ?? "";
+expectExcludes(parentHeader, "Better Decisions", "Retired parent header tagline");
+expectExcludes(parentHeader, ">Technology Core<", "Retired parent Technology menu");
 expectIncludes(interactiveCard, 'href="/INTRO_Interactive/"', "Interactive card");
 
 const communitySection = official.match(/<section id="community"[\s\S]*?<\/section>/)?.[0];

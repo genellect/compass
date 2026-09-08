@@ -6,6 +6,7 @@ import {
   VisionFieldGraphic
 } from "../components/BrandSignalGraphics";
 import { GitHubProfileLink } from "../components/GitHubProfileLink";
+import styles from "./official-core-copy.module.css";
 
 const interactiveIntroUrl = "/INTRO_Interactive/";
 const libraryUrl = "/future-strategy-library/";
@@ -142,7 +143,7 @@ export function TechnologyCoreSection() {
 
           <article className="v4-technology__interactive" data-reveal>
             <p className="v4-card-kicker">COMPASS INTERACTIVE</p>
-            <h3 className="v4-technology__interactive-title"><span>わからないが、</span><span>動き出す。</span></h3>
+            <h3 className={`v4-technology__interactive-title ${styles.interactiveTitle}`}><span>LET EVERYTHING</span>{' '}<span>MOVE.</span></h3>
             <div className="v4-technology__interactive-copy">
               <p>あなたが飲み込んだその疑問を、誰かも同じように抱えているかもしれない。</p>
               <p>問いも、迷いも、ひらめきも。その場にいる全員の思考が重なったとき、講義はただの説明ではなく、自分たちの学びに変わります。</p>
@@ -250,8 +251,8 @@ export function FounderPortfolioSection() {
         <div className="v4-founder__profile" data-reveal>
           <figure className="v4-founder__portrait">
             <picture>
-              <source type="image/webp" srcSet="/images/founder/yuto-matsui-portrait-480.webp 480w, /images/founder/yuto-matsui-portrait-800.webp 800w" sizes="(min-width: 901px) 340px, 100vw" />
-              <img src="/images/founder/yuto-matsui-portrait-800.jpg" width="800" height="1000" loading="lazy" decoding="async" alt="COMPASS代表 松井優知" />
+              <source type="image/webp" srcSet="/images/founder/yuto-matsui-parent-20260908-480.webp 480w, /images/founder/yuto-matsui-parent-20260908-800.webp 800w" sizes="(min-width: 901px) 340px, 100vw" />
+              <img src="/images/founder/yuto-matsui-parent-20260908-800.jpg" width="800" height="1000" loading="lazy" decoding="async" alt="COMPASS代表 松井優知" />
             </picture>
           </figure>
           <div className="v4-founder__profile-copy">

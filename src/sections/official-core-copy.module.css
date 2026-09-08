@@ -1,0 +1,21 @@
+.interactiveTitle:global(.v4-technology__interactive-title) {
+  display: grid;
+  gap: clamp(10px,2vw,16px);
+  margin: 26px 0 34px;
+}
+.interactiveTitle:global(.v4-technology__interactive-title) > span:first-child {
+  display: block;
+  font-size: clamp(19px,5.8vw,26px);
+  font-weight: 650;
+  line-height: 1.15;
+  letter-spacing: .015em;
+  white-space: nowrap;
+}
+.interactiveTitle:global(.v4-technology__interactive-title) > span:last-child {
+  display: block;
+  font-size: clamp(54px,13.5vw,88px);
+  font-weight: 900;
+  line-height: 1;
+  letter-spacing: -.045em;
+  white-space: nowrap;
+}
