@@ -28,6 +28,7 @@ test("EN Convergence Hero: photos, responsive layout, controls and retained work
           const box = node.getBoundingClientRect();
           return box.width > 0 && (box.right > rect.right + 1 || box.left < rect.left - 1 || node.scrollWidth > node.clientWidth + 1);
         });
+      });
       expect(overflow).toBe(false);
       await page.screenshot({ path: testInfo.outputPath(`hero-${width}-${index}.png`) });
     }
