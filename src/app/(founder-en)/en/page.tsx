@@ -91,7 +91,7 @@ function Arrow() {
 
 function ConvergenceField() {
   return (
-    <svg className={styles.convergenceField} viewBox="0 0 1200 760" aria-hidden="true" focusable="false">
+    <svg className={styles.convergenceField} viewBox="0 0 1440 900" aria-hidden="true" focusable="false">
       <defs>
         <linearGradient id="en-field-biotic" x1="0" y1="0" x2="1" y2="0">
           <stop offset="0" stopColor="#b6ef7a" stopOpacity="0" />
@@ -102,23 +102,31 @@ function ConvergenceField() {
           <stop offset="1" stopColor="#8b78f0" stopOpacity="0.82" />
         </linearGradient>
       </defs>
-      <path className={styles.fieldGuide} d="M-80 126C280 84 430 380 742 380S1080 314 1280 270" />
-      <path className={styles.fieldGuide} d="M-80 380H1280" />
-      <path className={styles.fieldGuide} d="M-80 642C280 686 430 380 742 380S1080 448 1280 510" />
-      <path className={styles.fieldBiotic} d="M-80 126C280 84 430 380 742 380" />
-      <path className={styles.fieldSignal} d="M-80 380H742" />
-      <path className={styles.fieldBiotic} d="M-80 642C280 686 430 380 742 380" />
+      <path className={styles.fieldGuide} d="M-80 160C214 150 392 268 612 450" />
+      <path className={styles.fieldGuide} d="M-80 450C188 450 410 450 612 450" />
+      <path className={styles.fieldGuide} d="M-80 770C220 764 404 632 612 450" />
+      <path className={styles.fieldBoundary} d="M612 -40C560 178 658 322 612 450C566 578 654 728 606 940" />
+      <path className={styles.fieldOrbit} d="M316 450A296 296 0 0 1 612 154" />
+      <path className={styles.fieldOrbit} d="M316 450A296 296 0 0 0 612 746" />
+      <path className={styles.fieldBiotic} d="M-80 160C214 150 392 268 612 450" />
+      <path className={styles.fieldSignal} d="M-80 450C188 450 410 450 612 450" />
+      <path className={styles.fieldBiotic} d="M-80 770C220 764 404 632 612 450" />
       <g className={styles.fieldNodes}>
-        <circle cx="208" cy="128" r="4" />
-        <circle cx="318" cy="380" r="5" />
-        <circle cx="236" cy="624" r="4" />
-        <circle cx="742" cy="380" r="8" />
-        <circle cx="1035" cy="332" r="4" />
-        <circle cx="1110" cy="474" r="4" />
+        <circle cx="152" cy="178" r="3" />
+        <circle cx="212" cy="450" r="4" />
+        <circle cx="168" cy="742" r="3" />
+        <circle cx="382" cy="316" r="2.5" />
+        <circle cx="420" cy="612" r="2.5" />
+        <circle cx="612" cy="450" r="7" />
       </g>
-      <circle className={styles.fieldPulseOne} cx="535" cy="302" r="3" />
-      <circle className={styles.fieldPulseTwo} cx="552" cy="380" r="3" />
-      <circle className={styles.fieldPulseThree} cx="526" cy="470" r="3" />
+      <circle className={styles.fieldPulseOne} cx="152" cy="178" r="3" />
+      <circle className={styles.fieldPulseTwo} cx="212" cy="450" r="3" />
+      <circle className={styles.fieldPulseThree} cx="168" cy="742" r="3" />
+      <g className={styles.fieldDispersion}>
+        <circle cx="612" cy="450" r="2" />
+        <circle cx="612" cy="450" r="2" />
+        <circle cx="612" cy="450" r="2" />
+      </g>
     </svg>
   );
 }
@@ -148,7 +156,7 @@ export default function EnglishFounderPage() {
       </header>
 
       <main id="main">
-        <section id="top" className={styles.hero} aria-labelledby="english-founder-title">
+        <section id="top" className={styles.hero} aria-labelledby="english-founder-title" data-hero-interface data-hero-cycle="0">
           <ConvergenceField />
           <div className={styles.heroCopy}>
             <p className={styles.heroRole}>Researcher &amp; Engineer</p>
@@ -165,9 +173,6 @@ export default function EnglishFounderPage() {
             </nav>
           </div>
           <EnglishHeroGallery />
-          <div className={styles.heroCoordinate} aria-hidden="true">
-            <span>35.68° N</span><span>139.76° E</span><span>2026 / TOKYO</span>
-          </div>
         </section>
 
         <section id="expertise" className={styles.expertise} aria-labelledby="expertise-title">

@@ -6,19 +6,22 @@ export const heroSlides = [
     src: "/images/founder-portfolio/yuto-matsui-nagano-lake-hero-20260831.webp",
     alt: "Yuto Matsui standing by a lake with the mountains of Nagano beyond",
     label: "Nagano / Lake",
-    position: "50% 50%"
+    position: "50% 50%",
+    mobilePosition: "50% 50%"
   },
   {
     src: "/images/founder-portfolio/yuto-matsui-illuminated-steps-hero-20260901.jpg",
     alt: "Yuto Matsui seated on illuminated steps at night",
     label: "Tokyo / Light",
-    position: "50% 50%"
+    position: "50% 50%",
+    mobilePosition: "50% 50%"
   },
   {
     src: "/images/founder-portfolio/yuto-matsui-nagano-mountain-hero-20260901.webp",
     alt: "Yuto Matsui standing in the Nagano highlands with mountains beyond",
     label: "Nagano / Highlands",
-    position: "50% 48%"
+    position: "50% 48%",
+    mobilePosition: "50% 47%"
   }
 ] as const;
 
