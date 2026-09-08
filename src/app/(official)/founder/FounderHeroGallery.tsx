@@ -1,9 +1,8 @@
 "use client";
 
 import Image from "next/image";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import styles from "./founder.module.css";
-import { MobileHeroSculpture } from "./MobileHeroSculpture";
 
 const SLIDES = [
   {
@@ -31,12 +30,31 @@ const INTERVAL_MS = 5200;
 export function FounderHeroGallery() {
   const [activeIndex, setActiveIndex] = useState(0);
   const [paused, setPaused] = useState(false);
+  const signals = useRef<SVGSVGElement>(null);
+
+  useEffect(() => {
+    const mobile = window.matchMedia("(max-width: 640px)");
+    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const sync = () => {
+      if (paused || reduced.matches || !mobile.matches || document.hidden) signals.current?.pauseAnimations();
+      else signals.current?.unpauseAnimations();
+    };
+    sync();
+    mobile.addEventListener("change", sync);
+    reduced.addEventListener("change", sync);
+    document.addEventListener("visibilitychange", sync);
+    return () => {
+      mobile.removeEventListener("change", sync);
+      reduced.removeEventListener("change", sync);
+      document.removeEventListener("visibilitychange", sync);
+    };
+  }, [paused]);
 
   useEffect(() => {
     if (paused || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
 
     const timer = window.setInterval(() => {
-      if (!document.hidden) {
+      if (!document.hidden && !window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
         setActiveIndex((current) => (current + 1) % SLIDES.length);
       }
     }, INTERVAL_MS);
@@ -52,7 +70,6 @@ export function FounderHeroGallery() {
       aria-label="Yuto Matsui ポートレート"
       data-paused={paused}
     >
-      <MobileHeroSculpture paused={paused} activeIndex={activeIndex} />
       <div className={styles.photoFrame} aria-live="off">
         {SLIDES.map((slide, index) => (
           <figure
@@ -67,12 +84,27 @@ export function FounderHeroGallery() {
               alt={index === activeIndex ? slide.alt : ""}
               fill
               priority
-              sizes="(min-width: 901px) 46vw, 88vw"
+              sizes="(min-width: 901px) 46vw, (max-width: 640px) 100vw, 88vw"
             />
           </figure>
         ))}
         <div className={styles.photoScan} aria-hidden="true" />
       </div>
+
+      <svg ref={signals} className={styles.mobileHeroSignals} viewBox="0 0 430 100" preserveAspectRatio="none" aria-hidden="true">
+        <g className={styles.mobileSignalBio}>
+          <path d="M-20 15 C110 15 130 83 252 54 S382 8 450 24" />
+          <circle r="2.5"><animateMotion dur="10.4s" repeatCount="indefinite" path="M-20 15 C110 15 130 83 252 54 S382 8 450 24" /></circle>
+        </g>
+        <g className={styles.mobileSignalAi}>
+          <path d="M-20 60 C102 92 177 8 280 42 S391 92 450 62" />
+          <circle r="2.5"><animateMotion dur="15.6s" repeatCount="indefinite" path="M-20 60 C102 92 177 8 280 42 S391 92 450 62" /></circle>
+        </g>
+        <g className={styles.mobileSignalEducation}>
+          <path d="M-20 86 C97 26 165 92 283 63 S384 44 450 12" />
+          <circle r="2.5"><animateMotion dur="13s" repeatCount="indefinite" path="M-20 86 C97 26 165 92 283 63 S384 44 450 12" /></circle>
+        </g>
+      </svg>
 
       <div className={styles.photoControls}>
         <div className={styles.photoDots} aria-label="表示する写真を選択">
