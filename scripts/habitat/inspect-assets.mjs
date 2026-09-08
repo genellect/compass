@@ -3,9 +3,9 @@ import path from 'node:path';
 import {createHash} from 'node:crypto';
 import sharp from 'sharp';
 
-const directory=path.resolve('public/habitat/v2');
+const directory=path.resolve('public/habitat/v3');
 const manifest=JSON.parse(await readFile(path.join(directory,'manifest.json'),'utf8'));
-const report={generatedAt:new Date().toISOString(),blender:manifest.blender,assets:[],posters:[],totalBytes:0};
+const report={generatedAt:new Date().toISOString(),blender:manifest.blender,assets:[],posters:[],lightmaps:[],totalBytes:0};
 for(const asset of manifest.assets){
   const bytes=await readFile(path.join(directory,asset.file));
   if(bytes.toString('ascii',0,4)!=='glTF'||bytes.readUInt32LE(4)!==2||bytes.readUInt32LE(8)!==bytes.length)throw new Error(`Invalid GLB: ${asset.file}`);
@@ -30,6 +30,13 @@ for(const item of manifest.posters){
   report.totalBytes+=bytes.length;
 }
 for(const item of manifest.environment)report.totalBytes+=(await readFile(path.join(directory,item.file))).length;
+if(manifest.lightmaps?.length!==manifest.sections.length-1)throw new Error('Room lightmaps are incomplete');
+for(const item of manifest.lightmaps){
+  const bytes=await readFile(path.join(directory,item.file)),info=await sharp(bytes).metadata();
+  if(bytes.length!==item.bytes||info.width<2048||info.height<2048)throw new Error('Invalid room lightmap: '+item.file);
+  report.lightmaps.push({file:item.file,bytes:bytes.length,width:info.width,height:info.height,sha256:createHash('sha256').update(bytes).digest('hex')});
+  report.totalBytes+=bytes.length;
+}
 if(report.totalBytes!==manifest.totalBytes||report.totalBytes>40e6)throw new Error('Total asset budget or manifest mismatch');
 const output=process.argv[2];if(output)await writeFile(output,JSON.stringify(report,null,2)+'\n');
 console.log(JSON.stringify({assets:report.assets.length,posters:report.posters.length,totalBytes:report.totalBytes,pass:true}));

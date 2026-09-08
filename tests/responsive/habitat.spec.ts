@@ -26,16 +26,21 @@ test('Desktop content columns match the room composition and Contact stays legib
 
 test('Desktop Hero fits the first screen and the new header remains keyboard operable', async ({ page }) => {
   await page.emulateMedia({ reducedMotion: 'reduce' });
-  for (const [width,height] of [[901,768],[1024,768],[1275,553],[1440,900],[1920,1080],[3840,2160]]) {
+  for (const [width,height] of [[901,768],[901,553],[960,540],[1024,768],[1275,553],[1280,720],[1366,768],[1440,900],[1920,1080],[2560,1440],[3840,2160]]) {
     await page.setViewportSize({width,height}); await page.goto('/');
     await expect(page.locator('[data-habitat]')).toHaveAttribute('data-enabled','true');
     const bounds=await page.evaluate(()=>{
       const hero=document.querySelector('#top')!.getBoundingClientRect();
       const header=document.querySelector('.site-header')!.getBoundingClientRect();
       const copy=document.querySelector('.li-hero-copy')!.getBoundingClientRect();
-      const controls=document.querySelector('nav[aria-label="このページの案内"]')!.getBoundingClientRect();
+      const controls=document.querySelector('[data-habitat-media]')!.getBoundingClientRect();
       const range=document.createRange();range.selectNodeContents(document.querySelector('h1')!);
+      const labels=[...document.querySelectorAll('.li-system-index__copy strong')].map(label=>{
+        const text=document.createRange();text.selectNodeContents(label);const box=label.getBoundingClientRect();
+        return [...text.getClientRects()].every(r=>r.left>=box.left-1&&r.right<=box.right+1);
+      });
       return {heroBottom:hero.bottom,copyBottom:copy.bottom,copyTop:copy.top,headerBottom:header.bottom,controlsTop:controls.top,
+        labelsFit:labels.every(Boolean),
         textFits:[...range.getClientRects()].every(r=>r.left>=0&&r.right<=innerWidth&&r.bottom<=innerHeight),overflow:document.documentElement.scrollWidth-innerWidth};
     });
     expect(bounds.heroBottom).toBeLessThanOrEqual(height+1);
@@ -43,6 +48,7 @@ test('Desktop Hero fits the first screen and the new header remains keyboard ope
     expect(bounds.copyBottom).toBeLessThanOrEqual(bounds.controlsTop-8);
     expect(bounds.copyTop).toBeGreaterThanOrEqual(bounds.headerBottom);
     expect(bounds.textFits).toBe(true); expect(bounds.overflow).toBeLessThanOrEqual(1);
+    expect(bounds.labelsFit).toBe(true);
   }
   await page.setViewportSize({width:1440,height:900});
   const nav=page.getByRole('navigation',{name:'Main navigation',exact:true});
@@ -59,6 +65,20 @@ test('Desktop Hero fits the first screen and the new header remains keyboard ope
 });
 test.beforeEach(async ({ page }) => {
   await page.route(/google-analytics|googletagmanager|cloudflareinsights|challenges\.cloudflare/, route => route.abort());
+});
+test('Desktop reading copy does not inherit the old white-on-dark text colors', async ({page})=>{
+  await page.setViewportSize({width:1280,height:720});await page.emulateMedia({reducedMotion:'reduce'});
+  await page.goto('/');await expect(page.locator('[data-habitat]')).toHaveAttribute('data-enabled','true');
+  const colors=await page.locator('.li-system-index__item:nth-child(n+2) strong, .v4-community__overview p, .v4-community__details-copy p, .v4-founder__statement p, .v4-manifesto__declaration p, .v4-technology__interactive-copy p').evaluateAll(nodes=>nodes.map(node=>({text:node.textContent?.trim(),color:getComputedStyle(node).color})));
+  const luminance=(rgb:number[])=>rgb.map(v=>v/255).map(v=>v<=.04045?v/12.92:((v+.055)/1.055)**2.4).reduce((s,v,i)=>s+v*[.2126,.7152,.0722][i],0);
+  const surface=luminance([243,240,233]);
+  expect(colors.length).toBeGreaterThan(10);
+  for(const {text,color} of colors){
+    const ink=luminance(color.match(/[\d.]+/g)!.slice(0,3).map(Number));
+    // Regression for the authored paper surface; moving-background contrast also
+    // receives visual review, since computed styles cannot sample a WebGL frame.
+    expect((surface+.05)/(ink+.05),text).toBeGreaterThanOrEqual(4.5);
+  }
 });
 test('Desktop visits all nine areas and retains working disclosure and pause controls', async ({ page }) => {
   test.setTimeout(240000);
@@ -198,6 +218,22 @@ test('Viewport changes and repeated route visits dispose the renderer', async ({
   await expect(page.locator('[data-habitat-backdrop] canvas')).toHaveCount(1);
 });
 
+test('A missing room lightmap uses that room poster and can be retried', async ({page})=>{
+  await page.setViewportSize({width:1280,height:720});
+  await page.route('**/habitat/**/architecture-vision.webp',route=>route.fulfill({status:503,body:''}));
+  await page.goto('/#vision');
+  const root=page.locator('[data-habitat]');
+  await expect(root).toHaveAttribute('data-scene-section','vision');
+  await expect(root).toHaveAttribute('data-scene-state','failed',{timeout:30000});
+  await expect(page.locator('[data-habitat-backdrop]>div').first()).toHaveCSS('background-image',/vision\.webp/);
+  await expect(page.locator('#vision h2')).toBeVisible();
+  await expect(page.locator('[data-habitat-backdrop] canvas')).toHaveCount(0);
+  await page.unroute('**/habitat/**/architecture-vision.webp');
+  await page.getByRole('button',{name:'3Dを再試行'}).click();
+  await expect(root).toHaveAttribute('data-scene-state','ready',{timeout:30000});
+  await expect(root).toHaveAttribute('data-scene-section','vision');
+});
+
 test('A failed planet texture uses the static scene and keeps navigation available', async ({ page }) => {
   await page.setViewportSize({width:1280,height:720});
   await page.route('**/habitat/**/planet.webp',route=>route.fulfill({status:503,body:''}));
@@ -210,10 +246,14 @@ test('A failed planet texture uses the static scene and keeps navigation availab
 
 test('Lost WebGL context fails over without losing page content', async ({ page }) => {
   await page.setViewportSize({ width: 1280, height: 720 }); await page.goto('/');
-  await expect(page.locator('[data-habitat]')).toHaveAttribute('data-scene-state','ready', { timeout: 30000 });
-  await page.locator('[data-habitat-backdrop] canvas').evaluate(canvas => {
-    (canvas as HTMLCanvasElement).getContext('webgl2')?.getExtension('WEBGL_lose_context')?.loseContext();
-  });
+  // Inject the failure on a ready frame. A separate browser round trip can allow
+  // software rendering to reach its low-FPS fallback before context loss occurs.
+  await page.waitForFunction(()=>{
+    if(document.querySelector('[data-habitat]')?.getAttribute('data-scene-state')!=='ready')return false;
+    const canvas=document.querySelector<HTMLCanvasElement>('[data-habitat-backdrop] canvas');
+    const extension=canvas?.getContext('webgl2')?.getExtension('WEBGL_lose_context');
+    if(!extension)return false;extension.loseContext();return true;
+  },undefined,{timeout:30000});
   await expect(page.locator('[data-habitat]')).toHaveAttribute('data-scene-state','failed');
   await expect(page.locator('h1')).toBeVisible();
   await expect(page.locator('[data-habitat-backdrop] canvas')).toHaveCount(0);

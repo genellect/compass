@@ -3,8 +3,8 @@ import path from 'node:path';
 import sharp from 'sharp';
 
 const root = process.cwd();
-const directory = path.resolve(root, 'public/habitat/v2');
-const intermediate = path.resolve(root, '../habitat-renders/v2');
+const directory = path.resolve(root, 'public/habitat/v3');
+const intermediate = path.resolve(root, '../habitat-renders/v3');
 await mkdir(intermediate, { recursive: true });
 for (const filename of await readdir(directory)) {
   if (!filename.endsWith('.png')) continue;
@@ -25,7 +25,8 @@ for (const section of manifest.sections) {
   const buffer = await readFile(path.join(directory, file));
   manifest.posters.push({ file, bytes: buffer.byteLength });
 }
-manifest.totalBytes = [...manifest.assets, ...manifest.posters, ...manifest.environment].reduce((sum, asset) => sum + asset.bytes, 0);
+if(manifest.sections.some(section=>section.id!=='top'&&!manifest.lightmaps?.some(item=>item.file===`architecture-${section.id}.webp`)))throw new Error('Room-specific architectural lighting is incomplete');
+manifest.totalBytes = [...manifest.assets, ...manifest.posters, ...manifest.environment, ...manifest.lightmaps].reduce((sum, asset) => sum + asset.bytes, 0);
 if (manifest.totalBytes > 40_000_000) throw new Error('Habitat exceeds 40MB quality-first asset budget');
 for (const asset of manifest.assets) if (asset.bytes > 8_000_000) throw new Error(`${asset.file} exceeds 8MB quality-first budget`);
 await writeFile(manifestPath, JSON.stringify(manifest, null, 2) + '\n');

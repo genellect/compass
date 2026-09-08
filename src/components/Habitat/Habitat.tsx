@@ -41,7 +41,7 @@ export function Habitat() {
     if (!host || !root) return;
     const desktop = matchMedia(DESKTOP_QUERY);
     const motion = matchMedia('(prefers-reduced-motion: reduce)');
-    let disposed = false, generation = 0, starts: number[] = [], frame = 0;
+    let disposed = false, generation = 0, starts: number[] = [], ends: number[] = [], frame = 0;
     let currentPoster = '', active = false, lastScroll = window.scrollY;
     let userInteracted = false;
     const initialHash = location.hash.slice(1);
@@ -56,21 +56,25 @@ export function Habitat() {
       setState(value);
     };
     const measure = () => {
+      ends = [];
       starts = sectionIds.map(id => {
         const section = root.querySelector<HTMLElement>('#' + id);
-        return section ? section.getBoundingClientRect().top + window.scrollY : 0;
+        const box = section?.getBoundingClientRect();
+        ends.push(box ? box.bottom + window.scrollY : 0);
+        return box ? box.top + window.scrollY : 0;
       });
     };
     const update = () => {
       frame = 0;
       if (!active || disposed) return;
-      const position = locateTour(window.scrollY, innerHeight, starts);
+      const position = locateTour(window.scrollY, innerHeight, starts, ends);
       const index = position.blend > .5 ? position.next : position.index;
       const id = sectionIds[index];
       root.dataset.sceneSection = id;
       const nextChapter=chapterIndex(index);
       if(activeChapter.current!==nextChapter){activeChapter.current=nextChapter;setChapter(nextChapter);sound.current?.cue(nextChapter);}
       root.style.setProperty('--tour-progress',String((position.index+position.local)/(sectionIds.length)));
+      root.style.setProperty('--travel-reveal',String(motion.matches || pausedRef.current ? 0 : Math.sin(Math.PI * position.blend)));
       if (id !== currentPoster) {
         currentPoster = id;
         const url = ASSET_BASE + id + '.webp';
@@ -159,6 +163,7 @@ export function Habitat() {
       for (const picture of pictures.values()) picture.onload = null;
       delete root.dataset.enabled; delete root.dataset.sceneState; delete root.dataset.sceneSection;
       root.style.removeProperty('--tour-progress');
+      root.style.removeProperty('--travel-reveal');
       window.dispatchEvent(new Event('compass:habitat-change'));
     };
   }, []);
@@ -171,11 +176,11 @@ export function Habitat() {
     </div>
     {enabled && <div className={styles.tourControls}>
       <nav className={styles.chapterNav} aria-label="このページの案内">
-        {chapters.map((item,index)=><a key={item.id} href={'#'+item.id} aria-current={index===chapter?'step':undefined} title={item.label}>
+        {chapters.map((item,index)=><a key={item.id} href={'#'+item.id} aria-label={item.label} aria-current={index===chapter?'step':undefined} title={item.label}>
           <span aria-hidden="true">{String(index+1).padStart(2,'0')}</span><span>{item.label}</span>
         </a>)}
       </nav>
-      <div className={styles.mediaControls}>
+      <div className={styles.mediaControls} data-habitat-media>
       <button type="button" className={styles.sound} aria-pressed={audible} onClick={()=>void toggleSound()}>
         <span className={styles.soundBars} data-audible={audible} aria-hidden="true"><i/><i/><i/></span>
         {audible?'音を切る':'音を入れる'}
