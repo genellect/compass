@@ -2768,7 +2768,9 @@
   .hero {
     --hero-gutter: 24px;
     --hero-bottom: max(16px, env(safe-area-inset-bottom));
-    --hero-copy-space: 292px;
+    --hero-copy-height: 293px;
+    --hero-header-height: 64px;
+    --hero-bridge-height: 48px;
     height: auto; min-height: 100svh; max-height: none;
     grid-template-rows: minmax(250px, 1fr) auto;
     padding: 64px 0 0;
@@ -2781,24 +2783,48 @@
     display: block; width: 100%; height: 100%; padding: 0;
   }
   .photoFrame {
-    position: absolute; inset: 0;
-    width: 100%; height: 100%; max-height: none;
+    position: absolute; inset: var(--hero-header-height) 0 calc(var(--hero-copy-height) + var(--hero-bridge-height));
+    width: 100%; height: auto; max-height: none;
+    container-type: size;
     border: 0; border-radius: 0;
     box-shadow: none;
     background: #f7fbff;
   }
   .photoFrame::before, .photoSlide::after, .photoScan { display: none; }
+  .photoFrame::after {
+    content: ""; position: absolute; z-index: 2; inset: auto 0 0; height: 22px;
+    background: linear-gradient(transparent, #f7fbff); pointer-events: none;
+  }
   .photoSlide, .photoSlide[data-motion] {
-    inset: 0 0 auto;
-    height: min(150vw, calc(100% - 80px));
+    inset: 0; height: 100%; width: 100%;
     clip-path: none; filter: none; transform: none;
     transition: opacity 900ms cubic-bezier(0.22, 0.61, 0.36, 1);
   }
-  .photoSlide[data-motion="from-right"] { top: -7vw; }
-  .photoSlide[data-motion="soft-rise"] { top: -2vw; }
-  .photoSlide img { object-fit: cover; object-position: 50% 35%; filter: none; }
-  .photoSlide[data-motion="from-right"] img { object-position: 50% 65%; }
-  .photoSlide[data-motion="soft-rise"] img { object-position: 56% 40%; }
+  /* Each camera preserves the source's 2:3 ratio; the viewport crops the scene,
+     never the face with a shared white overlay. cqh also protects short screens. */
+  .photoSlide[data-motion="from-left"] {
+    --image-width: min(88cqw, 400px, 106cqh);
+    --image-height: calc(var(--image-width) * 1.5);
+    --image-left: calc((100cqw - var(--image-width)) * 0.26);
+    --image-top: calc((100cqh - var(--image-height)) * 0.42);
+  }
+  .photoSlide[data-motion="from-right"] {
+    --image-width: 100cqw;
+    --image-height: calc(var(--image-width) * 1.5);
+    --image-left: 0px;
+    --image-top: max(calc(var(--image-height) * -0.22), calc((100cqh - var(--image-height)) * 0.84));
+  }
+  .photoSlide[data-motion="soft-rise"] {
+    --image-width: min(100cqw, 440px, 125cqh);
+    --image-height: calc(var(--image-width) * 1.5);
+    --image-left: calc((100cqw - var(--image-width)) * 0.5);
+    --image-top: calc((100cqh - var(--image-height)) * 0.45);
+  }
+  .photoSlide img {
+    width: var(--image-width) !important; height: var(--image-height) !important;
+    top: var(--image-top) !important; left: var(--image-left) !important; right: auto !important; bottom: auto !important;
+    max-width: none; object-fit: cover; object-position: center; filter: none; will-change: auto;
+  }
   .photoSlide[data-active="true"][data-motion] img { animation: none; transform: none; }
   .photoControls {
     position: absolute; z-index: 6; bottom: var(--hero-bottom); right: var(--hero-gutter);
@@ -2818,8 +2844,8 @@
     text-align: left; pointer-events: none; isolation: isolate;
   }
   .heroCopy::before {
-    content: ""; position: absolute; z-index: -1; inset: -112px 0 0;
-    background: linear-gradient(to bottom, rgba(247,251,255,0) 0, rgba(247,251,255,0.8) 70px, rgba(247,251,255,0.97) 112px, #f7fbff 65%, #f7fbff);
+    content: ""; position: absolute; z-index: -1; inset: 0;
+    background: #f7fbff;
     pointer-events: none;
   }
   .heroCopy > * { pointer-events: auto; }
@@ -2836,35 +2862,27 @@
   .heroCopy .socialLinks a { width: 44px; height: 44px; background: transparent; border: none; box-shadow: none; }
   .socialLinks a:hover { background: #eaf2f7; box-shadow: none; transform: none; }
   .socialLinks svg { width: 22px; height: 22px; }
-  .mobileHeroSignals { display: block; position: absolute; z-index: 6; right: 0; bottom: var(--hero-copy-space); width: 100%; height: 86px; overflow: visible; pointer-events: none; }
-  .mobileHeroSignals g { animation: mobileSignalFlow 15.6s ease-in-out infinite alternate; transform-origin: center; }
-  .mobileHeroSignals path { fill: none; stroke: currentColor; stroke-width: 1.4; opacity: 0.65; vector-effect: non-scaling-stroke; }
-  .mobileHeroSignals circle { fill: currentColor; }
-  .mobileSignalBio { color: var(--bio); }
-  .mobileSignalAi { color: var(--ai); animation-delay: -5.2s !important; }
-  .mobileSignalEducation { color: var(--education); animation-delay: -10.4s !important; }
+  .mobileHeroSignals { display: block; position: absolute; z-index: 6; right: 0; bottom: var(--hero-copy-height); width: 100%; height: var(--hero-bridge-height); overflow: hidden; pointer-events: none; }
   .heroPhoto[data-paused="true"] *, .heroPhoto[data-paused="true"] *::before { animation-play-state: paused !important; }
 }
 
 @media (max-width: 640px) and (max-height: 720px) {
-  .hero { --hero-copy-space: 265px; padding-top: 52px; }
-  .photoSlide[data-motion="from-left"] { top: -8vw; }
+  .hero { --hero-copy-height: 285px; --hero-header-height: 52px; --hero-bridge-height: 36px; padding-top: 52px; }
   .heroStatement { margin-top: 10px; }
   .heroCopy .socialLinks { margin-top: 12px; }
 }
 
 @media (max-width: 640px) and (max-height: 600px) {
-  .hero { --hero-gutter: 20px; --hero-bottom: max(12px, env(safe-area-inset-bottom)); --hero-copy-space: 240px; grid-template-rows: minmax(205px, 1fr) auto; }
+  .hero { --hero-gutter: 20px; --hero-bottom: max(12px, env(safe-area-inset-bottom)); --hero-copy-height: 251px; --hero-bridge-height: 26px; grid-template-rows: minmax(205px, 1fr) auto; }
   .heroCopy > .eyebrow { font-size: 9px; }
   .heroCopy h1 { margin-top: 5px; font-size: 2.1rem; }
   .japaneseName { margin-top: 3px; }
   .heroStatement { font-size: 1.25rem; margin-top: 8px; }
   .axisList { margin-top: 8px; }
   .heroCopy .socialLinks { margin-top: 10px; }
-  .mobileHeroSignals { height: 64px; }
+  .photoFrame::after { height: 12px; }
 }
 
-@keyframes mobileSignalFlow { from { transform: translateY(-3px) scaleY(0.94); } to { transform: translateY(3px) scaleY(1.06); } }
 @keyframes mobileMenuEnter { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: none; } }
 
 @media (prefers-reduced-motion: reduce) {
@@ -2872,7 +2890,5 @@
   .mobileExternalIcons a { transition: none; }
 }
 @media (max-width: 640px) and (prefers-reduced-motion: reduce) {
-  .mobileHeroSignals g { animation: none; }
-  .mobileHeroSignals circle { display: none; }
   .photoSlide, .photoSlide[data-motion] { transition: none !important; }
 }
