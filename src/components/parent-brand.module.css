@@ -1,0 +1,21 @@
+.parentBrand:global(.site-logo) { gap: 10px; }
+.parentBrand:global(.site-logo) :global(.logo-copy strong) {
+  font-family: inherit;
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: .045em;
+}
+.parentBrand:global(.site-logo) :global(.logo-mark) {
+  width: 28px;
+  height: 28px;
+  background: none;
+  box-shadow: none;
+}
+.parentBrand:global(.site-logo) :global(.logo-mark)::before { inset: 6px; }
+.parentBrand:global(.site-logo) :global(.logo-mark)::after {
+  width: 1px;
+  height: 20px;
+  inset: 3px auto auto 13px;
+  background: currentColor;
+}
+.parentBrand:global(.site-logo) :global(.logo-mark span) { inset: 13px 5px auto; }
