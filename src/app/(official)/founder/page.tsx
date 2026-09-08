@@ -1,11 +1,9 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import Script from "next/script";
-import { LectureSignalMatrix } from "../../../interactive/components/hero/LectureSignalMatrix";
-import { ProductExperienceMock } from "../../../interactive/components/ui/ProductExperienceMock";
 import { LegacyInteractions } from "../../../components/LegacyInteractions";
 import { FounderJapaneseLink } from "../../../components/FounderJapaneseLink";
-import { FutureStrategyHero } from "../future-strategy-library/components/FutureStrategyHero";
+import { FounderProducts } from "./FounderProducts";
 import { EssayContinuation } from "./EssayContinuation";
 import { FounderFragments } from "./FounderFragments";
 import { FounderHeroGallery } from "./FounderHeroGallery";
@@ -231,34 +229,6 @@ function CompassIcon() {
   return <Image src="/images/compass-mark.svg" alt="" width={28} height={28} aria-hidden="true" />;
 }
 
-function InteractiveHeroPreview() {
-  return (
-    <div
-      className={`${styles.interactiveHeroPreview} hero-section--signal`}
-      aria-label="COMPASS Interactive紹介サイトのHeroプレビュー"
-    >
-      <div className={styles.interactiveHeroGrid}>
-        <div className={styles.interactiveHeroCopy}>
-          <span className={styles.interactiveEyebrow}>NEXT LECTURE EXPERIENCE</span>
-          <p className={styles.interactiveHeroTitle} aria-label="LET EVERYTHING MOVE.">
-            <span>LET EVERYTHING</span>
-            <strong>MOVE.</strong>
-          </p>
-          <p className={styles.interactiveHeroLead}>
-            <span>リアルタイム×AIが、</span>
-            <span>講義を次の次元へ。</span>
-          </p>
-        </div>
-
-        <div className={`${styles.interactiveHeroStage} hero-signal-stage`} aria-hidden="true">
-          <LectureSignalMatrix />
-          <ProductExperienceMock compact className="founder-interactive-product-preview" />
-        </div>
-      </div>
-    </div>
-  );
-}
-
 export default function FounderPage() {
   return (
     <div className={styles.page} data-founder-page>
@@ -440,50 +410,7 @@ export default function FounderPage() {
             <header className={styles.productsHeading} data-reveal>
               <div><p className={styles.sectionKicker}>Products</p><h2 id="products-title">プロダクト紹介</h2></div>
             </header>
-            <div className={styles.productGrid}>
-              {products.map((product) => (
-                <article key={product.key} className={styles.productCard} data-product={product.key} data-reveal>
-                  <div className={styles.productVisual}>
-                    {product.key === "interactive" ? (
-                      <InteractiveHeroPreview />
-                    ) : product.key === "library" ? (
-                      <FutureStrategyHero variant="preview" />
-                    ) : (
-                      <>
-                        <Image src={product.image} alt={product.alt} fill sizes="(min-width: 901px) 32vw, 100vw" />
-                        <div className={styles.productWash} aria-hidden="true" />
-                        <Image src="/images/compass-mark.svg" alt="" width={40} height={40} className={styles.productMark} aria-hidden="true" />
-                      </>
-                    )}
-                  </div>
-                  <div className={styles.productCopy}>
-                    <p>{product.label}</p>
-                    <h3>
-                      {product.key === "interactive" ? (
-                        <><span>リアルタイム × AIが、</span><span>講義を次の次元へ。</span></>
-                      ) : product.key === "library" ? (
-                        <><span>北里大学薬学部生のための、</span><span>学生目線の資料ライブラリ。</span></>
-                      ) : product.title}
-                    </h3>
-                    <nav aria-label={`${product.label}へのリンク`}>
-                      {product.links.map((link) => {
-                        const opensNewTab = opensInNewTab(link.href);
-                        return (
-                          <a
-                            key={link.href}
-                            href={link.href}
-                            target={opensNewTab ? "_blank" : undefined}
-                            rel={opensNewTab ? "noopener noreferrer" : undefined}
-                          >
-                            <span>{link.label}</span><ArrowIcon />
-                          </a>
-                        );
-                      })}
-                    </nav>
-                  </div>
-                </article>
-              ))}
-            </div>
+            <FounderProducts products={products} />
           </div>
         </section>
 

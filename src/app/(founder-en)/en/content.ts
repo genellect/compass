@@ -58,12 +58,12 @@ export const products = [
     label: "COMPASS Interactive",
     title: "Real-time feedback and AI, built into the lecture experience.",
     links: [
-      { label: "Product overview", href: `${compassOrigin}/INTRO_Interactive/` },
+      { label: "Explore Interactive", href: `${compassOrigin}/INTRO_Interactive/` },
       {
         label: "ProtoPedia",
         href: "https://protopedia.net/prototype/private/59f061db-936a-4fa3-abc2-438a98711e9e"
       },
-      { label: "Technical portfolio", href: `${compassOrigin}/INTRO_Interactive/developers/` }
+      { label: "Technical overview", href: `${compassOrigin}/INTRO_Interactive/developers/` }
     ]
   },
   {

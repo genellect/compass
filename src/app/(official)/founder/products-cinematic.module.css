@@ -1,0 +1,80 @@
+.world { position: relative; }
+.world[data-language="en"] .secondary a, .world[data-language="en"] .motion { color: #dce7e2; }
+.world[data-language="en"] .motion { border-color: #dce7e24d; }
+.world[data-language="en"] .secondary a:hover { color: #b6ef7a; }
+.world[data-language="en"] .product[data-product="manifesto"] .title { font-family: Arial, Helvetica, sans-serif; line-height: 1.05; letter-spacing: -.04em; }
+.grid { display: grid; grid-template-columns: minmax(0, 1.24fr) minmax(0, 1fr); gap: 22px; align-items: start; }
+.product { min-width: 0; }
+.product[data-product="interactive"] { grid-row: span 2; }
+.stage { position: relative; height: 320px; overflow: hidden; isolation: isolate; border-radius: 8px; color: #f5f7fc; background: #111723; }
+.product[data-product="interactive"] .stage { height: 640px; background: #080f1d; }
+.product[data-product="library"] .stage { color: #132235; background: #e8edf1; }
+.product[data-product="manifesto"] .stage { height: 296px; background: #202435; }
+.scene { position: absolute; inset: 0; z-index: -2; overflow: hidden; background: radial-gradient(ellipse at 75% 30%, #243149 0, transparent 70%); }
+.scene canvas { width: 100%; height: 100%; display: block; opacity: 0; transition: opacity 600ms ease; }
+.scene[data-ready="true"] canvas { opacity: 1; }
+.product[data-product="library"] .scene { background: radial-gradient(ellipse at 70% 20%, #fff, transparent 80%); }
+.shade { position: absolute; inset: 0; z-index: -1; pointer-events: none; background: linear-gradient(0deg, #080f1d 0%, #080f1df5 25%, #080f1d80 47%, transparent 68%), linear-gradient(180deg, #080f1db0, transparent 18%); }
+.product[data-product="library"] .shade { background: linear-gradient(90deg, #e8edf1e8, #e8edf160 40%, transparent 75%); }
+.product[data-product="manifesto"] .shade { background: linear-gradient(90deg, #202435e8, #20243530 65%); }
+.identity { position: absolute; top: 29px; left: 30px; right: 25px; display: flex; align-items: center; gap: 11px; font-size: 12px; font-weight: 650; letter-spacing: .025em; }
+.mark { width: 14px; height: 14px; border: 1px solid currentColor; border-radius: 50%; position: relative; flex: 0 0 auto; }
+.mark::after { content: ""; position: absolute; width: 4px; height: 4px; border: 1px solid currentColor; top: 3px; left: 3px; transform: rotate(45deg); }
+.title { position: absolute; left: 30px; right: 25px; bottom: 104px; margin: 0; font-family: Arial, Helvetica, sans-serif; line-height: .95; font-weight: 650; letter-spacing: -.055em; pointer-events: none; }
+.title span, .title strong { display: block; }
+.product[data-product="interactive"] .title span { font-size: clamp(27px, 3.1vw, 42px); letter-spacing: -.045em; line-height: 1.1; }
+.product[data-product="interactive"] .title strong { font-size: clamp(66px, 7vw, 96px); font-weight: 750; letter-spacing: -.065em; margin-top: 7px; }
+.product[data-product="library"] .title { font-size: clamp(26px, 3.1vw, 42px); bottom: 94px; }
+.product[data-product="library"] .title strong { font-weight: 750; margin-top: 5px; }
+.product[data-product="manifesto"] .title { font-family: inherit; font-size: clamp(24px, 2.6vw, 33px); line-height: 1.35; letter-spacing: -.055em; bottom: 90px; }
+.product[data-product="manifesto"] .title strong { font-weight: 650; }
+.destination { position: absolute; left: 30px; right: 30px; bottom: 22px; display: flex; align-items: center; justify-content: space-between; min-height: 62px; border-top: 1px solid #ffffff5c; color: inherit; text-decoration: none; font-size: 16px; font-weight: 650; }
+.destination::before { content: ""; position: absolute; inset: -700px -30px -22px; }
+.destination > span, .destination svg { position: relative; pointer-events: none; }
+.destination svg { width: 34px; height: 34px; transition: transform 300ms ease; }
+.product[data-product="interactive"] .destination { padding: 0 18px; border: 0; background: #eff4fa; color: #111d30; }
+.product[data-product="library"] .destination { border-top-color: #13223550; }
+.destination:focus-visible { outline: 3px solid #4c7bce; outline-offset: 5px; }
+.stage:has(.destination:focus-visible) { outline: 3px solid #4c7bce; outline-offset: 3px; }
+.stage:hover .destination svg, .destination:focus-visible svg { transform: translate(3px, -3px); }
+.secondary { display: flex; flex-wrap: wrap; align-items: center; gap: 14px 26px; padding: 18px 2px 0; }
+.secondary a { display: inline-flex; align-items: center; gap: 12px; min-height: 36px; color: #34445a; font-size: 12px; font-weight: 550; text-decoration: none; }
+.secondary a:hover { color: #1c4ca0; text-decoration: underline; text-underline-offset: 5px; }
+.secondary a:focus-visible { outline: 2px solid #1c4ca0; outline-offset: 4px; }
+.motion { display: flex; align-items: center; gap: 8px; margin: 13px 0 0 auto; padding: 7px 10px; min-height: 36px; background: transparent; border: 1px solid #34445a30; border-radius: 4px; color: #34445a; font: inherit; font-size: 11px; cursor: pointer; }
+.motion:focus-visible { outline: 2px solid #1c4ca0; outline-offset: 3px; }
+.fallback { position: absolute; width: 58%; height: 56%; top: 8%; right: 3%; transition: opacity 500ms ease; }
+.fallback i { position: absolute; inset: 8%; border: 22px solid #aebacf; border-left-color: #eef4fc; border-bottom-color: #495774; border-radius: 45%; transform: rotate(-32deg) skew(12deg); box-shadow: inset 3px 3px 10px #0005, 8px 10px 20px #0002; }
+.fallback i:nth-child(2) { transform: rotate(38deg) skew(-18deg); inset: 20% 10%; border-color: #7c96ba #284e9c #527ac9 #c2d3ea; }
+.fallback i:nth-child(3) { transform: rotate(80deg) skew(12deg); inset: 5% 28%; border-width: 14px; }
+.scene[data-ready="true"] .fallback { opacity: 0; }
+@media (max-width: 900px) {
+  .grid { grid-template-columns: 1fr; gap: 20px; }
+  .product[data-product="interactive"] { grid-row: auto; }
+  .product[data-product="interactive"] .stage { height: 560px; }
+  .stage { height: 390px; }
+  .product[data-product="manifesto"] .stage { height: 380px; }
+  .product[data-product="interactive"] .title span { font-size: 40px; }
+  .product[data-product="interactive"] .title strong { font-size: 92px; }
+  .product[data-product="library"] .title { font-size: 42px; }
+  .product[data-product="manifesto"] .title { font-size: 34px; }
+}
+@media (max-width: 540px) {
+  .grid { gap: 18px; }
+  .product[data-product="interactive"] .stage { height: 490px; }
+  .stage { height: 360px; }
+  .product[data-product="manifesto"] .stage { height: 350px; }
+  .identity { left: 23px; top: 23px; font-size: 11px; }
+  .title { left: 23px; right: 20px; bottom: 102px; }
+  .product[data-product="interactive"] .title span { font-size: clamp(23px, 7.3vw, 36px); }
+  .product[data-product="interactive"] .title strong { font-size: clamp(59px, 18vw, 86px); }
+  .product[data-product="library"] .title { font-size: clamp(29px, 8.5vw, 42px); }
+  .product[data-product="manifesto"] .title { font-size: clamp(26px, 7.8vw, 34px); }
+  .destination { left: 23px; right: 23px; bottom: 20px; font-size: 15px; }
+  .secondary { gap: 12px 22px; padding-top: 10px; }
+  .secondary a { font-size: 11px; min-height: 44px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .scene canvas, .fallback, .destination svg { transition: none; }
+  .motion { display: none; }
+}
