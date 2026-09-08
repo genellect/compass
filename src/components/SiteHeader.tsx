@@ -6,6 +6,7 @@ import {
   isExternalCompassHref
 } from "../lib/futureStrategyLibrary";
 import { resolveSiteHref, type SiteRouteContext } from "./siteRouteContext";
+import styles from "./parent-brand.module.css";
 
 type NavItem = {
   description: string;
@@ -307,7 +308,7 @@ export function SiteHeader({
         data-fsl-landing-header={routeContext === "library" ? "true" : undefined}
       >
         <div className="header-inner">
-          <a className="site-logo" href={resolveHref("#top")} aria-label="COMPASS Home">
+          <a className={`site-logo${routeContext === "root" ? ` ${styles.parentBrand}` : ""}`} href={resolveHref("#top")} aria-label="COMPASS Home">
             <span className="logo-mark" aria-hidden="true"><span /></span>
             <span className="logo-copy"><strong>COMPASS</strong>{routeContext !== "root" && <small>Better Decisions</small>}</span>
             {routeContext === "library" ? (

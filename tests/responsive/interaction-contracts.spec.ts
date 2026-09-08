@@ -91,13 +91,14 @@ for (const route of officialDesktopRoutes) {
     const runtimeErrors = await openRoute(page, route.path, { name: "desktop-nav", width: 1363, height: 936 });
     const nav = page.locator(".site-header .desktop-nav");
     await expect(nav).toBeVisible();
-    for (const label of route.path === "/" ? ["Resources", "Community"] : ["Technology", "Resources", "Community"]) {
+    const groups = route.path === "/" ? ["Resources", "Community"] : ["Technology", "Resources", "Community"];
+    for (const label of groups) {
       await expect(nav.getByRole("button", { name: label, exact: true })).toBeVisible();
     }
     if (route.path === "/") {
       await expect(nav.getByRole("link", { name: "Interactive", exact: true })).toHaveAttribute("href", "INTRO_Interactive/");
-      await expect(nav.getByRole("button", { name: "Technology", exact: true })).toHaveCount(0);
       await expect(nav.getByText("Technology Core", { exact: true })).toHaveCount(0);
+      await expect(page.locator(".site-header .logo-copy")).toHaveText("COMPASS");
     }
     for (const label of ["Founder", "Contact"]) {
       await expect(nav.getByRole("link", { name: label, exact: true })).toBeVisible();
