@@ -1,0 +1,256 @@
+{
+  "blender": "4.5.13 LTS",
+  "seed": 21,
+  "assets": [
+    {
+      "file": "architecture.glb",
+      "bytes": 2388144,
+      "triangles": 15724,
+      "meshes": 2,
+      "textures": 4
+    },
+    {
+      "file": "top.glb",
+      "bytes": 1183108,
+      "triangles": 17532,
+      "meshes": 4,
+      "textures": 3
+    },
+    {
+      "file": "vision.glb",
+      "bytes": 1035956,
+      "triangles": 9352,
+      "meshes": 3,
+      "textures": 3
+    },
+    {
+      "file": "experience.glb",
+      "bytes": 1263912,
+      "triangles": 20380,
+      "meshes": 3,
+      "textures": 3
+    },
+    {
+      "file": "technology.glb",
+      "bytes": 1512248,
+      "triangles": 19136,
+      "meshes": 4,
+      "textures": 3
+    },
+    {
+      "file": "resources.glb",
+      "bytes": 3990908,
+      "triangles": 37476,
+      "meshes": 4,
+      "textures": 3
+    },
+    {
+      "file": "manifesto.glb",
+      "bytes": 710928,
+      "triangles": 8732,
+      "meshes": 3,
+      "textures": 2
+    },
+    {
+      "file": "community.glb",
+      "bytes": 1661424,
+      "triangles": 16592,
+      "meshes": 1,
+      "textures": 3
+    },
+    {
+      "file": "founder.glb",
+      "bytes": 1517768,
+      "triangles": 19444,
+      "meshes": 4,
+      "textures": 3
+    },
+    {
+      "file": "contact.glb",
+      "bytes": 934816,
+      "triangles": 3288,
+      "meshes": 1,
+      "textures": 3
+    },
+    {
+      "file": "environment.glb",
+      "bytes": 7120640,
+      "triangles": 151540,
+      "meshes": 8,
+      "textures": 3
+    }
+  ],
+  "sections": [
+    {
+      "id": "top",
+      "origin": [
+        0,
+        0,
+        0
+      ],
+      "camera": [
+        5.7,
+        2.65,
+        10
+      ],
+      "target": [
+        0,
+        2,
+        -1
+      ],
+      "filmOffset": -5
+    },
+    {
+      "id": "vision",
+      "origin": [
+        22,
+        0,
+        0
+      ],
+      "camera": [
+        27.7,
+        2.65,
+        10
+      ],
+      "target": [
+        22,
+        2,
+        -1
+      ],
+      "filmOffset": -5
+    },
+    {
+      "id": "experience",
+      "origin": [
+        44,
+        0,
+        0
+      ],
+      "camera": [
+        49.7,
+        2.65,
+        10
+      ],
+      "target": [
+        44,
+        2,
+        -1
+      ],
+      "filmOffset": -5
+    },
+    {
+      "id": "technology",
+      "origin": [
+        66,
+        0,
+        0
+      ],
+      "camera": [
+        71.7,
+        2.65,
+        10
+      ],
+      "target": [
+        66,
+        2,
+        -1
+      ],
+      "filmOffset": -5
+    },
+    {
+      "id": "resources",
+      "origin": [
+        88,
+        0,
+        0
+      ],
+      "camera": [
+        93.7,
+        2.65,
+        10
+      ],
+      "target": [
+        88,
+        2,
+        -1
+      ],
+      "filmOffset": -5
+    },
+    {
+      "id": "manifesto",
+      "origin": [
+        110,
+        0,
+        0
+      ],
+      "camera": [
+        115.7,
+        2.65,
+        10
+      ],
+      "target": [
+        110,
+        2,
+        -1
+      ],
+      "filmOffset": -5
+    },
+    {
+      "id": "community",
+      "origin": [
+        132,
+        0,
+        0
+      ],
+      "camera": [
+        137.7,
+        2.65,
+        10
+      ],
+      "target": [
+        132,
+        2,
+        -1
+      ],
+      "filmOffset": -5
+    },
+    {
+      "id": "founder",
+      "origin": [
+        154,
+        0,
+        0
+      ],
+      "camera": [
+        159.7,
+        2.65,
+        10
+      ],
+      "target": [
+        154,
+        2,
+        -1
+      ],
+      "filmOffset": -5
+    },
+    {
+      "id": "contact",
+      "origin": [
+        176,
+        0,
+        0
+      ],
+      "camera": [
+        181.7,
+        2.65,
+        10
+      ],
+      "target": [
+        176,
+        2,
+        -1
+      ],
+      "filmOffset": -5
+    }
+  ]
+}

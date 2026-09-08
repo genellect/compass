@@ -1,4 +1,6 @@
 import { SiteHeader } from "./components/SiteHeader";
+import { Habitat } from "./components/Habitat/Habitat";
+import habitatStyles from "./components/Habitat/habitat.module.css";
 import { Hero } from "./components/Hero";
 import { SiteFooter } from "./components/SiteFooter";
 import { ManifestoSection } from "./sections/ManifestoSection";
@@ -14,7 +16,8 @@ import {
 
 export function LegacyPageBody() {
   return (
-    <>
+    <div className={habitatStyles.root} data-habitat>
+      <Habitat />
       <SiteHeader />
       <main id="main" className="compass-v4-page">
         <Hero />
@@ -32,6 +35,6 @@ export function LegacyPageBody() {
         </div>
       </main>
       <SiteFooter />
-    </>
+    </div>
   );
 }

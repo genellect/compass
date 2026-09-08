@@ -334,8 +334,8 @@ for (const expected of [
   'class="v4-technology__interactive"',
   "次の1歩は、",
   "ここから始まる。",
-  "わからないが、",
-  "動き出す。",
+  "LET EVERYTHING",
+  "MOVE",
   "あなたが飲み込んだその疑問を、誰かも同じように抱えているかもしれない。",
   "未来の講義を、いま体験。",
   "ひとりでは見えない、",
@@ -461,6 +461,7 @@ if (visionLineCount !== 2) throw new Error(`Official page must contain exactly t
 const interactiveCard = official.match(/<article class="v4-technology__interactive"[\s\S]*?<\/article>/)?.[0];
 if (!interactiveCard) throw new Error("Official page is missing the Interactive card.");
 expectIncludes(interactiveCard, "未来の講義を、いま体験。", "Interactive card");
+expectExcludes(interactiveCard, "わからないが、", "Retired parent Interactive copy");
 expectIncludes(interactiveCard, 'href="/INTRO_Interactive/"', "Interactive card");
 
 const communitySection = official.match(/<section id="community"[\s\S]*?<\/section>/)?.[0];
@@ -1011,7 +1012,7 @@ expectIncludes(
   "Resources Manifesto navigation"
 );
 expectExcludes(siteHeaderSource, 'activeId: "manifesto"', "Independent Manifesto navigation");
-expectIncludes(siteHeaderSource, 'label: "Technology Core"', "Desktop Technology navigation");
+expectExcludes(official.match(/<header[\s\S]*?<\/header>/)?.[0] ?? '', '>Technology Core<', "Retired parent Technology Core navigation");
 expectIncludes(siteHeaderSource, "items: [navGroups[0].items[0]]", "Mobile Technology navigation");
 expectExcludes(siteHeaderSource, 'mobileLabel: "お問い合わせフォーム"', "Official header source");
 expectExcludes(siteHeaderSource, 'label: "COMPASS Essentials"', "Official header source");

@@ -1,5 +1,11 @@
 // @ts-nocheck -- legacy visual enhancement layer; navigation and disclosure state now live in React.
-(function () {
+export function initLegacyInteractions() {
+  const cleanups = [];
+  const listen = (target, type, handler, options) => {
+    target.addEventListener(type, handler, options);
+    cleanups.push(() => target.removeEventListener(type, handler, options));
+  };
+  const dispose = () => cleanups.splice(0).forEach((cleanup) => cleanup());
   const root = document.documentElement;
   const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   const mobileQuery = window.matchMedia("(max-width: 900px)");
@@ -15,6 +21,7 @@
         observer.unobserve(entry.target);
       });
     }, { threshold: 0.14, rootMargin: "0px 0px -8% 0px" });
+    cleanups.push(() => revealObserver.disconnect());
 
     revealTargets.forEach((target, index) => {
       const rect = target.getBoundingClientRect();
@@ -33,7 +40,7 @@
 
   if (hero && !hero.classList.contains("hero--editorial") && !reduceMotion) {
     let pointerFrame = null;
-    hero.addEventListener("pointermove", (event) => {
+    listen(hero, "pointermove", (event) => {
       if (mobileQuery.matches) return;
       if (pointerFrame) return;
 
@@ -47,7 +54,7 @@
       });
     }, { passive: true });
 
-    hero.addEventListener("pointerleave", () => {
+    listen(hero, "pointerleave", () => {
       root.style.setProperty("--hero-gaze-x", "0px");
       root.style.setProperty("--hero-gaze-y", "0px");
     });
@@ -60,18 +67,19 @@
       scrollFrame = null;
     };
 
-    window.addEventListener("scroll", () => {
+    listen(window, "scroll", () => {
       if (scrollFrame) return;
       scrollFrame = requestAnimationFrame(updateHeroScroll);
     }, { passive: true });
     updateHeroScroll();
+    cleanups.push(() => { cancelAnimationFrame(pointerFrame); cancelAnimationFrame(scrollFrame); });
   }
 
   const canvas = document.querySelector(".hero-particles");
-  if (!canvas) return;
+  if (!canvas) return dispose;
 
   const context = canvas.getContext("2d", { alpha: true });
-  if (!context) return;
+  if (!context) return dispose;
 
   let width = 0;
   let height = 0;
@@ -433,6 +441,12 @@
   };
 
   const startParticleLayer = () => {
+    cancelAnimationFrame(animationId);
+    animationId = null;
+    if (document.querySelector('[data-habitat][data-enabled="true"]')) {
+      context.clearRect(0, 0, width, height);
+      return;
+    }
     const particlesEnabled =
       isLivingIntelligence ||
       !hero?.classList.contains("hero--editorial") ||
@@ -452,11 +466,12 @@
 
   startParticleLayer();
 
-  window.addEventListener("resize", () => {
+  listen(window, "resize", () => {
     if (animationId) cancelAnimationFrame(animationId);
     particleAnimationStart = 0;
     startParticleLayer();
   });
-})();
-
-export {};
+  listen(window, "compass:habitat-change", startParticleLayer);
+  cleanups.push(() => cancelAnimationFrame(animationId));
+  return dispose;
+}

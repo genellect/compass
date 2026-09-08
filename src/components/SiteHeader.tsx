@@ -230,6 +230,9 @@ export function SiteHeader({
     };
     const handleEscape = (event: KeyboardEvent) => {
       if (event.key !== "Escape") return;
+      if (routeContext === "root" && activeMenu) {
+        headerRef.current?.querySelector<HTMLButtonElement>(`[aria-controls="${activeMenu}-menu"]`)?.focus();
+      }
       setActiveMenu(null);
       if (mobileOpen) closeMobileMenu();
     };
@@ -239,7 +242,7 @@ export function SiteHeader({
       document.removeEventListener("pointerdown", handlePointer);
       document.removeEventListener("keydown", handleEscape);
     };
-  }, [mobileOpen]);
+  }, [mobileOpen, activeMenu, routeContext]);
 
   useEffect(() => {
     document.body.classList.toggle("menu-open", mobileOpen);
@@ -306,7 +309,7 @@ export function SiteHeader({
         <div className="header-inner">
           <a className="site-logo" href={resolveHref("#top")} aria-label="COMPASS Home">
             <span className="logo-mark" aria-hidden="true"><span /></span>
-            <span className="logo-copy"><strong>COMPASS</strong><small>Better Decisions</small></span>
+            <span className="logo-copy"><strong>COMPASS</strong>{routeContext !== "root" && <small>Better Decisions</small>}</span>
             {routeContext === "library" ? (
               <span className="site-product-context" aria-label="Future Strategy Library">
                 <span className="site-product-context__long" aria-hidden="true">Future Strategy Library</span>
@@ -317,6 +320,11 @@ export function SiteHeader({
 
           <nav className="desktop-nav" aria-label="Main navigation">
             {navGroups.map((group) => {
+              if (routeContext === "root" && group.id === "technology") {
+                return <div key={group.id} className="nav-group nav-group--direct">
+                  <a className="nav-link" href={resolveHref("INTRO_Interactive/")}>Interactive</a>
+                </div>;
+              }
               const menuId = `${group.id}-menu`;
               const current = visibleSection === group.id;
               return (
