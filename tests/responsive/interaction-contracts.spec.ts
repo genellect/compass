@@ -243,7 +243,7 @@ for (const viewport of [
   });
 }
 
-test("Founder FRAGMENTS preserves its editorial order, ambient motion, and shared Library hero", async ({ page }) => {
+test("Founder FRAGMENTS preserves its editorial order and ambient motion beside the Library sculpture", async ({ page }) => {
   const runtimeErrors = collectRuntimeErrors(page);
   await page.setViewportSize({ width: 390, height: 844 });
   await page.emulateMedia({ reducedMotion: "no-preference" });
@@ -253,7 +253,7 @@ test("Founder FRAGMENTS preserves its editorial order, ambient motion, and share
   const fragments = page.locator("#fragments");
   await expect(fragments.locator("[data-slot]")).toHaveCount(19);
   await expect(fragments.locator("[data-fragment-ambient]")).toHaveCount(1);
-  await expect(page.locator('[data-product="library"] [data-library-hero-preview="true"]')).toHaveCount(1);
+  await expect(page.locator('[data-product="library"] [data-scene="library"]')).toHaveCount(1);
   await expect(page.locator('[data-product="library"] img')).toHaveCount(0);
 
   const report = await page.evaluate(() => ({
@@ -425,13 +425,13 @@ test("Interactive mobile navigation follows the real page hierarchy", async ({ p
   expect(runtimeErrors).toEqual([]);
 });
 
-test("Founder product links include equal-size ProtoPedia CTA in the requested order", async ({ page }) => {
+test("Founder cinematic products preserve destinations and prioritize the introduction CTA", async ({ page }) => {
   const runtimeErrors = await openRoute(page, "/founder/", {
     name: "founder-product-links",
     width: 1440,
     height: 900,
   });
-  const links = page.locator('[data-product="interactive"] nav a');
+  const links = page.locator('[data-product="interactive"] a');
   await expect(links).toHaveCount(3);
   await expect(links.nth(0)).toContainText("紹介サイト");
   await expect(links.nth(1)).toHaveAttribute(
@@ -446,8 +446,22 @@ test("Founder product links include equal-size ProtoPedia CTA in the requested o
       return { width: rect.width, height: rect.height };
     }),
   );
-  expect(new Set(dimensions.map(({ width }) => width)).size).toBe(1);
-  expect(new Set(dimensions.map(({ height }) => height)).size).toBe(1);
+  expect(dimensions[0].width).toBeGreaterThan(dimensions[1].width);
+  expect(dimensions[0].height).toBeGreaterThanOrEqual(54);
+  await links.first().scrollIntoViewIfNeeded();
+  await links.first().focus();
+  await expect(links.first()).toBeFocused();
+  await page.emulateMedia({ reducedMotion: "no-preference" });
+  const pause = page.locator('[data-products-cinematic] button[aria-pressed]');
+  await pause.click();
+  await expect(pause).toHaveAttribute("aria-pressed", "true");
+  await page.getByRole("button", { name: "3Dの自動モーションを再開" }).click();
+  await expect(pause).toHaveAttribute("aria-pressed", "false");
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await expect(pause).toBeHidden();
+  await page.setViewportSize({ width: 390, height: 844 });
+  await expect(links).toHaveCount(3);
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
   expect(runtimeErrors).toEqual([]);
 });
 

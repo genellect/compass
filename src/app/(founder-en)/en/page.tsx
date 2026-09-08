@@ -1,8 +1,7 @@
 import type { Metadata } from "next";
 import Image from "next/image";
-import { ProductExperienceMock } from "../../../interactive/components/ui/ProductExperienceMock";
 import { FounderJapaneseLink } from "../../../components/FounderJapaneseLink";
-import { FutureStrategyHero } from "../../(official)/future-strategy-library/components/FutureStrategyHero";
+import { FounderProducts } from "../../(official)/founder/FounderProducts";
 import {
   compassOrigin,
   credentials,
@@ -244,35 +243,9 @@ export default function EnglishFounderPage() {
           <div className={styles.sectionShell}>
             <header className={styles.workHeading}>
               <div><p className={styles.sectionIndex}>05 / Selected Work</p><h2 id="work-title">Selected Work</h2></div>
-              <p>Ideas become evidence when they work beyond the prototype.</p>
             </header>
 
-            <div className={styles.workGrid}>
-              {products.map((product) => (
-                <article key={product.key} className={styles.workCard} data-product={product.key}>
-                  <div className={styles.workVisual}>
-                    {product.key === "interactive" ? (
-                      <ProductExperienceMock compact className="english-interactive-product-preview" />
-                    ) : product.key === "library" ? (
-                      <FutureStrategyHero variant="preview" />
-                    ) : (
-                      <Image src={product.image} alt={product.alt} fill sizes="(min-width: 901px) 47vw, 92vw" />
-                    )}
-                  </div>
-                  <div className={styles.workCopy}>
-                    <p>{product.label}</p>
-                    <h3>{product.title}</h3>
-                    <nav aria-label={`${product.label} links`}>
-                      {product.links.map((link) => (
-                        <a key={link.href} href={link.href} target="_blank" rel="noopener noreferrer">
-                          <span>{link.label}</span><Arrow />
-                        </a>
-                      ))}
-                    </nav>
-                  </div>
-                </article>
-              ))}
-            </div>
+            <FounderProducts products={products} language="en" />
           </div>
         </section>
 
