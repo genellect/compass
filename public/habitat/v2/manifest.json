@@ -1,0 +1,413 @@
+{
+  "version": "2",
+  "blender": "4.5.13 LTS",
+  "seed": 21,
+  "assets": [
+    {
+      "file": "architecture.glb",
+      "bytes": 843556,
+      "triangles": 12544,
+      "meshes": 2,
+      "textures": 5,
+      "rawBytes": 10603168
+    },
+    {
+      "file": "top.glb",
+      "bytes": 217676,
+      "triangles": 4500,
+      "meshes": 1,
+      "textures": 3,
+      "rawBytes": 934952
+    },
+    {
+      "file": "vision.glb",
+      "bytes": 515804,
+      "triangles": 2308,
+      "meshes": 1,
+      "textures": 4,
+      "rawBytes": 5519960
+    },
+    {
+      "file": "experience.glb",
+      "bytes": 322628,
+      "triangles": 7936,
+      "meshes": 1,
+      "textures": 3,
+      "rawBytes": 1539612
+    },
+    {
+      "file": "technology.glb",
+      "bytes": 444028,
+      "triangles": 23496,
+      "meshes": 1,
+      "textures": 3,
+      "rawBytes": 1960224
+    },
+    {
+      "file": "resources.glb",
+      "bytes": 1044392,
+      "triangles": 38444,
+      "meshes": 1,
+      "textures": 3,
+      "rawBytes": 4660180
+    },
+    {
+      "file": "manifesto.glb",
+      "bytes": 106384,
+      "triangles": 5404,
+      "meshes": 2,
+      "textures": 2,
+      "rawBytes": 628104
+    },
+    {
+      "file": "community.glb",
+      "bytes": 392972,
+      "triangles": 15216,
+      "meshes": 1,
+      "textures": 3,
+      "rawBytes": 1648988
+    },
+    {
+      "file": "founder.glb",
+      "bytes": 286824,
+      "triangles": 6376,
+      "meshes": 1,
+      "textures": 3,
+      "rawBytes": 1328692
+    },
+    {
+      "file": "contact.glb",
+      "bytes": 271356,
+      "triangles": 5000,
+      "meshes": 1,
+      "textures": 3,
+      "rawBytes": 1194192
+    },
+    {
+      "file": "environment.glb",
+      "bytes": 1274156,
+      "triangles": 135216,
+      "meshes": 13,
+      "textures": 3,
+      "rawBytes": 7166480
+    }
+  ],
+  "sections": [
+    {
+      "id": "top",
+      "origin": [
+        0,
+        0,
+        0
+      ],
+      "arrival": [
+        42,
+        60,
+        180
+      ],
+      "camera": [
+        42,
+        52,
+        165
+      ],
+      "exit": [
+        40,
+        18,
+        52
+      ],
+      "target": [
+        100,
+        42,
+        -145
+      ],
+      "filmOffset": -1.8
+    },
+    {
+      "id": "vision",
+      "origin": [
+        22,
+        0,
+        0
+      ],
+      "arrival": [
+        27.8,
+        3.2,
+        15
+      ],
+      "camera": [
+        27.7,
+        2.9,
+        10
+      ],
+      "exit": [
+        27.4,
+        2.9,
+        8.2
+      ],
+      "target": [
+        22,
+        3,
+        -3
+      ],
+      "filmOffset": 4.32
+    },
+    {
+      "id": "experience",
+      "origin": [
+        44,
+        0,
+        0
+      ],
+      "arrival": [
+        49.8,
+        3.2,
+        15
+      ],
+      "camera": [
+        49.7,
+        2.9,
+        10
+      ],
+      "exit": [
+        49.4,
+        2.9,
+        8.2
+      ],
+      "target": [
+        44,
+        3,
+        -3
+      ],
+      "filmOffset": -1.728
+    },
+    {
+      "id": "technology",
+      "origin": [
+        66,
+        0,
+        0
+      ],
+      "arrival": [
+        71.8,
+        3.2,
+        15
+      ],
+      "camera": [
+        71.7,
+        2.9,
+        10
+      ],
+      "exit": [
+        71.4,
+        2.9,
+        8.2
+      ],
+      "target": [
+        66,
+        3,
+        -3
+      ],
+      "filmOffset": 4.32
+    },
+    {
+      "id": "resources",
+      "origin": [
+        88,
+        0,
+        0
+      ],
+      "arrival": [
+        93.8,
+        3.2,
+        15
+      ],
+      "camera": [
+        93.7,
+        2.9,
+        10
+      ],
+      "exit": [
+        93.4,
+        2.9,
+        8.2
+      ],
+      "target": [
+        88,
+        3,
+        -3
+      ],
+      "filmOffset": -4.32
+    },
+    {
+      "id": "manifesto",
+      "origin": [
+        110,
+        0,
+        0
+      ],
+      "arrival": [
+        115.8,
+        3.2,
+        15
+      ],
+      "camera": [
+        115.7,
+        2.9,
+        10
+      ],
+      "exit": [
+        115.4,
+        2.9,
+        8.2
+      ],
+      "target": [
+        110,
+        3,
+        -3
+      ],
+      "filmOffset": 4.32
+    },
+    {
+      "id": "community",
+      "origin": [
+        132,
+        0,
+        0
+      ],
+      "arrival": [
+        137.8,
+        3.2,
+        15
+      ],
+      "camera": [
+        137.7,
+        2.9,
+        10
+      ],
+      "exit": [
+        137.4,
+        2.9,
+        8.2
+      ],
+      "target": [
+        132,
+        3,
+        -3
+      ],
+      "filmOffset": -4.32
+    },
+    {
+      "id": "founder",
+      "origin": [
+        154,
+        0,
+        0
+      ],
+      "arrival": [
+        159.8,
+        3.2,
+        15
+      ],
+      "camera": [
+        159.7,
+        2.9,
+        10
+      ],
+      "exit": [
+        159.4,
+        2.9,
+        8.2
+      ],
+      "target": [
+        154,
+        3,
+        -3
+      ],
+      "filmOffset": 4.32
+    },
+    {
+      "id": "contact",
+      "origin": [
+        176,
+        0,
+        0
+      ],
+      "arrival": [
+        181.8,
+        3.2,
+        15
+      ],
+      "camera": [
+        181.7,
+        2.9,
+        10
+      ],
+      "exit": [
+        181.4,
+        2.9,
+        8.2
+      ],
+      "target": [
+        176,
+        3,
+        -3
+      ],
+      "filmOffset": -4.32
+    }
+  ],
+  "optimizer": {
+    "name": "@gltf-transform/cli",
+    "version": "4.5.0",
+    "compression": "EXT_meshopt_compression",
+    "positionBits": 16
+  },
+  "posters": [
+    {
+      "file": "top.webp",
+      "bytes": 204890
+    },
+    {
+      "file": "vision.webp",
+      "bytes": 181256
+    },
+    {
+      "file": "experience.webp",
+      "bytes": 187784
+    },
+    {
+      "file": "technology.webp",
+      "bytes": 199300
+    },
+    {
+      "file": "resources.webp",
+      "bytes": 211900
+    },
+    {
+      "file": "manifesto.webp",
+      "bytes": 182640
+    },
+    {
+      "file": "community.webp",
+      "bytes": 205316
+    },
+    {
+      "file": "founder.webp",
+      "bytes": 198048
+    },
+    {
+      "file": "contact.webp",
+      "bytes": 193326
+    }
+  ],
+  "environment": [
+    {
+      "file": "planet.webp",
+      "bytes": 864360
+    },
+    {
+      "file": "room.hdr",
+      "bytes": 309345
+    }
+  ],
+  "totalBytes": 8657941
+}

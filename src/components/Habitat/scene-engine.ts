@@ -1,10 +1,12 @@
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+import { MeshoptDecoder } from 'three/addons/libs/meshopt_decoder.module.js';
 import { HDRLoader } from 'three/addons/loaders/HDRLoader.js';
 import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
 import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
 import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
 import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
+import { RectAreaLightUniformsLib } from 'three/addons/lights/RectAreaLightUniformsLib.js';
 import { manifest, sections, smooth, type TourPosition, type Quality, type SceneState } from './scene-config';
 
 export interface SceneController {
@@ -15,6 +17,7 @@ export interface SceneController {
   dispose(): void;
 }
 type Zone = { object: THREE.Group; animated: THREE.Object3D[]; base: number[]; rotationBase: number[] };
+let areaLightTablesReady = false;
 function disposeObject(object: THREE.Object3D) {
   const geometries = new Set<THREE.BufferGeometry>(), materials = new Set<THREE.Material>();
   object.traverse(node => { if (node instanceof THREE.Mesh) { geometries.add(node.geometry); for (const material of Array.isArray(node.material) ? node.material : [node.material]) materials.add(material); } });
@@ -26,20 +29,30 @@ function disposeObject(object: THREE.Object3D) {
 
 export function createScene(host: HTMLElement, onState: (state: SceneState) => void): SceneController {
   let disposed = false, paused = false, quality: Quality = 'standard', fatal = false;
-  let started = false, frame = 0, last = 0, clock = 0, loadedAt = 0, sampleAt = 0, samples = 0, slowWindows = 0;
+  let started = false, warming = true, frame = 0, last = 0, clock = 0, loadedAt = 0, sampleAt = 0, samples = 0, slowWindows = 0;
   let position: TourPosition = { index: 0, next: 1, blend: 0, local: 0 };
   const renderer = new THREE.WebGLRenderer({ antialias: false, alpha: false, powerPreference: 'default' });
   renderer.setClearColor(0x071724); renderer.outputColorSpace = THREE.SRGBColorSpace;
-  renderer.toneMapping = THREE.ACESFilmicToneMapping; renderer.toneMappingExposure = 1;
+  renderer.toneMapping = THREE.AgXToneMapping; renderer.toneMappingExposure = 1;
   renderer.shadowMap.enabled = true; renderer.shadowMap.type = THREE.PCFSoftShadowMap;
   renderer.info.autoReset = false;
   renderer.domElement.setAttribute('aria-hidden', 'true'); host.append(renderer.domElement);
-  const scene = new THREE.Scene(); scene.fog = new THREE.FogExp2(0x101d28, .0025);
-  const camera = new THREE.PerspectiveCamera(43, 1, .1, 1400); camera.filmOffset = -4.32;
+  const scene = new THREE.Scene();
+  // Use the master's linear world radiance, independent of the reflection panorama.
+  scene.background = new THREE.Color().setRGB(.025 * .32, .046 * .32, .075 * .32);
+  scene.fog = new THREE.FogExp2(0x13232e, .00035);
+  const camera = new THREE.PerspectiveCamera(43, 1, .1, 5000); camera.filmOffset = -1.8;
   let environment: THREE.WebGLRenderTarget | null = null;
-  scene.environmentIntensity = .65;
-  scene.add(new THREE.HemisphereLight(0xd7e8ff, 0x333632, .85));
-  const sun = new THREE.DirectionalLight(0xd4e5ff, 3.1);
+  scene.environmentIntensity = .75;
+  scene.add(new THREE.HemisphereLight(0xd7e8ff, 0x727a77, .35));
+  if (!areaLightTablesReady) { RectAreaLightUniformsLib.init(); areaLightTablesReady = true; }
+  const roomLights = [
+    {light:new THREE.RectAreaLight(0xbadaff,1.4,12,12),offset:new THREE.Vector3(0,6,-8)},
+    {light:new THREE.RectAreaLight(0xffdeb0,.8,7,7),offset:new THREE.Vector3(-4,8,1)},
+    {light:new THREE.RectAreaLight(0xbfdcff,.5,6,6),offset:new THREE.Vector3(4,5,8)},
+  ];
+  roomLights.forEach(({light})=>scene.add(light));
+  const sun = new THREE.DirectionalLight(0xf2f7ff, 2.4);
   sun.castShadow = true; sun.shadow.mapSize.set(4096, 4096);
   Object.assign(sun.shadow.camera, { left: -16, right: 16, top: 12, bottom: -12, near: .1, far: 55 });
   sun.shadow.normalBias = .025; sun.shadow.bias = -.00012;
@@ -47,30 +60,32 @@ export function createScene(host: HTMLElement, onState: (state: SceneState) => v
   const warm = new THREE.DirectionalLight(0xffdfb6, .65); warm.position.set(-7, 4, 2); scene.add(warm);
   const renderTarget = new THREE.WebGLRenderTarget(1,1,{type:THREE.HalfFloatType}); renderTarget.samples = Math.min(4, renderer.capabilities.maxSamples);
   const composer = new EffectComposer(renderer, renderTarget);
-  const renderPass = new RenderPass(scene, camera), bloom = new UnrealBloomPass(new THREE.Vector2(1, 1), .18, .35, 1.4), output = new OutputPass();
+  const renderPass = new RenderPass(scene, camera), bloom = new UnrealBloomPass(new THREE.Vector2(1, 1), .1, .35, 2), output = new OutputPass();
   composer.addPass(renderPass); composer.addPass(bloom); composer.addPass(output);
   const loader = new GLTFLoader();
+  loader.setMeshoptDecoder(MeshoptDecoder);
   const zones = new Map<number, Zone>(), structures = new Map<number, THREE.Group>();
   const requests = new Map<number, Promise<void>>(), aborters = new Set<AbortController>();
   let architecture: THREE.Group | null = null;
+  const exteriorArchitecture = new THREE.Group(); scene.add(exteriorArchitecture);
   let campus: THREE.Group | null = null;
   const pointer = new THREE.Vector2(), targetPointer = new THREE.Vector2();
   const cameraPoint = new THREE.Vector3(), look = new THREE.Vector3(), nextPoint = new THREE.Vector3();
   const frustum=new THREE.Frustum(),projection=new THREE.Matrix4();
   // A single shared distant starfield; deliberately deterministic.
   let seed = 21; const random = () => { seed = (Math.imul(seed, 1664525) + 1013904223) >>> 0; return seed / 4294967296; };
-  const vertices = new Float32Array(900 * 3);
-  for (let i = 0; i < 900; i++) { vertices[i * 3] = random() * 1400 - 600; vertices[i * 3 + 1] = random() * 450; vertices[i * 3 + 2] = -950 - random() * 150; }
+  const vertices = new Float32Array(180 * 3);
+  for (let i = 0; i < 180; i++) { vertices[i * 3] = random() * 3500 - 1600; vertices[i * 3 + 1] = random() * 1400 + 200; vertices[i * 3 + 2] = -3800 - random() * 150; }
   const starGeometry = new THREE.BufferGeometry(); starGeometry.setAttribute('position', new THREE.BufferAttribute(vertices, 3));
-  const starMaterial = new THREE.PointsMaterial({ color: 0xbbdce5, size: .4, sizeAttenuation: true, fog: false });
+  const starMaterial = new THREE.PointsMaterial({ color: 0xbbdce5, size: .2, sizeAttenuation: true, fog: false });
   const stars = new THREE.Points(starGeometry, starMaterial); scene.add(stars);
-  const planetGeometry = new THREE.SphereGeometry(390, 96, 64), planetMaterial = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: .95, fog: false });
+  const planetGeometry = new THREE.SphereGeometry(950, 96, 64), planetMaterial = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: .95, emissive: new THREE.Color().setRGB(.025,.20,.30), emissiveIntensity: .2, fog: false });
   const planetTexture = new THREE.TextureLoader().load(manifest.zones[0].poster.replace('top.webp','planet.webp'), texture => {
     if (disposed) texture.dispose();
     else { texture.colorSpace = THREE.SRGBColorSpace; planetMaterial.map = texture; planetMaterial.needsUpdate = true; }
-  });
+  }, undefined, () => { if (!disposed) fail(); });
   const planet = new THREE.Mesh(planetGeometry, planetMaterial); scene.add(planet);
-  planet.position.set(88,-310,-550);
+  planet.position.set(450,750,-2800); planet.rotation.y=.8;
 
   const resize = () => {
     const w = Math.max(1, host.clientWidth), h = Math.max(1, host.clientHeight);
@@ -104,6 +119,16 @@ export function createScene(host: HTMLElement, onState: (state: SceneState) => v
           for (const material of Array.isArray(node.material) ? node.material : [node.material]) {
             if (material.transparent) { node.castShadow = false; material.depthWrite = false; }
             if (material.map) material.map.anisotropy = Math.min(4, renderer.capabilities.getMaxAnisotropy());
+            // Cycles includes indirect bounce light; retain contact shading without
+            // multiplying the coarse real-time ambient approximation into black.
+            if (material.aoMap) material.aoMapIntensity = .5;
+            if (material.userData.habitat_baked_indirect && material.emissiveMap) {
+              material.lightMap = material.emissiveMap;
+              material.lightMapIntensity = Math.PI;
+              material.emissiveMap = null;
+              material.emissive.fromArray(material.userData.habitat_emissive);
+              material.emissiveIntensity = 1;
+            }
           }
         }
       });
@@ -122,10 +147,10 @@ export function createScene(host: HTMLElement, onState: (state: SceneState) => v
       if (disposed || !wanted().has(index)) { disposeObject(object); return; }
       const animated: THREE.Object3D[] = [];
       object.traverse(node => { if (node.name.startsWith('Spin_') || node.name.startsWith('Float_')) animated.push(node); });
-      object.position.x = index * 22;
+      object.position.fromArray(sections[index].origin);
       zones.set(index, { object, animated, base: animated.map(node => node.position.y), rotationBase: animated.map(node=>node.rotation.y) }); scene.add(object);
-      if (architecture) { const copy = architecture.clone(true); copy.position.x = index * 22; scene.add(copy); structures.set(index, copy); }
-      loadedAt = performance.now(); trim(); schedule();
+      if (architecture) { const copy = architecture.clone(true); copy.position.fromArray(sections[index].origin); scene.add(copy); structures.set(index, copy); }
+      warming = true; loadedAt = performance.now(); trim(); schedule();
     }).catch(() => {
       if (!disposed && (index === position.index || (position.blend > 0 && index === position.next))) fail();
     }).finally(() => requests.delete(index));
@@ -136,6 +161,10 @@ export function createScene(host: HTMLElement, onState: (state: SceneState) => v
   const paint = () => {
     if (disposed || fatal) return;
     const a = sections[position.index], b = sections[position.next];
+    const roomX = THREE.MathUtils.lerp(a.origin[0],b.origin[0],paused?0:position.blend);
+    roomLights.forEach(({light,offset})=>{light.position.copy(offset);light.position.x+=roomX;light.lookAt(roomX,1,0);});
+    exteriorArchitecture.visible = position.index === 0 && position.blend < .85;
+    for (const structure of structures.values()) structure.visible = !exteriorArchitecture.visible;
     const offset=THREE.MathUtils.lerp(a.filmOffset,b.filmOffset,paused?0:position.blend);
     if(camera.filmOffset!==offset){camera.filmOffset=offset;camera.updateProjectionMatrix();}
     cameraPoint.fromArray(a.reading);
@@ -156,7 +185,12 @@ export function createScene(host: HTMLElement, onState: (state: SceneState) => v
     pointer.lerp(targetPointer, .06);
     if (!paused) { look.x += pointer.x * .18; look.y += pointer.y * .12; }
     camera.lookAt(look);
-    sun.position.set(look.x - 8, 5.5, -12); sun.target.position.set(look.x, 0, 1);
+    // The first view spans a city; interior views use a tighter shadow frustum.
+    const exterior = position.index === 0 ? 1-position.blend : 0;
+    const extent = THREE.MathUtils.lerp(18,140,exterior);
+    Object.assign(sun.shadow.camera,{left:-extent,right:extent,top:extent,bottom:-extent,far:420});
+    sun.shadow.camera.updateProjectionMatrix();
+    sun.position.set(look.x-90,150,look.z+90); sun.target.position.set(look.x,0,look.z);
     for (const zone of zones.values()) zone.animated.forEach((node, i) => {
       if (node.name.startsWith('Spin_')) node.rotation.y = zone.rotationBase[i] + clock * .10 * (i % 2 ? 1 : -1);
       else node.position.y = zone.base[i] + Math.sin(clock * .65 + i) * .065;
@@ -164,11 +198,12 @@ export function createScene(host: HTMLElement, onState: (state: SceneState) => v
     const ready = zones.has(position.index) && (position.blend === 0 || zones.has(position.next));
     if (!ready) { onState('loading'); return; }
     renderer.info.reset(); composer.render();
+    if (warming) { loadedAt = performance.now(); sampleAt = 0; samples = 0; slowWindows = 0; warming = false; }
     host.dataset.drawCalls = String(renderer.info.render.calls);
     // Count visible model geometry separately from shadow/post-processing submissions.
     frustum.setFromProjectionMatrix(projection.multiplyMatrices(camera.projectionMatrix,camera.matrixWorldInverse));
     let visibleTriangles=0;
-    scene.traverseVisible(node=>{if(node instanceof THREE.Mesh&&(!node.frustumCulled||frustum.intersectsObject(node)))visibleTriangles+=(node.geometry.index?.count??node.geometry.attributes.position.count)/3;});
+    scene.traverseVisible(node=>{if(node instanceof THREE.Mesh&&(!node.frustumCulled||frustum.intersectsObject(node)))visibleTriangles+=(node.geometry.index?.count??node.geometry.attributes.position.count)/3*(node instanceof THREE.InstancedMesh?node.count:1);});
     host.dataset.triangles = String(visibleTriangles);
     host.dataset.submittedTriangles = String(renderer.info.render.triangles);
     host.dataset.quality = quality;
@@ -229,9 +264,21 @@ export function createScene(host: HTMLElement, onState: (state: SceneState) => v
         try {environment=generator.fromEquirectangular(texture);scene.environment=environment.texture;}
         finally {generator.dispose();texture.dispose();}
         architecture = await load(manifest.architecture);
+        architecture.updateMatrixWorld(true);
+        architecture.traverse(node => {
+          if (!(node instanceof THREE.Mesh)) return;
+          const instances = new THREE.InstancedMesh(node.geometry,node.material,sections.length);
+          const placement = new THREE.Matrix4();
+          sections.forEach((section,index) => {
+            placement.makeTranslation(...section.origin).multiply(node.matrixWorld);
+            instances.setMatrixAt(index,placement);
+          });
+          instances.castShadow=node.castShadow;instances.receiveShadow=true;
+          instances.computeBoundingSphere();exteriorArchitecture.add(instances);
+        });
         campus = await load(manifest.environment);
         if (disposed) return;
-        campus.traverse(node=>{if(node instanceof THREE.Mesh)node.castShadow=false;});
+        campus.traverse(node=>{if(node instanceof THREE.Mesh)node.castShadow=true;});
         scene.add(campus);
         // Start accepting destination changes while the first zone is still downloading.
         started = true;
@@ -253,6 +300,7 @@ export function createScene(host: HTMLElement, onState: (state: SceneState) => v
       window.removeEventListener('pointermove', onPointer); window.removeEventListener('blur', onLeave);
       document.removeEventListener('visibilitychange', onVisibility); renderer.domElement.removeEventListener('webglcontextlost', onLost);
       zones.forEach(zone => disposeObject(zone.object)); zones.clear(); structures.clear();
+      exteriorArchitecture.traverse(node => {if(node instanceof THREE.InstancedMesh)node.dispose();});
       if (architecture) disposeObject(architecture);
       if (campus) disposeObject(campus);
       starGeometry.dispose(); starMaterial.dispose(); planetGeometry.dispose(); planetMaterial.dispose(); planetTexture.dispose(); environment?.dispose();

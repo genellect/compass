@@ -3,7 +3,7 @@ import path from 'node:path';
 import {createHash} from 'node:crypto';
 import sharp from 'sharp';
 
-const directory=path.resolve('public/habitat/v1');
+const directory=path.resolve('public/habitat/v2');
 const manifest=JSON.parse(await readFile(path.join(directory,'manifest.json'),'utf8'));
 const report={generatedAt:new Date().toISOString(),blender:manifest.blender,assets:[],posters:[],totalBytes:0};
 for(const asset of manifest.assets){

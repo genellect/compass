@@ -1,5 +1,7 @@
+import authored from '../../../public/habitat/v2/manifest.json';
+
 export const DESKTOP_QUERY = '(min-width: 901px) and (pointer: fine) and (hover: hover)';
-export const ASSET_BASE = '/habitat/v1/';
+export const ASSET_BASE = '/habitat/v2/';
 export const sectionIds = ['top', 'vision', 'experience', 'technology', 'resources', 'manifesto', 'community', 'founder', 'contact'] as const;
 export type SectionId = typeof sectionIds[number];
 export type Vec3 = readonly [number, number, number];
@@ -14,20 +16,18 @@ export interface SectionSceneConfig {
   target: Vec3;
   filmOffset: number;
 }
-export const sections: SectionSceneConfig[] = sectionIds.map((id, index) => ({
-  id, origin: [index * 22, 0, 0],
-  arrival: [index * 22 + 5.9, 2.7, 10.4],
-  reading: [index * 22 + 5.7, 2.65, 10],
-  exit: [index * 22 + 5.4, 2.6, 9.6],
-  target: [index * 22, 2, -1],
-  filmOffset: [ -4.32, 4.32, -1.728, 4.32, -4.32, 4.32, -4.32, 4.32, -4.32 ][index],
-}));
+export const sections: SectionSceneConfig[] = sectionIds.map(id => {
+  const pose = authored.sections.find(section => section.id === id)!;
+  return {id, origin: pose.origin as unknown as Vec3, arrival: pose.arrival as unknown as Vec3,
+    reading: pose.camera as unknown as Vec3, exit: pose.exit as unknown as Vec3,
+    target: pose.target as unknown as Vec3, filmOffset: pose.filmOffset};
+});
 export const chapters = [
-  {id:'vision',label:'考え方',title:'VISION'},
-  {id:'experience',label:'できること',title:'EXPERIENCE'},
-  {id:'technology',label:'体験する',title:'SYSTEMS'},
-  {id:'community',label:'人と活動',title:'PEOPLE'},
-  {id:'contact',label:'次の一歩',title:'CONNECT'},
+  {id:'vision',label:'Vision',title:'VISION'},
+  {id:'experience',label:'Experience',title:'EXPERIENCE'},
+  {id:'technology',label:'Interactive',title:'INTERACTIVE'},
+  {id:'community',label:'Community',title:'COMMUNITY'},
+  {id:'contact',label:'Contact',title:'CONTACT'},
 ] as const;
 export function chapterIndex(sectionIndex:number) { return sectionIndex<2?0:sectionIndex===2?1:sectionIndex<6?2:sectionIndex<8?3:4; }
 export interface SceneManifest {
@@ -38,7 +38,7 @@ export interface SceneManifest {
   zones: { id: SectionId; model: string; poster: string }[];
 }
 export const manifest: SceneManifest = {
-  version: '1', architecture: ASSET_BASE + 'architecture.glb',
+  version: '2', architecture: ASSET_BASE + 'architecture.glb',
   environment: ASSET_BASE + 'environment.glb',
   lighting: ASSET_BASE + 'room.hdr',
   zones: sectionIds.map(id => ({ id, model: ASSET_BASE + id + '.glb', poster: ASSET_BASE + id + '.webp' })),

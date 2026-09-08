@@ -34,7 +34,7 @@
     "test:habitat": "vitest run tests/habitat-tour.test.ts",
     "test:responsive:habitat": "playwright test tests/responsive/habitat.spec.ts",
     "habitat:prepare": "node scripts/habitat/prepare-assets.mjs",
-    "habitat:planet": "node scripts/habitat/planet-texture.mjs public/habitat/v1/planet.webp",
+    "habitat:planet": "node scripts/habitat/planet-texture.mjs public/habitat/v2/planet.webp",
     "check": "npm run verify:public-source && npm run test && npm run test:habitat && npm run typecheck && npm run build && npm run verify && npm run test:responsive && npm run test:responsive:habitat",
     "cloud:check": "npm run check",
     "dev:doctor": "bash .devcontainer/doctor.sh"

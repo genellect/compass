@@ -2,6 +2,28 @@ import { test, expect, devices } from '@playwright/test';
 
 const ids = ['top','vision','experience','technology','resources','manifesto','community','founder','contact'];
 
+test('Desktop content columns match the room composition and Contact stays legible', async ({page})=>{
+  await page.emulateMedia({reducedMotion:'reduce'});
+  for(const width of [901,1440]) {
+    await page.setViewportSize({width,height:900});await page.goto('/');
+    await expect(page.locator('[data-habitat]')).toHaveAttribute('data-enabled','true');
+    const cards=await page.locator('.v4-experience-card').evaluateAll(nodes=>nodes.map(n=>{const r=n.getBoundingClientRect();return {x:r.x,y:r.y,width:r.width};}));
+    expect(cards[1].x).toBeGreaterThan(cards[0].x+cards[0].width-1);
+    expect(Math.abs(cards[1].y-cards[0].y)).toBeLessThan(1);
+    if(width===1440)expect(Math.abs(cards[3].y-cards[0].y)).toBeLessThan(1);
+    const composition=await page.evaluate(()=>{
+      const copy=document.querySelector('.v4-manifesto__copy')!.getBoundingClientRect();
+      const button=document.querySelector('.contact-card > .button')!,r=button.getBoundingClientRect();
+      const text=document.createRange();text.selectNodeContents(button);
+      return {copyLeft:copy.left,buttonWidth:r.width,buttonHeight:r.height,textFits:[...text.getClientRects()].every(t=>t.left>=r.left&&t.right<=r.right),overflow:document.documentElement.scrollWidth-innerWidth};
+    });
+    if(width===1440)expect(composition.copyLeft).toBeGreaterThan(width*.48);
+    expect(composition.buttonWidth).toBeGreaterThan(260);
+    expect(composition.buttonHeight).toBeLessThan(110);
+    expect(composition.textFits).toBe(true);expect(composition.overflow).toBeLessThanOrEqual(1);
+  }
+});
+
 test('Desktop Hero fits the first screen and the new header remains keyboard operable', async ({ page }) => {
   await page.emulateMedia({ reducedMotion: 'reduce' });
   for (const [width,height] of [[901,768],[1024,768],[1275,553],[1440,900],[1920,1080],[3840,2160]]) {
@@ -79,7 +101,7 @@ test('Mobile preserves the current layout without fetching habitat assets or eng
   page.on('request', request => { if (request.url().includes('/habitat/')) assets.push(request.url()); });
   page.on('response', response => { if (response.url().endsWith('.js')) engines.push(response.text().then(text => text.includes('Habitat asset unavailable')).catch(() => false)); });
   await page.goto('/'); await expect(page.locator('[data-habitat]')).toHaveAttribute('data-enabled','false');
-  await expect(page.locator('.v4-technology__interactive-title')).toHaveText('LET EVERYTHING MOVE');
+  await expect(page.locator('.v4-technology__interactive-title')).toHaveText('LET EVERYTHING MOVE.');
   await expect(page.locator('.v4-technology__interactive-copy p').nth(0)).toHaveText('あなたが飲み込んだその疑問を、誰かも同じように抱えているかもしれない。');
   await expect(page.locator('.v4-technology__interactive-copy p').nth(1)).toHaveText('問いも、迷いも、ひらめきも。その場にいる全員の思考が重なったとき、講義はただの説明ではなく、自分たちの学びに変わります。');
   await page.locator('#contact').scrollIntoViewIfNeeded();
@@ -114,6 +136,16 @@ test('Reduced motion renders section posters without WebGL and without a motion 
   await expect(page.locator('[data-habitat-backdrop] canvas')).toHaveCount(0);
   await expect(page.getByRole('button', { name: '動きを止める' })).toHaveCount(0);
   await expect.poll(() => page.locator('[data-habitat-backdrop] > div').first().evaluate(e => getComputedStyle(e).backgroundImage)).toContain('resources.webp');
+  for(const id of ids) {
+    await page.evaluate(id=>document.getElementById(id)!.scrollIntoView({behavior:'instant',block:'start'}),id);
+    const poster=page.locator('[data-habitat-backdrop] > div').first();
+    await expect.poll(()=>poster.evaluate(e=>getComputedStyle(e).backgroundImage)).toContain(id+'.webp');
+    const dimensions=await poster.evaluate(async e=>{
+      const url=getComputedStyle(e).backgroundImage.match(/url\(["']?(.*?)["']?\)/)![1];
+      const image=new Image();image.src=url;await image.decode();return [image.naturalWidth,image.naturalHeight];
+    });
+    expect(dimensions).toEqual([1920,1080]);
+  }
   expect(models).toEqual([]);
 });
 
@@ -129,9 +161,9 @@ test('Chapter navigation seeks to the correct room and sound is opt-in and dispo
   await page.getByRole('button',{name:'音を入れる'}).click();
   await expect(page.getByRole('button',{name:'音を切る'})).toHaveAttribute('aria-pressed','true');
   const chapters=page.getByRole('navigation',{name:'このページの案内'});
-  await chapters.getByRole('link',{name:'人と活動',exact:true}).click();
+  await chapters.getByRole('link',{name:'Community',exact:true}).click();
   await expect(page.locator('[data-habitat]')).toHaveAttribute('data-scene-section','community');
-  await expect(chapters.getByRole('link',{name:'人と活動',exact:true})).toHaveAttribute('aria-current','step');
+  await expect(chapters.getByRole('link',{name:'Community',exact:true})).toHaveAttribute('aria-current','step');
   await page.getByRole('button',{name:'音を切る'}).click();
   await expect(page.getByRole('button',{name:'音を入れる'})).toHaveAttribute('aria-pressed','false');
   await page.setViewportSize({width:390,height:844});
@@ -164,6 +196,16 @@ test('Viewport changes and repeated route visits dispose the renderer', async ({
   await page.goto('/contact/'); await expect(page.locator('[data-habitat]')).toHaveCount(0);
   await page.goBack(); await expect(page.locator('[data-habitat]')).toHaveCount(1);
   await expect(page.locator('[data-habitat-backdrop] canvas')).toHaveCount(1);
+});
+
+test('A failed planet texture uses the static scene and keeps navigation available', async ({ page }) => {
+  await page.setViewportSize({width:1280,height:720});
+  await page.route('**/habitat/**/planet.webp',route=>route.fulfill({status:503,body:''}));
+  await page.goto('/');
+  await expect(page.locator('[data-habitat]')).toHaveAttribute('data-scene-state','failed');
+  await expect(page.locator('[data-habitat-backdrop] canvas')).toHaveCount(0);
+  await expect(page.locator('h1')).toBeVisible();
+  await expect(page.locator('.li-system-index a').first()).toBeVisible();
 });
 
 test('Lost WebGL context fails over without losing page content', async ({ page }) => {
