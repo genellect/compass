@@ -257,9 +257,9 @@ export default function FounderPage() {
           <MobileExternalMenu className={styles.mobileExternalLinks}>
             <div className={styles.mobileExternalPopover} aria-label="Yuto Matsuiの外部リンク">
               <div className={styles.mobileExternalIcons}>
-                <a href="https://www.instagram.com/n.m.w.314/?__pwa=1#" target="_blank" rel="noopener noreferrer" aria-label="Instagram"><InstagramIcon /></a>
-                <a href="https://github.com/genellect" target="_blank" rel="noopener noreferrer" aria-label="GitHub"><GitHubIcon /></a>
-                <a href={`${COMPASS_ORIGIN}/`} aria-label="COMPASS公式サイト"><CompassIcon /></a>
+                <a href="https://www.instagram.com/n.m.w.314/?__pwa=1#" target="_blank" rel="noopener noreferrer" aria-label="Instagram"><InstagramIcon /><span>Instagram</span></a>
+                <a href="https://github.com/genellect" target="_blank" rel="noopener noreferrer" aria-label="GitHub"><GitHubIcon /><span>GitHub</span></a>
+                <a href={`${COMPASS_ORIGIN}/`} aria-label="COMPASS公式サイト"><CompassIcon /><span>COMPASS</span></a>
               </div>
               <div className={styles.mobileLanguagePanel}>
                 <span>Language</span>
@@ -279,7 +279,7 @@ export default function FounderPage() {
             <p className={styles.eyebrow}>Life science · AI · Education</p>
             <h1 id="founder-title">Yuto Matsui</h1>
             <p className={styles.japaneseName}>松井優知</p>
-            <p className={styles.heroStatement}>境界を越え、新しい可能性へ。</p>
+            <p className={styles.heroStatement}><span>境界を越え、</span><span>新しい可能性へ。</span></p>
 
             <ul className={styles.axisList} aria-label="専門領域">
               <li data-accent="bio"><span aria-hidden="true" />ライフサイエンス研究</li>
