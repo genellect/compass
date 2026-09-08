@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import styles from "./founder.module.css";
+import { MobileHeroSculpture } from "./MobileHeroSculpture";
 
 const SLIDES = [
   {
@@ -49,7 +50,9 @@ export function FounderHeroGallery() {
       role="region"
       aria-roledescription="carousel"
       aria-label="Yuto Matsui ポートレート"
+      data-paused={paused}
     >
+      <MobileHeroSculpture paused={paused} activeIndex={activeIndex} />
       <div className={styles.photoFrame} aria-live="off">
         {SLIDES.map((slide, index) => (
           <figure

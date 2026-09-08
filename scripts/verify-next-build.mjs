@@ -650,7 +650,6 @@ for (const expected of [
   'data-scene="library"',
   'data-scene="manifesto"',
   "© 2026 Yuto Matsui. Designed and developed by Yuto Matsui. All rights reserved.",
-  "境界を越え、新しい可能性へ。",
   "COMPASS Interactive",
   "LET EVERYTHING",
   "MOVE.",
@@ -704,6 +703,8 @@ for (const expected of [
   '"url":"https://yuto-matsui.com/"',
   parentGaMeasurementId
 ]) expectIncludes(founder, expected, "Founder portfolio");
+
+expectIncludes(normalizeText(founder), "境界を越え、新しい可能性へ。", "Founder Hero semantic copy");
 
 expectExcludes(
   founder,
