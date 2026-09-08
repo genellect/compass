@@ -2,14 +2,14 @@ import { expect, test } from "./responsive-fixture";
 
 test.use({ isMobile: true, hasTouch: true, deviceScaleFactor: 2 });
 
-test("JP mobile portrait, sculpture and balanced external menu", async ({ page }, testInfo) => {
+test("JP mobile full-bleed portrait, signals and balanced external menu", async ({ page }, testInfo) => {
   test.setTimeout(90_000);
   const errors: string[] = [];
   page.on("pageerror", error => errors.push(error.message));
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto("/founder/", { waitUntil: "domcontentloaded" });
   const hero = page.locator("#top");
-  await expect(hero.locator('[data-ready="true"] canvas')).toBeAttached();
+  await expect(hero.locator('svg[class*="mobileHeroSignals"]')).toBeVisible();
   const pause = hero.getByRole("button", { name: "写真の自動切替を一時停止", exact: true });
   await pause.click();
   await expect(hero.locator('[data-paused="true"]')).toBeVisible();
@@ -19,16 +19,22 @@ test("JP mobile portrait, sculpture and balanced external menu", async ({ page }
     await expect.poll(() => image.evaluate((img: HTMLImageElement) => img.complete && img.naturalWidth > 0)).toBe(true);
     await page.screenshot({ path: testInfo.outputPath(`portrait-${index}.png`), animations: "disabled" });
   }
-  for (const [width, height] of [[320, 568], [390, 844], [430, 932], [640, 900]]) {
+  for (const [width, height] of [[320, 568], [375, 667], [390, 844], [430, 932], [640, 900]]) {
     await page.setViewportSize({ width, height });
     const frame = await hero.locator("figure").first().boundingBox();
     expect(frame!.width).toBeGreaterThan(width * 0.85);
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1)).toBe(true);
+    const links = hero.getByRole("navigation", { name: "Yuto Matsuiの外部リンク" }).getByRole("link");
+    for (const link of await links.all()) {
+      const box = await link.boundingBox();
+      expect(box!.y + box!.height).toBeLessThanOrEqual(height + 1);
+    }
     const lines = await hero.locator('p[class*="heroStatement"] > span').evaluateAll(nodes => nodes.map(n => n.getBoundingClientRect().top));
     expect(lines[1]).toBeGreaterThan(lines[0]);
     await page.getByRole("button", { name: "外部リンクを表示", exact: true }).click();
     const icons = page.locator('[class*="mobileExternalIcons"] > a');
     await expect(icons).toHaveCount(3);
+    expect(await icons.allTextContents()).toEqual(["", "", ""]);
     const geometry = await icons.evaluateAll(nodes => nodes.map(node => {
       const box = node.getBoundingClientRect();
       const icon = node.querySelector("svg, img")!.getBoundingClientRect();
@@ -55,6 +61,6 @@ test("JP mobile portrait, sculpture and balanced external menu", async ({ page }
   await expect(hero.locator("canvas")).toHaveCount(0);
   await expect(hero.locator('figure[data-active="true"] img')).toBeVisible();
   await page.setViewportSize({ width: 1024, height: 768 });
-  await expect(hero.locator('[class*="mobileHeroSculpture"]')).toBeHidden();
+  await expect(hero.locator('svg[class*="mobileHeroSignals"]')).toBeHidden();
   expect(errors).toEqual([]);
 });

@@ -257,9 +257,9 @@ export default function FounderPage() {
           <MobileExternalMenu className={styles.mobileExternalLinks}>
             <div className={styles.mobileExternalPopover} aria-label="Yuto Matsuiの外部リンク">
               <div className={styles.mobileExternalIcons}>
-                <a href="https://www.instagram.com/n.m.w.314/?__pwa=1#" target="_blank" rel="noopener noreferrer" aria-label="Instagram"><InstagramIcon /><span>Instagram</span></a>
-                <a href="https://github.com/genellect" target="_blank" rel="noopener noreferrer" aria-label="GitHub"><GitHubIcon /><span>GitHub</span></a>
-                <a href={`${COMPASS_ORIGIN}/`} aria-label="COMPASS公式サイト"><CompassIcon /><span>COMPASS</span></a>
+                <a href="https://www.instagram.com/n.m.w.314/?__pwa=1#" target="_blank" rel="noopener noreferrer" aria-label="Instagram"><InstagramIcon /></a>
+                <a href="https://github.com/genellect" target="_blank" rel="noopener noreferrer" aria-label="GitHub"><GitHubIcon /></a>
+                <a href={`${COMPASS_ORIGIN}/`} aria-label="COMPASS公式サイト"><CompassIcon /></a>
               </div>
               <div className={styles.mobileLanguagePanel}>
                 <span>Language</span>
