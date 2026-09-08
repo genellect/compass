@@ -2,7 +2,7 @@ import { expect, test } from "./responsive-fixture";
 
 test.use({ isMobile: true, hasTouch: true, deviceScaleFactor: 2 });
 
-test("JP mobile full-bleed portrait, signals and balanced external menu", async ({ page }, testInfo) => {
+test("JP mobile photo art direction, ribbons and balanced external menu", async ({ page }, testInfo) => {
   test.setTimeout(90_000);
   const errors: string[] = [];
   page.on("pageerror", error => errors.push(error.message));
@@ -23,6 +23,20 @@ test("JP mobile full-bleed portrait, signals and balanced external menu", async 
     await page.setViewportSize({ width, height });
     const frame = await hero.locator("figure").first().boundingBox();
     expect(frame!.width).toBeGreaterThan(width * 0.85);
+    const copy = await hero.locator('[class*="heroCopy"]').boundingBox();
+    const ribbon = await hero.locator('svg[class*="mobileHeroSignals"]').boundingBox();
+    expect(frame!.y + frame!.height).toBeLessThanOrEqual(ribbon!.y + 1);
+    expect(ribbon!.y + ribbon!.height).toBeLessThanOrEqual(copy!.y + 1);
+    for (const index of [1, 2, 3]) {
+      await hero.getByRole("button", { name: `写真 ${index} を表示`, exact: true }).click();
+      const image = hero.locator('figure[data-active="true"] img');
+      const box = await image.boundingBox();
+      expect(box!.width).toBeGreaterThan(width * 0.6);
+      expect(box!.width).toBeLessThanOrEqual(width + 1);
+      expect(box!.height / box!.width).toBeCloseTo(1.5, 2);
+      if (index === 1) expect(box!.width).toBeLessThan(width * 0.91);
+      await page.screenshot({ path: testInfo.outputPath(`composition-${width}-${index}.png`), animations: "disabled" });
+    }
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1)).toBe(true);
     const links = hero.getByRole("navigation", { name: "Yuto Matsuiの外部リンク" }).getByRole("link");
     for (const link of await links.all()) {

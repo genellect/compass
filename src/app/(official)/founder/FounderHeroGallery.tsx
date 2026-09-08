@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
+import { MobileHeroRibbons } from "./MobileHeroRibbons";
 import styles from "./founder.module.css";
 
 const SLIDES = [
@@ -30,25 +31,35 @@ const INTERVAL_MS = 5200;
 export function FounderHeroGallery() {
   const [activeIndex, setActiveIndex] = useState(0);
   const [paused, setPaused] = useState(false);
-  const signals = useRef<SVGSVGElement>(null);
+  const gallery = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const mobile = window.matchMedia("(max-width: 640px)");
-    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const hero = gallery.current?.parentElement;
+    const copy = hero?.querySelector<HTMLElement>(`.${styles.heroCopy}`);
+    const header = hero?.closest(`.${styles.page}`)?.querySelector<HTMLElement>(`.${styles.header}`);
+    if (!hero || !copy) return;
     const sync = () => {
-      if (paused || reduced.matches || !mobile.matches || document.hidden) signals.current?.pauseAnimations();
-      else signals.current?.unpauseAnimations();
+      if (!mobile.matches) {
+        hero.style.removeProperty("--hero-copy-height");
+        hero.style.removeProperty("--hero-header-height");
+        return;
+      }
+      hero.style.setProperty("--hero-copy-height", `${copy.offsetHeight}px`);
+      if (header) hero.style.setProperty("--hero-header-height", `${header.offsetHeight}px`);
     };
+    const observer = new ResizeObserver(sync);
+    observer.observe(copy);
+    if (header) observer.observe(header);
     sync();
     mobile.addEventListener("change", sync);
-    reduced.addEventListener("change", sync);
-    document.addEventListener("visibilitychange", sync);
     return () => {
+      observer.disconnect();
       mobile.removeEventListener("change", sync);
-      reduced.removeEventListener("change", sync);
-      document.removeEventListener("visibilitychange", sync);
+      hero.style.removeProperty("--hero-copy-height");
+      hero.style.removeProperty("--hero-header-height");
     };
-  }, [paused]);
+  }, []);
 
   useEffect(() => {
     if (paused || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
@@ -64,6 +75,7 @@ export function FounderHeroGallery() {
 
   return (
     <div
+      ref={gallery}
       className={styles.heroPhoto}
       role="region"
       aria-roledescription="carousel"
@@ -91,20 +103,7 @@ export function FounderHeroGallery() {
         <div className={styles.photoScan} aria-hidden="true" />
       </div>
 
-      <svg ref={signals} className={styles.mobileHeroSignals} viewBox="0 0 430 100" preserveAspectRatio="none" aria-hidden="true">
-        <g className={styles.mobileSignalBio}>
-          <path d="M-20 15 C110 15 130 83 252 54 S382 8 450 24" />
-          <circle r="2.5"><animateMotion dur="10.4s" repeatCount="indefinite" path="M-20 15 C110 15 130 83 252 54 S382 8 450 24" /></circle>
-        </g>
-        <g className={styles.mobileSignalAi}>
-          <path d="M-20 60 C102 92 177 8 280 42 S391 92 450 62" />
-          <circle r="2.5"><animateMotion dur="15.6s" repeatCount="indefinite" path="M-20 60 C102 92 177 8 280 42 S391 92 450 62" /></circle>
-        </g>
-        <g className={styles.mobileSignalEducation}>
-          <path d="M-20 86 C97 26 165 92 283 63 S384 44 450 12" />
-          <circle r="2.5"><animateMotion dur="13s" repeatCount="indefinite" path="M-20 86 C97 26 165 92 283 63 S384 44 450 12" /></circle>
-        </g>
-      </svg>
+      <MobileHeroRibbons paused={paused} />
 
       <div className={styles.photoControls}>
         <div className={styles.photoDots} aria-label="表示する写真を選択">
