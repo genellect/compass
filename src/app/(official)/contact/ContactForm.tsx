@@ -67,10 +67,10 @@ const targetContent: Record<ContactTarget, {
     submitLabel: "代表へ送信",
     successLabel: "代表",
     entries: [
+      { audience: "学生の方", description: "進路や挑戦に関する相談、意見交換、コミュニティへの参加" },
       { audience: "企業の方", description: "共同開発、受託開発、プロジェクトのご依頼、講演" },
-      { audience: "研究者の方", description: "共同研究のご相談、学会参加" },
       { audience: "教職員の方", description: "講演、教育連携、授業・教育活動に関するご相談" },
-      { audience: "学生の方", description: "進路や挑戦に関する相談、意見交換、コミュニティへの参加" }
+      { audience: "研究者の方", description: "共同研究のご相談、学会参加" }
     ]
   },
   compass: {
@@ -521,7 +521,7 @@ export function ContactForm() {
                   </div>
 
                   <div className={styles.fieldGroup}>
-                    <label htmlFor="affiliation">所属・立場 <RequiredBadge /></label>
+                    <label htmlFor="affiliation">所属 <RequiredBadge /></label>
                     <div className={styles.inputWrap}>
                       <input id="affiliation" name="affiliation" type="text" autoComplete="organization" minLength={2} maxLength={20} required value={form.affiliation} aria-invalid={hasError("affiliation")} aria-describedby={describedBy("affiliation", "affiliation-helper")} onBlur={() => markTouched("affiliation")} onChange={(event) => updateField("affiliation", event.target.value)} />
                       <FieldValid visible={hasValidValue("affiliation")} />

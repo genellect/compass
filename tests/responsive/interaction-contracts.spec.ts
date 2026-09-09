@@ -103,9 +103,17 @@ test("Contact reveals only the selected destination and preserves the form while
 
   await representative.check();
   await expect(page.locator("#audience-title")).toHaveText("代表へのご連絡");
+  await expect(page.locator('section[aria-labelledby="audience-title"] h3')).toHaveText([
+    "学生の方",
+    "企業の方",
+    "教職員の方",
+    "研究者の方",
+  ]);
   await expect(page.getByText("共同開発、受託開発、プロジェクトのご依頼、講演", { exact: true })).toBeVisible();
   await expect(page.getByText("授業での活用、教育連携、導入に関するお問い合わせ", { exact: true })).toHaveCount(0);
   await expect(page.locator("#details, #name, #affiliation, #email")).toHaveCount(4);
+  await expect(page.locator('label[for="affiliation"]')).toContainText("所属");
+  await expect(page.locator('label[for="affiliation"]')).not.toContainText("立場");
   expect(await page.locator("#name, #affiliation, #email, #details").evaluateAll(
     (elements) => elements.map((element) => element.id),
   )).toEqual(["name", "affiliation", "email", "details"]);
