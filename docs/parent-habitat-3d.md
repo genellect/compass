@@ -5,10 +5,13 @@ Status: Implemented, verification pending. Scope: `/` only; production publicati
 ## Runtime and content contract
 
 The existing parent composition is wrapped in a route-owned CSS module and a small client
-gate. Only `(min-width: 901px) and (pointer: fine) and (hover: hover)` imports the Three.js
-engine. Desktop CSS establishes layout before hydration to avoid a theme-induced layout
-shift. Mobile keeps the existing layout and particle renderer. Fine-pointer tablets
-can qualify. No user-agent identification, new API, account, database or external 3D service.
+gate. The Three.js engine loads for `(min-width: 901px) and (pointer: fine) and
+(hover: hover)`, or for a landscape device at least 901 CSS pixels wide whose primary
+pointer is coarse. The latter gives high-performance iPads in landscape the full authored
+scene and nearly the same UI as Desktop; it does not substitute a tablet-specific low-quality
+scene. Portrait tablets and phones keep the static layout. CSS establishes layout before
+hydration to avoid a theme-induced layout shift. No user-agent identification, new API,
+account, database or external 3D service is involved.
 
 One WebGL 2 renderer shows a continuous nine-zone habitat. Native scrolling selects actual
 section offsets, with a quiet reading interval and a transition near the end of each section.
@@ -50,6 +53,8 @@ the default cap is 6 million pixels / DPR 2, four-sample MSAA (hardware permitti
 4096px shadows and half-resolution bloom. Two consecutive three-second samples below
 28fps select the offline poster directly. Automatic degradation to visibly lower-quality
 3D is not used. The internal low setting exists for explicit diagnostics only.
+This same standard profile and runtime fallback apply on qualifying iPads, so device class
+alone never lowers scene fidelity.
 Samples start four seconds after model arrival and measure delivered frames, including GPU
 stalls. Browser scheduling/occlusion can also cause a safe static fallback; it does not
 establish a hardware benchmark.
@@ -141,7 +146,9 @@ npm run check:responsive:full
 The last command is Windows-only. Linux uses `check:responsive:cloud` and the Windows
 Responsive Quality Gate for visual baselines. `test:responsive:habitat` explicitly tests
 moving WebGL, all nine zones, pause, mobile no-fetch, deep links, reduced motion, failure,
-resize/disposal, destination changes during download and context loss; reduced-motion
+resize/disposal, destination changes during download and context loss. It also verifies
+that a landscape iPad profile starts the standard-quality renderer and exposes the tour UI,
+while the portrait iPad profile stays static and requests no habitat assets. Reduced-motion
 snapshots alone cannot verify live 3D. `scripts/habitat/audit.mjs` records viewport/renderer
 evidence without updating baselines. Use `--headed=true --channel=msedge` for a real-window
 run; record concurrent workloads, and do not conflate it with a headless run.

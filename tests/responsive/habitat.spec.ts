@@ -136,6 +136,57 @@ test('Mobile preserves the current layout without fetching habitat assets or eng
   await context.close();
 });
 
+test('iPad landscape enters the immersive scene while portrait stays static', async ({ browser }) => {
+  const landscape = await browser.newContext({ ...devices['iPad (gen 11) landscape'], reducedMotion: 'no-preference' });
+  const landscapePage = await landscape.newPage();
+  await landscapePage.route(/google-analytics|googletagmanager|cloudflareinsights|challenges\.cloudflare/, route => route.abort());
+  const firstModel = landscapePage.waitForRequest(
+    request => request.url().includes('/habitat/v3/') && request.url().endsWith('.glb'),
+    { timeout: 30_000 },
+  );
+  await landscapePage.goto('/');
+  const landscapeCapabilities = await landscapePage.evaluate(() => ({
+    width: innerWidth,
+    height: innerHeight,
+    coarse: matchMedia('(pointer: coarse)').matches,
+    fine: matchMedia('(pointer: fine)').matches,
+    hover: matchMedia('(hover: hover)').matches,
+    landscape: matchMedia('(orientation: landscape)').matches,
+  }));
+  expect(landscapeCapabilities).toEqual({ width: 944, height: 656, coarse: true, fine: false, hover: false, landscape: true });
+  await expect(landscapePage.locator('[data-habitat]')).toHaveAttribute('data-enabled', 'true');
+  await expect(landscapePage.locator('[data-habitat-backdrop]')).toHaveCSS('display', 'block');
+  await expect(landscapePage.locator('[data-habitat-backdrop] canvas')).toHaveCount(1);
+  await firstModel;
+  // Freeze the first standard-quality frame before software rendering used by CI
+  // can intentionally trigger the sustained-frame-budget static fallback.
+  await landscapePage.waitForFunction(() => {
+    const root = document.querySelector('[data-habitat]');
+    if (root?.getAttribute('data-scene-state') !== 'ready') return false;
+    const button = [...document.querySelectorAll('button')].find(candidate => candidate.textContent?.includes('動きを止める'));
+    button?.click();
+    return Boolean(button);
+  }, undefined, { timeout: 40_000 });
+  await expect(landscapePage.locator('[data-habitat]')).toHaveAttribute('data-scene-state', 'paused');
+  await expect(landscapePage.locator('[data-quality]')).toHaveAttribute('data-quality', 'standard');
+  await expect(landscapePage.getByRole('navigation', { name: 'このページの案内' })).toBeVisible();
+  await expect(landscapePage.getByRole('button', { name: /動きを再開する/ })).toBeVisible();
+  await landscape.close();
+
+  const portrait = await browser.newContext({ ...devices['iPad Pro 11'], reducedMotion: 'no-preference' });
+  const portraitPage = await portrait.newPage();
+  const habitatRequests: string[] = [];
+  portraitPage.on('request', request => {
+    if (request.url().includes('/habitat/')) habitatRequests.push(request.url());
+  });
+  await portraitPage.route(/google-analytics|googletagmanager|cloudflareinsights|challenges\.cloudflare/, route => route.abort());
+  await portraitPage.goto('/');
+  await expect(portraitPage.locator('[data-habitat]')).toHaveAttribute('data-enabled', 'false');
+  await expect(portraitPage.locator('[data-habitat-backdrop] canvas')).toHaveCount(0);
+  expect(habitatRequests).toEqual([]);
+  await portrait.close();
+});
+
 test('Sustained low frame rate chooses the static render without degrading the 3D quality', async ({ page }) => {
   test.setTimeout(90000);
   await page.setViewportSize({width:1280,height:720});
