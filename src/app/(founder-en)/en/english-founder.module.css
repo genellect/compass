@@ -432,7 +432,7 @@
 .credentialItem strong { font-family: var(--font-en-editorial), Georgia, serif; font-size: 2.15rem; font-weight: 460; }
 .credentialItem small { display: block; margin-top: 5px; color: rgba(232, 244, 235, 0.72); font-size: 0.62rem; letter-spacing: 0.035em; }
 
-.fragments { position: relative; padding: clamp(110px, 12vw, 180px) 0; background-color: var(--pearl); background-image: radial-gradient(circle at 10% 22%, rgba(182, 239, 122, 0.1), transparent 27%), linear-gradient(90deg, rgba(139, 120, 240, 0.045) 1px, transparent 1px); background-size: auto, 96px 100%; }
+.fragments { position: relative; overflow: hidden; padding: clamp(110px, 12vw, 180px) 0; background-color: var(--pearl); background-image: radial-gradient(circle at 10% 22%, rgba(182, 239, 122, 0.1), transparent 27%), linear-gradient(90deg, rgba(139, 120, 240, 0.045) 1px, transparent 1px); background-size: auto, 96px 100%; }
 .fragments::before {
   position: absolute;
   inset: 0;
@@ -442,9 +442,10 @@
   background-size: 14.28% 100%;
   pointer-events: none;
 }
-.fragmentsHeading { position: relative; display: grid; grid-template-columns: 1fr minmax(260px, 0.6fr); align-items: end; gap: 48px; margin-bottom: 62px; padding-top: 18px; border-top: 1px solid rgba(23, 33, 31, 0.22); }
+.fragmentsHeading { position: relative; z-index: 3; display: grid; grid-template-columns: 1fr minmax(260px, 0.6fr); align-items: end; gap: 48px; margin-bottom: 62px; padding-top: 18px; border-top: 1px solid rgba(23, 33, 31, 0.22); }
 .fragmentsHeading h2 { margin-top: 16px; font-family: var(--font-en-sans), Arial, sans-serif; font-size: clamp(3.2rem, 6vw, 6.7rem); font-weight: 760; letter-spacing: -0.055em; line-height: 0.9; }
 .fragmentsHeading > p { max-width: 34ch; margin: 0; color: #55515f; font-family: var(--font-en-editorial), Georgia, serif; font-size: 1.05rem; line-height: 1.6; }
+.fragmentViewSwitch, .fragmentFilmView { display: none; }
 .fragmentsRail {
   position: relative;
   display: flex;
@@ -466,6 +467,56 @@
 .fragmentRailPhoto img { display: block; width: auto; height: 100%; max-width: none; object-fit: cover; filter: saturate(0.84); pointer-events: none; }
 .fragmentRailPhoto[data-tone="tech"] img { filter: saturate(0.76) contrast(0.97); }
 .fragmentRailPhoto[data-tone="warm"] img { filter: saturate(0.8); }
+
+@media (min-width: 901px) and (orientation: landscape) {
+  .fragments[data-fragment-view="3d"] {
+    min-height: clamp(650px, 88svh, 900px);
+    padding: clamp(62px, 6vw, 92px) 0 54px;
+    color: #f2f8f5;
+    background:
+      radial-gradient(ellipse at 70% 22%, rgba(87, 68, 174, 0.28), transparent 42%),
+      radial-gradient(ellipse at 18% 72%, rgba(44, 150, 151, 0.2), transparent 46%),
+      linear-gradient(145deg, #050d12 0%, #071a1c 42%, #101126 72%, #060b12 100%);
+  }
+  .fragments[data-fragment-view="3d"]::before {
+    opacity: 0.55;
+    background-image: linear-gradient(90deg, transparent 49.7%, rgba(157, 224, 211, 0.17) 50%, transparent 50.3%);
+  }
+  .fragments[data-fragment-view="3d"] > .sectionShell { position: relative; z-index: 2; }
+  .fragments[data-fragment-view="3d"] .fragmentsHeading { margin-bottom: 8px; border-top-color: rgba(220, 240, 233, 0.24); }
+  .fragments[data-fragment-view="3d"] .sectionIndex { color: #9fe6a0; }
+  .fragments[data-fragment-view="3d"] .fragmentsHeading h2 { color: #f2f8f5; }
+  .fragments[data-fragment-view="3d"] .fragmentsHeading > p { color: rgba(232, 245, 239, 0.68); }
+  .fragmentViewSwitch {
+    position: absolute;
+    top: -1px;
+    right: 0;
+    display: flex;
+    gap: 2px;
+    padding: 3px;
+    border: 1px solid rgba(66, 94, 86, 0.3);
+    border-radius: 24px;
+  }
+  .fragmentViewSwitch button {
+    min-height: 34px;
+    padding: 0 15px;
+    border: 0;
+    border-radius: 20px;
+    color: #485b56;
+    background: transparent;
+    font: inherit;
+    font-size: 0.7rem;
+    letter-spacing: 0.03em;
+    cursor: pointer;
+  }
+  .fragmentViewSwitch button[aria-pressed="true"] { color: #f4faf7; background: #142b2a; }
+  .fragmentViewSwitch button:focus-visible { outline: 2px solid #75cfe0; outline-offset: 3px; }
+  .fragments[data-fragment-view="3d"] .fragmentViewSwitch { border-color: rgba(211, 239, 230, 0.25); background: rgba(4, 12, 15, 0.36); }
+  .fragments[data-fragment-view="3d"] .fragmentViewSwitch button { color: rgba(237, 247, 242, 0.68); }
+  .fragments[data-fragment-view="3d"] .fragmentViewSwitch button[aria-pressed="true"] { color: #061311; background: #b6ef7a; }
+  .fragments[data-fragment-view="3d"] .fragmentFilmView { display: block; }
+  .fragments[data-fragment-view="3d"] .fragmentsRail { display: none; }
+}
 
 .offHours { padding: clamp(110px, 12vw, 180px) 0; background: #e5e3eb; }
 .offHoursHeading { display: flex; align-items: end; justify-content: space-between; gap: 30px; margin-bottom: 62px; padding-top: 18px; border-top: 1px solid rgba(23, 33, 31, 0.22); }
@@ -745,4 +796,13 @@
   .convergenceField { transform: none !important; }
   .heroTransitionLayer span { transform: none !important; }
   .heroRole, .heroCopy h1, .heroThesis, .heroDomains, .heroSocialLinks { clip-path: none !important; opacity: 1; }
+}
+
+/* Final landscape override: later tablet spacing rules must not collapse the
+   cinematic film field at 901-1100px. */
+@media (min-width: 901px) and (orientation: landscape) {
+  .fragments[data-fragment-view="3d"] {
+    min-height: clamp(650px, 88svh, 900px);
+    padding: clamp(62px, 6vw, 92px) 0 54px;
+  }
 }

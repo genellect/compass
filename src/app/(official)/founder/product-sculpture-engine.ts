@@ -5,51 +5,6 @@ import { SVGLoader } from "three/addons/loaders/SVGLoader.js";
 import type { SculptureKind } from "./ProductSculpture";
 import { PLATFORM_GLYPHS } from "./platform-glyphs";
 
-// A closed, bevelled ribbon swept along a three-lobed spatial curve. The profile,
-// torsion and changing width are modelled here rather than loaded from a stock asset.
-class FoldedOrbit extends THREE.Curve<THREE.Vector3> {
-  constructor(private phase = 0, private form = 1) { super(); }
-  getPoint(t: number, target = new THREE.Vector3()) {
-    const a = t * Math.PI * 2;
-    const r = 1.30 + 0.42 * Math.cos(3 * a + this.phase);
-    return target.set(r * Math.cos(2 * a), r * Math.sin(2 * a), 0.66 * Math.sin(3 * a + this.phase) * this.form);
-  }
-}
-
-function ribbonGeometry(phase: number, form = 1) {
-  const curve = new FoldedOrbit(phase, form);
-  const segments = 240;
-  const sides = 16;
-  const frames = curve.computeFrenetFrames(segments, true);
-  const vertices: number[] = [];
-  const indices: number[] = [];
-  for (let i = 0; i <= segments; i++) {
-    const t = i / segments;
-    const p = curve.getPoint(t);
-    const twist = Math.sin(t * Math.PI * 6 + phase) * 0.48;
-    const n = frames.normals[i].clone().applyAxisAngle(frames.tangents[i], twist);
-    const b = new THREE.Vector3().crossVectors(frames.tangents[i], n);
-    const width = 0.24 + 0.075 * Math.sin(t * Math.PI * 6 + phase);
-    for (let j = 0; j <= sides; j++) {
-      const a = j / sides * Math.PI * 2;
-      // Superellipse gives a broad machined face with soft, reflective edges.
-      const x = Math.sign(Math.cos(a)) * Math.pow(Math.abs(Math.cos(a)), 0.42) * width;
-      const y = Math.sign(Math.sin(a)) * Math.pow(Math.abs(Math.sin(a)), 0.42) * 0.065;
-      const v = p.clone().addScaledVector(n, x).addScaledVector(b, y);
-      vertices.push(v.x, v.y, v.z);
-      if (i < segments && j < sides) {
-        const k = i * (sides + 1) + j;
-        indices.push(k, k + sides + 1, k + 1, k + 1, k + sides + 1, k + sides + 2);
-      }
-    }
-  }
-  const g = new THREE.BufferGeometry();
-  g.setAttribute("position", new THREE.Float32BufferAttribute(vertices, 3));
-  g.setIndex(indices);
-  g.computeVertexNormals();
-  return g;
-}
-
 export function mountSculpture(host: HTMLDivElement, kind: SculptureKind, isPaused: () => boolean, onReady: () => void) {
   const lightStage = kind === "library";
   const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true, powerPreference: "low-power" });
@@ -84,57 +39,83 @@ export function mountSculpture(host: HTMLDivElement, kind: SculptureKind, isPaus
   const blue = new THREE.MeshPhysicalMaterial({ color: 0x294cba, metalness: 0.88, roughness: 0.22, clearcoat: 1, envMapIntensity: 2, side: THREE.DoubleSide });
   const porcelain = new THREE.MeshPhysicalMaterial({ color: 0xf3f5fa, metalness: 0.4, roughness: 0.23, clearcoat: 1, envMapIntensity: 1.25 });
   const darkMetal = new THREE.MeshPhysicalMaterial({ color: 0x313954, metalness: 0.95, roughness: 0.2, clearcoat: 1, envMapIntensity: 1.6 });
+  const portalViolet = new THREE.MeshPhysicalMaterial({ color: 0x7568da, metalness: 0.7, roughness: 0.24, clearcoat: 1, envMapIntensity: 1.7, transparent: true, opacity: 0.92, side: THREE.DoubleSide });
   const sculpture = new THREE.Group();
   scene.add(sculpture);
   const moving: THREE.Object3D[] = [];
-  const inferenceField = new THREE.Group();
-  const signals: THREE.Mesh[] = [];
-  const signalPath = new FoldedOrbit(0);
-  const networkMaterial = new THREE.LineBasicMaterial({ color: 0xa9c7ff, transparent: true, opacity: 0.38 });
-  const signalMaterial = new THREE.MeshPhysicalMaterial({ color: 0xe2eeff, metalness: 0.65, roughness: 0.16, emissive: 0x6b96ed, emissiveIntensity: 0.25 });
+  const interactiveRibbons: { mesh: THREE.Mesh; material: THREE.ShaderMaterial; lane: number; phase: number }[] = [];
+  const manifestoFrames: { frame: THREE.Group; depth: number; phase: number }[] = [];
+  const manifestoGold = new THREE.MeshPhysicalMaterial({ color: 0xd6ac69, metalness: 0.76, roughness: 0.2, clearcoat: 1, envMapIntensity: 1.65 });
+  const manifestoTraceMaterial = new THREE.MeshBasicMaterial({ color: 0x91e5df, transparent: true, opacity: 0.48, toneMapped: false });
+  let manifestoTrace: THREE.Group | null = null;
 
   if (kind === "interactive") {
-    const ribbon = new THREE.Mesh(ribbonGeometry(0), chrome);
-    sculpture.add(ribbon);
-    const inner = new THREE.Mesh(ribbonGeometry(Math.PI, 0.78), blue);
-    inner.scale.setScalar(0.82);
-    inner.rotation.z = Math.PI / 3;
-    sculpture.add(inner);
-    moving.push(ribbon, inner);
-    // A faceted computational core and a connected spatial mesh, not a flat
-    // particle overlay. Travelling signals follow the modelled ribbon paths.
-    const core = new THREE.Mesh(new THREE.IcosahedronGeometry(0.52, 1), blue);
-    inferenceField.add(core);
-    const nodes = Array.from({ length: 56 }, (_, i) => {
-      const y = 1 - 2 * (i + 0.5) / 56;
-      const a = i * Math.PI * (3 - Math.sqrt(5));
-      const r = Math.sqrt(1 - y * y);
-      return new THREE.Vector3(Math.cos(a) * r, y, Math.sin(a) * r).multiplyScalar(0.88);
-    });
-    const edges: number[] = [];
-    nodes.forEach((node, i) => {
-      const neighbors = nodes.map((other, j) => ({ j, distance: node.distanceToSquared(other) }))
-        .filter(({ j }) => j !== i).sort((a, b) => a.distance - b.distance).slice(0, 3);
-      neighbors.forEach(({ j }) => {
-        if (j > i) edges.push(node.x, node.y, node.z, nodes[j].x, nodes[j].y, nodes[j].z);
+    // Kinetic Weave: many independent signals become one responsive field,
+    // then open again. The meaning lives in the choreography, not a literal
+    // icon, while the translucent material keeps the composition quiet.
+    const ribbonGeometry = new THREE.PlaneGeometry(6.2, 0.17, 96, 2);
+    for (let index = 0; index < 21; index++) {
+      const lane = (index - 10) / 10;
+      const phase = index / 21 * Math.PI * 2;
+      const material = new THREE.ShaderMaterial({
+        transparent: true,
+        depthWrite: false,
+        side: THREE.DoubleSide,
+        blending: THREE.NormalBlending,
+        uniforms: {
+          uTime: { value: 0 },
+          uLane: { value: lane },
+          uPhase: { value: phase },
+          uEnergy: { value: 0.5 }
+        },
+        vertexShader: `
+          uniform float uTime;
+          uniform float uLane;
+          uniform float uPhase;
+          uniform float uEnergy;
+          varying vec2 vUv;
+          varying float vWave;
+          void main(){
+            vUv=uv;
+            vec3 p=position;
+            float distanceFromCentre=abs(p.x)/3.1;
+            float spread=smoothstep(.08,1.,distanceFromCentre);
+            float convergence=.16+spread*.96;
+            float wave=sin(p.x*1.18-uTime*.52+uPhase);
+            float counter=cos(p.x*.72+uTime*.31-uPhase*.72);
+            p.y+=uLane*1.35*convergence+wave*(.08+.13*spread);
+            p.z+=counter*(.36+.24*uEnergy)+sin(p.x*1.65+uPhase)*.1+uLane*.18;
+            p.x+=sin(uTime*.18+uPhase)*.1*(1.-spread);
+            vWave=.5+.5*counter;
+            gl_Position=projectionMatrix*modelViewMatrix*vec4(p,1.);
+          }`,
+        fragmentShader: `
+          uniform float uLane;
+          uniform float uPhase;
+          uniform float uEnergy;
+          varying vec2 vUv;
+          varying float vWave;
+          void main(){
+            vec3 silver=vec3(.79,.86,.93);
+            vec3 cyan=vec3(.25,.79,.84);
+            vec3 violet=vec3(.39,.31,.76);
+            float chroma=.5+.5*sin(uPhase*1.7+vUv.x*4.2);
+            vec3 colour=mix(mix(violet,cyan,chroma),silver,.32+vWave*.28);
+            float edge=smoothstep(0.,.15,vUv.y)*smoothstep(0.,.15,1.-vUv.y);
+            float longitudinal=smoothstep(0.,.08,vUv.x)*smoothstep(0.,.08,1.-vUv.x);
+            float sheen=.58+.42*sin(vUv.x*11.+uPhase+vWave*1.4);
+            gl_FragColor=vec4(colour*(.76+sheen*.32),edge*longitudinal*(.34+uEnergy*.28));
+            #include <colorspace_fragment>
+          }`
       });
-    });
-    const meshGeometry = new THREE.BufferGeometry();
-    meshGeometry.setAttribute("position", new THREE.Float32BufferAttribute(edges, 3));
-    inferenceField.add(new THREE.LineSegments(meshGeometry, networkMaterial));
-    const dots = new THREE.InstancedMesh(new THREE.IcosahedronGeometry(0.026, 0), signalMaterial, nodes.length);
-    const matrix = new THREE.Matrix4();
-    nodes.forEach((node, i) => dots.setMatrixAt(i, matrix.makeTranslation(node.x, node.y, node.z)));
-    inferenceField.add(dots);
-    sculpture.add(inferenceField);
-    const bead = new THREE.IcosahedronGeometry(0.043, 1);
-    for (let i = 0; i < 8; i++) {
-      const signal = new THREE.Mesh(bead, signalMaterial);
-      signalPath.getPoint(i / 8, signal.position);
-      sculpture.add(signal);
-      signals.push(signal);
+      const mesh = new THREE.Mesh(ribbonGeometry, material);
+      mesh.rotation.x = -0.08 + lane * 0.18;
+      mesh.rotation.z = lane * 0.035;
+      mesh.position.z = lane * 0.055;
+      sculpture.add(mesh);
+      interactiveRibbons.push({ mesh, material, lane, phase });
     }
-    sculpture.rotation.set(0.4, -0.34, -0.35);
+    sculpture.rotation.set(-0.18, 0.35, -0.18);
   } else if (kind === "library") {
     const plate = new RoundedBoxGeometry(2.2, 0.115, 1.36, 4, 0.055);
     for (let i = 0; i < 13; i++) {
@@ -174,13 +155,47 @@ export function mountSculpture(host: HTMLDivElement, kind: SculptureKind, isPaus
     // The front is legible immediately, including with reduced motion.
     sculpture.rotation.set(-0.07, -0.12, -0.025);
   } else {
-    const body = new THREE.Mesh(ribbonGeometry(1.2, 0.4), chrome);
-    body.scale.set(1, 1, 0.85);
-    sculpture.add(body);
-    const core = new THREE.Mesh(new THREE.IcosahedronGeometry(0.56, 4), darkMetal);
-    sculpture.add(core);
-    moving.push(body, core);
-    sculpture.rotation.set(0.3, 0.6, 0.2);
+    // An open sequence of imperfect frames suggests possible futures rather
+    // than a single answer. The viewer looks through the sculpture, so its
+    // depth acts as a quiet invitation into the manifesto.
+    const horizontal = new RoundedBoxGeometry(2.5, 0.11, 0.12, 4, 0.045);
+    const vertical = new RoundedBoxGeometry(0.11, 1.66, 0.12, 4, 0.045);
+    const frameMaterials = [chrome, portalViolet, darkMetal, manifestoGold, blue];
+    for (let index = 0; index < 10; index++) {
+      const frame = new THREE.Group();
+      const material = frameMaterials[index % frameMaterials.length];
+      const top = new THREE.Mesh(horizontal, material);
+      const bottom = new THREE.Mesh(horizontal, material);
+      const left = new THREE.Mesh(vertical, material);
+      const right = new THREE.Mesh(vertical, material);
+      top.position.y = 0.82;
+      bottom.position.y = -0.82;
+      left.position.x = -1.2;
+      right.position.x = 1.2;
+      // Alternating openings keep the object from becoming a literal tunnel.
+      if (index % 3 !== 0) frame.add(top);
+      if (index % 4 !== 1) frame.add(bottom);
+      frame.add(left, right);
+      const depth = -2.8 + index * 0.62;
+      const phase = index / 10 * Math.PI * 2;
+      frame.position.z = depth;
+      frame.scale.setScalar(0.54 + index * 0.055);
+      sculpture.add(frame);
+      manifestoFrames.push({ frame, depth, phase });
+    }
+    manifestoTrace = new THREE.Group();
+    for (let index = 0; index < 3; index++) {
+      const offset = (index - 1) * 0.34;
+      const curve = new THREE.CatmullRomCurve3([
+        new THREE.Vector3(-1.9, -0.6 + offset, -3.1),
+        new THREE.Vector3(-0.7, 0.34 + offset * 0.45, -1.2),
+        new THREE.Vector3(0.32, -0.12 + offset * 0.2, 0.55),
+        new THREE.Vector3(1.72, 0.58 + offset, 2.85)
+      ]);
+      manifestoTrace.add(new THREE.Mesh(new THREE.TubeGeometry(curve, 72, 0.012, 6, false), manifestoTraceMaterial));
+    }
+    sculpture.add(manifestoTrace);
+    sculpture.rotation.set(-0.13, 0.18, -0.08);
   }
 
   const targetPointer = new THREE.Vector2();
@@ -202,12 +217,13 @@ export function mountSculpture(host: HTMLDivElement, kind: SculptureKind, isPaus
     camera.aspect = width / height;
     camera.position.z = camera.aspect < 0.9 ? 9.5 : 8.4;
     camera.updateProjectionMatrix();
-    sculpture.position.set(kind === "interactive" ? 0.38 : 0.52, kind === "interactive" ? 0.65 : 0.08, 0);
-    sculpture.scale.setScalar(kind === "interactive" ? 1.13 : 1.12);
+    sculpture.position.set(kind === "interactive" ? 0.5 : 0.52, kind === "interactive" ? 0.68 : 0.08, 0);
+    sculpture.scale.setScalar(kind === "interactive" ? 1.18 : 1.12);
     if (width < 450) {
-      sculpture.position.set(0.28, 0.65, 0);
-      sculpture.scale.setScalar(kind === "interactive" ? 1.05 : 1.03);
+      sculpture.position.set(0.18, 0.72, 0);
+      sculpture.scale.setScalar(kind === "interactive" ? 1.12 : 1.03);
     }
+    if (kind === "interactive") camera.position.z = camera.aspect < 0.82 ? 9.1 : 8.15;
     if (kind === "platform") {
       camera.position.z = 5.2;
       sculpture.position.set(0, 0, 0);
@@ -254,15 +270,19 @@ export function mountSculpture(host: HTMLDivElement, kind: SculptureKind, isPaus
       time += delta;
       pointer.lerp(targetPointer, 0.055);
       if (kind === "interactive") {
-        sculpture.rotation.y = -0.34 + time * 0.12 + pointer.x * 0.2;
-        sculpture.rotation.x = 0.4 + Math.sin(time * 0.28) * 0.2 + pointer.y * 0.15;
-        moving[1].rotation.z = Math.PI / 3 + Math.sin(time * 0.42) * 0.48;
-        moving[1].scale.setScalar(0.82 + Math.sin(time * 0.42) * 0.09);
-        inferenceField.rotation.set(time * 0.17, -time * 0.23, time * 0.08);
-        inferenceField.scale.setScalar(1 + Math.sin(time * 0.84) * 0.07);
-        networkMaterial.opacity = 0.32 + (1 + Math.sin(time * 0.84)) * 0.12;
-        signals.forEach((signal, i) => {
-          signalPath.getPoint((time / 14 + i / 8) % 1, signal.position);
+        const cycle = time * Math.PI * 2 / 10.4;
+        const pulse = 0.5 + 0.5 * Math.sin(cycle - 0.45);
+        const energy = pulse * pulse * (3 - 2 * pulse);
+        sculpture.rotation.x = -0.18 + Math.sin(cycle * 0.37) * 0.055 + pointer.y * 0.11;
+        sculpture.rotation.y = 0.35 + Math.sin(cycle * 0.31) * 0.12 + pointer.x * 0.18;
+        sculpture.rotation.z = -0.18 + Math.sin(cycle * 0.23) * 0.055;
+        interactiveRibbons.forEach(({ mesh, material, lane, phase }, index) => {
+          material.uniforms.uTime.value = time;
+          material.uniforms.uEnergy.value = energy;
+          mesh.position.y = Math.sin(cycle * 0.58 + phase) * 0.045;
+          mesh.position.z = lane * 0.055 + Math.cos(cycle * 0.42 - phase) * 0.075;
+          mesh.rotation.x = -0.08 + lane * 0.18 + Math.sin(cycle * 0.4 + phase) * 0.04;
+          mesh.rotation.z = lane * 0.035 + Math.sin(cycle * 0.28 + index * 0.21) * 0.026;
         });
       } else if (kind === "library") {
         sculpture.rotation.y = -0.4 + Math.sin(time * 0.23) * 0.38 + pointer.x * 0.2;
@@ -285,9 +305,23 @@ export function mountSculpture(host: HTMLDivElement, kind: SculptureKind, isPaus
           glyph.position.z = wave * 0.2;
         });
       } else {
-        sculpture.rotation.y = 0.6 + time * 0.09 + pointer.x * 0.18;
-        moving[0].rotation.z = Math.sin(time * 0.3) * 0.32;
-        moving[1].rotation.y = -time * 0.18;
+        const cycle = time * Math.PI * 2 / 10.8;
+        sculpture.rotation.x = -0.13 + Math.sin(cycle * 0.36) * 0.065 + pointer.y * 0.11;
+        sculpture.rotation.y = 0.18 + Math.sin(cycle * 0.3) * 0.12 + pointer.x * 0.16;
+        sculpture.rotation.z = -0.08 + Math.sin(cycle * 0.24) * 0.045;
+        manifestoFrames.forEach(({ frame, depth, phase }, index) => {
+          const wave = Math.sin(cycle * 1.12 - phase);
+          frame.position.z = depth + wave * 0.2;
+          frame.position.x = Math.sin(cycle * 0.48 + phase) * (0.08 + index * 0.008);
+          frame.position.y = Math.cos(cycle * 0.42 + phase) * 0.07;
+          frame.rotation.z = wave * 0.12 + Math.sin(cycle * 0.24 + phase) * 0.05;
+          frame.rotation.y = Math.sin(cycle * 0.68 - phase) * 0.16;
+        });
+        if (manifestoTrace) {
+          manifestoTrace.position.z = Math.sin(cycle * 0.62) * 0.22;
+          manifestoTrace.rotation.z = Math.sin(cycle * 0.4) * 0.08;
+          manifestoTraceMaterial.opacity = 0.28 + (0.5 + 0.5 * Math.sin(cycle - 0.5)) * 0.34;
+        }
       }
     }
     if (!paused || needsRender || lastPaused !== paused) {
@@ -299,9 +333,30 @@ export function mountSculpture(host: HTMLDivElement, kind: SculptureKind, isPaus
   }
   const onVisibility = () => { last = 0; schedule(); };
   const onMotion = () => {
+    if (kind === "interactive" && reduced.matches) {
+      sculpture.rotation.set(-0.18, 0.35, -0.18);
+      interactiveRibbons.forEach(({ mesh, material, lane }) => {
+        material.uniforms.uTime.value = 1.35;
+        material.uniforms.uEnergy.value = 0.58;
+        mesh.position.set(0, 0, lane * 0.055);
+        mesh.rotation.set(-0.08 + lane * 0.18, 0, lane * 0.035);
+      });
+    }
     if (kind === "platform" && reduced.matches) {
       sculpture.rotation.set(-0.07, -0.12, -0.025);
       moving.forEach(glyph => { glyph.rotation.set(0, 0, 0); glyph.position.y = 0; glyph.position.z = 0; });
+    }
+    if (kind === "manifesto" && reduced.matches) {
+      sculpture.rotation.set(-0.13, 0.18, -0.08);
+      manifestoFrames.forEach(({ frame, depth }) => {
+        frame.position.set(0, 0, depth);
+        frame.rotation.set(0, 0, 0);
+      });
+      if (manifestoTrace) {
+        manifestoTrace.position.set(0, 0, 0);
+        manifestoTrace.rotation.set(0, 0, 0);
+        manifestoTraceMaterial.opacity = 0.46;
+      }
     }
     last = 0; needsRender = true; schedule();
   };
@@ -330,7 +385,8 @@ export function mountSculpture(host: HTMLDivElement, kind: SculptureKind, isPaus
     const geometries = new Set<THREE.BufferGeometry>();
     scene.traverse((object) => { if (object instanceof THREE.Mesh || object instanceof THREE.LineSegments) geometries.add(object.geometry); });
     geometries.forEach((geometry) => geometry.dispose());
-    [chrome, blue, porcelain, darkMetal, networkMaterial, signalMaterial].forEach((material) => material.dispose());
+    interactiveRibbons.forEach(({ material }) => material.dispose());
+    [chrome, blue, porcelain, darkMetal, portalViolet, manifestoGold, manifestoTraceMaterial].forEach((material) => material.dispose());
     environment.dispose();
     renderer.dispose();
     renderer.forceContextLoss();

@@ -1,7 +1,8 @@
 "use client";
 
 import Image from "next/image";
-import { useEffect, useRef, type PointerEvent } from "react";
+import { useEffect, useRef, useState, type PointerEvent } from "react";
+import { FragmentFilm, FragmentFilmAtmosphere } from "../../(official)/founder/FragmentFilm";
 import { fragmentPhotos, type FragmentPhoto } from "./content";
 import styles from "./english-founder.module.css";
 
@@ -43,11 +44,21 @@ export function EnglishFragments() {
   const manuallyPausedRef = useRef(false);
   const resumeTimerRef = useRef<number | null>(null);
   const dragRef = useRef({ active: false, startX: 0, startScroll: 0 });
+  const [view, setView] = useState<"3d" | "original">("3d");
+  const [wide, setWide] = useState(false);
+
+  useEffect(() => {
+    const media = window.matchMedia("(min-width: 901px) and (orientation: landscape)");
+    const update = () => setWide(media.matches);
+    update();
+    media.addEventListener("change", update);
+    return () => media.removeEventListener("change", update);
+  }, []);
 
   useEffect(() => {
     const rail = railRef.current;
     const motionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
-    if (!rail || motionQuery.matches) return;
+    if (!rail || motionQuery.matches || (wide && view === "3d")) return;
 
     let frame = 0;
     let lastTime = performance.now();
@@ -65,7 +76,7 @@ export function EnglishFragments() {
 
     frame = window.requestAnimationFrame(move);
     return () => window.cancelAnimationFrame(frame);
-  }, []);
+  }, [view, wide]);
 
   useEffect(() => () => {
     if (resumeTimerRef.current) window.clearTimeout(resumeTimerRef.current);
@@ -112,7 +123,8 @@ export function EnglishFragments() {
   };
 
   return (
-    <section id="fragments" className={styles.fragments} aria-labelledby="fragments-title">
+    <section id="fragments" className={styles.fragments} aria-labelledby="fragments-title" data-fragment-view={view}>
+      <FragmentFilmAtmosphere variant="en" />
       <div className={styles.sectionShell}>
         <header className={styles.fragmentsHeading}>
           <div>
@@ -120,11 +132,19 @@ export function EnglishFragments() {
             <h2 id="fragments-title">FRAGMENTS</h2>
           </div>
           <p>Research, systems, cities, and the quiet moments between them.</p>
+          <div className={styles.fragmentViewSwitch} role="group" aria-label="FRAGMENTS presentation">
+            <button type="button" aria-pressed={view === "3d"} aria-controls="english-fragment-film" onClick={() => setView("3d")}>3D</button>
+            <button type="button" aria-pressed={view === "original"} aria-controls="english-fragment-original" onClick={() => setView("original")}>Original</button>
+          </div>
         </header>
 
+        <div className={styles.fragmentFilmView} id="english-fragment-film">
+          <FragmentFilm photos={fragmentPhotos} active={wide && view === "3d"} language="en" />
+        </div>
         <div
           ref={railRef}
           className={styles.fragmentsRail}
+          id="english-fragment-original"
           role="region"
           tabIndex={0}
           aria-label="Scrollable photo archive"
