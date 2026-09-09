@@ -953,23 +953,13 @@ expectOneH1(communityJoin, "Community registration page");
 for (const expected of [
   '<html lang="ja"',
   "お問い合わせ",
-  "COMPASSおよび代表（松井）へのお問い合わせ・ご連絡を受け付けています。",
-  "送信いただいた内容は、代表（松井）が確認し、必要に応じて返信いたします。",
-  "学生・教職員・研究者・団体・企業の方を問わず、どうぞお気軽にご連絡ください。",
-  "お名前",
-  "学部・学科 / 所属",
-  "メールアドレス",
-  "メールアドレスの確認",
-  "お問い合わせ内容",
-  "ご質問、ご相談、ご依頼、ご提案など、内容を自由にご記入ください。",
-  "確認コードを送信",
-  "お問い合わせを送信",
-  'minLength="2"',
-  'maxLength="20"',
-  'minLength="5"',
-  'maxLength="50"',
-  'minLength="10"',
-  'maxLength="1000"',
+  "COMPASSへの公式お問い合わせと、代表へのご連絡を受け付けています。",
+  "学生・教職員・研究者の方、団体・企業の方など、さまざまな方とのご縁を歓迎しています。",
+  "どちらへのご連絡ですか？",
+  "代表へのご連絡",
+  "Yuto Matsui",
+  "COMPASSへのお問い合わせ",
+  "活動・サービスに関する公式窓口",
   'rel="canonical" href="https://compass-official.pages.dev/contact/"',
   'content="noindex, follow"'
 ]) expectIncludes(contact, expected, "Contact page");
@@ -981,8 +971,19 @@ for (const expected of [
 ]) expectIncludes(contact, expected, "Contact root footer UI");
 
 for (const expected of [
+  "共同開発、受託開発、プロジェクトのご依頼、講演",
+  "授業での活用、教育連携、導入に関するお問い合わせ",
+  "ご用件や、お話ししたいことをお聞かせください。",
+  "学校名・組織名・活動名をご記入ください。所属先がない場合は「個人」とご記入ください。",
+  "確認コードを受け取る",
   "メールアドレスを確認",
-  "メールアドレスの確認が完了しました。",
+  "メールアドレス確認済み",
+  "メッセージは代表が直接拝見します。",
+  "【送信先：代表】",
+  "【送信先：COMPASS】",
+  "MESSAGE_MAX_LENGTH = 980",
+  "maxLength={20}",
+  "maxLength={50}",
   'action: "verify_code"',
   "verificationProof"
 ]) expectIncludes(contactFormSource, expected, "Contact form source");
@@ -1027,7 +1028,7 @@ expectExcludes(siteHeaderSource, "panel-link-interactive", "Official header sour
 expectExcludes(siteHeaderSource, "mobile-nav-highlight", "Official header source");
 expectIncludes(
   contactStyles.replace(/\r\n/g, "\n"),
-  ".helper {\n  margin: 7px 0 11px;\n  color: var(--copy);",
+  ".helper {\n  margin: 9px 0 12px;\n  color: var(--copy);",
   "Contact helper contrast"
 );
 
