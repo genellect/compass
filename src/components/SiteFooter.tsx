@@ -3,6 +3,7 @@ import {
   isExternalCompassHref
 } from "../lib/futureStrategyLibrary";
 import { resolveSiteHref, type SiteRouteContext } from "./siteRouteContext";
+import styles from "./site-footer.module.css";
 
 const libraryUrl = "/future-strategy-library/";
 
@@ -16,7 +17,7 @@ export function SiteFooter({ routeContext = "root" }: { routeContext?: SiteRoute
   return (
     <>
 <footer
-  className="site-footer"
+  className={`site-footer${routeContext === "root" ? "" : ` ${styles.footer}`}`}
   data-route-context={routeContext}
   data-ui-variant={usesRootFooterUi ? "root" : routeContext}
 >

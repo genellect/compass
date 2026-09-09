@@ -2,7 +2,7 @@
 
 ## Scope
 
-このリポジトリは、COMPASS公式サイトと関連する公開導線を管理する。主な対象は、公式親サイト、COMPASS Interactive紹介・開発者紹介、未来戦略ライブラリ、COMPASS Manifesto、Community参加フォーム、Contactフォーム、および公開に必要なCloudflare Pages FunctionsとGoogle Apps Scriptである。
+このリポジトリには、COMPASS公式サイトと、独立して扱うInteractive紹介・開発者紹介・yuto-matsui.comが同居している。通常のCOMPASS編集対象は、公式親サイト、未来戦略ライブラリ、COMPASS Manifesto、Community参加フォーム、Contactフォーム、およびその公開に必要なCloudflare Pages FunctionsとGoogle Apps Scriptである。リポジトリに同居することは、独立サイトの編集許可を意味しない。
 
 COMPASS Interactiveプロダクト本体、Productionデータベース、保護されたLibrary資料、利用者データ、認証情報はこの公開リポジトリに含まれない。
 
@@ -18,7 +18,16 @@ COMPASS Interactiveプロダクト本体、Productionデータベース、保護
 
 旧PDFと完了済み移行要件は履歴資料であり、現行実装の正本ではない。
 
-## Current Identity
+## Independent Website Boundaries (user instruction, 2026-09-09)
+
+「COMPASSプロジェクトを編集」「親・子サイトを統一」などの依頼で既定の対象となるのは、公式親サイト、未来戦略ライブラリ、Manifesto、Community参加、Contact等のCOMPASS公式surfaceである。**Interactive、開発者紹介、yuto-matsui.comは含めない。** 詳細なroute/source対応は `docs/WEBSITE_BOUNDARIES.md` を参照。
+
+- Interactive紹介・開発者紹介とInteractiveプロダクトは独立した編集範囲。ユーザーがそのsurfaceを明示して依頼しない限り、文章・デザイン・導線・実装・公開設定を変更しない。開発者紹介をCOMPASS編集の当然の対象や新規導線の候補として扱わない。
+- `yuto-matsui.com`（日本語・英語）は、COMPASSとはドメイン・提供価値の異なる独立Web。親子関係はない。同一repository、Next.js、Pages成果物の共有は運用上の配置であり、従属関係や変更権限を意味しない。
+- 共通CSS・layout・配信設定の変更では、これら独立surfaceへの波及を確認する。通常のCOMPASS依頼から全体一括リブランド・移設・ドメイン/redirect変更を推定しない。
+- 既存routeの存在は編集許可ではない。削除・公開停止・別repository移設は別途明示依頼が必要。
+
+## Current Identity (COMPASS)
 
 - Brand: COMPASS
 - Definition: 学生主導型 教育・テクノロジープラットフォーム

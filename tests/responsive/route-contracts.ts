@@ -43,7 +43,6 @@ export const routeContracts: RouteContract[] = [
       "#community .v4-community__cta",
       "#founder-title",
       "#founder .v4-founder__web-portfolio",
-      "#founder .v4-founder__github",
       "#contact-title",
       "#contact .button-primary",
     ],

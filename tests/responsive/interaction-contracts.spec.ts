@@ -91,12 +91,16 @@ for (const route of officialDesktopRoutes) {
     const runtimeErrors = await openRoute(page, route.path, { name: "desktop-nav", width: 1363, height: 936 });
     const nav = page.locator(".site-header .desktop-nav");
     await expect(nav).toBeVisible();
-    const groups = route.path === "/" ? ["Resources", "Community"] : ["Technology", "Resources", "Community"];
+    const groups = ["Technology", "Resources", "Community"];
     for (const label of groups) {
       await expect(nav.getByRole("button", { name: label, exact: true })).toBeVisible();
     }
     if (route.path === "/") {
-      await expect(nav.getByRole("link", { name: "Interactive", exact: true })).toHaveAttribute("href", "INTRO_Interactive/");
+      await nav.getByRole("button", { name: "Technology", exact: true }).click();
+      await expect(nav.locator("#technology-menu a")).toHaveCount(1);
+      await expect(nav.locator("#technology-menu a")).toHaveText("Technology教育を変える");
+      await expect(nav.locator("#technology-menu a")).toHaveAttribute("href", "INTRO_Interactive/");
+      await page.keyboard.press("Escape");
       await expect(nav.getByText("Technology Core", { exact: true })).toHaveCount(0);
       await expect(page.locator(".site-header .logo-copy")).toHaveText("COMPASS");
     }
@@ -125,6 +129,7 @@ test("Every parent Founder entry point uses the new portfolio URL", async ({ pag
   const expected = "https://yuto-matsui.com/";
 
   await expect(page.locator("#founder .v4-founder__web-portfolio")).toHaveAttribute("href", expected);
+  await expect(page.locator("#founder a[href*='github.com']")).toHaveCount(0);
   await expect(page.locator(".site-footer .footer-nav").getByRole("link", { name: "Founder" })).toHaveAttribute(
     "href",
     expected,
@@ -351,7 +356,7 @@ for (const scenario of [
   });
 }
 
-for (const path of ["/", "/INTRO_Interactive/", "/INTRO_Interactive/developers/"]) {
+for (const path of ["/INTRO_Interactive/", "/INTRO_Interactive/developers/"]) {
   test(`GitHub Portfolio link contract: ${path}`, async ({ page }) => {
     const runtimeErrors = await openRoute(page, path, { name: "github-link", width: 390, height: 844 });
     const links = page.locator('a[href="https://github.com/genellect"]');

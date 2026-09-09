@@ -19,20 +19,31 @@ export function Habitat() {
   const sound = useRef<Soundscape | null>(null);
   const soundEnabled = useRef(false);
   const soundLoading = useRef(false);
+  const pendingAudio = useRef<AudioContext | null>(null);
   const alive = useRef(true);
   const [audible,setAudible] = useState(false);
   const [chapter,setChapter] = useState(0);
   const activeChapter = useRef(0);
 
-  useEffect(()=>{alive.current=true;return()=>{alive.current=false;sound.current?.dispose();sound.current=null;};},[]);
+  useEffect(()=>{alive.current=true;return()=>{alive.current=false;sound.current?.dispose();sound.current=null;void pendingAudio.current?.close();pendingAudio.current=null;};},[]);
   const toggleSound = async () => {
     if(soundLoading.current)return;
     soundLoading.current=true;
     try {
-      if(!sound.current){const {createSoundscape}=await import('./soundscape');if(!alive.current||!matchMedia(DESKTOP_QUERY).matches)return;sound.current=createSoundscape();}
-      soundEnabled.current=!soundEnabled.current;setAudible(soundEnabled.current);
-      sound.current.setEnabled(soundEnabled.current);sound.current.cue(activeChapter.current);
-    } catch {soundEnabled.current=false;setAudible(false);} finally {soundLoading.current=false;}
+      if(!matchMedia(DESKTOP_QUERY).matches)return;
+      if(!sound.current){
+        // Resume in the click gesture before waiting for the lazy audio module.
+        const context=new AudioContext();pendingAudio.current=context;
+        await context.resume();
+        const {createSoundscape}=await import('./soundscape');
+        if(!alive.current||!matchMedia(DESKTOP_QUERY).matches||context.state==='closed'){if(context.state!=='closed')void context.close();return;}
+        sound.current=createSoundscape(context);pendingAudio.current=null;
+      }
+      const instance=sound.current;
+      const playing=await instance.setEnabled(!soundEnabled.current);
+      if(!alive.current||instance!==sound.current)return;
+      soundEnabled.current=playing;setAudible(playing);instance.cue(activeChapter.current);
+    } catch {soundEnabled.current=false;setAudible(false);void pendingAudio.current?.close();pendingAudio.current=null;} finally {soundLoading.current=false;}
   };
 
   useEffect(() => {
@@ -86,6 +97,7 @@ export function Habitat() {
       const jump = Math.abs(window.scrollY - lastScroll) > innerHeight;
       lastScroll = window.scrollY;
       controller.current?.update(position, jump);
+      sound.current?.setTravel(motion.matches || pausedRef.current ? 0 : position.blend);
     };
     const schedule = () => { if (!frame) frame = requestAnimationFrame(update); };
     const remeasure = () => { measure(); schedule(); };
@@ -97,6 +109,7 @@ export function Habitat() {
       setEnabled(active); setReduced(motion.matches);
       window.dispatchEvent(new Event('compass:habitat-change'));
       if (!active) {
+        void pendingAudio.current?.close();pendingAudio.current=null;
         sound.current?.dispose();sound.current=null;soundEnabled.current=false;setAudible(false);
         currentPoster = ''; if (poster.current) poster.current.style.backgroundImage = '';
         return;
@@ -138,6 +151,19 @@ export function Habitat() {
     window.addEventListener('resize', remeasure);
     window.addEventListener('pageshow', remeasure);
     window.addEventListener('hashchange', remeasure);
+    let hovered: Element | null = null;
+    const hoverSound = (event: PointerEvent) => {
+      if(event.pointerType!=='mouse')return;
+      const target=event.target instanceof Element?event.target.closest('a,button,summary'):null;
+      if(target&&target!==hovered&&!target.closest('[data-habitat-media]'))sound.current?.interact('hover');
+      hovered=target;
+    };
+    const activateSound = (event: MouseEvent) => {
+      const target=event.target instanceof Element?event.target.closest('a,button,summary'):null;
+      if(target&&!target.closest('[data-habitat-media]'))sound.current?.interact('activate');
+    };
+    root.addEventListener('pointerover',hoverSound);
+    root.addEventListener('click',activateSound);
     root.addEventListener('compass:habitat-toggle', toggle);
     window.addEventListener('wheel', noteInteraction, { passive: true });
     window.addEventListener('pointerdown', noteInteraction, { passive: true });
@@ -158,6 +184,7 @@ export function Habitat() {
       desktop.removeEventListener('change', sync); motion.removeEventListener('change', sync);
       window.removeEventListener('scroll', schedule); window.removeEventListener('resize', remeasure);
       window.removeEventListener('pageshow', remeasure); window.removeEventListener('hashchange', remeasure);
+      root.removeEventListener('pointerover',hoverSound);root.removeEventListener('click',activateSound);
       window.removeEventListener('wheel', noteInteraction); window.removeEventListener('pointerdown', noteInteraction); window.removeEventListener('keydown', noteInteraction);
       root.removeEventListener('compass:habitat-toggle', toggle);
       for (const picture of pictures.values()) picture.onload = null;
@@ -183,7 +210,7 @@ export function Habitat() {
       <div className={styles.mediaControls} data-habitat-media>
       <button type="button" className={styles.sound} aria-pressed={audible} onClick={()=>void toggleSound()}>
         <span className={styles.soundBars} data-audible={audible} aria-hidden="true"><i/><i/><i/></span>
-        {audible?'音を切る':'音を入れる'}
+        {audible?'音声OFF':'音声ON'}
       </button>
       {!reduced && <button type="button" className={styles.motion} aria-pressed={paused}
       onClick={() => mount.current?.closest('[data-habitat]')?.dispatchEvent(new Event('compass:habitat-toggle'))}>
