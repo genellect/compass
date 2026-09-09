@@ -365,7 +365,7 @@ export function CommunityJoinForm() {
 
         <fieldset className={styles.fieldset} aria-describedby={describedBy("focusAreas", "focusAreas-helper")}>
           <legend>興味のあること・頑張りたいこと <RequiredBadge /></legend>
-          <p className={styles.helper} id="focusAreas-helper">複数選択可、1つ以上必須</p>
+          <p className={styles.helper} id="focusAreas-helper">複数選択できます。</p>
           <div className={`${styles.choiceGrid} ${styles.interestGrid}`}>
             {FOCUS_AREA_OPTIONS.map((focusArea) => (
               <label className={styles.choice} key={focusArea}>
