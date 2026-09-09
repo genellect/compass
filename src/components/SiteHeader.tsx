@@ -231,6 +231,9 @@ export function SiteHeader({
     };
     const handleEscape = (event: KeyboardEvent) => {
       if (event.key !== "Escape") return;
+      if (routeContext === "root" && activeMenu) {
+        headerRef.current?.querySelector<HTMLButtonElement>(`[aria-controls="${activeMenu}-menu"]`)?.focus();
+      }
       setActiveMenu(null);
       if (mobileOpen) closeMobileMenu();
     };
@@ -240,7 +243,7 @@ export function SiteHeader({
       document.removeEventListener("pointerdown", handlePointer);
       document.removeEventListener("keydown", handleEscape);
     };
-  }, [mobileOpen]);
+  }, [mobileOpen, activeMenu, routeContext]);
 
   useEffect(() => {
     document.body.classList.toggle("menu-open", mobileOpen);

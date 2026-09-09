@@ -1,0 +1,507 @@
+{
+  "version": "3",
+  "blender": "4.5.13 LTS",
+  "seed": 21,
+  "assets": [
+    {
+      "file": "architecture.glb",
+      "bytes": 2555812,
+      "triangles": 14676,
+      "meshes": 2,
+      "textures": 9,
+      "rawBytes": 42069920,
+      "indirectLightmaps": 1
+    },
+    {
+      "file": "top.glb",
+      "bytes": 2046976,
+      "triangles": 64900,
+      "meshes": 5,
+      "textures": 9,
+      "rawBytes": 27777216,
+      "indirectLightmaps": 1
+    },
+    {
+      "file": "vision.glb",
+      "bytes": 3547692,
+      "triangles": 40624,
+      "meshes": 1,
+      "textures": 12,
+      "rawBytes": 39268808,
+      "indirectLightmaps": 1
+    },
+    {
+      "file": "experience.glb",
+      "bytes": 2627544,
+      "triangles": 41616,
+      "meshes": 1,
+      "textures": 9,
+      "rawBytes": 34569176,
+      "indirectLightmaps": 1
+    },
+    {
+      "file": "technology.glb",
+      "bytes": 1180904,
+      "triangles": 40336,
+      "meshes": 1,
+      "textures": 6,
+      "rawBytes": 19956848,
+      "indirectLightmaps": 1
+    },
+    {
+      "file": "resources.glb",
+      "bytes": 2955372,
+      "triangles": 55284,
+      "meshes": 1,
+      "textures": 9,
+      "rawBytes": 33088888,
+      "indirectLightmaps": 1
+    },
+    {
+      "file": "manifesto.glb",
+      "bytes": 262856,
+      "triangles": 5404,
+      "meshes": 2,
+      "textures": 3,
+      "rawBytes": 13483176,
+      "indirectLightmaps": 1
+    },
+    {
+      "file": "community.glb",
+      "bytes": 2816488,
+      "triangles": 88232,
+      "meshes": 1,
+      "textures": 9,
+      "rawBytes": 26090520,
+      "indirectLightmaps": 1
+    },
+    {
+      "file": "founder.glb",
+      "bytes": 1756628,
+      "triangles": 26044,
+      "meshes": 1,
+      "textures": 9,
+      "rawBytes": 26042772,
+      "indirectLightmaps": 1
+    },
+    {
+      "file": "contact.glb",
+      "bytes": 3094340,
+      "triangles": 27712,
+      "meshes": 1,
+      "textures": 9,
+      "rawBytes": 28828344,
+      "indirectLightmaps": 1
+    },
+    {
+      "file": "environment.glb",
+      "bytes": 4427484,
+      "triangles": 131258,
+      "meshes": 1,
+      "textures": 8,
+      "rawBytes": 40323012,
+      "indirectLightmaps": 1,
+      "simplification": {
+        "ratio": 0.75,
+        "maximumRelativeError": 0.0015
+      }
+    }
+  ],
+  "sections": [
+    {
+      "id": "top",
+      "origin": [
+        0,
+        0,
+        0
+      ],
+      "arrival": [
+        -8,
+        1.72,
+        11.8
+      ],
+      "camera": [
+        6.8,
+        1.8,
+        7
+      ],
+      "exit": [
+        8,
+        1.72,
+        11.8
+      ],
+      "corridor": [
+        11,
+        1.72,
+        16
+      ],
+      "target": [
+        0,
+        2,
+        -3
+      ],
+      "filmOffset": -1.8
+    },
+    {
+      "id": "vision",
+      "origin": [
+        22,
+        0,
+        0
+      ],
+      "arrival": [
+        14,
+        1.72,
+        11.8
+      ],
+      "camera": [
+        27.5,
+        1.72,
+        4.5
+      ],
+      "exit": [
+        30,
+        1.72,
+        11.8
+      ],
+      "corridor": [
+        33,
+        1.72,
+        16
+      ],
+      "target": [
+        20,
+        1.8,
+        -5
+      ],
+      "filmOffset": 3.6
+    },
+    {
+      "id": "experience",
+      "origin": [
+        44,
+        0,
+        0
+      ],
+      "arrival": [
+        36,
+        1.72,
+        11.8
+      ],
+      "camera": [
+        38.2,
+        1.75,
+        5
+      ],
+      "exit": [
+        52,
+        1.72,
+        11.8
+      ],
+      "corridor": [
+        55,
+        1.72,
+        16
+      ],
+      "target": [
+        46,
+        1.15,
+        0
+      ],
+      "filmOffset": -1.8
+    },
+    {
+      "id": "technology",
+      "origin": [
+        66,
+        0,
+        0
+      ],
+      "arrival": [
+        58,
+        1.72,
+        11.8
+      ],
+      "camera": [
+        70.8,
+        1.72,
+        3
+      ],
+      "exit": [
+        74,
+        1.72,
+        11.8
+      ],
+      "corridor": [
+        77,
+        1.72,
+        16
+      ],
+      "target": [
+        64,
+        1.5,
+        -2
+      ],
+      "filmOffset": 3.6
+    },
+    {
+      "id": "resources",
+      "origin": [
+        88,
+        0,
+        0
+      ],
+      "arrival": [
+        80,
+        1.72,
+        11.8
+      ],
+      "camera": [
+        82,
+        1.65,
+        0
+      ],
+      "exit": [
+        96,
+        1.72,
+        11.8
+      ],
+      "corridor": [
+        99,
+        1.72,
+        16
+      ],
+      "target": [
+        90,
+        1.6,
+        -4
+      ],
+      "filmOffset": -3.6
+    },
+    {
+      "id": "manifesto",
+      "origin": [
+        110,
+        0,
+        0
+      ],
+      "arrival": [
+        102,
+        1.72,
+        11.8
+      ],
+      "camera": [
+        115.4,
+        1.75,
+        5
+      ],
+      "exit": [
+        118,
+        1.72,
+        11.8
+      ],
+      "corridor": [
+        121,
+        1.72,
+        16
+      ],
+      "target": [
+        109,
+        2,
+        0
+      ],
+      "filmOffset": 3.6
+    },
+    {
+      "id": "community",
+      "origin": [
+        132,
+        0,
+        0
+      ],
+      "arrival": [
+        124,
+        1.72,
+        11.8
+      ],
+      "camera": [
+        127,
+        1.65,
+        4
+      ],
+      "exit": [
+        140,
+        1.72,
+        11.8
+      ],
+      "corridor": [
+        143,
+        1.72,
+        16
+      ],
+      "target": [
+        133,
+        1.25,
+        0
+      ],
+      "filmOffset": -3.6
+    },
+    {
+      "id": "founder",
+      "origin": [
+        154,
+        0,
+        0
+      ],
+      "arrival": [
+        146,
+        1.72,
+        11.8
+      ],
+      "camera": [
+        158.8,
+        1.65,
+        4.5
+      ],
+      "exit": [
+        162,
+        1.72,
+        11.8
+      ],
+      "corridor": [
+        165,
+        1.72,
+        16
+      ],
+      "target": [
+        153,
+        1.2,
+        -1
+      ],
+      "filmOffset": 3.6
+    },
+    {
+      "id": "contact",
+      "origin": [
+        176,
+        0,
+        0
+      ],
+      "arrival": [
+        168,
+        1.72,
+        11.8
+      ],
+      "camera": [
+        172,
+        1.7,
+        5
+      ],
+      "exit": [
+        184,
+        1.72,
+        11.8
+      ],
+      "corridor": [
+        187,
+        1.72,
+        16
+      ],
+      "target": [
+        179,
+        1.8,
+        -6
+      ],
+      "filmOffset": -3.6
+    }
+  ],
+  "optimizer": {
+    "name": "@gltf-transform/cli",
+    "version": "4.5.0",
+    "compression": "EXT_meshopt_compression",
+    "positionBits": 16
+  },
+  "lightmaps": [
+    {
+      "file": "architecture-community.webp",
+      "bytes": 363224
+    },
+    {
+      "file": "architecture-contact.webp",
+      "bytes": 355978
+    },
+    {
+      "file": "architecture-experience.webp",
+      "bytes": 364802
+    },
+    {
+      "file": "architecture-founder.webp",
+      "bytes": 363018
+    },
+    {
+      "file": "architecture-manifesto.webp",
+      "bytes": 364702
+    },
+    {
+      "file": "architecture-resources.webp",
+      "bytes": 361522
+    },
+    {
+      "file": "architecture-technology.webp",
+      "bytes": 360886
+    },
+    {
+      "file": "architecture-vision.webp",
+      "bytes": 381406
+    }
+  ],
+  "posters": [
+    {
+      "file": "top.webp",
+      "bytes": 121416
+    },
+    {
+      "file": "vision.webp",
+      "bytes": 109530
+    },
+    {
+      "file": "experience.webp",
+      "bytes": 149612
+    },
+    {
+      "file": "technology.webp",
+      "bytes": 128978
+    },
+    {
+      "file": "resources.webp",
+      "bytes": 138258
+    },
+    {
+      "file": "manifesto.webp",
+      "bytes": 138468
+    },
+    {
+      "file": "community.webp",
+      "bytes": 134454
+    },
+    {
+      "file": "founder.webp",
+      "bytes": 128128
+    },
+    {
+      "file": "contact.webp",
+      "bytes": 92496
+    }
+  ],
+  "environment": [
+    {
+      "file": "planet.webp",
+      "bytes": 970412
+    },
+    {
+      "file": "room.hdr",
+      "bytes": 388360
+    }
+  ],
+  "totalBytes": 32687746
+}

@@ -5,12 +5,15 @@ import { useEffect } from "react";
 export function LegacyInteractions() {
   useEffect(() => {
     let cancelled = false;
+    let dispose: (() => void) | undefined;
     const root = document.documentElement;
     const revealWasInitialized = root.classList.contains("reveal-ready");
 
     void import("../legacy-interactions")
-      .then(() => {
-        if (cancelled || !revealWasInitialized) return;
+      .then(({ initLegacyInteractions }) => {
+        if (cancelled) return;
+        dispose = initLegacyInteractions();
+        if (!revealWasInitialized) return;
         document.querySelectorAll("[data-reveal]").forEach((target) => {
           target.classList.add("is-visible");
         });
@@ -25,6 +28,7 @@ export function LegacyInteractions() {
 
     return () => {
       cancelled = true;
+      dispose?.();
     };
   }, []);
 

@@ -1017,7 +1017,7 @@ expectIncludes(
   "Resources Manifesto navigation"
 );
 expectExcludes(siteHeaderSource, 'activeId: "manifesto"', "Independent Manifesto navigation");
-expectIncludes(siteHeaderSource, 'label: "Technology Core"', "Desktop Technology navigation");
+expectExcludes(official.match(/<header[\s\S]*?<\/header>/)?.[0] ?? '', '>Technology Core<', "Retired parent Technology Core navigation");
 expectIncludes(siteHeaderSource, "items: [navGroups[0].items[0]]", "Mobile Technology navigation");
 expectExcludes(siteHeaderSource, 'mobileLabel: "お問い合わせフォーム"', "Official header source");
 expectExcludes(siteHeaderSource, 'label: "COMPASS Essentials"', "Official header source");

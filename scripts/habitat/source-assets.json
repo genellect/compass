@@ -1,0 +1,148 @@
+{
+  "verified": "2026-09-09",
+  "assets": [
+    {
+      "file": "marble_01_Diffuse.jpg",
+      "size": 1269188,
+      "md5": "4eeefea16242cecb3b429ac0c8f88740",
+      "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/marble_01/marble_01_diff_2k.jpg"
+    },
+    {
+      "file": "marble_01_nor_gl.jpg",
+      "size": 409581,
+      "md5": "f25efb0b61ec7ac183b3b0f4d032ed17",
+      "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/marble_01/marble_01_nor_gl_2k.jpg"
+    },
+    {
+      "file": "marble_01_Rough.jpg",
+      "size": 281388,
+      "md5": "c4cf0375d84277c6020bf230823efdcc",
+      "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/marble_01/marble_01_rough_2k.jpg"
+    },
+    {
+      "file": "rough_linen_Diffuse.jpg",
+      "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/rough_linen/rough_linen_diff_2k.jpg",
+      "md5": "1287d4d1183c511e4adc55b8d006d763",
+      "size": 3607181
+    },
+    {
+      "file": "rough_linen_nor_gl.jpg",
+      "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/rough_linen/rough_linen_nor_gl_2k.jpg",
+      "md5": "facad45539d3011e197bd87562ba1679",
+      "size": 3849356
+    },
+    {
+      "file": "rough_linen_Rough.jpg",
+      "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/rough_linen/rough_linen_rough_2k.jpg",
+      "md5": "fb70674c782d6bead54c8baaae2b77db",
+      "size": 4655974
+    },
+    {
+      "file": "plant.blend",
+      "size": 2784361,
+      "url": "https://dl.polyhaven.org/file/ph-assets/Models/blend/1k/potted_plant_01/potted_plant_01_1k.blend",
+      "md5": "bb15d3876df0af34b5da74d3fb30ac32"
+    },
+    {
+      "file": "textures/potted_plant_01_pot_nor_gl_1k.png",
+      "size": 4818586,
+      "url": "https://dl.polyhaven.org/file/ph-assets/Models/png/1k/potted_plant_01/potted_plant_01_pot_nor_gl_1k.png",
+      "md5": "5e5af69e2722f56931196263d681d114"
+    },
+    {
+      "file": "textures/potted_plant_01_leaves_diff_1k.png",
+      "size": 3368765,
+      "url": "https://dl.polyhaven.org/file/ph-assets/Models/png/1k/potted_plant_01/potted_plant_01_leaves_diff_1k.png",
+      "md5": "a1e100797a055cb55dbbff2aa9095aaf"
+    },
+    {
+      "file": "textures/potted_plant_01_pot_rough_1k.png",
+      "size": 1629094,
+      "url": "https://dl.polyhaven.org/file/ph-assets/Models/png/1k/potted_plant_01/potted_plant_01_pot_rough_1k.png",
+      "md5": "4df6a1b9a92906d9db92f72d6ed47246"
+    },
+    {
+      "file": "textures/potted_plant_01_leaves_nor_gl_1k.png",
+      "size": 4012816,
+      "url": "https://dl.polyhaven.org/file/ph-assets/Models/png/1k/potted_plant_01/potted_plant_01_leaves_nor_gl_1k.png",
+      "md5": "0cdae385d28c2d80331a657daab48dbb"
+    },
+    {
+      "file": "textures/potted_plant_01_pot_diff_1k.png",
+      "size": 4849826,
+      "url": "https://dl.polyhaven.org/file/ph-assets/Models/png/1k/potted_plant_01/potted_plant_01_pot_diff_1k.png",
+      "md5": "83a8851050896c27c531863b02c8894a"
+    },
+    {
+      "file": "textures/potted_plant_01_leaves_alpha_1k.png",
+      "size": 90654,
+      "url": "https://dl.polyhaven.org/file/ph-assets/Models/png/1k/potted_plant_01/potted_plant_01_leaves_alpha_1k.png",
+      "md5": "16b9d6529665f89b069696f46ffa3f36"
+    },
+    {
+      "file": "textures/potted_plant_01_leaves_rough_1k.png",
+      "size": 1059300,
+      "url": "https://dl.polyhaven.org/file/ph-assets/Models/png/1k/potted_plant_01/potted_plant_01_leaves_rough_1k.png",
+      "md5": "f8d44664f9aa7c95088334bcab7a3c6b"
+    },
+    {
+      "file": "lounge-chair.blend",
+      "size": 355104,
+      "url": "https://dl.polyhaven.org/file/ph-assets/Models/blend/1k/modern_arm_chair_01/modern_arm_chair_01_1k.blend",
+      "md5": "ca8d0a6fd436060212d9b734f89e942f"
+    },
+    {
+      "file": "textures/modern_arm_chair_01_pillow_rough_1k.png",
+      "size": 776559,
+      "url": "https://dl.polyhaven.org/file/ph-assets/Models/png/1k/modern_arm_chair_01/modern_arm_chair_01_pillow_rough_1k.png",
+      "md5": "096e983517d50f1be01dc41e6358e724"
+    },
+    {
+      "file": "textures/modern_arm_chair_01_pillow_diff_1k.png",
+      "size": 2077828,
+      "url": "https://dl.polyhaven.org/file/ph-assets/Models/png/1k/modern_arm_chair_01/modern_arm_chair_01_pillow_diff_1k.png",
+      "md5": "8b2da02e62c4aa18768347b485b93f05"
+    },
+    {
+      "file": "textures/modern_arm_chair_01_pillow_nor_gl_1k.png",
+      "size": 2211406,
+      "url": "https://dl.polyhaven.org/file/ph-assets/Models/png/1k/modern_arm_chair_01/modern_arm_chair_01_pillow_nor_gl_1k.png",
+      "md5": "4a45ec99d742983b68d12300e5dd4dae"
+    },
+    {
+      "file": "textures/modern_arm_chair_01_legs_nor_gl_1k.png",
+      "size": 2968569,
+      "url": "https://dl.polyhaven.org/file/ph-assets/Models/png/1k/modern_arm_chair_01/modern_arm_chair_01_legs_nor_gl_1k.png",
+      "md5": "ad7dac7165d6ccf82f0e6dd5935eda94"
+    },
+    {
+      "file": "textures/modern_arm_chair_01_legs_rough_1k.png",
+      "size": 1009274,
+      "url": "https://dl.polyhaven.org/file/ph-assets/Models/png/1k/modern_arm_chair_01/modern_arm_chair_01_legs_rough_1k.png",
+      "md5": "e508222c711063862c66b4626d446455"
+    },
+    {
+      "file": "textures/modern_arm_chair_01_pillow_metal_1k.png",
+      "size": 2155,
+      "url": "https://dl.polyhaven.org/file/ph-assets/Models/png/1k/modern_arm_chair_01/modern_arm_chair_01_pillow_metal_1k.png",
+      "md5": "3984ebd3e0aff11d149c2c40985d22f3"
+    },
+    {
+      "file": "textures/modern_arm_chair_01_legs_diff_1k.png",
+      "size": 2832680,
+      "url": "https://dl.polyhaven.org/file/ph-assets/Models/png/1k/modern_arm_chair_01/modern_arm_chair_01_legs_diff_1k.png",
+      "md5": "6c89b1133fdbbe865687aa9a0f574fd8"
+    },
+    {
+      "file": "textures/modern_arm_chair_01_legs_metal_1k.png",
+      "size": 2155,
+      "url": "https://dl.polyhaven.org/file/ph-assets/Models/png/1k/modern_arm_chair_01/modern_arm_chair_01_legs_metal_1k.png",
+      "md5": "3984ebd3e0aff11d149c2c40985d22f3"
+    },
+    {
+      "file": "nasa-blue-marble-july.jpg",
+      "url": "https://assets.science.nasa.gov/content/dam/science/esd/eo/images/bmng/bmng-topography/july/world.topo.200407.3x5400x2700.jpg",
+      "sha256": "85a24885616097b5e06532b7d8e30fa5d749a782e70ea55971dd8539a0899206"
+    }
+  ]
+}
