@@ -93,10 +93,19 @@
 .successCard h1 {
   margin: 0;
   color: var(--ink);
+  text-wrap: balance;
+}
+
+.formHeading h1 {
+  font-size: clamp(2rem, 3.4vw, 3.35rem);
+  letter-spacing: -0.045em;
+  line-height: 1.14;
+}
+
+.successCard h1 {
   font-size: clamp(2.45rem, 5vw, 4.6rem);
   letter-spacing: -0.055em;
   line-height: 1.08;
-  text-wrap: balance;
 }
 
 .formHeading > p:not(.formKicker) {
