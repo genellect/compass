@@ -90,6 +90,8 @@ for (const route of officialDesktopRoutes) {
   test(`Official Desktop navigation contract: ${route.path}`, async ({ page }) => {
     const runtimeErrors = await openRoute(page, route.path, { name: "desktop-nav", width: 1363, height: 936 });
     const nav = page.locator(".site-header .desktop-nav");
+    await expect(page.locator("footer").last()).toContainText("Don’t Just Learn. Build What’s Next.");
+    await expect(page.locator("footer").last()).not.toContainText("Better Education. Better Decisions.");
     await expect(nav).toBeVisible();
     const groups = ["Technology", "Resources", "Community"];
     for (const label of groups) {

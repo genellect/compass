@@ -19,12 +19,12 @@ export function SiteFooter({ routeContext = "root" }: { routeContext?: SiteRoute
 <footer
   className={`site-footer${routeContext === "root" ? "" : ` ${styles.footer}`}`}
   data-route-context={routeContext}
-  data-ui-variant={usesRootFooterUi ? "root" : routeContext}
+  data-ui-variant="root"
 >
   <div className="container footer-inner">
     <div className="footer-brand">
       <p className="footer-logo">COMPASS</p>
-      <p>{usesRootFooterUi ? "Don’t Just Learn. Build What’s Next." : "Better Education. Better Decisions."}</p>
+      <p>Don’t Just Learn. Build What’s Next.</p>
     </div>
 
     <nav className="footer-nav" aria-label="Footer navigation">
