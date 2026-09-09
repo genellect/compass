@@ -13,6 +13,8 @@ import {
 } from "@/lib/contact-schema";
 import styles from "./contact.module.css";
 
+type ContactTarget = "representative" | "compass";
+
 type LocalFormState = {
   affiliation: string;
   details: string;
@@ -30,6 +32,11 @@ type TurnstileApi = {
   reset: (widgetId: string) => void;
 };
 
+type AudienceEntry = {
+  audience: string;
+  description: string;
+};
+
 declare global {
   interface Window {
     turnstile?: TurnstileApi;
@@ -41,6 +48,43 @@ const initialForm: LocalFormState = {
   affiliation: "",
   email: "",
   details: ""
+};
+
+const MESSAGE_MAX_LENGTH = 980;
+
+const targetContent: Record<ContactTarget, {
+  cardDescription: string;
+  cardTitle: string;
+  entries: AudienceEntry[];
+  messagePrefix: string;
+  submitLabel: string;
+  successLabel: string;
+}> = {
+  representative: {
+    cardTitle: "代表へのご連絡",
+    cardDescription: "Yuto Matsui",
+    messagePrefix: "【送信先：代表】",
+    submitLabel: "代表へ送信",
+    successLabel: "代表",
+    entries: [
+      { audience: "学生の方", description: "進路や挑戦に関する相談、意見交換、コミュニティへの参加" },
+      { audience: "企業の方", description: "共同開発、受託開発、プロジェクトのご依頼、講演" },
+      { audience: "教職員の方", description: "講演、教育連携、授業・教育活動に関するご相談" },
+      { audience: "研究者の方", description: "共同研究のご相談、学会参加" }
+    ]
+  },
+  compass: {
+    cardTitle: "COMPASSへのお問い合わせ",
+    cardDescription: "活動・サービスに関する公式窓口",
+    messagePrefix: "【送信先：COMPASS】",
+    submitLabel: "COMPASSへ送信",
+    successLabel: "COMPASS",
+    entries: [
+      { audience: "教職員・教育機関の方", description: "授業での活用、教育連携、導入に関するお問い合わせ" },
+      { audience: "企業・団体の方", description: "連携・協力、取材に関するお問い合わせ" },
+      { audience: "学生の方", description: "活動・サービスに関する質問、不具合のご報告、ご意見" }
+    ]
+  }
 };
 
 const turnstileSiteKey =
@@ -64,12 +108,65 @@ function FieldValid({ visible }: { visible: boolean }) {
   );
 }
 
+function TargetCard({
+  checked,
+  description,
+  onChange,
+  title,
+  value
+}: {
+  checked: boolean;
+  description: string;
+  onChange: (target: ContactTarget) => void;
+  title: string;
+  value: ContactTarget;
+}) {
+  return (
+    <label className={`${styles.targetCard} ${checked ? styles.targetCardSelected : ""}`}>
+      <input
+        checked={checked}
+        name="contactTarget"
+        onChange={() => onChange(value)}
+        required
+        type="radio"
+        value={value}
+      />
+      <span className={styles.targetCardCopy}>
+        <strong>{title}</strong>
+        <span>{description}</span>
+      </span>
+      <span className={styles.targetIndicator} aria-hidden="true"><span /></span>
+    </label>
+  );
+}
+
+function AudiencePanel({ target }: { target: ContactTarget }) {
+  const content = targetContent[target];
+  return (
+    <section className={styles.audiencePanel} aria-labelledby="audience-title">
+      <div className={styles.sectionHeading}>
+        <p>WHO THIS IS FOR</p>
+        <h2 id="audience-title">{content.cardTitle}</h2>
+      </div>
+      <div className={`${styles.audienceGrid} ${target === "compass" ? styles.audienceGridCompact : ""}`}>
+        {content.entries.map((entry) => (
+          <article className={styles.audienceCard} key={entry.audience}>
+            <h3>{entry.audience}</h3>
+            <p>{entry.description}</p>
+          </article>
+        ))}
+      </div>
+    </section>
+  );
+}
+
 function identityKey(form: LocalFormState) {
   const parsed = contactIdentityFieldsSchema.safeParse(form);
   return parsed.success ? JSON.stringify(parsed.data) : "";
 }
 
 export function ContactForm() {
+  const [contactTarget, setContactTarget] = useState<ContactTarget | "">("");
   const [form, setForm] = useState<LocalFormState>(initialForm);
   const [verificationCode, setVerificationCode] = useState("");
   const [verificationProof, setVerificationProof] = useState("");
@@ -100,7 +197,7 @@ export function ContactForm() {
   }), [form]);
   const clientErrors = formValidation.success ? {} : getContactFieldErrors(formValidation.error);
   const visibleErrors = { ...clientErrors, ...serverErrors };
-  const canRequestCode = identityValidation.success && Boolean(turnstileToken) && status === "idle";
+  const canRequestCode = Boolean(contactTarget) && identityValidation.success && Boolean(turnstileToken) && status === "idle";
   const canVerifyCode = (
     /^\d{6}$/.test(verificationCode) &&
     Boolean(challengeId) &&
@@ -109,6 +206,7 @@ export function ContactForm() {
     status === "idle"
   );
   const canSubmit = (
+    Boolean(contactTarget) &&
     formValidation.success &&
     Boolean(challengeId) &&
     Boolean(verificationProof) &&
@@ -146,8 +244,8 @@ export function ContactForm() {
     if (window.turnstile && turnstileWidgetRef.current) window.turnstile.reset(turnstileWidgetRef.current);
   };
 
-  const invalidateChallenge = () => {
-    if (!challengeId) return;
+  const invalidateChallenge = (message = "入力内容を変更したため、確認コードを再送してください。") => {
+    if (!challengeId && !verificationProof) return;
     setChallengeId("");
     setChallengeIdentity("");
     setChallengeExpiresAt(0);
@@ -155,7 +253,16 @@ export function ContactForm() {
     setVerificationProof("");
     verificationRequestIdRef.current = "";
     submissionRequestIdRef.current = "";
-    setNoticeMessage("入力内容を変更したため、確認コードを再送してください。");
+    setNoticeMessage(message);
+  };
+
+  const updateTarget = (target: ContactTarget) => {
+    if (status !== "idle" || contactTarget === target) return;
+    invalidateChallenge("宛先を変更したため、確認コードを再送してください。");
+    setContactTarget(target);
+    setStatusMessage("");
+    codeRequestIdRef.current = "";
+    submissionRequestIdRef.current = "";
   };
 
   const updateField = (field: FieldName, value: string) => {
@@ -187,7 +294,7 @@ export function ContactForm() {
 
   const requestCode = async () => {
     const identity = contactIdentityFieldsSchema.safeParse(form);
-    if (!identity.success || !turnstileToken) {
+    if (!identity.success || !turnstileToken || !contactTarget) {
       setTouched((current) => ({ ...current, name: true, affiliation: true, email: true }));
       setStatusMessage(turnstileToken ? CONTACT_FORM_ERROR_MESSAGE : "「私はロボットではありません」を確認してください。");
       return;
@@ -299,17 +406,13 @@ export function ContactForm() {
     event.preventDefault();
     const parsed = contactFieldsSchema.safeParse(form);
 
-    if (!parsed.success || !challengeId || !verificationProof) {
+    if (!parsed.success || !challengeId || !verificationProof || !contactTarget) {
       setTouched({ name: true, affiliation: true, email: true, details: true, verificationCode: true });
       setStatusMessage(!verificationProof ? "メールアドレスの確認を完了してください。" : CONTACT_FORM_ERROR_MESSAGE);
       return;
     }
 
-    if (challengeIdentity !== JSON.stringify({
-      name: parsed.data.name,
-      affiliation: parsed.data.affiliation,
-      email: parsed.data.email
-    })) {
+    if (challengeIdentity !== identityKey(form)) {
       invalidateChallenge();
       return;
     }
@@ -333,6 +436,7 @@ export function ContactForm() {
         body: JSON.stringify({
           action: "submit",
           ...parsed.data,
+          details: `${targetContent[contactTarget].messagePrefix}\n${parsed.data.details}`,
           challengeId,
           verificationProof,
           requestId: stableRequestId,
@@ -357,220 +461,171 @@ export function ContactForm() {
     }
   };
 
-  if (status === "success") {
+  if (status === "success" && contactTarget) {
     return (
-      <section className={`${styles.formCard} ${styles.successCard}`} aria-labelledby="success-title">
+      <section className={`${styles.contactSurface} ${styles.successCard}`} aria-labelledby="success-title">
         <div className={styles.successIcon} aria-hidden="true">✓</div>
-        <h1 id="success-title">お問い合わせを受け付けました</h1>
-        <p>
-          <strong>{form.name.trim()} さん</strong><br />
-          受付メールを <span>{form.email.trim().toLowerCase()}</span> に送信しました。
-        </p>
-        <p className={styles.successNote}>内容を確認のうえ、COMPASSよりご連絡します。</p>
-        <a className={styles.homeButton} href="/">COMPASS公式サイトへ戻る</a>
+        <p className={styles.formKicker}>MESSAGE RECEIVED</p>
+        <h1 id="success-title">ご連絡を受け付けました</h1>
+        <p className={styles.successDestination}>送信先：{targetContent[contactTarget].successLabel}</p>
+        <p>受付メールを <span>{form.email.trim().toLowerCase()}</span> に送信しました。</p>
+        <a className={styles.homeButton} href="/">トップページへ</a>
       </section>
     );
   }
 
   return (
-    <section className={styles.formCard} aria-labelledby="form-title">
-      <div className={styles.formHeading}>
-        <p className={styles.formKicker}>CONTACT</p>
-        <h1 id="form-title">お問い合わせ</h1>
-        <p className={styles.formIntro}>COMPASSおよび代表（松井）へのお問い合わせ・ご連絡を受け付けています。</p>
-        <p>送信いただいた内容は、代表（松井）が確認し、必要に応じて返信いたします。</p>
-        <p>学生・教職員・研究者・団体・企業の方を問わず、どうぞお気軽にご連絡ください。</p>
-      </div>
-
+    <section className={styles.contactSurface} aria-labelledby="form-title">
       <form id="contact-form" noValidate aria-busy={status !== "idle"} onSubmit={handleSubmit}>
-        <div className={styles.fieldGroup}>
-          <label htmlFor="name">お名前 <RequiredBadge /></label>
-          <div className={styles.inputWrap}>
-            <input
-              id="name"
-              name="name"
-              type="text"
-              autoComplete="name"
-              minLength={2}
-              maxLength={20}
-              required
-              value={form.name}
-              aria-invalid={hasError("name")}
-              aria-describedby={describedBy("name")}
-              onBlur={() => markTouched("name")}
-              onChange={(event) => updateField("name", event.target.value)}
-            />
-            <FieldValid visible={hasValidValue("name")} />
+        <div className={styles.introStage}>
+          <div className={styles.formHeading}>
+            <p className={styles.formKicker}>CONTACT</p>
+            <h1 id="form-title">お問い合わせ</h1>
+            <p className={styles.formIntro}>COMPASSへの公式お問い合わせと、代表へのご連絡を受け付けています。</p>
+            <p>学生・教職員・研究者の方、団体・企業の方など、さまざまな方とのご縁を歓迎しています。</p>
           </div>
-          <FieldError id="name-error" visible={hasError("name")} />
+
+          <section className={styles.targetSection} aria-labelledby="target-title">
+            <div className={styles.sectionHeading}>
+              <p>DESTINATION</p>
+              <h2 id="target-title">どちらへのご連絡ですか？</h2>
+            </div>
+            <fieldset>
+              <legend className={styles.srOnly}>ご連絡先を選択してください</legend>
+              <div className={styles.targetGrid}>
+                <TargetCard checked={contactTarget === "representative"} description="Yuto Matsui" onChange={updateTarget} title="代表へのご連絡" value="representative" />
+                <TargetCard checked={contactTarget === "compass"} description="活動・サービスに関する公式窓口" onChange={updateTarget} title="COMPASSへのお問い合わせ" value="compass" />
+              </div>
+            </fieldset>
+          </section>
         </div>
 
-        <div className={styles.fieldGroup}>
-          <label htmlFor="affiliation">学部・学科 / 所属 <RequiredBadge /></label>
-          <div className={styles.inputWrap}>
-            <input
-              id="affiliation"
-              name="affiliation"
-              type="text"
-              autoComplete="organization"
-              minLength={2}
-              maxLength={20}
-              required
-              value={form.affiliation}
-              aria-invalid={hasError("affiliation")}
-              aria-describedby={describedBy("affiliation")}
-              onBlur={() => markTouched("affiliation")}
-              onChange={(event) => updateField("affiliation", event.target.value)}
-            />
-            <FieldValid visible={hasValidValue("affiliation")} />
-          </div>
-          <FieldError id="affiliation-error" visible={hasError("affiliation")} />
-        </div>
+        {contactTarget ? (
+          <div className={styles.revealedFlow} id="contact-flow">
+            <AudiencePanel target={contactTarget} />
 
-        <div className={styles.fieldGroup}>
-          <label htmlFor="email">メールアドレス <RequiredBadge /></label>
-          <div className={styles.inputWrap}>
-            <input
-              id="email"
-              name="email"
-              type="email"
-              autoComplete="email"
-              inputMode="email"
-              minLength={5}
-              maxLength={50}
-              required
-              value={form.email}
-              aria-invalid={hasError("email")}
-              aria-describedby={describedBy("email")}
-              onBlur={() => markTouched("email")}
-              onChange={(event) => updateField("email", event.target.value)}
-            />
-            <FieldValid visible={hasValidValue("email")} />
-          </div>
-          <FieldError id="email-error" visible={hasError("email")} />
-        </div>
+            <div className={styles.formColumns}>
+              <section className={styles.formStage} aria-labelledby="identity-title">
+                <div className={styles.sectionHeading}>
+                  <p>ABOUT YOU</p>
+                  <h2 id="identity-title">お名前と返信先</h2>
+                </div>
+                <div className={styles.identityFields}>
+                  <div className={styles.fieldGroup}>
+                    <label htmlFor="name">お名前 <RequiredBadge /></label>
+                    <div className={styles.inputWrap}>
+                      <input id="name" name="name" type="text" autoComplete="name" minLength={2} maxLength={20} required value={form.name} aria-invalid={hasError("name")} aria-describedby={describedBy("name")} onBlur={() => markTouched("name")} onChange={(event) => updateField("name", event.target.value)} />
+                      <FieldValid visible={hasValidValue("name")} />
+                    </div>
+                    <FieldError id="name-error" visible={hasError("name")} />
+                  </div>
 
-        <div className={styles.verificationPanel}>
-          <div>
-            <h2>メールアドレスの確認</h2>
-            <p>お問い合わせの送信には、メールアドレスの確認が必要です。</p>
-            <p>入力したメールアドレスへ、6桁の確認コードを送信します。</p>
-          </div>
+                  <div className={styles.fieldGroup}>
+                    <label htmlFor="affiliation">所属 <RequiredBadge /></label>
+                    <div className={styles.inputWrap}>
+                      <input id="affiliation" name="affiliation" type="text" autoComplete="organization" minLength={2} maxLength={20} required value={form.affiliation} aria-invalid={hasError("affiliation")} aria-describedby={describedBy("affiliation", "affiliation-helper")} onBlur={() => markTouched("affiliation")} onChange={(event) => updateField("affiliation", event.target.value)} />
+                      <FieldValid visible={hasValidValue("affiliation")} />
+                    </div>
+                    <p className={styles.helper} id="affiliation-helper">学生：学校名・学部・学年／企業・団体：名称・役職／教職員・研究者：所属機関・役職をご記入ください。</p>
+                    <FieldError id="affiliation-error" visible={hasError("affiliation")} />
+                  </div>
 
-          {noticeMessage && <p className={styles.statusNotice} role="status">{noticeMessage}</p>}
+                  <div className={styles.fieldGroup}>
+                    <label htmlFor="email">メールアドレス <RequiredBadge /></label>
+                    <div className={styles.inputWrap}>
+                      <input id="email" name="email" type="email" autoComplete="email" inputMode="email" minLength={5} maxLength={50} required value={form.email} aria-invalid={hasError("email")} aria-describedby={describedBy("email")} onBlur={() => markTouched("email")} onChange={(event) => updateField("email", event.target.value)} />
+                      <FieldValid visible={hasValidValue("email")} />
+                    </div>
+                    <FieldError id="email-error" visible={hasError("email")} />
+                  </div>
+                </div>
+              </section>
 
-          {!verificationProof ? (
-            <>
-              <div className={styles.securityBox}>
-                {turnstileSiteKey ? (
-                  <div ref={turnstileContainerRef} className={styles.turnstile} />
-                ) : (
-                  <p className={styles.configurationError} role="alert">現在送信できません。時間をおいて再度お試しください。</p>
-                )}
+              <section className={`${styles.formStage} ${styles.messageStage}`} aria-labelledby="message-title">
+                <div className={styles.sectionHeading}>
+                  <p>YOUR MESSAGE</p>
+                  <h2 id="message-title">メッセージ</h2>
+                </div>
+                <p className={styles.helper} id="details-helper">ご質問、ご相談、ご依頼、ご提案など、内容を自由にご記入ください。</p>
+                <label className={styles.srOnly} htmlFor="details">メッセージ 必須</label>
+                <div className={`${styles.inputWrap} ${styles.textareaWrap}`}>
+                  <textarea
+                    id="details"
+                    name="details"
+                    rows={10}
+                    minLength={10}
+                    maxLength={MESSAGE_MAX_LENGTH}
+                    required
+                    value={form.details}
+                    aria-invalid={hasError("details")}
+                    aria-describedby={describedBy("details", "details-helper")}
+                    onBlur={() => markTouched("details")}
+                    onChange={(event) => updateField("details", event.target.value)}
+                  />
+                  <FieldValid visible={hasValidValue("details")} />
+                </div>
+                <div className={styles.textareaMeta}>
+                  <FieldError id="details-error" visible={hasError("details")} />
+                  <span>{form.details.length} / {MESSAGE_MAX_LENGTH}</span>
+                </div>
+              </section>
+            </div>
+
+            <section className={`${styles.formStage} ${styles.verificationPanel}`} aria-labelledby="verification-title">
+              <div className={styles.verificationIntro}>
+                <div className={styles.sectionHeading}>
+                  <p>EMAIL CHECK</p>
+                  <h2 id="verification-title">メールアドレスの確認</h2>
+                </div>
+                <p>お問い合わせの送信には、メールアドレスの確認が必要です。</p>
+                <p>入力したメールアドレスへ、6桁の確認コードを送信します。</p>
               </div>
 
-              <button
-                className={styles.secondaryButton}
-                type="button"
-                disabled={!canRequestCode}
-                onClick={requestCode}
-              >
-                {status === "requesting_code" ? "送信しています…" : challengeId ? "確認コードを再送" : "確認コードを送信"}
+              <div className={styles.verificationAction}>
+                {noticeMessage ? <p className={styles.statusNotice} role="status">{noticeMessage}</p> : null}
+                {!verificationProof ? (
+                  <>
+                    <div className={styles.securityBox}>
+                      {turnstileSiteKey ? <div ref={turnstileContainerRef} className={styles.turnstile} /> : <p className={styles.configurationError} role="alert">現在送信できません。時間をおいて再度お試しください。</p>}
+                    </div>
+                    <button className={styles.secondaryButton} type="button" disabled={!canRequestCode} onClick={requestCode}>
+                      {status === "requesting_code" ? "送信しています…" : challengeId ? "確認コードを再送" : "確認コードを受け取る"}
+                    </button>
+                    {challengeId ? (
+                      <div className={styles.codeField}>
+                        <label htmlFor="verificationCode">確認コード</label>
+                        <p className={styles.codeHelper} id="verification-code-helper">メールに記載された6桁のコードを入力してください。</p>
+                        <div className={styles.codeControls}>
+                          <input id="verificationCode" name="verificationCode" type="text" autoComplete="one-time-code" inputMode="numeric" pattern="[0-9]{6}" minLength={6} maxLength={6} required value={verificationCode} aria-invalid={hasError("verificationCode")} aria-describedby={describedBy("verificationCode", "verification-code-helper")} onBlur={() => markTouched("verificationCode")} onChange={(event) => { setVerificationCode(event.target.value.replace(/\D/g, "").slice(0, 6)); setVerificationProof(""); setServerErrors((current) => ({ ...current, verificationCode: undefined })); setStatusMessage(""); verificationRequestIdRef.current = ""; submissionRequestIdRef.current = ""; }} />
+                          <button className={styles.verifyButton} type="button" disabled={!canVerifyCode} onClick={verifyCode}>{status === "verifying_code" ? "確認しています…" : "メールアドレスを確認"}</button>
+                        </div>
+                        <FieldError id="verificationCode-error" visible={hasError("verificationCode")} />
+                      </div>
+                    ) : null}
+                  </>
+                ) : (
+                  <p className={styles.verifiedStatus} role="status"><span aria-hidden="true">✓</span>メールアドレス確認済み</p>
+                )}
+              </div>
+            </section>
+
+            <div className={styles.honeypot} aria-hidden="true">
+              <label htmlFor="website">ウェブサイト</label>
+              <input ref={honeypotRef} id="website" name="website" type="text" tabIndex={-1} autoComplete="off" />
+            </div>
+
+            <Script id="cloudflare-turnstile-contact" src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit" strategy="afterInteractive" onLoad={() => setTurnstileReady(true)} onReady={() => setTurnstileReady(true)} />
+
+            <section className={styles.submitStage} aria-label="送信">
+              <p className={styles.handlingNote}>メッセージは代表が直接確認します。</p>
+              {statusMessage ? <p className={styles.statusError} role="alert">{statusMessage}</p> : null}
+              <button className={styles.submitButton} type="submit" disabled={!canSubmit}>
+                <span>{status === "submitting" ? "送信しています…" : targetContent[contactTarget].submitLabel}</span>
+                <span aria-hidden="true">→</span>
               </button>
-
-              {challengeId && (
-                <div className={styles.codeField}>
-                  <label htmlFor="verificationCode">確認コード</label>
-                  <p className={styles.codeHelper} id="verification-code-helper">メールに記載された6桁のコードを入力してください。</p>
-                  <input
-                    id="verificationCode"
-                    name="verificationCode"
-                    type="text"
-                    autoComplete="one-time-code"
-                    inputMode="numeric"
-                    pattern="[0-9]{6}"
-                    minLength={6}
-                    maxLength={6}
-                    required
-                    value={verificationCode}
-                    aria-invalid={hasError("verificationCode")}
-                    aria-describedby={describedBy("verificationCode", "verification-code-helper")}
-                    onBlur={() => markTouched("verificationCode")}
-                    onChange={(event) => {
-                      setVerificationCode(event.target.value.replace(/\D/g, "").slice(0, 6));
-                      setVerificationProof("");
-                      setServerErrors((current) => ({ ...current, verificationCode: undefined }));
-                      setStatusMessage("");
-                      verificationRequestIdRef.current = "";
-                      submissionRequestIdRef.current = "";
-                    }}
-                  />
-                  <FieldError id="verificationCode-error" visible={hasError("verificationCode")} />
-                  <button
-                    className={styles.verifyButton}
-                    type="button"
-                    disabled={!canVerifyCode}
-                    onClick={verifyCode}
-                  >
-                    {status === "verifying_code" ? "確認しています…" : "メールアドレスを確認"}
-                  </button>
-                </div>
-              )}
-            </>
-          ) : (
-            <p className={styles.verifiedStatus} role="status">
-              <span aria-hidden="true">✓</span>
-              メールアドレスの確認が完了しました。
-            </p>
-          )}
-        </div>
-
-        <div className={styles.fieldGroup}>
-          <label htmlFor="details">お問い合わせ内容 <RequiredBadge /></label>
-          <div className={styles.helper} id="details-helper">
-            <p>ご質問、ご相談、ご依頼、ご提案など、内容を自由にご記入ください。</p>
+            </section>
           </div>
-          <div className={`${styles.inputWrap} ${styles.textareaWrap}`}>
-            <textarea
-              id="details"
-              name="details"
-              rows={7}
-              minLength={10}
-              maxLength={1000}
-              required
-              value={form.details}
-              aria-invalid={hasError("details")}
-              aria-describedby={describedBy("details", "details-helper")}
-              onBlur={() => markTouched("details")}
-              onChange={(event) => updateField("details", event.target.value)}
-            />
-            <FieldValid visible={hasValidValue("details")} />
-          </div>
-          <div className={styles.textareaMeta}>
-            <FieldError id="details-error" visible={hasError("details")} />
-            <span>{form.details.length} / 1000</span>
-          </div>
-        </div>
-
-        <div className={styles.honeypot} aria-hidden="true">
-          <label htmlFor="website">ウェブサイト</label>
-          <input ref={honeypotRef} id="website" name="website" type="text" tabIndex={-1} autoComplete="off" />
-        </div>
-
-        <Script
-          id="cloudflare-turnstile-contact"
-          src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit"
-          strategy="afterInteractive"
-          onLoad={() => setTurnstileReady(true)}
-          onReady={() => setTurnstileReady(true)}
-        />
-
-        {statusMessage && <p className={styles.statusError} role="alert">{statusMessage}</p>}
-
-        <button className={styles.submitButton} type="submit" disabled={!canSubmit}>
-          <span>{status === "submitting" ? "送信しています…" : "お問い合わせを送信"}</span>
-          <span aria-hidden="true">→</span>
-        </button>
+        ) : null}
       </form>
     </section>
   );

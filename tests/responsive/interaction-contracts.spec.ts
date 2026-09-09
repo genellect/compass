@@ -86,6 +86,58 @@ const officialDesktopRoutes = [
   { path: "/contact/", active: "Contact" },
 ];
 
+test("Contact reveals only the selected destination and preserves the form while switching", async ({ page }) => {
+  const runtimeErrors = await openRoute(page, "/contact/", {
+    name: "contact-destination-mobile",
+    width: 390,
+    height: 844,
+  });
+
+  const representative = page.locator('input[name="contactTarget"][value="representative"]');
+  const compass = page.locator('input[name="contactTarget"][value="compass"]');
+
+  await expect(representative).not.toBeChecked();
+  await expect(compass).not.toBeChecked();
+  await expect(page.locator("#audience-title, #details, #name, #affiliation, #email")).toHaveCount(0);
+  await expect(page.getByRole("button", { name: /へ送信$/ })).toHaveCount(0);
+
+  await representative.check();
+  await expect(page.locator("#audience-title")).toHaveText("代表へのご連絡");
+  await expect(page.locator('section[aria-labelledby="audience-title"] h3')).toHaveText([
+    "学生の方",
+    "企業の方",
+    "教職員の方",
+    "研究者の方",
+  ]);
+  await expect(page.getByText("共同開発、受託開発、プロジェクトのご依頼、講演", { exact: true })).toBeVisible();
+  await expect(page.getByText("授業での活用、教育連携、導入に関するお問い合わせ", { exact: true })).toHaveCount(0);
+  await expect(page.locator("#details, #name, #affiliation, #email")).toHaveCount(4);
+  await expect(page.locator('label[for="affiliation"]')).toContainText("所属");
+  await expect(page.locator('label[for="affiliation"]')).not.toContainText("立場");
+  expect(await page.locator("#name, #affiliation, #email, #details").evaluateAll(
+    (elements) => elements.map((element) => element.id),
+  )).toEqual(["name", "affiliation", "email", "details"]);
+  await expect(page.getByRole("button", { name: "代表へ送信", exact: true })).toBeVisible();
+
+  await page.locator("#details").fill("フォーム切り替え時にも保持するためのメッセージです。");
+  await page.locator("#name").fill("松井優知");
+  await page.locator("#affiliation").fill("北里大学 薬学部4年");
+  await page.locator("#email").fill("test@example.com");
+
+  await compass.check();
+  await expect(page.locator("#audience-title")).toHaveText("COMPASSへのお問い合わせ");
+  await expect(page.getByText("授業での活用、教育連携、導入に関するお問い合わせ", { exact: true })).toBeVisible();
+  await expect(page.getByText("共同開発、受託開発、プロジェクトのご依頼、講演", { exact: true })).toHaveCount(0);
+  await expect(page.locator("#details")).toHaveValue("フォーム切り替え時にも保持するためのメッセージです。");
+  await expect(page.locator("#name")).toHaveValue("松井優知");
+  await expect(page.locator("#affiliation")).toHaveValue("北里大学 薬学部4年");
+  await expect(page.locator("#email")).toHaveValue("test@example.com");
+  await expect(page.getByRole("button", { name: "COMPASSへ送信", exact: true })).toBeVisible();
+
+  expect(await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth)).toBeLessThanOrEqual(1);
+  expect(runtimeErrors).toEqual([]);
+});
+
 for (const route of officialDesktopRoutes) {
   test(`Official Desktop navigation contract: ${route.path}`, async ({ page }) => {
     const runtimeErrors = await openRoute(page, route.path, { name: "desktop-nav", width: 1363, height: 936 });
