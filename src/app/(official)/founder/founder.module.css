@@ -821,7 +821,7 @@
 .fragmentViewSwitch, .fragmentFilmView { display: none; }
 
 @media (min-width: 901px) and (orientation: landscape) {
-  .fragments[data-fragment-view="3d"] { padding: clamp(56px, 5vw, 80px) 0 56px; background: linear-gradient(180deg, #fbfdfd, #eef3f2 50%, #fafcfb); }
+  .fragments[data-fragment-view="3d"] { padding: clamp(56px, 5vw, 80px) 0 56px; background: linear-gradient(180deg, #fbfdfd, #edf2f4 34%, #f0eef5 67%, #fafcfb); }
   .fragments[data-fragment-view="3d"]::after { display: none; }
   .fragments[data-fragment-view="3d"] .fragmentsHeader { margin-bottom: 8px; position: relative; z-index: 3; }
   .fragmentViewSwitch { display: flex; margin-left: auto; padding: 3px; gap: 2px; border: 1px solid #40647630; border-radius: 24px; }

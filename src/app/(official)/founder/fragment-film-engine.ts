@@ -16,6 +16,7 @@ export function mountFilm(host: HTMLDivElement, photos: readonly FilmPhoto[], pa
   const reduced = matchMedia("(prefers-reduced-motion: reduce)");
   const coarse = matchMedia("(pointer: coarse)");
   const loader = new THREE.TextureLoader();
+  const atmosphere = host.closest<HTMLElement>("#fragments");
   let length = 0;
   const panels = photos.map(photo => {
     const width = 3.2 * photo.width / photo.height;
@@ -150,9 +151,12 @@ export function mountFilm(host: HTMLDivElement, photos: readonly FilmPhoto[], pa
     const tension = reduced.matches ? 0 : THREE.MathUtils.clamp(distance, -1, 1);
     // The same clock and drag tension drive the light field and sculptural path.
     if (++fieldTick % 3 === 0 || reduced.matches || paused()) {
-      host.parentElement?.style.setProperty("--film-light-x", `${48 + Math.sin(motionTime*.27)*15 + tension*6}%`);
-      host.parentElement?.style.setProperty("--film-light-y", `${46 + Math.cos(motionTime*.32)*12}%`);
-      host.parentElement?.style.setProperty("--film-shadow-angle", `${-8 + Math.sin(motionTime*.29)*3 + tension*2}deg`);
+      atmosphere?.style.setProperty("--film-light-x", `${48 + Math.sin(motionTime*.27)*15 + tension*6}%`);
+      atmosphere?.style.setProperty("--film-light-y", `${46 + Math.cos(motionTime*.32)*12}%`);
+      atmosphere?.style.setProperty("--film-shadow-angle", `${-8 + Math.sin(motionTime*.29)*3 + tension*2}deg`);
+      atmosphere?.style.setProperty("--film-drift-x", `${Math.sin(motionTime*.27)*125 + tension*24}px`);
+      atmosphere?.style.setProperty("--film-drift-y", `${Math.cos(motionTime*.32)*32}px`);
+      atmosphere?.style.setProperty("--film-flow", `${-motionTime*52 - tension*36}`);
     }
     panels.forEach(panel => {
       const x = wrap(panel.center - position);

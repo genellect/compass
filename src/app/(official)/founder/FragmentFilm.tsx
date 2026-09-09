@@ -4,6 +4,21 @@ import { useEffect, useRef, useState } from "react";
 import type { FilmController, FilmPhoto } from "./fragment-film-engine";
 import css from "./fragment-film.module.css";
 
+export function FragmentFilmAtmosphere() {
+  return <div className={css.atmosphere} aria-hidden="true" data-film-atmosphere>
+    <div className={css.lightField} />
+    <div className={css.groundShadow} />
+    <svg className={css.contours} viewBox="0 0 1440 900" preserveAspectRatio="none">
+      <path d="M-180 120 C280 -20 1230 210 1570 690" />
+      <path d="M-160 145 C310 12 1180 225 1550 710" />
+      <path d="M-120 695 C230 910 1150 815 1540 340" />
+      <path d="M-80 712 C250 899 1190 794 1530 305" />
+      <path className={css.trace} d="M-180 120 C280 -20 1230 210 1570 690" />
+      <path className={css.trace} d="M-120 695 C230 910 1150 815 1540 340" />
+    </svg>
+  </div>;
+}
+
 export function FragmentFilm({ photos, active }: { photos: readonly FilmPhoto[]; active: boolean }) {
   const host = useRef<HTMLDivElement>(null);
   const controller = useRef<FilmController | null>(null);
@@ -29,15 +44,6 @@ export function FragmentFilm({ photos, active }: { photos: readonly FilmPhoto[];
     return () => { disposed = true; observer.disconnect(); controller.current?.dispose(); controller.current = null; setReady(false); };
   }, [active, fallback, photos]);
   return <div className={css.film} data-fragment-film data-ready={ready}>
-    <div className={css.atmosphere} aria-hidden="true">
-      <div className={css.lightField} />
-      <div className={css.groundShadow} />
-      <svg className={css.contours} viewBox="0 0 1440 700" preserveAspectRatio="none">
-        <path d="M-120 545 C230 760 1150 665 1540 190" />
-        <path d="M-80 562 C250 749 1190 644 1530 155" />
-        <path d="M-160 578 C285 766 1200 613 1500 125" />
-      </svg>
-    </div>
     <div ref={host} className={css.viewport} tabIndex={ready ? 0 : -1} role="group" aria-label="湾曲した写真フィルム。左右キー、ドラッグ、横スクロールで移動" />
     <div className={css.fallback} tabIndex={ready ? -1 : 0} aria-label="FRAGMENTSの写真一覧">
       {photos.map(photo => <Image key={photo.key} src={photo.src} alt={photo.alt} width={photo.width} height={photo.height} loading="lazy" draggable={false} />)}

@@ -3,7 +3,7 @@
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import styles from "./founder.module.css";
-import { FragmentFilm } from "./FragmentFilm";
+import { FragmentFilm, FragmentFilmAtmosphere } from "./FragmentFilm";
 
 type FragmentPhoto = {
   key: string;
@@ -377,6 +377,7 @@ export function FounderFragments() {
   return (
     <section id="fragments" className={styles.fragments} aria-labelledby="fragments-title" data-fragment-view={view}>
       <FragmentSignalField />
+      <FragmentFilmAtmosphere />
       <div className={styles.sectionShell}>
         <header className={styles.fragmentsHeader}>
           <h2 id="fragments-title">FRAGMENTS</h2>

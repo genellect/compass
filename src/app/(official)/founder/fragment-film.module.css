@@ -1,10 +1,21 @@
-.film { --film-light-x: 48%; --film-light-y: 58%; --film-shadow-angle: -8deg; position: relative; isolation: isolate; width: 100vw; height: clamp(480px, 74svh, 760px); margin-left: calc(50% - 50vw); }
-.atmosphere { position: absolute; inset: -70px 0 -50px; overflow: hidden; z-index: -1; pointer-events: none; }
-.lightField { position: absolute; inset: 0; background: radial-gradient(ellipse at var(--film-light-x) var(--film-light-y), #fcfdfaff 0%, #e6eeeb80 26%, transparent 57%), radial-gradient(ellipse at 84% 36%, #a6c8cf60, transparent 45%), radial-gradient(ellipse at 8% 62%, #d7c6a848, transparent 44%); }
-.groundShadow { position: absolute; width: 95%; height: 25%; left: 4%; bottom: 12%; border-radius: 50%; background: radial-gradient(ellipse, #27414d2c, #627a8010 47%, transparent 70%); transform: rotate(var(--film-shadow-angle)) scaleY(.7); }
-.contours { position: absolute; inset: 0; width: 100%; height: 100%; fill: none; stroke: #658994; stroke-width: .65; opacity: .24; transform: rotate(var(--film-shadow-angle)); transform-origin: 60% 55%; }
-.contours path:nth-child(2) { opacity: .45; }
-.contours path:nth-child(3) { opacity: .22; }
+.film { position: relative; isolation: isolate; width: 100vw; height: clamp(480px, 74svh, 760px); margin-left: calc(50% - 50vw); }
+.atmosphere { display: none; position: absolute; inset: 0; overflow: hidden; z-index: 0; pointer-events: none; }
+@media (min-width: 901px) and (orientation: landscape) {
+  :global([data-fragment-view="3d"]) > .atmosphere { display: block; }
+}
+/* Entire section, including the heading and negative space; never above photos. */
+.lightField { position: absolute; inset: -12%; background: radial-gradient(ellipse at var(--film-light-x, 48%) var(--film-light-y, 58%), #ffffffd9 0%, #ffffff60 24%, transparent 53%), radial-gradient(ellipse at 82% 30%, #b7a9d35e, transparent 48%), radial-gradient(ellipse at 12% 64%, #8ac5ba55, transparent 47%); }
+.lightField::before, .lightField::after { content: ""; position: absolute; inset: -15%; will-change: transform; }
+.lightField::before { background: linear-gradient(118deg, transparent 28%, #c7dadb24 37%, #ffffffa6 44%, #ded9ed40 50%, transparent 61%); transform: translate3d(var(--film-drift-x, 0px), var(--film-drift-y, 0px), 0) rotate(var(--film-shadow-angle, -8deg)); }
+.lightField::after { background: radial-gradient(ellipse at 65% 72%, #a9c4d44d, transparent 42%); transform: translate3d(calc(0px - var(--film-drift-x, 0px)), calc(0px - var(--film-drift-y, 0px)), 0); }
+.groundShadow { position: absolute; width: 95%; height: 25%; left: 4%; bottom: 12%; border-radius: 50%; background: radial-gradient(ellipse, #3f52632b, #6b708910 47%, transparent 70%); transform: rotate(var(--film-shadow-angle, -8deg)) scaleY(.7); }
+.contours { position: absolute; inset: 0; width: 100%; height: 100%; fill: none; stroke: #688c9a; stroke-width: .7; opacity: .32; transform: rotate(var(--film-shadow-angle, -8deg)); transform-origin: 60% 55%; }
+.contours path:nth-child(2), .contours path:nth-child(4) { opacity: .32; }
+.contours .trace { stroke: #677aa8; stroke-width: 1.7; stroke-linecap: round; stroke-dasharray: 110 1900; stroke-dashoffset: var(--film-flow, 0); }
+.contours .trace:last-child { stroke: #398f87; stroke-dashoffset: calc(var(--film-flow, 0) - 740); }
+@media (prefers-reduced-motion: reduce) {
+  .lightField::before, .lightField::after { will-change: auto; }
+}
 .viewport { position: absolute; inset: 0 0 48px; touch-action: pan-y pinch-zoom; cursor: grab; outline-offset: -5px; }
 .viewport:active { cursor: grabbing; }
 .viewport canvas { display: block; width: 100%; height: 100%; opacity: 0; }

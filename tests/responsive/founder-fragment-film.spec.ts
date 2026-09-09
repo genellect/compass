@@ -17,6 +17,10 @@ test("JP film is landscape-only and Original retains every photo and control", a
   expect(originals).toHaveLength(19);
   expect(await film.locator("img").evaluateAll(imgs => imgs.map(img => img.getAttribute("src")))).toEqual(originals);
   const canvas = film.locator("canvas");
+  const atmosphere = page.locator("[data-film-atmosphere]");
+  const sectionBox = (await page.locator("#fragments").boundingBox())!;
+  const atmosphereBox = (await atmosphere.boundingBox())!;
+  expect(atmosphereBox).toEqual(sectionBox);
   const filmBox = (await film.boundingBox())!;
   expect(filmBox.width).toBeGreaterThanOrEqual(1438);
   expect(filmBox.height).toBeGreaterThan(650);
@@ -25,11 +29,14 @@ test("JP film is landscape-only and Original retains every photo and control", a
   await film.getByRole("button", { name: "次の写真", exact: true }).click();
   expect(Buffer.compare(before, await canvas.screenshot())).not.toBe(0);
   const still = await canvas.screenshot();
+  const stillBackground = await page.locator("#fragments").getAttribute("style");
   await page.waitForTimeout(300);
   expect(Buffer.compare(still, await canvas.screenshot())).toBe(0);
+  expect(await page.locator("#fragments").getAttribute("style")).toBe(stillBackground);
   await film.screenshot({ path: info.outputPath("film-desktop.png") });
   await toggle.getByRole("button", { name: "Original", exact: true }).click();
   await expect(original).toBeVisible();
+  await expect(atmosphere).toBeHidden();
   await expect(film.locator("canvas")).toHaveCount(0);
   await expect(page.getByRole("button", { name: /写真セット \d を表示/ })).toHaveCount(4);
   await page.getByRole("button", { name: "写真セット 3 を表示" }).click();
@@ -46,6 +53,7 @@ test("JP film is landscape-only and Original retains every photo and control", a
       await expect(canvas).toHaveCount(1);
       if (width === 1180) await film.screenshot({ path: info.outputPath("film-ipad-landscape.png") });
     } else {
+      await expect(atmosphere).toBeHidden();
       await expect(toggle).toBeHidden();
       await expect(film).toBeHidden();
       await expect(canvas).toHaveCount(0);
@@ -68,17 +76,18 @@ test("Film auto motion, pause, manual drag and wheel coexist with page scrolling
   await expect(film).toHaveAttribute("data-ready", "true", { timeout: 20_000 });
   const canvas = film.locator("canvas");
   const first = await canvas.screenshot();
-  const initialLight = await film.getAttribute("style");
+  const section = page.locator("#fragments");
+  const initialLight = await section.getAttribute("style");
   await page.waitForTimeout(500);
   expect(Buffer.compare(first, await canvas.screenshot())).not.toBe(0);
-  expect(await film.getAttribute("style")).not.toBe(initialLight);
+  expect(await section.getAttribute("style")).not.toBe(initialLight);
   await film.getByRole("button", { name: "写真フィルムの自動送りを一時停止", exact: true }).click();
   await page.waitForTimeout(1000);
   const paused = await canvas.screenshot();
-  const pausedLight = await film.getAttribute("style");
+  const pausedLight = await section.getAttribute("style");
   await page.waitForTimeout(300);
   expect(Buffer.compare(paused, await canvas.screenshot())).toBe(0);
-  expect(await film.getAttribute("style")).toBe(pausedLight);
+  expect(await section.getAttribute("style")).toBe(pausedLight);
   const box = (await canvas.boundingBox())!;
   await page.mouse.move(box.x + box.width * .6, box.y + box.height * .5);
   await page.mouse.down();
