@@ -1,0 +1,11 @@
+.footer:global(.site-footer)[data-route-context] {
+  color: #49636a;
+  background: #eeefe8;
+  border-top: 1px solid #bfceca;
+}
+.footer:global(.site-footer)[data-route-context] :global(:is(p,a,span)) { color:#49636a; }
+.footer:global(.site-footer)[data-route-context] :global(.footer-logo) { color:#173740; }
+.footer:global(.site-footer)[data-route-context] :global(.footer-cta a) { background:#f8f8f1; border-color:#bccfca; color:#173740; }
+.footer:global(.site-footer)[data-route-context] :global(.footer-cta a:hover) { background:#e0eae1; }
+.footer:global(.site-footer)[data-route-context] :global(.footer-note) { border-color:#c7d3cf; }
+.footer:global(.site-footer)[data-route-context] :global(a:focus-visible) { outline:2px solid #257788; outline-offset:4px; }

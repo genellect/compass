@@ -19,3 +19,37 @@
   letter-spacing: -.045em;
   white-space: nowrap;
 }
+
+.portfolioPrimary:global(.v4-founder__web-portfolio):any-link {
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+  min-height: 62px;
+  padding: 18px 22px;
+  color: #f8faf5;
+  background: #173f49;
+  border: 1px solid #6facb5;
+  border-radius: 8px;
+  box-shadow: 0 8px 24px #102d361c;
+  opacity: 1;
+  font-size: 16px;
+  font-weight: 750;
+  letter-spacing: .025em;
+  line-height: 1.35;
+  text-decoration: none;
+  transition: background 180ms ease, box-shadow 180ms ease;
+}
+.portfolioPrimary:global(.v4-founder__web-portfolio):hover {
+  color: #fff;
+  background: #24545e;
+  box-shadow: 0 10px 28px #102d3629;
+}
+.portfolioPrimary:global(.v4-founder__web-portfolio):focus-visible {
+  outline: 3px solid #30a6b6;
+  outline-offset: 4px;
+}
+.portfolioPrimary svg { flex: 0 0 22px; width: 22px; height: 22px; }
+.portfolioPrimary strong { color: inherit; font: inherit; }
+.portfolioPrimary i { margin-left: auto; color: inherit; font-size: 24px; font-style: normal; }

@@ -421,3 +421,18 @@
   .page *::before,
   .page *::after { scroll-behavior: auto !important; transition-duration: 0.01ms !important; }
 }
+
+/* Shared COMPASS habitat palette; form content and geometry are unchanged. */
+.page { --ink:#173740; --copy:#49636a; --paper:#f2f3ed; --cyan:#2f7984; --cyan-deep:#246673; --line:#ccd8d6; background:radial-gradient(ellipse at 12% 0%,#ddece6,transparent 45rem),linear-gradient(130deg,#f7f5ee,#edf2ef); }
+.page .backLink { color:#315b64; }
+.page .backLink:hover { color:#173740; }
+.page .formCard { background:#fffefa; border-color:#ccd8d6; border-radius:16px; box-shadow:0 22px 64px #17374012; }
+.page .formCard::before { background:linear-gradient(90deg,#337985,#cadccf,transparent); }
+.page .submitButton,.page .homeButton { color:#f8faf5; background:#173f49; border-radius:8px; box-shadow:0 8px 24px #1737401c; }
+.page .submitButton:not(:disabled):hover,.page .homeButton:hover { background:#24545e; }
+
+.page .intro,.page .intro h1,.page .steps strong { color:#173740; }
+.page .lead,.page .steps small,.page .notice p { color:#49636a; }
+.page .steps li { border-color:#b7ccca; }
+.page .notice { background:#e6eeE8; border-color:#afc6c2; }
+.page .notice p:first-child { color:#173740; }

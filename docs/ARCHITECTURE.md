@@ -9,6 +9,8 @@ Last source verification: 2026-08-28
 
 ## 1. System Boundary
 
+編集境界は [WEBSITE_BOUNDARIES.md](WEBSITE_BOUNDARIES.md) に従う（2026-09-09明示指示）。Interactive・開発者紹介・yuto-matsui.comは通常のCOMPASS編集に含めない。yuto-matsui.comは同じNext.js/Pages成果物に同居する独立Webであり、COMPASSの子サイトではない。
+
 | System | Responsibility | Repository / deployment |
 |---|---|---|
 | COMPASS公式site | Brand、公開情報、紹介route、公開form UI | この公開repository / `compass-official.pages.dev` |

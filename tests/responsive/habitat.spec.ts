@@ -52,7 +52,12 @@ test('Desktop Hero fits the first screen and the new header remains keyboard ope
   }
   await page.setViewportSize({width:1440,height:900});
   const nav=page.getByRole('navigation',{name:'Main navigation',exact:true});
-  await expect(nav.getByRole('link',{name:'Interactive',exact:true})).toHaveAttribute('href','INTRO_Interactive/');
+  const technology=nav.getByRole('button',{name:'Technology',exact:true});
+  await technology.click();
+  await expect(page.locator('#technology-menu a')).toHaveCount(1);
+  await expect(page.locator('#technology-menu a')).toHaveText('Technology教育を変える');
+  await expect(page.locator('#technology-menu a')).toHaveAttribute('href','INTRO_Interactive/');
+  await page.keyboard.press('Escape');
   await expect(nav.getByText('Technology Core',{exact:true})).toHaveCount(0);
   const resources=nav.getByRole('button',{name:'Resources',exact:true});
   await resources.focus();await page.keyboard.press('ArrowDown');
@@ -174,18 +179,33 @@ test('Chapter navigation seeks to the correct room and sound is opt-in and dispo
   await page.addInitScript(()=>{
     const Original=window.AudioContext;
     (window as unknown as {__audioContexts:AudioContext[]}).__audioContexts=[];
-    window.AudioContext=class extends Original{constructor(){super();(window as unknown as {__audioContexts:AudioContext[]}).__audioContexts.push(this);}};
+    (window as unknown as {__audioOutputs:AnalyserNode[]}).__audioOutputs=[];
+    window.AudioContext=class extends Original{constructor(){
+      super();(window as unknown as {__audioContexts:AudioContext[]}).__audioContexts.push(this);
+      const output=this.createAnalyser();output.fftSize=4096;output.connect(this.destination);
+      Object.defineProperty(this,'destination',{value:output});
+      (window as unknown as {__audioOutputs:AnalyserNode[]}).__audioOutputs.push(output);
+    }};
   });
   await page.goto('/');
   expect(await page.evaluate(()=>(window as unknown as {__audioContexts:AudioContext[]}).__audioContexts.length)).toBe(0);
-  await page.getByRole('button',{name:'音を入れる'}).click();
-  await expect(page.getByRole('button',{name:'音を切る'})).toHaveAttribute('aria-pressed','true');
+  await page.getByRole('button',{name:'音声ON'}).click();
+  await expect(page.getByRole('button',{name:'音声OFF'})).toHaveAttribute('aria-pressed','true');
+  const outputLevel=()=>page.evaluate(()=>{
+    const output=(window as unknown as {__audioOutputs:AnalyserNode[]}).__audioOutputs[0];
+    const data=new Float32Array(output.fftSize);output.getFloatTimeDomainData(data);
+    return Math.sqrt(data.reduce((sum,value)=>sum+value*value,0)/data.length);
+  });
+  await expect.poll(outputLevel).toBeGreaterThan(.008);
+  expect(await outputLevel()).toBeLessThan(.2);
+  expect(await page.evaluate(()=>(window as unknown as {__audioContexts:AudioContext[]}).__audioContexts[0].state)).toBe('running');
   const chapters=page.getByRole('navigation',{name:'このページの案内'});
   await chapters.getByRole('link',{name:'Community',exact:true}).click();
   await expect(page.locator('[data-habitat]')).toHaveAttribute('data-scene-section','community');
   await expect(chapters.getByRole('link',{name:'Community',exact:true})).toHaveAttribute('aria-current','step');
-  await page.getByRole('button',{name:'音を切る'}).click();
-  await expect(page.getByRole('button',{name:'音を入れる'})).toHaveAttribute('aria-pressed','false');
+  await page.getByRole('button',{name:'音声OFF'}).click();
+  await expect(page.getByRole('button',{name:'音声ON'})).toHaveAttribute('aria-pressed','false');
+  await expect.poll(outputLevel).toBeLessThan(.0005);
   await page.setViewportSize({width:390,height:844});
   await expect.poll(()=>page.evaluate(()=>(window as unknown as {__audioContexts:AudioContext[]}).__audioContexts[0]?.state)).toBe('closed');
   await expect(page.getByRole('navigation',{name:'このページの案内'})).toHaveCount(0);

@@ -253,7 +253,7 @@ for (const expected of [
 
 const githubProfileUrl = "https://github.com/genellect";
 for (const [html, label, expectedCount] of [
-  [official, "Official founder profile", 1],
+  [official, "Official founder profile", 0],
   [interactive, "Interactive developer profile", 1],
   [interactiveDevelopers, "Interactive developer introduction profile", 1]
 ]) {
@@ -265,7 +265,8 @@ for (const [html, label, expectedCount] of [
     expectIncludes(link, 'target="_blank"', `${label} GitHub link`);
     expectIncludes(link, 'rel="noopener noreferrer"', `${label} GitHub link`);
   }
-  expectIncludes(html, "GitHub Portfolio", `${label} GitHub CTA label`);
+  if (expectedCount > 0) expectIncludes(html, "GitHub Portfolio", `${label} GitHub CTA label`);
+  else expectExcludes(html, "GitHub Portfolio", `${label} retired GitHub CTA label`);
 }
 
 if (!/<h2 id="resources-title"><span>知らなかった未来に、<\/span><span>出会う。<\/span><\/h2>/.test(official)) {
@@ -607,7 +608,7 @@ expectIncludes(founder, 'href="#experience"', "Founder Desktop Credentials navig
 expectExcludes(founder, 'href="#credentials"', "Founder legacy Credentials navigation");
 expectIncludes(interactive, 'href="https://yuto-matsui.com/"', "Interactive Founder portfolio link");
 expectIncludes(official, "Web Portfolio", "Official Founder Web Portfolio CTA");
-expectIncludes(official, "GitHub Portfolio", "Official Founder GitHub Portfolio CTA");
+expectExcludes(official, "GitHub Portfolio", "Official Founder retired GitHub Portfolio CTA");
 
 for (const expected of [
   '<html lang="ja"',

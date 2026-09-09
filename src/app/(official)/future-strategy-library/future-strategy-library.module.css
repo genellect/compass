@@ -3078,3 +3078,38 @@
     justify-content: flex-end;
   }
 }
+
+/* Shared COMPASS habitat materials and color; existing content/layout retained. */
+.fslPage { --brand-paper:#f3f3ed; --brand-ink:#173740; --brand-copy:#49636a; --brand-cyan-deep:#2f7984; --line-light:#cbd8d6; color:#173740; background:#f3f3ed; }
+.fslPage .hero { color:#173740; background:radial-gradient(ellipse at 85% 28%,#d7e8e3,transparent 60%),linear-gradient(120deg,#faf8f0,#eef3ee); }
+.fslPage .heroAtmosphere { background:linear-gradient(90deg,#f7f6efb3,transparent 75%); }
+.fslPage .heroGrid { opacity:.28; }
+.fslPage .heroTitle,.fslPage .heroSubhead { color:#173740; text-shadow:none; }
+.fslPage .heroTitle span:last-child::after { background:#327a84; box-shadow:none; }
+.fslPage .heroDescription,.fslPage .actionMicrocopy,.fslPage .heroHorizonRule { color:#49636a; }
+.fslPage .heroIntelligenceField { background:none; }
+.fslPage .heroTitle > span { color:#173740; }
+.fslPage .knowledgeGraphic text { fill:#416971; }
+.fslPage .knowledgeGraphic .documentLayer rect { fill:#f3f7ef; stroke:#6d9f9b; }
+.fslPage .knowledgeGraphic .documentLayer line { stroke:#75a39e; }
+.fslPage .knowledgeGraphic .horizonLine { stroke:#267e89; }
+.fslPage .knowledgeGraphic .mobileFrame path { stroke:#8cb4af; }
+.fslPage .thesisSection,.fslPage .fieldsSection { background:#eef1e9; }
+.fslPage .materialsSection { background:#fcfbf5; }
+.fslPage .fieldCard,.fslPage .materialFrame { background:#f8f8f2; border-color:#cbd8d6; border-radius:12px; }
+.fslPage .materialsConversion { background:#173f49; border-color:#5a858b; border-radius:12px; }
+.fslPage .trustSection,.fslPage .finalSection { color:#173740; background:radial-gradient(ellipse at 85% 30%,#dceae1,transparent 65%),#f1f3ec; }
+.fslPage .trustCopy h2,.fslPage .finalInner h2 { color:#173740; }
+.fslPage .trustSection .sectionLabel,.fslPage .finalSection .sectionLabel,.fslPage .trustFacts dt { color:#2c707c; }
+.fslPage .trustBody,.fslPage .trustFacts dd,.fslPage .finalBody,.fslPage .finalMicrocopy,.fslPage .importantNote p { color:#49636a; }
+.fslPage .trustFacts > div { border-color:#bdcfcb; }
+.fslPage .importantNote { color:#49636a; background:#fafaf4; border-color:#c2d1cc; }
+.fslPage .importantNote > span { color:#846628; }
+.fslPage .registrationAction { color:#f8faf5; background:#173f49; border:1px solid #6facb5; border-radius:8px; box-shadow:0 8px 24px #1737401c; }
+.fslPage .registrationAction:hover { background:#24545e; }
+.fslPage a.registrationAction { color:#f8faf5; }
+.fslPage .ctaArrow { color:#173740; background:#e7efdf; }
+.fslPage .footer { color:#49636a; background:#eeefe8; border-top:1px solid #bfceca; }
+.fslPage .footerBrand strong { color:#173740; }
+.fslPage .footerBrand span,.fslPage .footerLinks a,.fslPage .footerDisclaimer p,.fslPage .copyright { color:#49636a; }
+.fslPage .footerDisclaimer { border-color:#c7d3cf; }

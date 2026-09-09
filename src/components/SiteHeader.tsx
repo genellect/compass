@@ -7,6 +7,7 @@ import {
 } from "../lib/futureStrategyLibrary";
 import { resolveSiteHref, type SiteRouteContext } from "./siteRouteContext";
 import styles from "./parent-brand.module.css";
+import headerStyles from "./site-header.module.css";
 
 type NavItem = {
   description: string;
@@ -46,14 +47,10 @@ const navGroups: NavGroup[] = [
     items: [
       {
         href: "INTRO_Interactive/",
-        label: "COMPASS Interactive",
-        description: "疑問が届く、参加型講義システム",
+        label: "Technology",
+        description: "教育を変える",
+        mobileLabel: "COMPASS Interactive",
         mobileDescription: "疑問が届く、参加型講義システム"
-      },
-      {
-        href: "#technology",
-        label: "Technology Core",
-        description: "学びを支える仕組みと考え方"
       }
     ]
   },
@@ -303,14 +300,15 @@ export function SiteHeader({
       <a className="skip-link" href="#main">本文へスキップ</a>
       <header
         ref={headerRef}
-        className="site-header"
+        className={`site-header ${headerStyles.header}`}
         data-site-header
+        data-route-context={routeContext}
         data-fsl-landing-header={routeContext === "library" ? "true" : undefined}
       >
         <div className="header-inner">
-          <a className={`site-logo${routeContext === "root" ? ` ${styles.parentBrand}` : ""}`} href={resolveHref("#top")} aria-label="COMPASS Home">
+          <a className={`site-logo ${styles.parentBrand}`} href={resolveHref("#top")} aria-label="COMPASS Home">
             <span className="logo-mark" aria-hidden="true"><span /></span>
-            <span className="logo-copy"><strong>COMPASS</strong>{routeContext !== "root" && <small>Better Decisions</small>}</span>
+            <span className="logo-copy"><strong>COMPASS</strong></span>
             {routeContext === "library" ? (
               <span className="site-product-context" aria-label="Future Strategy Library">
                 <span className="site-product-context__long" aria-hidden="true">Future Strategy Library</span>
@@ -321,11 +319,6 @@ export function SiteHeader({
 
           <nav className="desktop-nav" aria-label="Main navigation">
             {navGroups.map((group) => {
-              if (routeContext === "root" && group.id === "technology") {
-                return <div key={group.id} className="nav-group nav-group--direct">
-                  <a className="nav-link" href={resolveHref("INTRO_Interactive/")}>Interactive</a>
-                </div>;
-              }
               const menuId = `${group.id}-menu`;
               const current = visibleSection === group.id;
               return (
