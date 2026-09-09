@@ -6,23 +6,31 @@ import { PLATFORM_GLYPHS, PLATFORM_MEDIA } from "./platform-glyphs";
 
 export type SculptureKind = "interactive" | "library" | "manifesto" | "platform";
 
-function KineticWeaveFallback() {
-  const threads = Array.from({ length: 17 }, (_, index) => index);
-  return <svg className={styles.portalFallback} viewBox="0 0 320 320" focusable="false">
+function AnamorphicLightFallback() {
+  return <svg className={styles.opticalFallback} viewBox="0 0 420 360" focusable="false">
     <defs>
-      <linearGradient id="weave-metal" x1="0" y1="0" x2="1" y2="1">
-        <stop offset="0" stopColor="#6adce5" />
-        <stop offset="0.5" stopColor="#edf6ff" />
-        <stop offset="1" stopColor="#6c5ed4" />
+      <linearGradient id="optical-metal" x1="0" y1="1" x2="1" y2="0">
+        <stop offset="0" stopColor="#263047" />
+        <stop offset="0.46" stopColor="#edf6ff" />
+        <stop offset="1" stopColor="#7082a4" />
+      </linearGradient>
+      <linearGradient id="optical-spectrum" x1="0" y1="1" x2="1" y2="0">
+        <stop offset="0" stopColor="#d7f8ff" />
+        <stop offset="0.42" stopColor="#58d4df" />
+        <stop offset="0.76" stopColor="#7968dc" />
+        <stop offset="1" stopColor="#d8ad69" />
       </linearGradient>
     </defs>
-    <g fill="none" stroke="url(#weave-metal)" strokeLinecap="round">
-      {threads.map(index => {
-        const start = 56 + index * 12;
-        const end = 264 - index * 12;
-        return <path key={index} opacity={0.34 + (index % 5) * 0.1} strokeWidth={2 + (index % 3) * 0.8} d={`M16 ${start} C92 ${start - 64}, 118 ${144 + (index - 8) * 2}, 160 160 S236 ${end + 54}, 304 ${end}`} />;
-      })}
+    <g fill="url(#optical-metal)" stroke="#d7e5f4" strokeOpacity=".3">
+      <path d="m55 241 86-44 12 25-85 45z" />
+      <path d="m96 174 88-46 13 26-88 46z" />
+      <path d="m148 112 91-47 13 27-91 46z" />
+      <path d="m178 266 86-44 13 25-86 45z" />
+      <path d="m224 199 90-46 13 26-90 46z" />
+      <path d="m275 134 88-45 13 26-88 45z" />
+      <path d="m199 97 24-10 49 150-26 11z" fill="#80d7e3" fillOpacity=".42" />
     </g>
+    <path d="M43 276 C133 222 231 170 379 82" fill="none" stroke="url(#optical-spectrum)" strokeWidth="3" strokeLinecap="round" />
   </svg>;
 }
 
@@ -94,7 +102,7 @@ export function ProductSculpture({ kind, paused, layout = "shared" }: { kind: Sc
       {kind === "platform" ? <svg className={styles.platformFallback} viewBox="-10 -12 210 130" focusable="false">
         <g transform="translate(12 10)" fill="#3457b6">{PLATFORM_GLYPHS.map(d => <path key={d} d={d} fillRule="evenodd" />)}</g>
         <g stroke="#c9eafa" strokeWidth="0.8">{PLATFORM_GLYPHS.map((d, i) => <path key={d} d={d} fill={i ? "#8774ef" : "#43d9ef"} fillRule="evenodd" />)}</g>
-      </svg> : kind === "interactive" ? <KineticWeaveFallback /> : kind === "manifesto" ? <ManifestoFallback /> : <div className={styles.fallback}><i /><i /><i /></div>}
+      </svg> : kind === "interactive" ? <AnamorphicLightFallback /> : kind === "manifesto" ? <ManifestoFallback /> : <div className={styles.fallback}><i /><i /><i /></div>}
     </div>
   );
 }
