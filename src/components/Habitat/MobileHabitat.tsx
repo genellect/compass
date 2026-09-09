@@ -16,6 +16,7 @@ const assets: MobileAsset[] = media.sections;
 
 export function MobileHabitat() {
   const [hosts, setHosts] = useState<Host[]>([]);
+  const [creditHost, setCreditHost] = useState<HTMLElement | null>(null);
   const [active, setActive] = useState<SectionId | null>(null);
   const [paused, setPaused] = useState(false);
   const [restricted, setRestricted] = useState(true);
@@ -33,7 +34,8 @@ export function MobileHabitat() {
     const sync = () => {
       observer?.disconnect(); ratios.clear(); setActive(null);
       setRestricted(reduced.matches || !!connection?.saveData || /(^|-)2g$/.test(connection?.effectiveType ?? ''));
-      if (desktop.matches) { setHosts([]); return; }
+      if (desktop.matches) { setHosts([]); setCreditHost(null); return; }
+      setCreditHost(root.querySelector<HTMLElement>('.site-footer .footer-note'));
       const found = sectionIds.flatMap(id => {
         const element = root.querySelector<HTMLElement>('#' + id);
         return element ? [{ id, element }] : [];
@@ -67,9 +69,17 @@ export function MobileHabitat() {
     try { sessionStorage.setItem(pauseKey,String(!value)); } catch { /* optional storage */ }
     return !value;
   });
-  return hosts.map(({id,element}) => createPortal(
+  return <>{hosts.map(({id,element}) => createPortal(
     <MobileScene key={id} id={id} active={active===id && !blocked} paused={paused}
-      restricted={restricted} visited={visited.current} toggle={toggle}/>, element, id));
+      restricted={restricted} visited={visited.current} toggle={toggle}/>, element, id))}
+    {creditHost && createPortal(<details className={styles.credits} data-mobile-media-credits>
+      <summary>映像・写真：NASA / ISS</summary>
+      <p>Earth Science and Remote Sensing Unit, NASA Johnson Space Center</p>
+      <ul>{[...new Set(assets.map(asset=>asset.source).filter(Boolean))].map((source,index)=><li key={source}>
+        <a href={source} target="_blank" rel="noopener noreferrer">{['ISSオーロラ映像','ISSからの星空写真','ISS写真集'][index]} ↗</a>
+      </li>)}</ul>
+    </details>,creditHost)}
+  </>;
 }
 
 function MobileScene({id,active,paused,restricted,visited,toggle}:{
@@ -143,8 +153,6 @@ function MobileScene({id,active,paused,restricted,visited,toggle}:{
       onEnded={()=>{visited.add(id);setEnded(true);setReady(false);}}/>}
     <div className={styles.veil} aria-hidden="true"/>
     </div>
-    {scene.source && <a className={styles.credit} href={scene.source} target="_blank" rel="noopener noreferrer"
-      aria-label="宇宙の実写映像・写真の出典：NASA（新しいタブで開く）">NASA / ISS ↗</a>}
     {src && !restricted && !failed && !ended && <button type="button" className={styles.control}
       aria-pressed={paused} onClick={toggle}>{paused?'映像を再生':'映像を停止'}</button>}
   </div>;

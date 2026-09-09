@@ -1,6 +1,6 @@
 # Mobile space media
 
-Status: Implemented, verification pending. Preview only; Production approval remains separate.
+Status: Preview approved on 2026-09-10; Production release verification in progress.
 
 ## Authored direction
 
@@ -18,8 +18,9 @@ and operational; no Blender work is necessary to replace actual space photograph
 ## Source register and attribution
 
 All sources were checked on 2026-09-10. Credit NASA; the SVS source specifically credits the
-Earth Science and Remote Sensing Unit, NASA Johnson Space Center. Each Mobile section links
-to its NASA source. Use follows https://www.nasa.gov/nasa-brand-center/images-and-media/ .
+Earth Science and Remote Sensing Unit, NASA Johnson Space Center. The parent Mobile footer
+groups all three NASA sources in a compact disclosure. There are no section attribution CTAs.
+Use follows https://www.nasa.gov/nasa-brand-center/images-and-media/ .
 No NASA endorsement, partnership, logo or association with COMPASS is claimed.
 The selected photographs contain no identifiable people or third-party copyright notice.
 
@@ -66,7 +67,7 @@ The script emits 720/1080 portrait WebP and 768/1080 3:4 alternatives. Both 720Ã
 1080Ã—1920 H.264 films are eight seconds, 24 fps, silent, fast-start MP4. First/end posters
 are decoded from the delivered 1080 movie, so playback does not jump back at completion.
 Outputs enforce 250 KB Hero poster, 2.5 MB selected still set, and 4 MB per movie budgets.
-The manifest's productionReady remains false pending this Preview's explicit approval.
+The manifest records explicit approval of this Preview on 2026-09-10.
 
 ## Browser contract
 
@@ -74,7 +75,7 @@ The manifest's productionReady remains false pending this Preview's explicit app
 no realtime 3D import, one playing film, lazy images, once-per-visit playback, final posters,
 session pause choice, menu/visibility/offscreen pause, reduced-motion/save-data/2g stills,
 and a three-second failed-start/stall fallback. No external media requests occur for visitors.
-Attribution links are media controls; the existing editorial copy/links/order stay intact.
+Attribution links are grouped in the Mobile footer; the existing editorial copy/links/order stay intact.
 Related official Mobile changes are restricted to header/footer/navigation colors.
 Independent sites, backend, analytics payloads and form bodies are excluded.
 

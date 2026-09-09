@@ -21,6 +21,14 @@ for (const width of [320,340,341,390,430,768,900]) {
     await expect(page.locator('[data-mobile-scene="top"] img')).toBeVisible();
     await expect(page.locator('h1')).toHaveCount(1);
     await expect(page.locator('[data-mobile-scene] video')).toHaveCount(0);
+    await expect(page.locator('[data-mobile-scene] a')).toHaveCount(0);
+    const credits=page.locator('.site-footer [data-mobile-media-credits]');
+    await expect(credits).toHaveCount(1);
+    await expect(credits).not.toHaveAttribute('open');
+    await credits.locator('summary').click();
+    await expect(credits.locator('a')).toHaveCount(3);
+    await expect(credits.locator('a').first()).toBeVisible();
+    await credits.locator('summary').click();
     for (const id of ['top','vision','experience','technology','resources','manifesto','community','founder','contact']) {
       await page.locator('#'+id).scrollIntoViewIfNeeded();
       const bounds=await page.locator('#'+id).evaluate(el=>{

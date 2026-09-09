@@ -1,7 +1,7 @@
 {
   "version": "mobile-space-v1",
-  "productionReady": false,
-  "status": "Actual footage encoded; browser and Preview acceptance pending",
+  "productionReady": true,
+  "status": "Preview approved 2026-09-10; attribution moved to parent Mobile footer",
   "method": "ISS photography and photographic timelapse; crop, resize and H.264/WebP encode only",
   "sourcePolicy": "https://www.nasa.gov/nasa-brand-center/images-and-media/",
   "sections": [
