@@ -521,12 +521,12 @@ export function ContactForm() {
                   </div>
 
                   <div className={styles.fieldGroup}>
-                    <label htmlFor="affiliation">所属 <RequiredBadge /></label>
+                    <label htmlFor="affiliation">所属・立場 <RequiredBadge /></label>
                     <div className={styles.inputWrap}>
                       <input id="affiliation" name="affiliation" type="text" autoComplete="organization" minLength={2} maxLength={20} required value={form.affiliation} aria-invalid={hasError("affiliation")} aria-describedby={describedBy("affiliation", "affiliation-helper")} onBlur={() => markTouched("affiliation")} onChange={(event) => updateField("affiliation", event.target.value)} />
                       <FieldValid visible={hasValidValue("affiliation")} />
                     </div>
-                    <p className={styles.helper} id="affiliation-helper">学校名・組織名・活動名をご記入ください。所属先がない場合は「個人」とご記入ください。</p>
+                    <p className={styles.helper} id="affiliation-helper">学生：学校名・学部・学年／企業・団体：名称・役職／教職員・研究者：所属機関・役職をご記入ください。</p>
                     <FieldError id="affiliation-error" visible={hasError("affiliation")} />
                   </div>
 
@@ -546,7 +546,7 @@ export function ContactForm() {
                   <p>YOUR MESSAGE</p>
                   <h2 id="message-title">メッセージ</h2>
                 </div>
-                <p className={styles.helper} id="details-helper">ご用件や、お話ししたいことをお聞かせください。</p>
+                <p className={styles.helper} id="details-helper">ご質問、ご相談、ご依頼、ご提案など、内容を自由にご記入ください。</p>
                 <label className={styles.srOnly} htmlFor="details">メッセージ 必須</label>
                 <div className={`${styles.inputWrap} ${styles.textareaWrap}`}>
                   <textarea
@@ -617,7 +617,7 @@ export function ContactForm() {
             <Script id="cloudflare-turnstile-contact" src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit" strategy="afterInteractive" onLoad={() => setTurnstileReady(true)} onReady={() => setTurnstileReady(true)} />
 
             <section className={styles.submitStage} aria-label="送信">
-              <p className={styles.handlingNote}>メッセージは代表が直接拝見します。</p>
+              <p className={styles.handlingNote}>メッセージは代表が直接確認します。</p>
               {statusMessage ? <p className={styles.statusError} role="alert">{statusMessage}</p> : null}
               <button className={styles.submitButton} type="submit" disabled={!canSubmit}>
                 <span>{status === "submitting" ? "送信しています…" : targetContent[contactTarget].submitLabel}</span>

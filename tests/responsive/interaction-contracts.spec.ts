@@ -113,7 +113,7 @@ test("Contact reveals only the selected destination and preserves the form while
 
   await page.locator("#details").fill("フォーム切り替え時にも保持するためのメッセージです。");
   await page.locator("#name").fill("松井優知");
-  await page.locator("#affiliation").fill("個人");
+  await page.locator("#affiliation").fill("北里大学 薬学部4年");
   await page.locator("#email").fill("test@example.com");
 
   await compass.check();
@@ -122,7 +122,7 @@ test("Contact reveals only the selected destination and preserves the form while
   await expect(page.getByText("共同開発、受託開発、プロジェクトのご依頼、講演", { exact: true })).toHaveCount(0);
   await expect(page.locator("#details")).toHaveValue("フォーム切り替え時にも保持するためのメッセージです。");
   await expect(page.locator("#name")).toHaveValue("松井優知");
-  await expect(page.locator("#affiliation")).toHaveValue("個人");
+  await expect(page.locator("#affiliation")).toHaveValue("北里大学 薬学部4年");
   await expect(page.locator("#email")).toHaveValue("test@example.com");
   await expect(page.getByRole("button", { name: "COMPASSへ送信", exact: true })).toBeVisible();
 
