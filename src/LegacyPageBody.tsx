@@ -1,5 +1,7 @@
 import { SiteHeader } from "./components/SiteHeader";
 import { Habitat } from "./components/Habitat/Habitat";
+import { MobileHabitat } from "./components/Habitat/MobileHabitat";
+import mobileStyles from "./components/Habitat/mobile-habitat.module.css";
 import habitatStyles from "./components/Habitat/habitat.module.css";
 import { Hero } from "./components/Hero";
 import { SiteFooter } from "./components/SiteFooter";
@@ -16,8 +18,9 @@ import {
 
 export function LegacyPageBody() {
   return (
-    <div className={habitatStyles.root} data-habitat>
+    <div className={`${habitatStyles.root} ${mobileStyles.root}`} data-habitat data-mobile-habitat>
       <Habitat />
+      <MobileHabitat />
       <SiteHeader />
       <main id="main" className="compass-v4-page">
         <Hero />

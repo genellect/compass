@@ -443,7 +443,7 @@ export function initLegacyInteractions() {
   const startParticleLayer = () => {
     cancelAnimationFrame(animationId);
     animationId = null;
-    if (document.querySelector('[data-habitat][data-enabled="true"]')) {
+    if (document.querySelector('[data-habitat][data-enabled="true"], [data-mobile-habitat]')) {
       context.clearRect(0, 0, width, height);
       return;
     }
