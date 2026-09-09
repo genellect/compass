@@ -13,6 +13,46 @@
 .contours path:nth-child(2), .contours path:nth-child(4) { opacity: .32; }
 .contours .trace { stroke: #677aa8; stroke-width: 1.7; stroke-linecap: round; stroke-dasharray: 110 1900; stroke-dashoffset: var(--film-flow, 0); }
 .contours .trace:last-child { stroke: #398f87; stroke-dashoffset: calc(var(--film-flow, 0) - 740); }
+.atmosphere[data-film-variant="en"] {
+  background:
+    radial-gradient(ellipse at 52% 54%, rgba(40, 115, 120, 0.18), transparent 48%),
+    radial-gradient(ellipse at 82% 18%, rgba(96, 72, 180, 0.22), transparent 43%),
+    linear-gradient(145deg, #030a0e 0%, #061417 41%, #111126 72%, #050a11 100%);
+}
+.atmosphere[data-film-variant="en"]::before,
+.atmosphere[data-film-variant="en"]::after {
+  content: "";
+  position: absolute;
+  inset: -22%;
+  will-change: transform;
+}
+.atmosphere[data-film-variant="en"]::before {
+  background:
+    repeating-radial-gradient(ellipse at 58% 54%, transparent 0 62px, rgba(114, 212, 205, 0.065) 63px 64px, transparent 65px 122px),
+    conic-gradient(from 205deg at 58% 54%, transparent 0 18%, rgba(117, 207, 224, 0.08) 19% 20%, transparent 21% 54%, rgba(139, 120, 240, 0.09) 55% 56%, transparent 57%);
+  transform: translate3d(var(--film-drift-x, 0px), var(--film-drift-y, 0px), 0) rotate(var(--film-shadow-angle, -8deg)) scale(1.05);
+}
+.atmosphere[data-film-variant="en"]::after {
+  background:
+    linear-gradient(113deg, transparent 32%, rgba(166, 235, 226, 0.07) 32.2% 32.45%, transparent 32.7% 61%, rgba(155, 128, 234, 0.08) 61.2% 61.5%, transparent 61.7%),
+    repeating-linear-gradient(90deg, transparent 0 124px, rgba(201, 236, 229, 0.025) 125px 126px);
+  transform: translate3d(calc(0px - var(--film-drift-x, 0px)), calc(0px - var(--film-drift-y, 0px)), 0) rotate(3deg);
+}
+.atmosphere[data-film-variant="en"] .lightField {
+  inset: -18%;
+  background:
+    radial-gradient(ellipse at var(--film-light-x, 48%) var(--film-light-y, 58%), rgba(202, 240, 230, 0.2) 0%, rgba(83, 173, 170, 0.11) 24%, transparent 54%),
+    radial-gradient(ellipse at 81% 27%, rgba(112, 86, 207, 0.21), transparent 47%),
+    radial-gradient(ellipse at 12% 70%, rgba(44, 150, 151, 0.15), transparent 45%);
+}
+.atmosphere[data-film-variant="en"] .lightField::before {
+  background: linear-gradient(118deg, transparent 24%, rgba(83, 203, 204, 0.04) 34%, rgba(220, 244, 238, 0.14) 44%, rgba(119, 91, 205, 0.08) 53%, transparent 64%);
+}
+.atmosphere[data-film-variant="en"] .lightField::after { background: radial-gradient(ellipse at 65% 72%, rgba(80, 151, 184, 0.13), transparent 44%); }
+.atmosphere[data-film-variant="en"] .groundShadow { background: radial-gradient(ellipse, rgba(0, 0, 0, 0.6), rgba(36, 71, 74, 0.14) 47%, transparent 71%); }
+.atmosphere[data-film-variant="en"] .contours { stroke: #7cb9b8; opacity: .24; }
+.atmosphere[data-film-variant="en"] .contours .trace { stroke: #88e2dc; opacity: .72; }
+.atmosphere[data-film-variant="en"] .contours .trace:last-child { stroke: #9684e8; }
 @media (prefers-reduced-motion: reduce) {
   .lightField::before, .lightField::after { will-change: auto; }
 }
@@ -27,3 +67,6 @@
 .controls button { min-width: 42px; height: 36px; padding: 0 12px; border: 1px solid #37658235; background: #f7faf9; color: #243d4a; border-radius: 20px; font: inherit; font-size: 11px; cursor: pointer; }
 .controls button:hover { background: #e6eeef; }
 .controls button:focus-visible, .viewport:focus-visible, .fallback:focus-visible { outline: 2px solid #34788b; }
+.film[data-language="en"] .controls button { border-color: rgba(192, 235, 226, 0.25); color: rgba(242, 250, 246, 0.86); background: rgba(4, 15, 18, 0.76); backdrop-filter: blur(10px); }
+.film[data-language="en"] .controls button:hover { color: #071310; background: #b6ef7a; }
+.film[data-language="en"] .controls button:focus-visible, .film[data-language="en"] .viewport:focus-visible, .film[data-language="en"] .fallback:focus-visible { outline-color: #75cfe0; }

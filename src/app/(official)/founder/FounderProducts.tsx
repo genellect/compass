@@ -24,7 +24,7 @@ export function FounderProducts({ products, language = "ja" }: { products: reado
     ...products.filter(product => product.key === "library").map(product => ({ product, layout: "wide" as const }))
   ];
   return (
-    <div className={styles.world} data-products-cinematic="true" data-language={language}>
+    <div className={styles.world} data-products-cinematic="true" data-language={language} data-paused={paused}>
       <div className={styles.grid}>
         {cards.map(({ product, layout }) => {
           const [primary, ...secondary] = product.links;

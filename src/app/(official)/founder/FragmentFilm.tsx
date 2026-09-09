@@ -4,8 +4,8 @@ import { useEffect, useRef, useState } from "react";
 import type { FilmController, FilmPhoto } from "./fragment-film-engine";
 import css from "./fragment-film.module.css";
 
-export function FragmentFilmAtmosphere() {
-  return <div className={css.atmosphere} aria-hidden="true" data-film-atmosphere>
+export function FragmentFilmAtmosphere({ variant = "jp" }: { variant?: "jp" | "en" }) {
+  return <div className={css.atmosphere} aria-hidden="true" data-film-atmosphere data-film-variant={variant}>
     <div className={css.lightField} />
     <div className={css.groundShadow} />
     <svg className={css.contours} viewBox="0 0 1440 900" preserveAspectRatio="none">
@@ -19,7 +19,7 @@ export function FragmentFilmAtmosphere() {
   </div>;
 }
 
-export function FragmentFilm({ photos, active }: { photos: readonly FilmPhoto[]; active: boolean }) {
+export function FragmentFilm({ photos, active, language = "ja" }: { photos: readonly FilmPhoto[]; active: boolean; language?: "ja" | "en" }) {
   const host = useRef<HTMLDivElement>(null);
   const controller = useRef<FilmController | null>(null);
   const pauseRef = useRef(false);
@@ -43,15 +43,16 @@ export function FragmentFilm({ photos, active }: { photos: readonly FilmPhoto[];
     observer.observe(element);
     return () => { disposed = true; observer.disconnect(); controller.current?.dispose(); controller.current = null; setReady(false); };
   }, [active, fallback, photos]);
-  return <div className={css.film} data-fragment-film data-ready={ready}>
-    <div ref={host} className={css.viewport} tabIndex={ready ? 0 : -1} role="group" aria-label="湾曲した写真フィルム。左右キー、ドラッグ、横スクロールで移動" />
-    <div className={css.fallback} tabIndex={ready ? -1 : 0} aria-label="FRAGMENTSの写真一覧">
+  const english = language === "en";
+  return <div className={css.film} data-fragment-film data-ready={ready} data-language={language}>
+    <div ref={host} className={css.viewport} tabIndex={ready ? 0 : -1} role="group" aria-label={english ? "Curved photographic film. Use the arrow keys, drag, or scroll horizontally to move." : "湾曲した写真フィルム。左右キー、ドラッグ、横スクロールで移動"} />
+    <div className={css.fallback} tabIndex={ready ? -1 : 0} aria-label={english ? "FRAGMENTS photo archive" : "FRAGMENTSの写真一覧"}>
       {photos.map(photo => <Image key={photo.key} src={photo.src} alt={photo.alt} width={photo.width} height={photo.height} loading="lazy" draggable={false} />)}
     </div>
     {ready && <div className={css.controls}>
-      <button type="button" onClick={() => controller.current?.step(-1)} aria-label="前の写真">←</button>
-      <button type="button" aria-pressed={paused} onClick={() => setPaused(!paused)} aria-label={paused ? "写真フィルムの自動送りを再開" : "写真フィルムの自動送りを一時停止"}>{paused ? "Play" : "Pause"}</button>
-      <button type="button" onClick={() => controller.current?.step(1)} aria-label="次の写真">→</button>
+      <button type="button" onClick={() => controller.current?.step(-1)} aria-label={english ? "Previous image" : "前の写真"}>←</button>
+      <button type="button" aria-pressed={paused} onClick={() => setPaused(!paused)} aria-label={english ? (paused ? "Resume automatic film movement" : "Pause automatic film movement") : (paused ? "写真フィルムの自動送りを再開" : "写真フィルムの自動送りを一時停止")}>{paused ? "Play" : "Pause"}</button>
+      <button type="button" onClick={() => controller.current?.step(1)} aria-label={english ? "Next image" : "次の写真"}>→</button>
     </div>}
   </div>;
 }
