@@ -3080,7 +3080,9 @@
 }
 
 /* Shared COMPASS footer only; the page UI retains its original theme. */
+@media (min-width: 901px) {
 .fslPage .footer { color:#49636a; background:#eeefe8; border-top:1px solid #bfceca; }
 .fslPage .footerBrand strong { color:#173740; }
 .fslPage .footerBrand span,.fslPage .footerLinks a,.fslPage .footerDisclaimer p,.fslPage .copyright { color:#49636a; }
 .fslPage .footerDisclaimer { border-color:#c7d3cf; }
+}

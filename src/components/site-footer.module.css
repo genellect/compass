@@ -1,3 +1,4 @@
+@media (min-width: 901px) {
 .footer:global(.site-footer)[data-route-context] {
   color: #49636a;
   background: #eeefe8;
@@ -10,3 +11,4 @@
 .footer:global(.site-footer)[data-route-context] :global(.footer-cta a:hover) { color:#236c78; text-decoration:underline; text-underline-offset:4px; }
 .footer:global(.site-footer)[data-route-context] :global(.footer-note) { border-color:#c7d3cf; }
 .footer:global(.site-footer)[data-route-context] :global(a:focus-visible) { outline:2px solid #257788; outline-offset:4px; }
+}
