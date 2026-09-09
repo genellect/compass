@@ -7,16 +7,23 @@ export const TURNSTILE_ACTION = "community_registration";
 
 export const YEAR_OPTIONS = ["1年", "2年", "3年", "4年", "5・6年", "大学院生"] as const;
 
+export const FOCUS_AREA_OPTIONS = [
+  "AI活用",
+  "英語学習",
+  "生命科学",
+  "IT・プログラミング",
+  "起業・ビジネス",
+  "留学・海外進学"
+] as const;
+
 export const INTEREST_OPTIONS = [
   "イベント企画",
   "SNS発信",
-  "デザイン",
-  "カメラマン",
-  "動画編集",
-  "Web開発",
-  "本格的なアプリ開発",
-  "AIの使い方",
-  "深層学習・AIエージェント",
+  "写真撮影",
+  "Webサイト制作",
+  "動画制作",
+  "デザイン・資料制作",
+  "本格的なシステム開発",
   "まずは話を聞いてみたい"
 ] as const;
 
@@ -38,6 +45,11 @@ export const communityRegistrationFieldSchemas = {
     .regex(/^[A-Za-z]{2}\d{5,6}$/, FORM_ERROR_MESSAGE)
     .transform((value) => value.toUpperCase()),
   year: z.enum(YEAR_OPTIONS, { error: FORM_ERROR_MESSAGE }),
+  focusAreas: z
+    .array(z.enum(FOCUS_AREA_OPTIONS, { error: FORM_ERROR_MESSAGE }))
+    .min(1, FORM_ERROR_MESSAGE)
+    .max(FOCUS_AREA_OPTIONS.length, FORM_ERROR_MESSAGE)
+    .refine((items) => new Set(items).size === items.length, FORM_ERROR_MESSAGE),
   interests: z
     .array(z.enum(INTEREST_OPTIONS, { error: FORM_ERROR_MESSAGE }))
     .min(1, FORM_ERROR_MESSAGE)
@@ -63,7 +75,7 @@ export function getFieldErrors(error: z.ZodError): Partial<Record<keyof Communit
   for (const issue of error.issues) {
     const field = issue.path[0];
     if (typeof field !== "string" || field in result) continue;
-    if (["name", "email", "facultyDepartment", "studentId", "year", "interests", "motivation"].includes(field)) {
+    if (["name", "email", "facultyDepartment", "studentId", "year", "focusAreas", "interests", "motivation"].includes(field)) {
       result[field as keyof CommunityRegistrationFields] = FORM_ERROR_MESSAGE;
     }
   }

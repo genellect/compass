@@ -6,6 +6,7 @@ import {
   COMMUNITY_REGISTRATION_ENDPOINT,
   communityRegistrationFieldSchemas,
   communityRegistrationFieldsSchema,
+  FOCUS_AREA_OPTIONS,
   FORM_ERROR_MESSAGE,
   getFieldErrors,
   INTEREST_OPTIONS,
@@ -17,6 +18,7 @@ import styles from "./community-join.module.css";
 type LocalFormState = {
   email: string;
   facultyDepartment: string;
+  focusAreas: string[];
   interests: string[];
   motivation: string;
   name: string;
@@ -46,6 +48,7 @@ const initialForm: LocalFormState = {
   facultyDepartment: "",
   studentId: "",
   year: "",
+  focusAreas: [],
   interests: [],
   motivation: ""
 };
@@ -94,6 +97,7 @@ export function CommunityJoinForm() {
     facultyDepartment: communityRegistrationFieldSchemas.facultyDepartment.safeParse(form.facultyDepartment).success,
     studentId: communityRegistrationFieldSchemas.studentId.safeParse(form.studentId).success,
     year: communityRegistrationFieldSchemas.year.safeParse(form.year).success,
+    focusAreas: communityRegistrationFieldSchemas.focusAreas.safeParse(form.focusAreas).success,
     interests: communityRegistrationFieldSchemas.interests.safeParse(form.interests).success,
     motivation: communityRegistrationFieldSchemas.motivation.safeParse(form.motivation).success
   }), [form]);
@@ -156,6 +160,14 @@ export function CommunityJoinForm() {
     markTouched("interests");
   };
 
+  const toggleFocusArea = (focusArea: string) => {
+    const focusAreas = form.focusAreas.includes(focusArea)
+      ? form.focusAreas.filter((item) => item !== focusArea)
+      : [...form.focusAreas, focusArea];
+    updateField("focusAreas", focusAreas);
+    markTouched("focusAreas");
+  };
+
   const resetTurnstile = () => {
     setTurnstileToken("");
     if (window.turnstile && turnstileWidgetRef.current) window.turnstile.reset(turnstileWidgetRef.current);
@@ -172,6 +184,7 @@ export function CommunityJoinForm() {
         facultyDepartment: true,
         studentId: true,
         year: true,
+        focusAreas: true,
         interests: true,
         motivation: true
       });
@@ -350,10 +363,31 @@ export function CommunityJoinForm() {
           <FieldValid visible={hasValidValue("year")} />
         </fieldset>
 
+        <fieldset className={styles.fieldset} aria-describedby={describedBy("focusAreas", "focusAreas-helper")}>
+          <legend>興味のあること・頑張りたいこと <RequiredBadge /></legend>
+          <p className={styles.helper} id="focusAreas-helper">複数選択可、1つ以上必須</p>
+          <div className={`${styles.choiceGrid} ${styles.interestGrid}`}>
+            {FOCUS_AREA_OPTIONS.map((focusArea) => (
+              <label className={styles.choice} key={focusArea}>
+                <input
+                  type="checkbox"
+                  name="focusAreas"
+                  value={focusArea}
+                  checked={form.focusAreas.includes(focusArea)}
+                  onChange={() => toggleFocusArea(focusArea)}
+                />
+                <span>{focusArea}</span>
+              </label>
+            ))}
+          </div>
+          <FieldError id="focusAreas-error" visible={hasError("focusAreas")} />
+          <FieldValid visible={hasValidValue("focusAreas")} />
+        </fieldset>
+
         <fieldset className={styles.fieldset} aria-describedby={describedBy("interests", "interests-helper")}>
           <legend>やってみたい活動 <RequiredBadge /></legend>
           <p className={styles.helper} id="interests-helper">複数選択できます。</p>
-          <div className={`${styles.choiceGrid} ${styles.interestGrid}`}>
+          <div className={`${styles.choiceGrid} ${styles.interestGrid} ${styles.activityGrid}`}>
             {INTEREST_OPTIONS.map((interest) => (
               <label className={styles.choice} key={interest}>
                 <input
