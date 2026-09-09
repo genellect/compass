@@ -47,8 +47,8 @@ const navGroups: NavGroup[] = [
     items: [
       {
         href: "INTRO_Interactive/",
-        label: "Technology",
-        description: "教育を変える",
+        label: "COMPASS Interactive",
+        description: "疑問が届く、参加型講義システム",
         mobileLabel: "COMPASS Interactive",
         mobileDescription: "疑問が届く、参加型講義システム"
       }
