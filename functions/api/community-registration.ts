@@ -123,6 +123,7 @@ async function relayToGoogleAppsScript(
       facultyDepartment: payload.facultyDepartment,
       studentId: payload.studentId,
       year: payload.year,
+      focusAreas: payload.focusAreas,
       interests: payload.interests,
       motivation: payload.motivation
     })
