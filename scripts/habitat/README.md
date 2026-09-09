@@ -5,8 +5,11 @@ it is not an assertion of photorealism or a production release. See the release
 report for actual browser, hardware and viewport measurements.
 
 Only the root page imports `Habitat`. Its small client gate loads the Three.js
-engine on screens at least 901 CSS pixels wide with a fine, hover-capable pointer.
-Mobile keeps the existing page. HTML copy and links remain real DOM content.
+engine on screens at least 901 CSS pixels wide with either a fine, hover-capable
+pointer or a landscape, coarse primary pointer. This gives high-performance iPads
+in landscape the same standard-quality scene and nearly the same UI as Desktop.
+Portrait tablets and phones keep the static layout. HTML copy and links remain
+real DOM content.
 
 ## Authoring inputs
 
@@ -66,7 +69,8 @@ when Three.js changes.
 - `check-camera-path.mjs CLI_ENTRY RAW_DIR REPORT_PATH` checks the actual geometry
   along the room transitions. It does not replace reviewing the moving camera.
 - `npm run test:habitat` and `npm run test:responsive:habitat` cover the section
-  mapping, native scroll, fit, pause, fallbacks and Mobile network isolation.
+  mapping, native scroll, fit, pause, fallbacks, Mobile network isolation and the
+  landscape-iPad/portrait-iPad eligibility boundary.
 - Run the repository gates in `AGENTS.md`. Record existing unrelated failures;
   do not modify other routes or image baselines just to make this feature green.
 - `measure-scene.mjs --url=URL --out=REPORT_DIR --section=top` uses headed Edge and

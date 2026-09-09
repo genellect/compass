@@ -1,6 +1,12 @@
 import authored from '../../../public/habitat/v3/manifest.json';
 
-export const DESKTOP_QUERY = '(min-width: 901px) and (pointer: fine) and (hover: hover)';
+// Offer the full authored scene to conventional Desktop input and to wide,
+// landscape touch tablets. Runtime frame-budget checks keep unsupported tablets
+// on the matching offline render instead of lowering the approved scene quality.
+export const DESKTOP_QUERY = [
+  '(min-width: 901px) and (pointer: fine) and (hover: hover)',
+  '(min-width: 901px) and (orientation: landscape) and (pointer: coarse)'
+].join(', ');
 export const ASSET_BASE = '/habitat/v3/';
 export const sectionIds = ['top', 'vision', 'experience', 'technology', 'resources', 'manifesto', 'community', 'founder', 'contact'] as const;
 export type SectionId = typeof sectionIds[number];
