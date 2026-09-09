@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import styles from "./founder.module.css";
+import { FragmentFilm, FragmentFilmAtmosphere } from "./FragmentFilm";
 
 type FragmentPhoto = {
   key: string;
@@ -353,24 +354,37 @@ function FragmentMobileReel() {
 
 export function FounderFragments() {
   const [activeSpread, setActiveSpread] = useState(0);
+  const [view, setView] = useState<"3d" | "original">("3d");
+  const [wide, setWide] = useState(false);
+  useEffect(() => {
+    const media = matchMedia("(min-width: 901px) and (orientation: landscape)");
+    const update = () => setWide(media.matches);
+    update(); media.addEventListener("change", update);
+    return () => media.removeEventListener("change", update);
+  }, []);
 
   useEffect(() => {
     const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
-    if (reducedMotion.matches) return;
+    if (reducedMotion.matches || (wide && view === "3d")) return;
 
     const timer = window.setTimeout(() => {
       setActiveSpread((current) => (current + 1) % fragmentSpreads.length);
     }, spreadDurationMs);
 
     return () => window.clearTimeout(timer);
-  }, [activeSpread]);
+  }, [activeSpread, wide, view]);
 
   return (
-    <section id="fragments" className={styles.fragments} aria-labelledby="fragments-title">
+    <section id="fragments" className={styles.fragments} aria-labelledby="fragments-title" data-fragment-view={view}>
       <FragmentSignalField />
+      <FragmentFilmAtmosphere />
       <div className={styles.sectionShell}>
         <header className={styles.fragmentsHeader}>
           <h2 id="fragments-title">FRAGMENTS</h2>
+          <div className={styles.fragmentViewSwitch} role="group" aria-label="FRAGMENTSの表示形式">
+            <button type="button" aria-pressed={view === "3d"} aria-controls="fragment-film-view" onClick={() => setView("3d")}>3D</button>
+            <button type="button" aria-pressed={view === "original"} aria-controls="fragment-original-view" onClick={() => setView("original")}>Original</button>
+          </div>
           <div className={styles.fragmentSequence} aria-label="FRAGMENTSの表示セット">
             {fragmentSpreads.map((_, index) => (
               <button
@@ -384,7 +398,10 @@ export function FounderFragments() {
           </div>
         </header>
 
-        <div className={styles.fragmentsEssay}>
+        <div className={styles.fragmentFilmView} id="fragment-film-view">
+          <FragmentFilm photos={fragmentPhotos} active={wide && view === "3d"} />
+        </div>
+        <div className={styles.fragmentsEssay} id="fragment-original-view">
           {fragmentSpreads.map((spread, spreadIndex) => (
             <div
               key={spreadIndex}

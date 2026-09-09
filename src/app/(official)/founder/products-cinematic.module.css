@@ -5,6 +5,7 @@
 .world[data-language="en"] .product[data-product="manifesto"] .title { font-family: Arial, Helvetica, sans-serif; line-height: 1.05; letter-spacing: -.04em; }
 .grid { display: grid; grid-template-columns: minmax(0, 1.24fr) minmax(0, 1fr); gap: 22px; align-items: start; }
 .product { min-width: 0; }
+.product[data-layout="wide"] { display: none; }
 .product[data-product="interactive"] { grid-row: span 2; }
 .stage { position: relative; height: 320px; overflow: hidden; isolation: isolate; border-radius: 8px; color: #f5f7fc; background: #111723; }
 .product[data-product="interactive"] .stage { height: 640px; background: #080f1d; }
@@ -77,4 +78,23 @@
 @media (prefers-reduced-motion: reduce) {
   .scene canvas, .fallback, .destination svg { transition: none; }
   .motion { display: none; }
+}
+
+/* Keep this condition identical to PLATFORM_MEDIA. Portrait/tablet/mobile
+   rules above are deliberately unchanged. DOM order equals the visible order. */
+@media (min-width: 901px) and (orientation: landscape) {
+  .product[data-layout="compact"] { display: none; }
+  .product[data-layout="wide"] { display: block; }
+  .product[data-product="platform"] .stage { height: 320px; background: #202435; }
+  .product[data-layout="wide"][data-product="library"] .stage { height: 296px; }
+  .product[data-product="platform"] .scene { inset: 12px -14px 54px 24%; background: none; pointer-events: none; }
+  .product[data-product="platform"] .shade { background: linear-gradient(90deg, #202435f5 0%, #202435d9 30%, #20243566 54%, transparent 76%), linear-gradient(0deg, #202435 0%, #202435e6 19%, transparent 38%); }
+  .product[data-product="platform"] .title { left: 30px; right: auto; width: calc(66% - 36px); bottom: 106px; font-size: clamp(24px, 2.4vw, 32px); line-height: 1.15; letter-spacing: -.045em; text-wrap: balance; }
+  .product[data-product="platform"] .title > span { white-space: nowrap; }
+  .product[data-product="platform"] .title strong { margin-top: 8px; font-weight: 750; }
+  .platformFallback { position: absolute; width: 100%; height: 100%; inset: 0; transition: opacity 500ms ease; }
+  .scene[data-ready="true"] .platformFallback { opacity: 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .platformFallback { transition: none; }
 }

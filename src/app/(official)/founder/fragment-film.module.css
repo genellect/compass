@@ -1,0 +1,29 @@
+.film { position: relative; isolation: isolate; width: 100vw; height: clamp(480px, 74svh, 760px); margin-left: calc(50% - 50vw); }
+.atmosphere { display: none; position: absolute; inset: 0; overflow: hidden; z-index: 0; pointer-events: none; }
+@media (min-width: 901px) and (orientation: landscape) {
+  :global([data-fragment-view="3d"]) > .atmosphere { display: block; }
+}
+/* Entire section, including the heading and negative space; never above photos. */
+.lightField { position: absolute; inset: -12%; background: radial-gradient(ellipse at var(--film-light-x, 48%) var(--film-light-y, 58%), #ffffffd9 0%, #ffffff60 24%, transparent 53%), radial-gradient(ellipse at 82% 30%, #b7a9d35e, transparent 48%), radial-gradient(ellipse at 12% 64%, #8ac5ba55, transparent 47%); }
+.lightField::before, .lightField::after { content: ""; position: absolute; inset: -15%; will-change: transform; }
+.lightField::before { background: linear-gradient(118deg, transparent 28%, #c7dadb24 37%, #ffffffa6 44%, #ded9ed40 50%, transparent 61%); transform: translate3d(var(--film-drift-x, 0px), var(--film-drift-y, 0px), 0) rotate(var(--film-shadow-angle, -8deg)); }
+.lightField::after { background: radial-gradient(ellipse at 65% 72%, #a9c4d44d, transparent 42%); transform: translate3d(calc(0px - var(--film-drift-x, 0px)), calc(0px - var(--film-drift-y, 0px)), 0); }
+.groundShadow { position: absolute; width: 95%; height: 25%; left: 4%; bottom: 12%; border-radius: 50%; background: radial-gradient(ellipse, #3f52632b, #6b708910 47%, transparent 70%); transform: rotate(var(--film-shadow-angle, -8deg)) scaleY(.7); }
+.contours { position: absolute; inset: 0; width: 100%; height: 100%; fill: none; stroke: #688c9a; stroke-width: .7; opacity: .32; transform: rotate(var(--film-shadow-angle, -8deg)); transform-origin: 60% 55%; }
+.contours path:nth-child(2), .contours path:nth-child(4) { opacity: .32; }
+.contours .trace { stroke: #677aa8; stroke-width: 1.7; stroke-linecap: round; stroke-dasharray: 110 1900; stroke-dashoffset: var(--film-flow, 0); }
+.contours .trace:last-child { stroke: #398f87; stroke-dashoffset: calc(var(--film-flow, 0) - 740); }
+@media (prefers-reduced-motion: reduce) {
+  .lightField::before, .lightField::after { will-change: auto; }
+}
+.viewport { position: absolute; inset: 0 0 48px; touch-action: pan-y pinch-zoom; cursor: grab; outline-offset: -5px; }
+.viewport:active { cursor: grabbing; }
+.viewport canvas { display: block; width: 100%; height: 100%; opacity: 0; }
+.film[data-ready="true"] canvas { opacity: 1; }
+.fallback { position: absolute; inset: 15px 0 55px; display: flex; align-items: center; gap: 14px; overflow-x: auto; padding: 0 24px; }
+.fallback img { height: 90%; width: auto; max-width: none; flex: 0 0 auto; object-fit: contain; }
+.film[data-ready="true"] .fallback { width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip-path: inset(50%); }
+.controls { position: absolute; bottom: 0; left: 50%; transform: translateX(-50%); display: flex; gap: 10px; }
+.controls button { min-width: 42px; height: 36px; padding: 0 12px; border: 1px solid #37658235; background: #f7faf9; color: #243d4a; border-radius: 20px; font: inherit; font-size: 11px; cursor: pointer; }
+.controls button:hover { background: #e6eeef; }
+.controls button:focus-visible, .viewport:focus-visible, .fallback:focus-visible { outline: 2px solid #34788b; }

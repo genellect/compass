@@ -818,6 +818,22 @@
   margin-bottom: 34px;
 }
 
+.fragmentViewSwitch, .fragmentFilmView { display: none; }
+
+@media (min-width: 901px) and (orientation: landscape) {
+  .fragments[data-fragment-view="3d"] { padding: clamp(56px, 5vw, 80px) 0 56px; background: linear-gradient(180deg, #fbfdfd, #edf2f4 34%, #f0eef5 67%, #fafcfb); }
+  .fragments[data-fragment-view="3d"]::after { display: none; }
+  .fragments[data-fragment-view="3d"] .fragmentsHeader { margin-bottom: 8px; position: relative; z-index: 3; }
+  .fragmentViewSwitch { display: flex; margin-left: auto; padding: 3px; gap: 2px; border: 1px solid #40647630; border-radius: 24px; }
+  .fragmentViewSwitch button { min-height: 34px; padding: 0 15px; border: 0; border-radius: 20px; background: transparent; color: #425d6a; font: inherit; font-size: 11px; letter-spacing: .03em; cursor: pointer; }
+  .fragmentViewSwitch button[aria-pressed="true"] { color: #f7fafb; background: #263f4d; }
+  .fragmentViewSwitch button:focus-visible { outline: 2px solid #34788b; outline-offset: 3px; }
+  .fragments[data-fragment-view="3d"] .fragmentFilmView { display: block; }
+  .fragments[data-fragment-view="3d"] .fragmentsEssay,
+  .fragments[data-fragment-view="3d"] .fragmentSequence,
+  .fragments[data-fragment-view="3d"] .fragmentSignalField { display: none; }
+}
+
 .fragmentsHeader h2 {
   margin: 8px 0 0;
   color: var(--ink);
