@@ -5,49 +5,70 @@ export type FilmController = { step: (direction: number) => void; dispose: () =>
 
 export function mountFilm(host: HTMLDivElement, photos: readonly FilmPhoto[], paused: () => boolean, ready: () => void, failed: () => void): FilmController {
   const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true, powerPreference: "low-power" });
-  renderer.setPixelRatio(Math.min(devicePixelRatio, 1.6));
+  renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
   renderer.outputColorSpace = THREE.SRGBColorSpace;
   renderer.setClearColor(0x000000, 0);
   renderer.domElement.setAttribute("aria-hidden", "true");
   host.appendChild(renderer.domElement);
   const scene = new THREE.Scene();
-  const camera = new THREE.PerspectiveCamera(40, 1, 0.1, 80);
-  camera.position.z = 8.7;
+  const camera = new THREE.PerspectiveCamera(36, 1, 0.1, 80);
+  camera.position.z = 9.8;
   const reduced = matchMedia("(prefers-reduced-motion: reduce)");
   const coarse = matchMedia("(pointer: coarse)");
   const loader = new THREE.TextureLoader();
   let length = 0;
   const panels = photos.map(photo => {
-    const width = 4 * photo.width / photo.height;
+    const width = 3.2 * photo.width / photo.height;
     const center = length + width / 2;
     length += width + 0.16;
     // The photo window keeps its native ratio; the carrier and perforations
     // sit outside it. Adjacent carriers meet to form one continuous ribbon.
-    const geometry = new THREE.PlaneGeometry(width + 0.16, 4.76, 48, 16);
+    const geometry = new THREE.PlaneGeometry(width + 0.16, 3.62, 64, 12);
     const material = new THREE.ShaderMaterial({
       transparent: true,
-      uniforms: { picture: { value: null }, center: { value: 0 }, origin: { value: center }, photoWidth: { value: width }, loaded: { value: 0 }, bend: { value: 0 }, tone: { value: photo.tone === "warm" || photo.tone === "tech" ? 0.9 : photo.tone === "lift" ? 0.94 : 1 }, lift: { value: photo.tone === "lift" ? 1.03 : 1 } },
+      side: THREE.DoubleSide,
+      uniforms: { picture: { value: null }, center: { value: 0 }, origin: { value: center }, photoWidth: { value: width }, loaded: { value: 0 }, bend: { value: 0 }, clock: { value: 0 }, tone: { value: photo.tone === "warm" || photo.tone === "tech" ? 0.9 : photo.tone === "lift" ? 0.94 : 1 }, lift: { value: photo.tone === "lift" ? 1.03 : 1 } },
       vertexShader: `
         varying vec2 vLocal;
         varying float vCarrier;
         varying float vDepth;
+        varying float vRear;
         uniform float center;
         uniform float origin;
         uniform float bend;
+        uniform float clock;
+        // One open hairpin: the return run belongs to the same photo sequence.
+        // Arc length around the turn matches the straight runs approximately.
+        vec3 path(float s) {
+          if (s < 8.) return vec3(s, -1. + .14*s, 1. - .008*s*s);
+          if (s < 16.) {
+            float a = (s - 8.) / 8. * 3.14159265;
+            return vec3(8. + 2.55*sin(a), .12 + .8*(1.-cos(a)), .488 - 2.55*(1.-cos(a)));
+          }
+          float x = 24. - s;
+          return vec3(x, 1.72 - .105*(x-8.), -4.612 - .008*(x-6.)*(x-6.));
+        }
         void main() {
           vLocal = position.xy;
           vCarrier = position.x + origin;
-          float x = position.x + center;
-          // Open, asymmetric sweep rather than a closed cylindrical gallery.
-          // Every panel shares the same world-space curve, including its edges.
-          float twist = .16 * sin(x * .24 - .3);
-          float y = position.y * cos(twist);
-          float z = position.y * sin(twist);
-          y += .115 * x + .32 * sin(x * .38 - .4);
-          z += -.018 * x * x + .65 * sin(x * .36 + .25);
-          z += bend * .10 * sin(x * .3);
-          vDepth = z;
-          gl_Position = projectionMatrix * modelViewMatrix * vec4(x, y, z, 1.);
+          float s = position.x + center;
+          vec3 p = path(s);
+          vec3 tangent = normalize(path(s + .025) - path(s - .025));
+          vec3 up = normalize(vec3(-tangent.y, abs(tangent.x) + .2, 0.));
+          // The readable foreground stays broad and nearly planar. The carrier
+          // twists more strongly at its returning edge, not across central faces.
+          float rear = smoothstep(8., 16., s);
+          float twist = .10*sin(s*.3 + clock*.36) + rear*.28 + bend*.14;
+          up = normalize(up + vec3(0., 0., twist));
+          p += position.y * up;
+          p.y += .12*sin(s*.21 + clock*.32);
+          p.z += .16*sin(s*.17 + clock*.27) + bend*.14*sin(s*.22);
+          // Small continuous roll integrates the entire sculpture, not each card.
+          float roll = .025*sin(clock*.29);
+          p.xy = mat2(cos(roll), -sin(roll), sin(roll), cos(roll)) * p.xy;
+          vDepth = p.z;
+          vRear = rear;
+          gl_Position = projectionMatrix * modelViewMatrix * vec4(p, 1.);
         }`,
       fragmentShader: `
         uniform sampler2D picture;
@@ -58,24 +79,36 @@ export function mountFilm(host: HTMLDivElement, photos: readonly FilmPhoto[], pa
         varying vec2 vLocal;
         varying float vCarrier;
         varying float vDepth;
+        varying float vRear;
+        uniform float clock;
         void main() {
           float edge = abs(vLocal.y);
-          bool photo = abs(vLocal.x) < photoWidth * .5 && edge < 2.;
+          bool photo = abs(vLocal.x) < photoWidth * .5 && edge < 1.6;
           if (photo) {
-            vec2 photoUv = vLocal / vec2(photoWidth, 4.) + .5;
+            vec2 photoUv = vLocal / vec2(photoWidth, 3.2) + .5;
+            // Double-sided photographic stock: the rear run remains readable.
+            if (!gl_FrontFacing) photoUv.x = 1. - photoUv.x;
             vec4 c = texture2D(picture, photoUv);
             float gray = dot(c.rgb, vec3(.2126, .7152, .0722));
             gl_FragColor = vec4(mix(vec3(gray), c.rgb, tone) * lift, c.a * loaded);
           } else {
             // Real transparent rounded perforations, not pale dots painted
             // over the carrier. Their phase travels with the physical film.
-            vec2 hole = abs(vec2(mod(vCarrier + .2, .4) - .2, edge - 2.20)) - vec2(.09, .075);
-            float cutout = length(max(hole, 0.)) + min(max(hole.x, hole.y), 0.) - .025;
+            vec2 hole = abs(vec2(mod(vCarrier + .145, .29) - .145, edge - 1.705)) - vec2(.057, .042);
+            float cutout = length(max(hole, 0.)) + min(max(hole.x, hole.y), 0.) - .014;
             if (cutout < 0.) discard;
-            vec3 carrier = vec3(.008, .016, .021);
-            carrier *= 1. + .14 * sin(vDepth * .8);
-            float rim = smoothstep(2.34, 2.37, edge);
-            carrier = mix(carrier, vec3(.11, .15, .16), rim * .45);
+            vec3 carrier = vec3(.012, .024, .030);
+            float reflection = pow(.5 + .5*sin(vCarrier*.48 + vDepth*.65 - clock*.32), 6.);
+            vec3 silver = mix(vec3(.19,.31,.33), vec3(.48,.38,.22), .5+.5*sin(vCarrier*.17));
+            carrier += silver * reflection * .32;
+            float rim = smoothstep(1.778, 1.801, edge);
+            float aperture = 1. - smoothstep(.002,.012,cutout);
+            carrier = mix(carrier, silver, rim*.75 + aperture*.35);
+            float tick = step(.276, mod(vCarrier+.06,.29)) * step(1.775,edge);
+            carrier += vec3(.23,.28,.27)*tick;
+            // A fine inner rebate gives the photo window a precise physical edge.
+            float rebate = 1.-smoothstep(.002,.014,edge-1.6);
+            carrier *= 1.-.55*rebate;
             gl_FragColor = vec4(carrier, 1.);
           }
           #include <colorspace_fragment>
@@ -94,12 +127,14 @@ export function mountFilm(host: HTMLDivElement, photos: readonly FilmPhoto[], pa
   let visible = false;
   let disposed = false;
   let announced = false;
+  let motionTime = 0;
+  let fieldTick = 0;
   let width = 1;
   let pointer: { id: number; x: number; y: number; start: number; horizontal: boolean } | null = null;
-  const wrap = (x: number) => ((x + length / 2) % length + length) % length - length / 2;
+  const wrap = (x: number) => ((x + 19) % length + length) % length - 19;
   const schedule = () => { if (!disposed && visible && !document.hidden && !frame) frame = requestAnimationFrame(draw); };
   const manual = () => { manualUntil = performance.now() + 4000; schedule(); };
-  const step = (direction: number) => { manual(); target += direction * 4.5; if (reduced.matches) position = target; };
+  const step = (direction: number) => { manual(); target += direction * 3.4; if (reduced.matches) position = target; };
   function draw(now: number) {
     frame = 0;
     if (disposed || !visible || document.hidden) { last = 0; return; }
@@ -108,22 +143,30 @@ export function mountFilm(host: HTMLDivElement, photos: readonly FilmPhoto[], pa
     const dt = last ? Math.min((now - last) / 1000, 0.08) : 0;
     last = now;
     const auto = !paused() && !reduced.matches && !pointer && now > manualUntil;
-    if (auto) target += dt * 0.3;
+    if (auto) target += dt * 0.62;
     const distance = target - position;
     position = reduced.matches ? target : position + distance * (1 - Math.exp(-dt * 12));
-    const extent = Math.min(13, camera.aspect * 3.1 + 3.5);
+    if (!reduced.matches && !paused()) motionTime += dt;
+    const tension = reduced.matches ? 0 : THREE.MathUtils.clamp(distance, -1, 1);
+    // The same clock and drag tension drive the light field and sculptural path.
+    if (++fieldTick % 3 === 0 || reduced.matches || paused()) {
+      host.parentElement?.style.setProperty("--film-light-x", `${48 + Math.sin(motionTime*.27)*15 + tension*6}%`);
+      host.parentElement?.style.setProperty("--film-light-y", `${46 + Math.cos(motionTime*.32)*12}%`);
+      host.parentElement?.style.setProperty("--film-shadow-angle", `${-8 + Math.sin(motionTime*.29)*3 + tension*2}deg`);
+    }
     panels.forEach(panel => {
       const x = wrap(panel.center - position);
-      const nearby = Math.abs(x) < extent + panel.width / 2;
+      const nearby = x > -19-panel.width && x < 48+panel.width;
       panel.mesh.visible = nearby;
       panel.material.uniforms.center.value = x;
-      panel.material.uniforms.bend.value = reduced.matches ? 0 : THREE.MathUtils.clamp(distance, -1, 1);
+      panel.material.uniforms.bend.value = tension;
+      panel.material.uniforms.clock.value = reduced.matches ? 0 : motionTime;
       if (nearby && !panel.texture && !panel.loading) {
         panel.loading = true;
         loader.load(panel.photo.src, texture => {
           if (disposed) { texture.dispose(); return; }
           texture.colorSpace = THREE.SRGBColorSpace;
-          texture.anisotropy = Math.min(4, renderer.capabilities.getMaxAnisotropy());
+          texture.anisotropy = Math.min(8, renderer.capabilities.getMaxAnisotropy());
           panel.texture = texture;
           panel.loading = false;
           panel.material.uniforms.picture.value = texture;
@@ -131,7 +174,7 @@ export function mountFilm(host: HTMLDivElement, photos: readonly FilmPhoto[], pa
           if (!announced && panels.filter(p => p.mesh.visible).every(p => p.texture)) { announced = true; ready(); }
           schedule();
         }, undefined, () => { if (!disposed) failed(); });
-      } else if (!nearby && Math.abs(x) > extent + panel.width + 6 && panel.texture) {
+      } else if (!nearby && panel.texture) {
         panel.texture.dispose(); panel.texture = null;
         panel.material.uniforms.picture.value = null; panel.material.uniforms.loaded.value = 0;
       }

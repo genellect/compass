@@ -68,13 +68,17 @@ test("Film auto motion, pause, manual drag and wheel coexist with page scrolling
   await expect(film).toHaveAttribute("data-ready", "true", { timeout: 20_000 });
   const canvas = film.locator("canvas");
   const first = await canvas.screenshot();
+  const initialLight = await film.getAttribute("style");
   await page.waitForTimeout(500);
   expect(Buffer.compare(first, await canvas.screenshot())).not.toBe(0);
+  expect(await film.getAttribute("style")).not.toBe(initialLight);
   await film.getByRole("button", { name: "写真フィルムの自動送りを一時停止", exact: true }).click();
   await page.waitForTimeout(1000);
   const paused = await canvas.screenshot();
+  const pausedLight = await film.getAttribute("style");
   await page.waitForTimeout(300);
   expect(Buffer.compare(paused, await canvas.screenshot())).toBe(0);
+  expect(await film.getAttribute("style")).toBe(pausedLight);
   const box = (await canvas.boundingBox())!;
   await page.mouse.move(box.x + box.width * .6, box.y + box.height * .5);
   await page.mouse.down();

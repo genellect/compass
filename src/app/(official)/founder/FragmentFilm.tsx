@@ -29,6 +29,15 @@ export function FragmentFilm({ photos, active }: { photos: readonly FilmPhoto[];
     return () => { disposed = true; observer.disconnect(); controller.current?.dispose(); controller.current = null; setReady(false); };
   }, [active, fallback, photos]);
   return <div className={css.film} data-fragment-film data-ready={ready}>
+    <div className={css.atmosphere} aria-hidden="true">
+      <div className={css.lightField} />
+      <div className={css.groundShadow} />
+      <svg className={css.contours} viewBox="0 0 1440 700" preserveAspectRatio="none">
+        <path d="M-120 545 C230 760 1150 665 1540 190" />
+        <path d="M-80 562 C250 749 1190 644 1530 155" />
+        <path d="M-160 578 C285 766 1200 613 1500 125" />
+      </svg>
+    </div>
     <div ref={host} className={css.viewport} tabIndex={ready ? 0 : -1} role="group" aria-label="湾曲した写真フィルム。左右キー、ドラッグ、横スクロールで移動" />
     <div className={css.fallback} tabIndex={ready ? -1 : 0} aria-label="FRAGMENTSの写真一覧">
       {photos.map(photo => <Image key={photo.key} src={photo.src} alt={photo.alt} width={photo.width} height={photo.height} loading="lazy" draggable={false} />)}
