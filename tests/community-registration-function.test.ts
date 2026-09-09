@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { onRequest, type RegistrationEnv } from "../functions/api/community-registration";
-import { INTEREST_OPTIONS, TURNSTILE_ACTION } from "../src/lib/community-registration-schema";
+import { FOCUS_AREA_OPTIONS, INTEREST_OPTIONS, TURNSTILE_ACTION } from "../src/lib/community-registration-schema";
 
 const origin = "https://compass-official.pages.dev";
 const requestId = "1f386090-84e0-4c2f-a4d7-6f8f4f8ad141";
@@ -15,6 +15,7 @@ const payload = {
   facultyDepartment: "薬学部 薬学科",
   studentId: "PP00000",
   year: "1年",
+  focusAreas: [FOCUS_AREA_OPTIONS[0], FOCUS_AREA_OPTIONS[1]],
   interests: [INTEREST_OPTIONS[0], INTEREST_OPTIONS[1]],
   motivation: "英語学習イベントを企画してみたいです。",
   requestId,
@@ -77,6 +78,7 @@ describe("community registration Pages Function", () => {
       facultyDepartment: payload.facultyDepartment,
       studentId: payload.studentId,
       year: payload.year,
+      focusAreas: payload.focusAreas,
       interests: payload.interests,
       motivation: payload.motivation
     });

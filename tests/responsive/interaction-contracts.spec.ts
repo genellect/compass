@@ -86,6 +86,59 @@ const officialDesktopRoutes = [
   { path: "/contact/", active: "Contact" },
 ];
 
+test("Community form separates required focus areas from the compressed activity choices", async ({ page }) => {
+  const runtimeErrors = await openRoute(page, "/community/join/", {
+    name: "community-interest-areas-mobile",
+    width: 390,
+    height: 844,
+  });
+
+  const focusAreas = page.locator('input[name="focusAreas"]');
+  const activities = page.locator('input[name="interests"]');
+  await expect(focusAreas).toHaveCount(6);
+  await expect(activities).toHaveCount(8);
+  expect(await focusAreas.evaluateAll((inputs) => inputs.map((input) => (input as HTMLInputElement).value))).toEqual([
+    "AI活用",
+    "英語学習",
+    "生命科学",
+    "IT・プログラミング",
+    "起業・ビジネス",
+    "留学・海外進学",
+  ]);
+  expect(await activities.evaluateAll((inputs) => inputs.map((input) => (input as HTMLInputElement).value))).toEqual([
+    "イベント企画",
+    "SNS発信",
+    "写真撮影",
+    "Webサイト制作",
+    "動画制作",
+    "デザイン・資料制作",
+    "本格的なシステム開発",
+    "まずは話を聞いてみたい",
+  ]);
+  const order = await page.locator('input[name="focusAreas"], input[name="interests"]').evaluateAll((inputs) =>
+    inputs.map((input) => (input as HTMLInputElement).name),
+  );
+  expect(order.slice(0, 6)).toEqual(Array(6).fill("focusAreas"));
+  expect(order.slice(6)).toEqual(Array(8).fill("interests"));
+  await focusAreas.first().check();
+  await activities.last().check();
+  await expect(focusAreas.first()).toBeChecked();
+  await expect(activities.last()).toBeChecked();
+  expect(await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth)).toBeLessThanOrEqual(1);
+
+  await page.setViewportSize({ width: 1363, height: 936 });
+  const columnCounts = await page.locator('input[name="focusAreas"], input[name="interests"]').evaluateAll((inputs) => {
+    const focusGrid = inputs.find((input) => (input as HTMLInputElement).name === "focusAreas")?.parentElement?.parentElement;
+    const activityGrid = inputs.find((input) => (input as HTMLInputElement).name === "interests")?.parentElement?.parentElement;
+    return {
+      focus: focusGrid ? getComputedStyle(focusGrid).gridTemplateColumns.split(" ").length : 0,
+      activities: activityGrid ? getComputedStyle(activityGrid).gridTemplateColumns.split(" ").length : 0,
+    };
+  });
+  expect(columnCounts).toEqual({ focus: 3, activities: 4 });
+  expect(runtimeErrors).toEqual([]);
+});
+
 test("Contact reveals only the selected destination and preserves the form while switching", async ({ page }) => {
   const runtimeErrors = await openRoute(page, "/contact/", {
     name: "contact-destination-mobile",

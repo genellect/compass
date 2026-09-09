@@ -7,16 +7,22 @@ const CONFIG = Object.freeze({
   SENDER_NAME: "学生支援団体COMPASS",
   TIME_ZONE: "Asia/Tokyo",
   YEARS: Object.freeze(["1年", "2年", "3年", "4年", "5・6年", "大学院生"]),
+  FOCUS_AREAS: Object.freeze([
+    "AI活用",
+    "英語学習",
+    "生命科学",
+    "IT・プログラミング",
+    "起業・ビジネス",
+    "留学・海外進学"
+  ]),
   INTERESTS: Object.freeze([
     "イベント企画",
     "SNS発信",
-    "デザイン",
-    "カメラマン",
-    "動画編集",
-    "Web開発",
-    "本格的なアプリ開発",
-    "AIの使い方",
-    "深層学習・AIエージェント",
+    "写真撮影",
+    "Webサイト制作",
+    "動画制作",
+    "デザイン・資料制作",
+    "本格的なシステム開発",
     "まずは話を聞いてみたい"
   ])
 });
@@ -159,6 +165,7 @@ function validateRegistration_(raw) {
     "facultyDepartment",
     "studentId",
     "year",
+    "focusAreas",
     "interests",
     "motivation"
   ];
@@ -172,6 +179,7 @@ function validateRegistration_(raw) {
     typeof raw.facultyDepartment !== "string" ||
     typeof raw.studentId !== "string" ||
     typeof raw.year !== "string" ||
+    (raw.focusAreas !== undefined && !Array.isArray(raw.focusAreas)) ||
     !Array.isArray(raw.interests) ||
     typeof raw.motivation !== "string" ||
     typeof raw.requestId !== "string" ||
@@ -186,6 +194,11 @@ function validateRegistration_(raw) {
   const studentId = raw.studentId.trim().toUpperCase();
   const year = raw.year.trim();
   const motivation = raw.motivation.trim();
+  // Keep the relay compatible while GAS is deployed immediately before the
+  // Pages release. The public Pages Function requires this field after cutover.
+  const focusAreas = Array.isArray(raw.focusAreas)
+    ? raw.focusAreas.map((item) => typeof item === "string" ? item.trim() : "")
+    : [];
   const interests = raw.interests.map((item) => typeof item === "string" ? item.trim() : "");
 
   if (name.length < 2 || name.length > 20) return { ok: false };
@@ -193,6 +206,9 @@ function validateRegistration_(raw) {
   if (facultyDepartment.length < 5 || facultyDepartment.length > 30) return { ok: false };
   if (!/^[A-Z]{2}\d{5,6}$/.test(studentId)) return { ok: false };
   if (CONFIG.YEARS.indexOf(year) === -1) return { ok: false };
+  if (raw.focusAreas !== undefined && (focusAreas.length < 1 || focusAreas.length > CONFIG.FOCUS_AREAS.length)) return { ok: false };
+  if (focusAreas.length > 0 && focusAreas.some((item) => CONFIG.FOCUS_AREAS.indexOf(item) === -1)) return { ok: false };
+  if (focusAreas.length > 0 && new Set(focusAreas).size !== focusAreas.length) return { ok: false };
   if (interests.length < 1 || interests.length > CONFIG.INTERESTS.length) return { ok: false };
   if (interests.some((item) => CONFIG.INTERESTS.indexOf(item) === -1)) return { ok: false };
   if (new Set(interests).size !== interests.length) return { ok: false };
@@ -214,6 +230,7 @@ function validateRegistration_(raw) {
       facultyDepartment,
       studentId,
       year,
+      focusAreas,
       interests,
       motivation
     }
@@ -221,6 +238,9 @@ function validateRegistration_(raw) {
 }
 
 function buildOperatorText_(payload) {
+  const focusAreas = payload.focusAreas.length > 0
+    ? payload.focusAreas.map((focusArea) => `  ・${focusArea}`).join("\n")
+    : "  ・（旧フォームからの送信）";
   const interests = payload.interests.map((interest) => `  ・${interest}`).join("\n");
   const motivation = payload.motivation || "（記入なし）";
   const receivedAt = Utilities.formatDate(
@@ -236,6 +256,8 @@ function buildOperatorText_(payload) {
 ・学部・学科：${payload.facultyDepartment}
 ・学籍番号：${payload.studentId}
 ・学年：${payload.year}
+・興味のあること・頑張りたいこと：
+${focusAreas}
 ・やってみたい活動：
 ${interests}
 ・興味を持った理由や、やってみたいこと：

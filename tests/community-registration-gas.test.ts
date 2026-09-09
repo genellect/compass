@@ -1,7 +1,7 @@
 import { readFileSync } from "node:fs";
 import { createContext, runInContext, type Context } from "node:vm";
 import { describe, expect, it } from "vitest";
-import { INTEREST_OPTIONS } from "../src/lib/community-registration-schema";
+import { FOCUS_AREA_OPTIONS, INTEREST_OPTIONS } from "../src/lib/community-registration-schema";
 
 const gasSource = readFileSync(new URL("../google-apps-script/Code.gs", import.meta.url), "utf8");
 const sharedSecret = "a-secure-shared-secret-with-more-than-32-characters";
@@ -16,6 +16,7 @@ const payload = {
   facultyDepartment: "薬学部 薬学科",
   studentId: "PP00000",
   year: "1年",
+  focusAreas: [FOCUS_AREA_OPTIONS[0], FOCUS_AREA_OPTIONS[1]],
   interests: [INTEREST_OPTIONS[0], INTEREST_OPTIONS[1]],
   motivation: "英語学習イベントを企画してみたいです。"
 };
@@ -130,6 +131,8 @@ describe("Community registration Google Apps Script", () => {
     expect(operator.body).toContain("COMPASS Communityの登録申請がありました。");
     expect(operator.body).toContain("・氏名：松井 優人");
     expect(operator.body).toContain("・学籍番号：PP00000");
+    expect(operator.body).toContain("・興味のあること・頑張りたいこと：");
+    expect(operator.body).toContain(`・${FOCUS_AREA_OPTIONS[1]}`);
     expect(operator.body).toContain(`・${INTEREST_OPTIONS[1]}`);
     expect(operator.body).toContain("※本メールはGoogle Apps Scriptにより自動送信されています。");
 
@@ -171,6 +174,28 @@ https://compass-official.pages.dev/
 
     expect(duplicate).toEqual({ ok: true, requestId, duplicate: true });
     expect(runtime.sentEmails).toHaveLength(2);
+  });
+
+  it("accepts the previous relay shape during the GAS-first deployment window", () => {
+    const runtime = createGasRuntime();
+    const legacyPayload = { ...payload } as Partial<typeof payload>;
+    delete legacyPayload.focusAreas;
+    const result = post(runtime.context, {
+      ...legacyPayload,
+      requestId: "2f386090-84e0-4c2f-a4d7-6f8f4f8ad142"
+    });
+
+    expect(result.ok).toBe(true);
+    expect(runtime.sentEmails[0]?.body).toContain("・（旧フォームからの送信）");
+  });
+
+  it("rejects an explicitly empty focus-area selection", () => {
+    const runtime = createGasRuntime();
+    expect(post(runtime.context, { ...payload, focusAreas: [] })).toEqual({
+      ok: false,
+      code: "validation"
+    });
+    expect(runtime.sentEmails).toHaveLength(0);
   });
 
   it("rejects an invalid shared secret and invalid student email", () => {

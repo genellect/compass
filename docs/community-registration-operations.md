@@ -47,6 +47,8 @@ Apps Scriptは保存しただけでは本番デプロイへ反映されません
 
 既存デプロイを更新すれば `/exec` URLは変わりません。新しいデプロイを別に作った場合は、Cloudflareの `GOOGLE_APPS_SCRIPT_URL` も新しいURLへ更新します。
 
+フォーム項目と送信契約を同時に更新する場合は、先に後方互換のあるGASを新バージョンへ更新し、その後にPagesを公開します。現行のGASは`focusAreas`がない旧Pages Functionからの送信を移行中のみ受け付け、新しいPages Functionは`focusAreas`を1件以上必須として検証します。この順序により切替中の既存フォーム受付を維持します。
+
 ## ローカル確認
 
 公開用の秘密値はリポジトリへ保存しません。`.env.example` と `.dev.vars.example` をそれぞれローカル専用ファイルへコピーして値を設定します。
