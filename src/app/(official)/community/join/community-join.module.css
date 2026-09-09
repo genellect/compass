@@ -423,6 +423,7 @@
 }
 
 /* Shared COMPASS habitat palette; form content and geometry are unchanged. */
+@media (min-width: 901px) {
 .page { --ink:#173740; --copy:#49636a; --paper:#f2f3ed; --cyan:#2f7984; --cyan-deep:#246673; --line:#ccd8d6; background:radial-gradient(ellipse at 12% 0%,#ddece6,transparent 45rem),linear-gradient(130deg,#f7f5ee,#edf2ef); }
 .page .backLink { color:#315b64; }
 .page .backLink:hover { color:#173740; }
@@ -436,3 +437,4 @@
 .page .steps li { border-color:#b7ccca; }
 .page .notice { background:#e6eeE8; border-color:#afc6c2; }
 .page .notice p:first-child { color:#173740; }
+}

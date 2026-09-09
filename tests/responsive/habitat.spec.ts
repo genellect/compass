@@ -55,7 +55,7 @@ test('Desktop Hero fits the first screen and the new header remains keyboard ope
   const technology=nav.getByRole('button',{name:'Technology',exact:true});
   await technology.click();
   await expect(page.locator('#technology-menu a')).toHaveCount(1);
-  await expect(page.locator('#technology-menu a')).toHaveText('Technology教育を変える');
+  await expect(page.locator('#technology-menu a')).toHaveText('COMPASS Interactive疑問が届く、参加型講義システム');
   await expect(page.locator('#technology-menu a')).toHaveAttribute('href','INTRO_Interactive/');
   await page.keyboard.press('Escape');
   await expect(nav.getByText('Technology Core',{exact:true})).toHaveCount(0);

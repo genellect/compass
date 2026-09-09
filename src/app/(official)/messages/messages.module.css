@@ -1155,6 +1155,7 @@
 }
 
 /* The editorial structure stays intact inside the shared COMPASS palette. */
+@media (min-width: 901px) {
 .messagePage { --message-paper:#f3f3eb; --message-paper-deep:#e3ebe3; --message-ink:#173740; --message-copy:#36545b; --message-cyan:#398694; background:#eef1e9; }
 .messagePage .reader,.messagePage .readingStage { background:linear-gradient(120deg,#f5f4eb,#e6eee7); }
 .messagePage .cover { color:#173740; background:radial-gradient(ellipse at 85% 20%,#d7e9e2,transparent 58%),linear-gradient(120deg,#faf8f0,#edf2ec); }
@@ -1172,3 +1173,4 @@
 .messagePage .chapterIndex li[data-read="true"] button span { color:#346f60; }
 .messagePage .chapterIndex li[data-current="true"] button { color:#173740; background:#d9e7de; }
 .messagePage .mobileReaderBar { color:#173740; background:#f3f5eded; border-color:#bccfca; }
+}

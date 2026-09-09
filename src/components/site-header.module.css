@@ -48,17 +48,6 @@
   .header:global(.site-header) :global(.panel-link:hover) { background: #c5e6fa0d; transform: none; }
   .header:global(.site-header) :global(:is(a,button):focus-visible) { outline: 2px solid #257788; outline-offset: 4px; }
 }
-@media (max-width: 900px) {
-  .header:global(.site-header):not([data-route-context="root"]) { color:#173740; background:#f3f5edf5; border-bottom:1px solid #c4d2cd; box-shadow:0 5px 18px #17374010; }
-  .header:global(.site-header):not([data-route-context="root"]) :global(.logo-copy strong),
-  .header:global(.site-header):not([data-route-context="root"]) :global(.site-product-context),
-  .header:global(.site-header):not([data-route-context="root"]) :global(.menu-toggle) { color:#173740; }
-  .header:global(.site-header):not([data-route-context="root"]) :global(.logo-mark) { border-color:#4f7b80; }
-  .header:global(.site-header):not([data-route-context="root"]) ~ :global(.mobile-menu .mobile-menu-panel) { color:#173740; background:#f3f5ed; border-color:#bdcfca; }
-  .header:global(.site-header):not([data-route-context="root"]) ~ :global(.mobile-menu :is(p,strong,a,button)) { color:#173740; }
-  .header:global(.site-header):not([data-route-context="root"]) ~ :global(.mobile-menu :is(small,.mobile-menu-top span)) { color:#49636a; }
-  .header:global(.site-header):not([data-route-context="root"]) ~ :global(.mobile-menu .mobile-menu-primary) { color:#f8faf5; background:#173f49; }
-}
 @media (min-width: 901px) and (max-width: 1100px) {
   :global(body):has(.header) { --header-height: 92px; }
   .header:global(.site-header) { inset: 12px 12px auto; width: calc(100% - 24px); }

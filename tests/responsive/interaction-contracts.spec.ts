@@ -90,6 +90,8 @@ for (const route of officialDesktopRoutes) {
   test(`Official Desktop navigation contract: ${route.path}`, async ({ page }) => {
     const runtimeErrors = await openRoute(page, route.path, { name: "desktop-nav", width: 1363, height: 936 });
     const nav = page.locator(".site-header .desktop-nav");
+    await expect(page.locator("footer").last()).toContainText("Don’t Just Learn. Build What’s Next.");
+    await expect(page.locator("footer").last()).not.toContainText("Better Education. Better Decisions.");
     await expect(nav).toBeVisible();
     const groups = ["Technology", "Resources", "Community"];
     for (const label of groups) {
@@ -98,7 +100,7 @@ for (const route of officialDesktopRoutes) {
     if (route.path === "/") {
       await nav.getByRole("button", { name: "Technology", exact: true }).click();
       await expect(nav.locator("#technology-menu a")).toHaveCount(1);
-      await expect(nav.locator("#technology-menu a")).toHaveText("Technology教育を変える");
+      await expect(nav.locator("#technology-menu a")).toHaveText("COMPASS Interactive疑問が届く、参加型講義システム");
       await expect(nav.locator("#technology-menu a")).toHaveAttribute("href", "INTRO_Interactive/");
       await page.keyboard.press("Escape");
       await expect(nav.getByText("Technology Core", { exact: true })).toHaveCount(0);
