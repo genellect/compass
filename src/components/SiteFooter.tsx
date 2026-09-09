@@ -4,6 +4,7 @@ import {
 } from "../lib/futureStrategyLibrary";
 import { resolveSiteHref, type SiteRouteContext } from "./siteRouteContext";
 import styles from "./site-footer.module.css";
+import mobileChrome from "./mobile-chrome.module.css";
 
 const libraryUrl = "/future-strategy-library/";
 
@@ -17,7 +18,7 @@ export function SiteFooter({ routeContext = "root" }: { routeContext?: SiteRoute
   return (
     <>
 <footer
-  className={`site-footer${routeContext === "root" ? "" : ` ${styles.footer}`}`}
+  className={`site-footer${routeContext === "root" ? "" : ` ${styles.footer}`} ${mobileChrome.chrome} ${['root','messages'].includes(routeContext) ? mobileChrome.dark : ''}`}
   data-route-context={routeContext}
   data-ui-variant="root"
 >

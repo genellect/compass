@@ -389,7 +389,7 @@ expectExcludes(official, "AI時代の学生へ贈る、COMPASSの決意。", "Ma
 
 expectOrdered(
   official,
-  ['id="resources"', 'id="manifesto"', 'id="community"', 'id="founder"', 'id="contact"', 'class="site-footer"'],
+  ['id="resources"', 'id="manifesto"', 'id="community"', 'id="founder"', 'id="contact"', '<footer class="site-footer'],
   "Official closing section order"
 );
 

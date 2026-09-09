@@ -119,11 +119,11 @@ test('Desktop visits all nine areas and retains working disclosure and pause con
   expect(errors).toEqual([]);
 });
 
-test('Mobile preserves the current layout without fetching habitat assets or engine', async ({ browser }) => {
+test('Mobile preserves copy without fetching realtime habitat assets or engine', async ({ browser }) => {
   const context = await browser.newContext({ ...devices['iPhone 13'], reducedMotion: 'reduce' });
   const page = await context.newPage(); const assets: string[] = []; const engines: Promise<boolean>[] = [];
   await page.route(/google-analytics|googletagmanager|cloudflareinsights|challenges\.cloudflare/, route => route.abort());
-  page.on('request', request => { if (request.url().includes('/habitat/')) assets.push(request.url()); });
+  page.on('request', request => { if (request.url().includes('/habitat/v3/')) assets.push(request.url()); });
   page.on('response', response => { if (response.url().endsWith('.js')) engines.push(response.text().then(text => text.includes('Habitat asset unavailable')).catch(() => false)); });
   await page.goto('/'); await expect(page.locator('[data-habitat]')).toHaveAttribute('data-enabled','false');
   await expect(page.locator('.v4-technology__interactive-title')).toHaveText('LET EVERYTHING MOVE.');
@@ -177,7 +177,7 @@ test('iPad landscape enters the immersive scene while portrait stays static', as
   const portraitPage = await portrait.newPage();
   const habitatRequests: string[] = [];
   portraitPage.on('request', request => {
-    if (request.url().includes('/habitat/')) habitatRequests.push(request.url());
+    if (request.url().includes('/habitat/v3/')) habitatRequests.push(request.url());
   });
   await portraitPage.route(/google-analytics|googletagmanager|cloudflareinsights|challenges\.cloudflare/, route => route.abort());
   await portraitPage.goto('/');

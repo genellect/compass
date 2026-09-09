@@ -25,6 +25,7 @@ const contentTypes = new Map([
   [".jpg", "image/jpeg"],
   [".js", "text/javascript; charset=utf-8"],
   [".json", "application/json; charset=utf-8"],
+  [".mp4", "video/mp4"],
   [".png", "image/png"],
   [".svg", "image/svg+xml; charset=utf-8"],
   [".txt", "text/plain; charset=utf-8"],
@@ -62,14 +63,27 @@ const server = createServer((request, response) => {
     return;
   }
 
-  response.writeHead(200, {
+  const size = statSync(file).size;
+  const headers = {
     "Content-Type": contentTypes.get(extname(file).toLowerCase()) ?? "application/octet-stream",
-  });
+    "Accept-Ranges": "bytes",
+  };
+  const range = request.headers.range?.match(/^bytes=(\d+)-(\d*)$/);
+  let start = 0, end = size - 1;
+  if (range) {
+    start = Number(range[1]); end = range[2] ? Math.min(Number(range[2]), size - 1) : size - 1;
+    if (start > end || start >= size) {
+      response.writeHead(416, { 'Content-Range': `bytes */${size}` }); response.end(); return;
+    }
+    headers['Content-Range'] = `bytes ${start}-${end}/${size}`;
+  }
+  headers['Content-Length'] = end - start + 1;
+  response.writeHead(range ? 206 : 200, headers);
   if (request.method === "HEAD") {
     response.end();
     return;
   }
-  createReadStream(file).pipe(response);
+  createReadStream(file, { start, end }).pipe(response);
 });
 
 server.listen(port, host, () => {

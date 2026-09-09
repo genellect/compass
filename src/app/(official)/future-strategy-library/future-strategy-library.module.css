@@ -3080,6 +3080,13 @@
 }
 
 /* Shared COMPASS footer only; the page UI retains its original theme. */
+@media (max-width:900px) {
+  .fslPage .footer { background:#07131c; color:#b6c9c8; border-color:#3e5960; }
+  .fslPage .footerBrand strong { color:#eff4ee; }
+  .fslPage .footerBrand span,.fslPage .footerLinks a,.fslPage .footerDisclaimer p,.fslPage .copyright { color:#b6c9c8; }
+  .fslPage .footerDisclaimer { border-color:#3e5960; }
+  .fslPage .footerLinks a:focus-visible { outline:2px solid #b6c9c8; outline-offset:4px; }
+}
 @media (min-width: 901px) {
 .fslPage .footer { color:#49636a; background:#eeefe8; border-top:1px solid #bfceca; }
 .fslPage .footerBrand strong { color:#173740; }

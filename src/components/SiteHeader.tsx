@@ -8,6 +8,7 @@ import {
 import { resolveSiteHref, type SiteRouteContext } from "./siteRouteContext";
 import styles from "./parent-brand.module.css";
 import headerStyles from "./site-header.module.css";
+import mobileChrome from "./mobile-chrome.module.css";
 
 type NavItem = {
   description: string;
@@ -167,6 +168,7 @@ export function SiteHeader({
   const [mobileMounted, setMobileMounted] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [pendingMobileTarget, setPendingMobileTarget] = useState<string | null>(null);
+  const mobileChromeClass = `${mobileChrome.chrome} ${['root', 'library', 'messages', 'community'].includes(routeContext) ? mobileChrome.dark : ''}`;
   const routeSection: Record<Exclude<SiteRouteContext, "root">, string> = {
     messages: "resources",
     library: "resources",
@@ -300,7 +302,7 @@ export function SiteHeader({
       <a className="skip-link" href="#main">本文へスキップ</a>
       <header
         ref={headerRef}
-        className={`site-header ${headerStyles.header}`}
+        className={`site-header ${headerStyles.header} ${mobileChromeClass}`}
         data-site-header
         data-route-context={routeContext}
         data-fsl-landing-header={routeContext === "library" ? "true" : undefined}
@@ -420,7 +422,7 @@ export function SiteHeader({
       <div className={`mobile-scrim${mobileOpen ? " is-visible" : ""}`} hidden={!mobileMounted} onClick={() => closeMobileMenu()} />
       <aside
         id="mobile-menu"
-        className={`mobile-menu${mobileOpen ? " is-open" : ""}`}
+        className={`mobile-menu${mobileOpen ? " is-open" : ""} ${mobileChromeClass}`}
         aria-label="Mobile navigation"
         aria-hidden={!mobileOpen}
         hidden={!mobileMounted}

@@ -1,0 +1,487 @@
+{
+  "version": "mobile-space-v1",
+  "productionReady": false,
+  "status": "Actual footage encoded; browser and Preview acceptance pending",
+  "method": "ISS photography and photographic timelapse; crop, resize and H.264/WebP encode only",
+  "sourcePolicy": "https://www.nasa.gov/nasa-brand-center/images-and-media/",
+  "sections": [
+    {
+      "id": "top",
+      "poster": "/habitat/mobile-v1/top-720.webp",
+      "tablet": "/habitat/mobile-v1/top-tablet-768.webp",
+      "end": "/habitat/mobile-v1/top-end-720.webp",
+      "video": "/habitat/mobile-v1/top-{size}.mp4",
+      "posters": [
+        {
+          "src": "/habitat/mobile-v1/top-720.webp",
+          "width": 720,
+          "height": 1280,
+          "bytes": 15488
+        },
+        {
+          "src": "/habitat/mobile-v1/top-1080.webp",
+          "width": 1080,
+          "height": 1920,
+          "bytes": 33676
+        }
+      ],
+      "tablets": [
+        {
+          "src": "/habitat/mobile-v1/top-tablet-768.webp",
+          "width": 768,
+          "height": 1024,
+          "bytes": 11028
+        },
+        {
+          "src": "/habitat/mobile-v1/top-tablet-1080.webp",
+          "width": 1080,
+          "height": 1440,
+          "bytes": 34168
+        }
+      ],
+      "ends": [
+        {
+          "src": "/habitat/mobile-v1/top-end-720.webp",
+          "width": 720,
+          "height": 1280,
+          "bytes": 17048
+        },
+        {
+          "src": "/habitat/mobile-v1/top-end-1080.webp",
+          "width": 1080,
+          "height": 1920,
+          "bytes": 43108
+        }
+      ],
+      "videos": [
+        {
+          "src": "/habitat/mobile-v1/top-720.mp4",
+          "width": 720,
+          "height": 1280,
+          "bytes": 2802921,
+          "duration": 8,
+          "fps": 24,
+          "audio": false
+        },
+        {
+          "src": "/habitat/mobile-v1/top-1080.mp4",
+          "width": 1080,
+          "height": 1920,
+          "bytes": 3166922,
+          "duration": 8,
+          "fps": 24,
+          "audio": false
+        }
+      ],
+      "focus": [
+        50,
+        50
+      ],
+      "source": "https://svs.gsfc.nasa.gov/31375/",
+      "sourceFile": "aurora-hero-source.mp4",
+      "sourceSha256": "813e5e56df2a13cb86a4f3501f18a5da1475176f6fcf6877133ac51a8d7afa86",
+      "sourceStart": 8,
+      "credit": "NASA / Earth Science and Remote Sensing Unit, Johnson Space Center"
+    },
+    {
+      "id": "vision",
+      "poster": "/habitat/mobile-v1/vision-720.webp",
+      "tablet": "/habitat/mobile-v1/vision-tablet-768.webp",
+      "end": null,
+      "video": null,
+      "posters": [
+        {
+          "src": "/habitat/mobile-v1/vision-720.webp",
+          "width": 720,
+          "height": 1280,
+          "bytes": 88310
+        },
+        {
+          "src": "/habitat/mobile-v1/vision-1080.webp",
+          "width": 1080,
+          "height": 1920,
+          "bytes": 210694
+        }
+      ],
+      "tablets": [
+        {
+          "src": "/habitat/mobile-v1/vision-tablet-768.webp",
+          "width": 768,
+          "height": 1024,
+          "bytes": 71772
+        },
+        {
+          "src": "/habitat/mobile-v1/vision-tablet-1080.webp",
+          "width": 1080,
+          "height": 1440,
+          "bytes": 142442
+        }
+      ],
+      "ends": [],
+      "videos": [],
+      "focus": [
+        50,
+        50
+      ],
+      "source": "https://eol.jsc.nasa.gov/SearchPhotos/photo.pl?mission=ISS061&roll=E&frame=110527",
+      "sourceFile": "ISS061-E-110527.jpg",
+      "sourceSha256": "f595ae42793b434d3b436bfc1cce6b66955e5e5466d850fe1e6a0a6c98450293",
+      "sourceStart": null,
+      "credit": "NASA / Earth Science and Remote Sensing Unit, Johnson Space Center"
+    },
+    {
+      "id": "experience",
+      "poster": "/habitat/mobile-v1/experience-720.webp",
+      "tablet": "/habitat/mobile-v1/experience-tablet-768.webp",
+      "end": null,
+      "video": null,
+      "posters": [
+        {
+          "src": "/habitat/mobile-v1/experience-720.webp",
+          "width": 720,
+          "height": 1280,
+          "bytes": 73658
+        },
+        {
+          "src": "/habitat/mobile-v1/experience-1080.webp",
+          "width": 1080,
+          "height": 1920,
+          "bytes": 263568
+        }
+      ],
+      "tablets": [
+        {
+          "src": "/habitat/mobile-v1/experience-tablet-768.webp",
+          "width": 768,
+          "height": 1024,
+          "bytes": 72880
+        },
+        {
+          "src": "/habitat/mobile-v1/experience-tablet-1080.webp",
+          "width": 1080,
+          "height": 1440,
+          "bytes": 225240
+        }
+      ],
+      "ends": [],
+      "videos": [],
+      "focus": [
+        50,
+        50
+      ],
+      "source": "https://www.nasa.gov/international-space-station/desktop-and-mobile-wallpapers/",
+      "sourceFile": "jet.png",
+      "sourceSha256": "be80ea6c5a4c4e3dbfc3431ff80ef7437f6d7c14abce6eca08e5c19a5566b08e",
+      "sourceStart": null,
+      "credit": "NASA / Earth Science and Remote Sensing Unit, Johnson Space Center"
+    },
+    {
+      "id": "technology",
+      "poster": "/habitat/mobile-v1/technology-720.webp",
+      "tablet": "/habitat/mobile-v1/technology-tablet-768.webp",
+      "end": null,
+      "video": null,
+      "posters": [
+        {
+          "src": "/habitat/mobile-v1/technology-720.webp",
+          "width": 720,
+          "height": 1280,
+          "bytes": 42062
+        },
+        {
+          "src": "/habitat/mobile-v1/technology-1080.webp",
+          "width": 1080,
+          "height": 1920,
+          "bytes": 180104
+        }
+      ],
+      "tablets": [
+        {
+          "src": "/habitat/mobile-v1/technology-tablet-768.webp",
+          "width": 768,
+          "height": 1024,
+          "bytes": 24540
+        },
+        {
+          "src": "/habitat/mobile-v1/technology-tablet-1080.webp",
+          "width": 1080,
+          "height": 1440,
+          "bytes": 83122
+        }
+      ],
+      "ends": [],
+      "videos": [],
+      "focus": [
+        50,
+        50
+      ],
+      "source": "https://svs.gsfc.nasa.gov/31375/",
+      "sourceFile": "aurora-full.tif",
+      "sourceSha256": "bc0629461bec06f9e58728107804e5793063327acdf6361ad0ed365db68e0036",
+      "sourceStart": null,
+      "credit": "NASA / Earth Science and Remote Sensing Unit, Johnson Space Center"
+    },
+    {
+      "id": "resources",
+      "poster": "/habitat/mobile-v1/resources-720.webp",
+      "tablet": "/habitat/mobile-v1/resources-tablet-768.webp",
+      "end": null,
+      "video": null,
+      "posters": [
+        {
+          "src": "/habitat/mobile-v1/resources-720.webp",
+          "width": 720,
+          "height": 1280,
+          "bytes": 82642
+        },
+        {
+          "src": "/habitat/mobile-v1/resources-1080.webp",
+          "width": 1080,
+          "height": 1920,
+          "bytes": 208220
+        }
+      ],
+      "tablets": [
+        {
+          "src": "/habitat/mobile-v1/resources-tablet-768.webp",
+          "width": 768,
+          "height": 1024,
+          "bytes": 69462
+        },
+        {
+          "src": "/habitat/mobile-v1/resources-tablet-1080.webp",
+          "width": 1080,
+          "height": 1440,
+          "bytes": 137096
+        }
+      ],
+      "ends": [],
+      "videos": [],
+      "focus": [
+        50,
+        50
+      ],
+      "source": "https://eol.jsc.nasa.gov/SearchPhotos/photo.pl?mission=ISS061&roll=E&frame=110527",
+      "sourceFile": "ISS061-E-110527.jpg",
+      "sourceSha256": "f595ae42793b434d3b436bfc1cce6b66955e5e5466d850fe1e6a0a6c98450293",
+      "sourceStart": null,
+      "credit": "NASA / Earth Science and Remote Sensing Unit, Johnson Space Center"
+    },
+    {
+      "id": "manifesto",
+      "poster": "/habitat/mobile-v1/manifesto-720.webp",
+      "tablet": "/habitat/mobile-v1/manifesto-tablet-768.webp",
+      "end": null,
+      "video": null,
+      "posters": [
+        {
+          "src": "/habitat/mobile-v1/manifesto-720.webp",
+          "width": 720,
+          "height": 1280,
+          "bytes": 34090
+        },
+        {
+          "src": "/habitat/mobile-v1/manifesto-1080.webp",
+          "width": 1080,
+          "height": 1920,
+          "bytes": 219166
+        }
+      ],
+      "tablets": [
+        {
+          "src": "/habitat/mobile-v1/manifesto-tablet-768.webp",
+          "width": 768,
+          "height": 1024,
+          "bytes": 38628
+        },
+        {
+          "src": "/habitat/mobile-v1/manifesto-tablet-1080.webp",
+          "width": 1080,
+          "height": 1440,
+          "bytes": 173898
+        }
+      ],
+      "ends": [],
+      "videos": [],
+      "focus": [
+        50,
+        50
+      ],
+      "source": "https://www.nasa.gov/international-space-station/desktop-and-mobile-wallpapers/",
+      "sourceFile": "sunset.png",
+      "sourceSha256": "0e48ee361d4b8829b0152f1ce00bbc44bd01dc9f7e45a73b36abc4ec666570f4",
+      "sourceStart": null,
+      "credit": "NASA / Earth Science and Remote Sensing Unit, Johnson Space Center"
+    },
+    {
+      "id": "community",
+      "poster": "/habitat/mobile-v1/community-720.webp",
+      "tablet": "/habitat/mobile-v1/community-tablet-768.webp",
+      "end": "/habitat/mobile-v1/community-end-720.webp",
+      "video": "/habitat/mobile-v1/community-{size}.mp4",
+      "posters": [
+        {
+          "src": "/habitat/mobile-v1/community-720.webp",
+          "width": 720,
+          "height": 1280,
+          "bytes": 21516
+        },
+        {
+          "src": "/habitat/mobile-v1/community-1080.webp",
+          "width": 1080,
+          "height": 1920,
+          "bytes": 41422
+        }
+      ],
+      "tablets": [
+        {
+          "src": "/habitat/mobile-v1/community-tablet-768.webp",
+          "width": 768,
+          "height": 1024,
+          "bytes": 32600
+        },
+        {
+          "src": "/habitat/mobile-v1/community-tablet-1080.webp",
+          "width": 1080,
+          "height": 1440,
+          "bytes": 108550
+        }
+      ],
+      "ends": [
+        {
+          "src": "/habitat/mobile-v1/community-end-720.webp",
+          "width": 720,
+          "height": 1280,
+          "bytes": 33532
+        },
+        {
+          "src": "/habitat/mobile-v1/community-end-1080.webp",
+          "width": 1080,
+          "height": 1920,
+          "bytes": 76548
+        }
+      ],
+      "videos": [
+        {
+          "src": "/habitat/mobile-v1/community-720.mp4",
+          "width": 720,
+          "height": 1280,
+          "bytes": 3724818,
+          "duration": 8,
+          "fps": 24,
+          "audio": false
+        },
+        {
+          "src": "/habitat/mobile-v1/community-1080.mp4",
+          "width": 1080,
+          "height": 1920,
+          "bytes": 3354677,
+          "duration": 8,
+          "fps": 24,
+          "audio": false
+        }
+      ],
+      "focus": [
+        50,
+        50
+      ],
+      "source": "https://svs.gsfc.nasa.gov/31375/",
+      "sourceFile": "aurora-community-source.mp4",
+      "sourceSha256": "3611d8d39a88d34e96768f0feb70826bf1ba6dfc207c00b7f21cc76fb82ae50d",
+      "sourceStart": 54,
+      "credit": "NASA / Earth Science and Remote Sensing Unit, Johnson Space Center"
+    },
+    {
+      "id": "founder",
+      "poster": "/habitat/mobile-v1/founder-720.webp",
+      "tablet": "/habitat/mobile-v1/founder-tablet-768.webp",
+      "end": null,
+      "video": null,
+      "posters": [
+        {
+          "src": "/habitat/mobile-v1/founder-720.webp",
+          "width": 720,
+          "height": 1280,
+          "bytes": 27246
+        },
+        {
+          "src": "/habitat/mobile-v1/founder-1080.webp",
+          "width": 1080,
+          "height": 1920,
+          "bytes": 66282
+        }
+      ],
+      "tablets": [
+        {
+          "src": "/habitat/mobile-v1/founder-tablet-768.webp",
+          "width": 768,
+          "height": 1024,
+          "bytes": 27728
+        },
+        {
+          "src": "/habitat/mobile-v1/founder-tablet-1080.webp",
+          "width": 1080,
+          "height": 1440,
+          "bytes": 57164
+        }
+      ],
+      "ends": [],
+      "videos": [],
+      "focus": [
+        50,
+        50
+      ],
+      "source": "https://www.nasa.gov/international-space-station/desktop-and-mobile-wallpapers/",
+      "sourceFile": "wispy.png",
+      "sourceSha256": "051c88e9a4c9bb66806468a1a6f675ba6eec2e45c6d7e9ea66f4abccea86cd95",
+      "sourceStart": null,
+      "credit": "NASA / Earth Science and Remote Sensing Unit, Johnson Space Center"
+    },
+    {
+      "id": "contact",
+      "poster": "/habitat/mobile-v1/contact-720.webp",
+      "tablet": "/habitat/mobile-v1/contact-tablet-768.webp",
+      "end": null,
+      "video": null,
+      "posters": [
+        {
+          "src": "/habitat/mobile-v1/contact-720.webp",
+          "width": 720,
+          "height": 1280,
+          "bytes": 34090
+        },
+        {
+          "src": "/habitat/mobile-v1/contact-1080.webp",
+          "width": 1080,
+          "height": 1920,
+          "bytes": 219166
+        }
+      ],
+      "tablets": [
+        {
+          "src": "/habitat/mobile-v1/contact-tablet-768.webp",
+          "width": 768,
+          "height": 1024,
+          "bytes": 38628
+        },
+        {
+          "src": "/habitat/mobile-v1/contact-tablet-1080.webp",
+          "width": 1080,
+          "height": 1440,
+          "bytes": 173898
+        }
+      ],
+      "ends": [],
+      "videos": [],
+      "focus": [
+        50,
+        50
+      ],
+      "source": "https://www.nasa.gov/international-space-station/desktop-and-mobile-wallpapers/",
+      "sourceFile": "sunset.png",
+      "sourceSha256": "0e48ee361d4b8829b0152f1ce00bbc44bd01dc9f7e45a73b36abc4ec666570f4",
+      "sourceStart": null,
+      "credit": "NASA / Earth Science and Remote Sensing Unit, Johnson Space Center"
+    }
+  ]
+}

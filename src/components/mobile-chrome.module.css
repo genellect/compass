@@ -1,0 +1,25 @@
+/* Official navigation surfaces only: never inherited by page bodies. */
+@media (max-width:900px), (min-width:901px) and (pointer:coarse) and (orientation:portrait), (min-width:901px) and (pointer:none), (min-width:901px) and (pointer:fine) and (hover:none) {
+  .chrome { --chrome-bg:#f3f2ec; --chrome-fg:#183740; --chrome-secondary:#40636a; --chrome-line:#b8cac1; --chrome-button:#193f48; --chrome-button-text:#fff; }
+  .dark { --chrome-bg:#07121b; --chrome-fg:#eff4ee; --chrome-secondary:#b6c9c8; --chrome-line:#3e5960; --chrome-button:#d4e9de; --chrome-button-text:#173740; }
+  .chrome:global(.site-header),.chrome:global(.site-footer) { background:var(--chrome-bg); color:var(--chrome-fg); border-color:var(--chrome-line); box-shadow:none; backdrop-filter:none; }
+  .chrome:global(.site-header) :global(.logo-copy strong),.chrome:global(.site-header) :global(.site-logo),.chrome:global(.site-header) :global(.menu-toggle) { color:var(--chrome-fg); }
+  .chrome:global(.site-header) :global(.menu-toggle) { background:transparent; border-color:var(--chrome-line); }
+  .chrome :global(:is(.menu-toggle,.mobile-menu-close)>span) { background:var(--chrome-fg); }
+  .chrome :global(.logo-mark),.chrome :global(.logo-mark)::before { border-color:var(--chrome-secondary); }
+  .chrome :global(.logo-mark span) { background:var(--chrome-secondary); }
+  .chrome :global(.site-product-context) { background:transparent; border-color:var(--chrome-line); color:var(--chrome-secondary); }
+  .chrome:global(.mobile-menu) :global(.mobile-menu-panel) { background:var(--chrome-bg); color:var(--chrome-fg); border-color:var(--chrome-line); }
+  .chrome :global(:is(.mobile-menu-top,.mobile-nav-group,.mobile-nav-group a)) { border-color:var(--chrome-line); }
+  .chrome :global(:is(.mobile-menu-top p,.mobile-nav-link-title,.mobile-nav-group a)) { color:var(--chrome-fg); }
+  .chrome :global(:is(.mobile-menu-top span,.mobile-nav-group h2,.mobile-nav-link-description)) { color:var(--chrome-secondary); }
+  .chrome :global(.mobile-nav-group a) { background:transparent; box-shadow:none; }
+  .chrome :global(.mobile-nav-group a:hover),.chrome :global(.mobile-nav-group a[aria-current]) { background:color-mix(in srgb,var(--chrome-fg) 7%,var(--chrome-bg)); }
+  .chrome :global(.mobile-menu-close) { background:transparent; border-color:var(--chrome-line); color:var(--chrome-fg); }
+  .chrome :global(.mobile-menu-primary) { background:var(--chrome-button); color:var(--chrome-button-text); border-color:var(--chrome-button); }
+  .chrome:global(.site-footer) :global(:is(p,a,span)) { color:var(--chrome-secondary); }
+  .chrome:global(.site-footer) :global(.footer-logo) { color:var(--chrome-fg); }
+  .chrome:global(.site-footer) :global(.footer-cta a) { background:transparent; color:var(--chrome-fg); border-color:var(--chrome-line); }
+  .chrome:global(.site-footer) :global(:is(.footer-cta,.footer-note)) { border-color:var(--chrome-line); }
+  .chrome :global(:is(a,button):focus-visible) { outline:2px solid var(--chrome-secondary); outline-offset:4px; }
+}
