@@ -17,13 +17,17 @@ test("JP film is landscape-only and Original retains every photo and control", a
   expect(originals).toHaveLength(19);
   expect(await film.locator("img").evaluateAll(imgs => imgs.map(img => img.getAttribute("src")))).toEqual(originals);
   const canvas = film.locator("canvas");
+  const filmBox = (await film.boundingBox())!;
+  expect(filmBox.width).toBeGreaterThanOrEqual(1438);
+  expect(filmBox.height).toBeGreaterThan(650);
+  await film.screenshot({ path: info.outputPath("film-desktop-initial.png") });
   const before = await canvas.screenshot();
   await film.getByRole("button", { name: "次の写真", exact: true }).click();
   expect(Buffer.compare(before, await canvas.screenshot())).not.toBe(0);
   const still = await canvas.screenshot();
   await page.waitForTimeout(300);
   expect(Buffer.compare(still, await canvas.screenshot())).toBe(0);
-  await page.locator("#fragments").screenshot({ path: info.outputPath("film-desktop.png") });
+  await film.screenshot({ path: info.outputPath("film-desktop.png") });
   await toggle.getByRole("button", { name: "Original", exact: true }).click();
   await expect(original).toBeVisible();
   await expect(film.locator("canvas")).toHaveCount(0);
@@ -40,7 +44,7 @@ test("JP film is landscape-only and Original retains every photo and control", a
       await film.scrollIntoViewIfNeeded();
       await expect(film).toHaveAttribute("data-ready", "true", { timeout: 20_000 });
       await expect(canvas).toHaveCount(1);
-      if (width === 1180) await page.locator("#fragments").screenshot({ path: info.outputPath("film-ipad-landscape.png") });
+      if (width === 1180) await film.screenshot({ path: info.outputPath("film-ipad-landscape.png") });
     } else {
       await expect(toggle).toBeHidden();
       await expect(film).toBeHidden();

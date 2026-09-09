@@ -12,7 +12,7 @@ export function mountFilm(host: HTMLDivElement, photos: readonly FilmPhoto[], pa
   host.appendChild(renderer.domElement);
   const scene = new THREE.Scene();
   const camera = new THREE.PerspectiveCamera(40, 1, 0.1, 80);
-  camera.position.z = 7.4;
+  camera.position.z = 8.7;
   const reduced = matchMedia("(prefers-reduced-motion: reduce)");
   const coarse = matchMedia("(pointer: coarse)");
   const loader = new THREE.TextureLoader();
@@ -20,18 +20,64 @@ export function mountFilm(host: HTMLDivElement, photos: readonly FilmPhoto[], pa
   const panels = photos.map(photo => {
     const width = 4 * photo.width / photo.height;
     const center = length + width / 2;
-    length += width + 0.12;
-    const geometry = new THREE.PlaneGeometry(width, 4, 32, 8);
+    length += width + 0.16;
+    // The photo window keeps its native ratio; the carrier and perforations
+    // sit outside it. Adjacent carriers meet to form one continuous ribbon.
+    const geometry = new THREE.PlaneGeometry(width + 0.16, 4.76, 48, 16);
     const material = new THREE.ShaderMaterial({
       transparent: true,
-      uniforms: { picture: { value: null }, center: { value: 0 }, loaded: { value: 0 }, bend: { value: 0 }, tone: { value: photo.tone === "warm" || photo.tone === "tech" ? 0.9 : photo.tone === "lift" ? 0.94 : 1 }, lift: { value: photo.tone === "lift" ? 1.03 : 1 } },
-      vertexShader: `varying vec2 vUv; uniform float center; uniform float bend;
-        void main(){ vUv=uv; vec3 p=position; float x=p.x+center; float a=x/10.;
-          p.x=10.*sin(a); p.z=10.*(cos(a)-1.) + bend*sin(uv.x*3.14159265)*.12;
-          gl_Position=projectionMatrix*modelViewMatrix*vec4(p,1.); }`,
-      fragmentShader: `uniform sampler2D picture; uniform float loaded; uniform float tone; uniform float lift; varying vec2 vUv;
-        void main(){ vec4 c=texture2D(picture,vUv); float gray=dot(c.rgb,vec3(.2126,.7152,.0722));
-          gl_FragColor=vec4(mix(vec3(gray),c.rgb,tone)*lift,c.a*loaded);
+      uniforms: { picture: { value: null }, center: { value: 0 }, origin: { value: center }, photoWidth: { value: width }, loaded: { value: 0 }, bend: { value: 0 }, tone: { value: photo.tone === "warm" || photo.tone === "tech" ? 0.9 : photo.tone === "lift" ? 0.94 : 1 }, lift: { value: photo.tone === "lift" ? 1.03 : 1 } },
+      vertexShader: `
+        varying vec2 vLocal;
+        varying float vCarrier;
+        varying float vDepth;
+        uniform float center;
+        uniform float origin;
+        uniform float bend;
+        void main() {
+          vLocal = position.xy;
+          vCarrier = position.x + origin;
+          float x = position.x + center;
+          // Open, asymmetric sweep rather than a closed cylindrical gallery.
+          // Every panel shares the same world-space curve, including its edges.
+          float twist = .16 * sin(x * .24 - .3);
+          float y = position.y * cos(twist);
+          float z = position.y * sin(twist);
+          y += .115 * x + .32 * sin(x * .38 - .4);
+          z += -.018 * x * x + .65 * sin(x * .36 + .25);
+          z += bend * .10 * sin(x * .3);
+          vDepth = z;
+          gl_Position = projectionMatrix * modelViewMatrix * vec4(x, y, z, 1.);
+        }`,
+      fragmentShader: `
+        uniform sampler2D picture;
+        uniform float loaded;
+        uniform float photoWidth;
+        uniform float tone;
+        uniform float lift;
+        varying vec2 vLocal;
+        varying float vCarrier;
+        varying float vDepth;
+        void main() {
+          float edge = abs(vLocal.y);
+          bool photo = abs(vLocal.x) < photoWidth * .5 && edge < 2.;
+          if (photo) {
+            vec2 photoUv = vLocal / vec2(photoWidth, 4.) + .5;
+            vec4 c = texture2D(picture, photoUv);
+            float gray = dot(c.rgb, vec3(.2126, .7152, .0722));
+            gl_FragColor = vec4(mix(vec3(gray), c.rgb, tone) * lift, c.a * loaded);
+          } else {
+            // Real transparent rounded perforations, not pale dots painted
+            // over the carrier. Their phase travels with the physical film.
+            vec2 hole = abs(vec2(mod(vCarrier + .2, .4) - .2, edge - 2.20)) - vec2(.09, .075);
+            float cutout = length(max(hole, 0.)) + min(max(hole.x, hole.y), 0.) - .025;
+            if (cutout < 0.) discard;
+            vec3 carrier = vec3(.008, .016, .021);
+            carrier *= 1. + .14 * sin(vDepth * .8);
+            float rim = smoothstep(2.34, 2.37, edge);
+            carrier = mix(carrier, vec3(.11, .15, .16), rim * .45);
+            gl_FragColor = vec4(carrier, 1.);
+          }
           #include <colorspace_fragment>
         }`
     });

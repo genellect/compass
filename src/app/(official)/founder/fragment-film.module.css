@@ -1,5 +1,5 @@
-.film { position: relative; height: clamp(380px, 60vh, 560px); margin: 0 calc((min(1240px, 100vw - 48px) - 100vw) / 2); }
-.viewport { position: absolute; inset: 0 0 44px; touch-action: pan-y pinch-zoom; cursor: grab; outline-offset: -5px; }
+.film { position: relative; width: 100vw; height: clamp(480px, 74svh, 760px); margin-left: calc(50% - 50vw); }
+.viewport { position: absolute; inset: 0 0 48px; touch-action: pan-y pinch-zoom; cursor: grab; outline-offset: -5px; }
 .viewport:active { cursor: grabbing; }
 .viewport canvas { display: block; width: 100%; height: 100%; opacity: 0; }
 .film[data-ready="true"] canvas { opacity: 1; }
