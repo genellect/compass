@@ -1,7 +1,9 @@
 import * as THREE from "three";
 import { RoomEnvironment } from "three/addons/environments/RoomEnvironment.js";
 import { RoundedBoxGeometry } from "three/addons/geometries/RoundedBoxGeometry.js";
+import { SVGLoader } from "three/addons/loaders/SVGLoader.js";
 import type { SculptureKind } from "./ProductSculpture";
+import { PLATFORM_GLYPHS } from "./platform-glyphs";
 
 // A closed, bevelled ribbon swept along a three-lobed spatial curve. The profile,
 // torsion and changing width are modelled here rather than loaded from a stock asset.
@@ -143,6 +145,34 @@ export function mountSculpture(host: HTMLDivElement, kind: SculptureKind, isPaus
       moving.push(mesh);
     }
     sculpture.rotation.set(0.48, -0.4, -0.3);
+  } else if (kind === "platform") {
+    chrome.color.setHex(0x43d9ef);
+    chrome.metalness = 0.65;
+    chrome.roughness = 0.32;
+    chrome.clearcoat = 0.3;
+    chrome.envMapIntensity = 1;
+    blue.color.setHex(0x6652e8);
+    blue.metalness = 0.65;
+    blue.roughness = 0.32;
+    blue.clearcoat = 0.3;
+    blue.envMapIntensity = 1;
+    renderer.toneMappingExposure = 1.05;
+    key.intensity = 2;
+    rim.intensity = 2;
+    soft.intensity = 1;
+    for (const [index, outline] of PLATFORM_GLYPHS.entries()) {
+      const svg = new SVGLoader().parse(`<svg xmlns="http://www.w3.org/2000/svg"><path d="${outline}" fill-rule="evenodd"/></svg>`);
+      const shapes = svg.paths.flatMap(path => SVGLoader.createShapes(path));
+      const geometry = new THREE.ExtrudeGeometry(shapes, { depth: 22, bevelEnabled: true, bevelSize: 3, bevelThickness: 3, bevelSegments: 4, curveSegments: 24, steps: 1 });
+      geometry.scale(0.01, -0.01, 0.01);
+      geometry.center();
+      const glyph = new THREE.Mesh(geometry, index ? [blue, chrome] : [chrome, blue]);
+      glyph.position.x = index ? 0.48 : -0.48;
+      sculpture.add(glyph);
+      moving.push(glyph);
+    }
+    // The front is legible immediately, including with reduced motion.
+    sculpture.rotation.set(-0.07, -0.12, -0.025);
   } else {
     const body = new THREE.Mesh(ribbonGeometry(1.2, 0.4), chrome);
     body.scale.set(1, 1, 0.85);
@@ -178,6 +208,13 @@ export function mountSculpture(host: HTMLDivElement, kind: SculptureKind, isPaus
       sculpture.position.set(0.28, 0.65, 0);
       sculpture.scale.setScalar(kind === "interactive" ? 1.05 : 1.03);
     }
+    if (kind === "platform") {
+      camera.position.z = 5.2;
+      sculpture.position.set(0, 0, 0);
+      // The frontmost copy may overlap this field; the shade protects contrast.
+      sculpture.scale.setScalar(Math.min(1.95, camera.aspect * 1.35));
+      camera.updateProjectionMatrix();
+    }
     needsRender = true;
     schedule();
   };
@@ -194,6 +231,7 @@ export function mountSculpture(host: HTMLDivElement, kind: SculptureKind, isPaus
     if (coarse.matches || reduced.matches) return;
     const rect = host.getBoundingClientRect();
     targetPointer.set((event.clientX - rect.left) / rect.width - 0.5, (event.clientY - rect.top) / rect.height - 0.5);
+    if (kind === "platform") targetPointer.clampScalar(-0.5, 0.5);
   };
   const resetPointer = () => targetPointer.set(0, 0);
   const card = host.closest("article");
@@ -232,6 +270,20 @@ export function mountSculpture(host: HTMLDivElement, kind: SculptureKind, isPaus
           plate.rotation.y = (i - 6) * (0.16 + Math.sin(time * 0.42) * 0.10);
           plate.position.y = (i - 6) * (0.18 + (1 + Math.sin(time * 0.42)) * 0.025);
         });
+      } else if (kind === "platform") {
+        const phase = time * Math.PI * 2 / 8;
+        sculpture.rotation.x = -0.07 + pointer.y * 0.1745;
+        sculpture.rotation.y = -0.12 + pointer.x * 0.1745;
+        moving.forEach((glyph, i) => {
+          const wave = Math.sin(phase) * (i ? -1 : 1);
+          // A full turn with a readable hold at the beginning/end of each cycle.
+          const turn = THREE.MathUtils.clamp(((time % 8) / 8 - 0.12 - i * 0.06) / 0.68, 0, 1);
+          const eased = turn * turn * turn * (turn * (turn * 6 - 15) + 10);
+          glyph.rotation.y = eased * Math.PI * 2;
+          glyph.rotation.z = wave * 0.1396;
+          glyph.position.y = wave * 0.06;
+          glyph.position.z = wave * 0.2;
+        });
       } else {
         sculpture.rotation.y = 0.6 + time * 0.09 + pointer.x * 0.18;
         moving[0].rotation.z = Math.sin(time * 0.3) * 0.32;
@@ -246,7 +298,13 @@ export function mountSculpture(host: HTMLDivElement, kind: SculptureKind, isPaus
     schedule();
   }
   const onVisibility = () => { last = 0; schedule(); };
-  const onMotion = () => { last = 0; needsRender = true; schedule(); };
+  const onMotion = () => {
+    if (kind === "platform" && reduced.matches) {
+      sculpture.rotation.set(-0.07, -0.12, -0.025);
+      moving.forEach(glyph => { glyph.rotation.set(0, 0, 0); glyph.position.y = 0; glyph.position.z = 0; });
+    }
+    last = 0; needsRender = true; schedule();
+  };
   const onLost = (event: Event) => { event.preventDefault(); contextLost = true; host.dataset.ready = "false"; };
   const onRestored = () => { contextLost = false; host.dataset.ready = "true"; needsRender = true; schedule(); };
   document.addEventListener("visibilitychange", onVisibility);
@@ -275,6 +333,7 @@ export function mountSculpture(host: HTMLDivElement, kind: SculptureKind, isPaus
     [chrome, blue, porcelain, darkMetal, networkMaterial, signalMaterial].forEach((material) => material.dispose());
     environment.dispose();
     renderer.dispose();
+    renderer.forceContextLoss();
     renderer.domElement.remove();
   };
 }
