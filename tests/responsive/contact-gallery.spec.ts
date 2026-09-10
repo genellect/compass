@@ -165,12 +165,18 @@ for (const target of ["representative", "compass"]) {
     await menu.click();
     await page.keyboard.press("Escape");
     await expect(page.getByText("メールアドレス確認済み", { exact: false })).toBeVisible();
+    await page.locator('[data-contact-header]').getByRole('link',{name:'CONTACT — 3Dの入口へ戻る'}).click();
+    await expect(page.locator('[data-contact-entrance]')).toBeVisible();
+    await page.locator(`[data-door="${target}"]`).click();
+    await expect(page.getByText("メールアドレス確認済み", { exact: false })).toBeVisible();
     const submit = page.getByRole("button", { name: target === "compass" ? "COMPASSへ送信" : "代表へ送信", exact: true });
     await submit.click();
     await expect(page.getByText("テスト：送信を再試行してください。", { exact: true })).toBeVisible();
     await submit.click();
     await expect(page.getByRole("heading", { name: "ご連絡を受け付けました" })).toBeVisible();
     await expect(page.locator("[data-contact-header]")).toBeVisible();
+    await page.locator('[data-contact-header]').getByRole('link',{name:'CONTACT — 3Dの入口へ戻る'}).click();
+    await expect(page.locator('[data-contact-entrance]')).toBeVisible();
     expect(actions).toEqual(["request_code", "verify_code", "verify_code", "submit", "submit"]);
   });
 }

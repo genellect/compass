@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import brand from "@/components/parent-brand.module.css";
 import styles from "./contact-chrome.module.css";
+import { CONTACT_RETURN_TO_ENTRANCE } from "./contact-entry-events";
 
 const links = [
   { label: "Yuto Matsui — JP", href: "https://yuto-matsui.com/" },
@@ -50,7 +51,11 @@ export function ContactHeader() {
     <header className={styles.header} data-contact-header>
       <a className={styles.skip} href="#main">本文へスキップ</a>
       <div className={styles.headerInner}>
-        <a className={`site-logo ${brand.parentBrand} ${styles.brand}`} href="#contact-top" aria-label="Contact ページの先頭へ">
+        <a className={`site-logo ${brand.parentBrand} ${styles.brand}`} href="/contact/" aria-label="CONTACT — 3Dの入口へ戻る" onClick={(event) => {
+          if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+          setOpen(false);
+          if (!window.dispatchEvent(new Event(CONTACT_RETURN_TO_ENTRANCE, { cancelable: true }))) event.preventDefault();
+        }}>
           <span className="logo-mark" aria-hidden="true"><span /></span>
           <span className={styles.wordmark}>CONTACT</span>
         </a>

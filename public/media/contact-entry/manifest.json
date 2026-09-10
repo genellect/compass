@@ -7,33 +7,33 @@
   "assets": [
     {
       "file": "lobby-desktop.webp",
-      "bytes": 56324,
-      "sha256": "3015ed903e086370566cc35cf8094f9a2fb4476f1892544fded8efe5a3b36dea"
+      "bytes": 56940,
+      "sha256": "f549cd3086b3dc75ee5ae24b5ec8aa3efba2b46d0d438afbb95ddc8e7ccc2271"
     },
     {
       "file": "lobby-mobile.webp",
-      "bytes": 37452,
-      "sha256": "26b35c75d29406b8ba12144b10a20da52979a9a80f64ef3e6f7a6b9c6cce7c0f"
+      "bytes": 38292,
+      "sha256": "334d33083a59e04fa75103950fc45daeb700b20fbf87519fa06d8a3011a13222"
     },
     {
       "file": "representative-desktop.mp4",
-      "bytes": 632736,
-      "sha256": "dadfecc00b9024dfed94715b3ce5f5660c96ed7c0a526ef76d28cb942866acc3"
+      "bytes": 642575,
+      "sha256": "d6ad0d2768ff155223b6184f316da0d0482fcbf96ed98ddb9ab55ffd0f8d3670"
     },
     {
       "file": "compass-desktop.mp4",
-      "bytes": 617649,
-      "sha256": "5b47c54d1cf5ac08852e67981cf509a2c52a32f6224c1fec720b49a9bb2ce0ba"
+      "bytes": 626449,
+      "sha256": "e65449a8dcea39fcfd7cbc126aac4e4da63bd1c0ab996f4e45779be54991d507"
     },
     {
       "file": "representative-mobile.mp4",
-      "bytes": 456331,
-      "sha256": "a22e476b7bc44f75cb02d5445a07ac10f2a60ddf974e832a6c1fad32844b8acd"
+      "bytes": 465857,
+      "sha256": "ea3f95e57ec97cd9c0f9418ab7bd99ae880670d6fc83f71533083c4718ea464a"
     },
     {
       "file": "compass-mobile.mp4",
-      "bytes": 496540,
-      "sha256": "1e12ab7f61ed5584a1e1066083547fc4ae244e018f307659713c1a7e82714c2e"
+      "bytes": 506693,
+      "sha256": "dca7bc574fe71c4a38ed5479526f3c4c6e1c07fc7ce35cae80d5bb8875fb7ee2"
     }
   ]
 }

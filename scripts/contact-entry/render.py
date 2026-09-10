@@ -228,8 +228,8 @@ for target,x in centers.items():
  box('Door header track',(x,2,3.6),(2.65,.5,.085),bronze,.01)
  box('Flush stone threshold',(x,2,.043),(2.6,.8,.028),stone,.006)
  # Quiet lettering is mounted onto the solid wall, never a floating HTML card.
- text('Room name '+target,'執務室' if target=='representative' else '会議室',(x,1.752,4.23),.26,black)
- text('Room identity '+target,'Yuto Matsui' if target=='representative' else 'COMPASS',(x,1.75,3.92),.22,black)
+ text('Room name '+target,'執務室' if target=='representative' else '会議室',(x,1.752,4.82),.34,black)
+ text('Room identity '+target,'Yuto Matsui' if target=='representative' else 'COMPASS',(x,1.75,4.25),.62,black)
  leaves=[]
  for side in [-1,1]:
   h=bpy.data.objects.new(target+' leaf '+str(side),None);s.collection.objects.link(h);h.location=(x+side*.615,2.025,0)

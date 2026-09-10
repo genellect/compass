@@ -1,6 +1,7 @@
 "use client";
 
 import Script from "next/script";
+import { CONTACT_RETURN_TO_ENTRANCE } from "./contact-entry-events";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   CONTACT_ENDPOINT,
@@ -190,6 +191,25 @@ export function ContactForm() {
   const [touched, setTouched] = useState<Partial<Record<FieldName | "verificationCode", boolean>>>({});
   const [serverErrors, setServerErrors] = useState<FieldErrors>({});
   const [status, setStatus] = useState<SubmissionState>("idle");
+  useEffect(() => {
+    let focusFrame = 0;
+    const returnToEntrance = (event: Event) => {
+      // A completed submission uses the ordinary link to start a fresh visit.
+      if (status === "success") return;
+      event.preventDefault();
+      setEntryComplete(false);
+      cancelAnimationFrame(focusFrame);
+      focusFrame = requestAnimationFrame(() => {
+        document.getElementById("form-title")?.focus({ preventScroll: true });
+        window.scrollTo({ top: 0, behavior: "instant" });
+      });
+    };
+    window.addEventListener(CONTACT_RETURN_TO_ENTRANCE, returnToEntrance);
+    return () => {
+      window.removeEventListener(CONTACT_RETURN_TO_ENTRANCE, returnToEntrance);
+      cancelAnimationFrame(focusFrame);
+    };
+  }, [status]);
   const [statusMessage, setStatusMessage] = useState("");
   const [noticeMessage, setNoticeMessage] = useState("");
   const [turnstileReady, setTurnstileReady] = useState(false);

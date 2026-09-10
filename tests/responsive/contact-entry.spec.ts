@@ -2,6 +2,30 @@ import { expect, test } from "./responsive-fixture";
 import { collectRuntimeErrors } from "./layout-audit";
 
 for (const width of [390, 1440]) {
+  test(`CONTACT header returns to the 3D entrance and preserves the draft at ${width}px`, async ({page}) => {
+    await page.setViewportSize({width,height:900});
+    await page.emulateMedia({reducedMotion:'reduce'});
+    await page.goto('/contact/');
+    await page.locator('[data-door="representative"]').click();
+    await page.locator('#name').fill('入力保持テスト');
+    await page.locator('#details').fill('入口へ戻った後も保持する問い合わせ本文です。');
+    await page.locator('[data-contact-header]').getByRole('link',{name:'CONTACT — 3Dの入口へ戻る'}).focus();
+    await page.keyboard.press('Enter');
+    await expect(page.locator('[data-contact-entrance]')).toBeVisible();
+    await expect(page.locator('#form-title')).toBeFocused();
+    expect(await page.evaluate(()=>scrollY)).toBe(0);
+    await page.locator('[data-door="compass"]').click();
+    await expect(page.locator('input[value="compass"]')).toBeChecked();
+    await expect(page.locator('#name')).toHaveValue('入力保持テスト');
+    await expect(page.locator('#details')).toHaveValue('入口へ戻った後も保持する問い合わせ本文です。');
+    await page.locator('[data-contact-header]').getByRole('link',{name:'CONTACT — 3Dの入口へ戻る'}).click();
+    await expect(page.locator('[data-contact-entrance]')).toBeVisible();
+    await page.getByRole('button',{name:'演出なしで入力へ'}).click();
+    await expect(page.locator('#name')).toHaveValue('入力保持テスト');
+  });
+}
+
+for (const width of [390, 1440]) {
   for (const target of ["representative", "compass"]) {
     test(`Contact door ${target} plays a two-second film at ${width}px then leaves a quiet form`, async ({ page }, testInfo) => {
       const errors = collectRuntimeErrors(page);
@@ -127,13 +151,18 @@ test("Contact architecture stays unobscured and its door controls remain accessi
     await expect(image).toBeVisible();
     const imageBox=(await image.boundingBox())!;
     const questionBox=(await question.boundingBox())!;
-    expect(questionBox.y+questionBox.height).toBeLessThanOrEqual(imageBox.y);
+    const titleBox=(await page.getByRole('heading',{name:'お問い合わせ',exact:true}).boundingBox())!;
+    expect(titleBox.y).toBeGreaterThanOrEqual(imageBox.y);
+    expect(titleBox.y+titleBox.height).toBeLessThanOrEqual(questionBox.y);
+    expect(imageBox.x).toBe(0);
+    expect(imageBox.width).toBe(width);
     for (const target of ["representative","compass"]) {
       const door=page.locator(`[data-door="${target}"]`);
       await expect(door).toHaveAccessibleName(target==="representative" ? /執務室.*Yuto Matsui/ : /会議室.*COMPASS/);
       await expect(door).toHaveText("");
       expect(await door.evaluate(el=>getComputedStyle(el).backgroundColor)).toBe("rgba(0, 0, 0, 0)");
       const box=(await door.boundingBox())!;
+      expect(questionBox.y+questionBox.height).toBeLessThan(box.y);
       expect(box.width).toBeGreaterThanOrEqual(44);
       expect(box.height).toBeGreaterThanOrEqual(44);
       expect(box.x).toBeGreaterThanOrEqual(imageBox.x);
