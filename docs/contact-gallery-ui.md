@@ -33,3 +33,13 @@ email or verification code should be sent by these checks.
 The Contact route deliberately opts out of the shared full-screen Mobile menu
 contract. All other routes retain that contract. Preview publication uses the
 existing Cloudflare Git branch build; production publication is a separate step.
+
+## Atrium revision (2026-09-10)
+
+The visible wordmark is CONTACT. An 880px maximum writing desk exposes the
+monumental ring and receding colonnades above and beside the content. Mobile
+reserves 152px below the fixed header for the architecture, with a shorter
+entrance on short viewports. Solid white form panels retain readable text.
+Scroll adds a small depth offset; input focus freezes pointer/scroll response.
+The CSS fallback retains the ring and perspective floor without WebGL.
+ContactForm, schema, Pages Functions, and GAS remain unchanged.

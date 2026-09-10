@@ -52,7 +52,7 @@ export function ContactHeader() {
       <div className={styles.headerInner}>
         <a className={`site-logo ${brand.parentBrand} ${styles.brand}`} href="#contact-top" aria-label="Contact ページの先頭へ">
           <span className="logo-mark" aria-hidden="true"><span /></span>
-          <span className={styles.wordmark}>Contact</span>
+          <span className={styles.wordmark}>CONTACT</span>
         </a>
         <nav className={styles.desktopNav} aria-label="Contact navigation"><ContactLinks /></nav>
         <div className={styles.mobileMenu} ref={menu} onBlur={(event) => {
@@ -75,7 +75,7 @@ export function ContactFooter() {
     <footer className={styles.footer} data-contact-footer>
       <div className={styles.footerInner}>
         <div className={styles.footerTop}>
-          <a className={styles.footerTitle} href="#contact-top">Contact</a>
+          <a className={styles.footerTitle} href="#contact-top">CONTACT</a>
           <a className={styles.backTop} href="#contact-top">Back to top <span aria-hidden="true">↑</span></a>
         </div>
         <nav className={styles.footerNav} aria-label="Contact footer navigation"><ContactLinks /></nav>

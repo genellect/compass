@@ -21,7 +21,7 @@
 .brand:global(.site-logo) :global(.logo-mark) { border-color: #24454f70; background: none; box-shadow: none; }
 .brand:global(.site-logo) :global(.logo-mark)::before { border-color: #496a729e; }
 .brand:global(.site-logo) :global(.logo-mark span) { background: #496a729e; }
-.wordmark { font-size: 18px; font-weight: 750; letter-spacing: -.025em; }
+.wordmark { font-size: 18px; font-weight: 750; letter-spacing: .12em; }
 .desktopNav { display: flex; align-items: center; gap: clamp(18px, 2.4vw, 36px); }
 .desktopNav a, .footerNav a { display: flex; align-items: center; justify-content: space-between; gap: 12px; text-decoration: none; }
 .desktopNav a { color: #334952; font-size: 11px; font-weight: 650; letter-spacing: .015em; min-height: 44px; }
