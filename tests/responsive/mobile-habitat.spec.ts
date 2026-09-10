@@ -44,6 +44,55 @@ for (const width of [320,340,341,390,430,768,900]) {
   });
 }
 
+for (const viewport of [
+  {width:320,height:568},
+  {width:340,height:667},
+  {width:390,height:844},
+  {width:430,height:932},
+  {width:768,height:1024},
+  {width:900,height:600},
+]) {
+  test(`Mobile Hero fits the initial viewport at ${viewport.width}x${viewport.height}`,async({page})=>{
+    await page.setViewportSize(viewport);
+    await page.emulateMedia({reducedMotion:'reduce'});
+    await page.goto('/');
+    const layout=await page.locator('#top').evaluate(hero=>{
+      const heroBox=hero.getBoundingClientRect();
+      const title=hero.querySelector('h1')!.getBoundingClientRect();
+      const lead=hero.querySelector('.li-hero-lead')!.getBoundingClientRect();
+      const index=hero.querySelector('.li-system-index')!.getBoundingClientRect();
+      return {heroTop:heroBox.top,heroBottom:heroBox.bottom,titleBottom:title.bottom,
+        leadTop:lead.top,indexBottom:index.bottom,viewportHeight:innerHeight};
+    });
+    expect(layout.heroTop).toBeCloseTo(0,0);
+    expect(layout.heroBottom).toBeLessThanOrEqual(layout.viewportHeight+1);
+    expect(layout.indexBottom).toBeLessThanOrEqual(layout.viewportHeight+1);
+    expect(layout.leadTop-layout.titleBottom).toBeLessThanOrEqual(65);
+  });
+}
+
+test('Mobile Community disclosure keeps its content and presents a composed closed and open panel',async({page})=>{
+  await page.setViewportSize({width:390,height:844});
+  await page.emulateMedia({reducedMotion:'reduce'});
+  await page.goto('/');
+  const details=page.locator('#community details.v4-community__details');
+  const summary=details.locator('summary');
+  const copy=details.locator('.v4-community__details-copy');
+  await details.scrollIntoViewIfNeeded();
+  expect(await details.getAttribute('open')).toBeNull();
+  await expect(copy).not.toBeVisible();
+  const closed=await details.evaluate(el=>({radius:getComputedStyle(el).borderRadius,background:getComputedStyle(el).backgroundImage}));
+  const summaryHeight=await summary.evaluate(el=>el.getBoundingClientRect().height);
+  expect(closed.radius).toBe('16px');
+  expect(closed.background).not.toBe('none');
+  expect(summaryHeight).toBeGreaterThanOrEqual(68);
+  await summary.click();
+  await expect(details).toHaveAttribute('open','');
+  await expect(copy).toBeVisible();
+  await expect(copy.locator('p')).toHaveCount(5);
+  await expect(summary).toContainText('閉じる');
+});
+
 test('Mobile menu and Community disclosure remain operable',async({page})=>{
   await page.setViewportSize({width:390,height:844});await page.goto('/');
   await page.getByRole('button',{name:'メニューを開く',exact:true}).click();
