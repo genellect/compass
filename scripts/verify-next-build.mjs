@@ -1618,8 +1618,8 @@ const expectedFunctionRoutes = [
   "/founder/",
   "/founder/index.html",
   "/en",
-  "/en/",
-  "/en/index.html",
+  // Route contract approved in 84b9662 (2026-08-31); keep exact matching.
+  "/en/*",
   "/robots.txt",
   "/sitemap.xml",
   "/api/community-registration",

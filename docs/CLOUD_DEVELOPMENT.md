@@ -43,7 +43,7 @@ npm run cloud:check
 1. repository accessを確認し、最新`main`からCodespaceまたは専用branchを作る。
 2. container作成が自動完了し、doctorが`READY`を返すことを確認する。
 3. `npm run dev:cloud`でprivate port `3000`を開く。
-4. 小さな非本番変更で`npm run cloud:check`、commit、push、Draft PRを実行する。
+4. 小さな非本番変更で`npm run cloud:check`を実行する。Git操作が許可されていればcommit、push、Draft PRまで進める。CDによる本番公開は別の許可境界とする。
 5. PR checksとreview権限を確認し、Production権限や秘密値なしで通常開発できることを記録する。
 
 ## 5分で開始する
@@ -146,6 +146,18 @@ FastAPIはVS Code task **Library: start FastAPI**、composite PostgreSQL環境�
 | `npm run test:responsive:update-snapshots` | Windows baselineの横にLinux baselineを作ってしまう | UI承認後にWindowsで人が実行 |
 | `npm run rehearse:library-production` | PowerShell script | GitHub Actions `Library Security Quality Gate` |
 | `npm run deploy:*` | Production side effect | ユーザーの明示承認を伴う別workflow |
+
+## 環境ごとの検証の使い分け
+
+| 実行環境 | 初期整備 | 受入条件 |
+|---|---|---|
+| Codespaces / Dev Container | `.devcontainer/post-create.sh` | `npm run dev:doctor`と該当test |
+| Codex Cloud | `.codex/setup.sh` | `npm run cloud:check`。Docker専用doctorは要求しない |
+| Windowsの補助検証 | lockfileで導入、Windows専用手順 | `npm.cmd run check`と必要なvisual regression |
+
+pnpmは補助CLIとして固定し、依存管理はnpm/uvのlockfileで行います。Git操作は依頼の許可範囲で実行します。
+固定バージョンの整合は `npm run verify:toolchain`、非本番コマンドの詳細は
+[開発・検証](development-workflows.md)、更新手順は[依存保守](dependency-maintenance.md)を参照してください。
 
 ## Codexを主要開発環境にする
 

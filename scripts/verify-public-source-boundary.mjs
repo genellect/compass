@@ -6,7 +6,7 @@ import { pathToFileURL } from "node:url";
 
 const execFileAsync = promisify(execFile);
 
-const TEXT_FILE = /(?:^|\/)(?:Dockerfile(?:\.[^/]+)?|_headers|_redirects|\.env(?:\.[^/]+)?|\.dev\.vars(?:\.[^/]+)?|\.npmrc|\.pypirc|\.netrc)$|\.(?:cfg|conf|css|hcl|html|ini|js|json|key|mjs|md|pem|properties|py|ps1|sql|tf|toml|ts|tsx|txt|xml|ya?ml)$/i;
+export const TEXT_FILE = /(?:^|\/)(?:LICENSE(?:\.[^/]+)?|Dockerfile(?:\.[^/]+)?|_headers|_redirects|\.env(?:\.[^/]+)?|\.dev\.vars(?:\.[^/]+)?|\.npmrc|\.pypirc|\.netrc)$|\.(?:bash|cfg|cjs|conf|css|gs|hcl|html|ini|js|jsonc?|key|lock|mjs|md|pem|properties|py|ps1|sh|sql|svg|tf|toml|ts|tsx|txt|xml|ya?ml)$/i;
 const PRIVATE_DATA_FILE = /\.(?:backup|csv|db|dump|ods|sqlite3?|tfstate|tfvars(?:\.json)?|tsv|xlsx?)$/i;
 const PRIVATE_CONFIG_FILE = /(?:^|\/)(?:\.env(?:\.[^/]*)?|\.dev\.vars(?:\.[^/]*)?|\.netrc|\.pypirc)$/i;
 const GENERATED_ARTIFACT_PREFIX = /^(?:\.next(?:-[^/]+)?|out|outputs|__pycache__)(?:\/|$)/;

@@ -208,9 +208,10 @@ Cloudflare Access、同一originの最小Pages proxy、private edge secret、Goo
 server-side `sub` RBAC、serviceごとのDB loginと最小DB roleを重ねる。public serviceは管理routeを
 常時404とし、管理者・監査・export表へ到達できないため、sourceを読まれてもsecret値とProduction identity／dataなしでは
 認証・認可を突破できない構成とする。管理URLは公開導線へ掲載しないが、非掲載や`noindex`を認可とは扱わない。
-ただし、現行public DB roleには登録処理用tableのraw `SELECT`が残るため、そのDB credentialまで漏えいした場合の
-PII一括読取は未解消である。RLS、限定関数、または同等のdata-service境界と実PostgreSQL権限試験で
-credential単独のbulk readを拒否できるまで、実PII投入とProduction Cutoverを認めない。
+2026-09-10のsource確認では、旧public DB roleのraw `SELECT`を前提とする説明は過去の状態である。
+現行sourceはraw table権限を撤去し、独立したtokenを要求する限定RPCで公開登録を処理する。
+詳細と残余条件は`docs/library-registration/public-repository-security-boundary.md`を正本とする。
+実production相当LOGINでのPostgreSQL権限試験など、同文書のgateを満たすまで本番受入済みと記載しない。
 Drive副作用は、producerが実Drive IDを持たずversioned HMAC-SHA256 operation attestationを発行し、
 private workerだけが固定targetとOAuth credentialを持つ。DB行のtarget ID、欠損・改変・期限切れ・再利用署名を
 権限根拠にせず、検証失敗時はDrive APIを呼ばない。

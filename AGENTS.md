@@ -2,7 +2,14 @@
 
 ## Scope
 
-このリポジトリには、COMPASS公式サイトと、独立して扱うInteractive紹介・開発者紹介・yuto-matsui.comが同居している。通常のCOMPASS編集対象は、公式親サイト、未来戦略ライブラリ、COMPASS Manifesto、Community参加フォーム、Contactフォーム、およびその公開に必要なCloudflare Pages FunctionsとGoogle Apps Scriptである。リポジトリに同居することは、独立サイトの編集許可を意味しない。
+通常のCOMPASS依頼では、次を編集対象とする。
+
+- 公式親サイト、未来戦略ライブラリ、COMPASS Manifesto
+- Community参加フォーム、Contactフォーム
+- 上記の公開に必要なCloudflare Pages FunctionsとGoogle Apps Script
+
+Interactive紹介、開発者紹介、yuto-matsui.comは独立した編集範囲である。
+各対象を指定した依頼がない限り変更しない。詳細は以下のIndependent Website Boundariesを参照する。
 
 COMPASS Interactiveプロダクト本体、Productionデータベース、保護されたLibrary資料、利用者データ、認証情報はこの公開リポジトリに含まれない。
 
@@ -26,6 +33,15 @@ COMPASS Interactiveプロダクト本体、Productionデータベース、保護
 - `yuto-matsui.com`（日本語・英語）は、COMPASSとはドメイン・提供価値の異なる独立Web。親子関係はない。同一repository、Next.js、Pages成果物の共有は運用上の配置であり、従属関係や変更権限を意味しない。
 - 共通CSS・layout・配信設定の変更では、これら独立surfaceへの波及を確認する。通常のCOMPASS依頼から全体一括リブランド・移設・ドメイン/redirect変更を推定しない。
 - 既存routeの存在は編集許可ではない。削除・公開停止・別repository移設は別途明示依頼が必要。
+
+## Rights and Documentation
+
+- 権利者が許可した作業は、その範囲で実行する。既に得た同一作業の許可を繰り返し求めない。
+- ソース公開は第三者への一般的な改変・商用利用・再配布の許諾ではない。`LICENSE`と`THIRD_PARTY_NOTICES.md`を参照する。
+- 文書は日本語を基調とし、識別子・状態語を統一する。1段落1論点、規則の適用条件を明記する。
+- 文章整理では規則・承認条件・理念・canonical copyを保持する。事実訂正には現行sourceの根拠を添える。
+- READMEは人間向けに、価値・技術構成・実装箇所・検証方法を説明する。AGENTSは条件と行動を短い規則で示す。
+- 非本番の依存監査は`docs/dependency-maintenance.md`、開発コマンドは`docs/development-workflows.md`を参照する。
 
 ## Current Identity (COMPASS)
 
@@ -99,9 +115,15 @@ npm run check
 
 これはform関連テスト、TypeScript検査、Production build、static export検証、全公開routeのPlaywright responsive smokeを実行する。変更範囲に応じて個別commandを使う場合も、実行したもの・省略したもの・理由を最終報告へ記載する。
 
+文書・環境・依存保守の変更では、追加で`npm run check:repository`を実行する。
+Python依存の監査・テストは`docs/dependency-maintenance.md`に従う。
+
 ## Git and Deployment
 
-commit、push、PR、Cloudflare設定、GAS deployment、Production公開は、ユーザーが明示的に依頼した場合だけ行う。既存の未関連変更を保持し、破壊的なGit操作で消去しない。
+- commit、push、PR、Cloudflare設定、GAS deployment、Production公開は、ユーザーが明示的に依頼した範囲で行う。
+- Git操作の許可から本番公開の許可を推定しない。mainへのpush/mergeがCDを起動する場合は本番操作として扱う。
+- 既存CDを無断で解除しない。依頼で指定された公開条件を守る。
+- 既存の未関連変更を保持する。破壊的なGit操作で消去しない。
 
 COMPASS Web UIの実装・改装仕様を受けた場合は、実装と検証後にPRを作成し、Cloudflare Previewで確認可能な状態まで進めることを標準フローとする。Production公開は、常にユーザーの明示指示を必要とする。
 
@@ -115,7 +137,7 @@ COMPASS Web UIの実装・改装仕様を受けた場合は、実装と検証後
 - Codespacesでは`.devcontainer/devcontainer.json`と`docs/CLOUD_DEVELOPMENT.md`を正本とする。
 - 既存PCの`.env*`、credential、Production dataをcloud環境へcopyしない。
 - 通常のcloud taskはnon-live testのみとし、Production form、実email、deploy、migration、secret変更を実行しない。
-- Codex taskは完了前に該当testを実行し、branchへcommitしてDraft PRでreview可能な状態にする。
+- Codex taskは完了前に該当testを実行する。Git操作まで依頼された実装taskではbranchへcommitし、Draft PRでreview可能にする。調査・提案だけの依頼や、本番影響を伴うGit操作にはこの自動実行規則を適用しない。
 - Dev Containerの初回作成後と環境定義変更後は`npm run dev:doctor`を実行し、手作業のglobal package導入で不足を隠さない。
 - cloud経路はLinuxである。`.ps1` script、`npm.cmd`、`Get-NetTCPConnection`等のWindows専用手順をcloud taskの前提にしない。Docker composeを使うLibrary環境は`scripts/library-docker-dev.sh`を使用する。
 

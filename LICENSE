@@ -1,0 +1,89 @@
+COMPASS Proprietary Source-Available License
+Version 1.0, 10 September 2026
+
+Copyright (c) 2026 Yuto Matsui. All rights reserved.
+
+1. Scope and ownership
+
+This license applies only to the software, documentation, and original creative
+materials in this repository for which Yuto Matsui owns or controls the relevant
+rights (the "Materials"). It does not claim ownership of third-party components,
+contributions, media, fonts, data, trademarks, or other material owned by others.
+Those items remain subject to their own terms; see THIRD_PARTY_NOTICES.md and
+the notices accompanying each item. An omission from that inventory does not
+transfer third-party rights to Yuto Matsui or override a third-party license.
+
+2. Limited permission to inspect
+
+You may view and read the publicly available Materials for personal study and
+evaluation. Public availability does not grant a general right to execute,
+commercially exploit, modify, distribute, sublicense, or deploy the Materials.
+The limited permission in this section is subject to the restrictions below.
+
+3. Prior express written permission
+
+Unless an exception in section 4 applies, you must obtain Yuto Matsui's prior,
+express written permission before doing any of the following:
+
+(a) Commercial use: selling, licensing, monetizing, incorporating the Materials
+    into a commercial product or service, providing them as a hosted service,
+    or otherwise using them for commercial advantage or monetary compensation.
+(b) Modification: changing, adapting, translating code, or creating derivative
+    works of the Materials, whether for commercial or noncommercial purposes.
+(c) Redistribution: distributing, republishing, mirroring, sublicensing, or
+    otherwise supplying copies of the Materials or derivative works to others,
+    whether modified or unmodified, and whether for a fee or free of charge.
+
+These are separate restrictions. A noncommercial purpose does not authorize
+modification or redistribution. Attribution alone does not grant permission.
+Permission must identify the permitted activity and scope. Electronic writing
+expressly issued by Yuto Matsui may satisfy the written-permission requirement.
+Silence, repository access, an issue, a pull request, or permission for a
+different activity is not permission for the requested activity.
+
+4. Preserved rights and exceptions
+
+Nothing in this license limits rights that cannot lawfully be restricted,
+including exceptions and limitations under applicable copyright law. Nothing
+withdraws permissions necessarily granted to GitHub or its users under the
+applicable GitHub terms for operating the service, including viewing and
+forking a public repository within GitHub. Such permissions do not constitute
+a separate, general permission from Yuto Matsui for commercial exploitation,
+modification, or redistribution outside their applicable scope.
+
+Third-party licenses continue to govern their respective components. A valid
+separate written agreement from Yuto Matsui governs to the extent it expressly
+grants different rights. This license does not retroactively revoke rights
+already granted under another applicable license or agreement.
+
+Ordinary use of the officially hosted COMPASS services remains governed by
+their applicable service terms. This repository license does not prohibit
+visiting the official website or using its intended public functions.
+
+5. Notices and identity
+
+Preserve copyright and third-party notices in any copies you are authorized
+to make. No trademark, branding, endorsement, patent, or other intellectual
+property rights are granted by implication. Do not represent third-party
+materials as original COMPASS work or imply their creators endorse COMPASS.
+
+6. Warranty and liability
+
+To the extent permitted by applicable law, the Materials are provided as is,
+without warranties of any kind, including merchantability, fitness for a
+particular purpose, or noninfringement. To that same extent, Yuto Matsui is not
+liable for claims, damages, or other liability arising from the Materials or
+their use. Nothing excludes liability that applicable law does not permit
+to be excluded.
+
+7. Termination and interpretation
+
+Permissions granted by this license terminate if you breach its conditions.
+Rights under applicable law, GitHub's terms, or a separate third-party license
+are not terminated by this provision. A waiver or additional permission must
+be express and in writing from Yuto Matsui. If a provision is unenforceable,
+the remaining provisions continue to apply to the extent permitted by law.
+
+The English text of this LICENSE is authoritative. Japanese explanations in
+the repository are provided for convenience and do not expand its permissions.
+Permission-request instructions: docs/legal/permissions.md.

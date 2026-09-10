@@ -1,0 +1,25 @@
+{
+  "reviewedOn": "2026-09-10",
+  "scope": "Current source, build and test usage. This is not permission to redistribute every dependency or container without its required notices and source obligations.",
+  "reviewedExpressions": [
+    "0BSD", "MIT", "MIT-0", "ISC", "BSD-2-Clause", "BSD-3-Clause",
+    "Apache-2.0", "MIT OR Apache-2.0", "Apache-2.0 OR BSD-2-Clause", "Apache-2.0 OR BSD-3-Clause",
+    "MPL-2.0", "LGPL-3.0-only", "LGPL-3.0-or-later",
+    "Apache-2.0 AND LGPL-3.0-or-later", "Apache-2.0 AND LGPL-3.0-or-later AND MIT",
+    "CC0-1.0", "CC-BY-4.0", "PSF-2.0", "MIT AND PSF-2.0"
+  ],
+  "pythonLegacyMetadata": {
+    "colorama@0.4.6": {
+      "expression": "BSD-3-Clause",
+      "suffix": "colorama-0.4.6.dist-info/licenses/LICENSE.txt",
+      "sha256": "cac35c02686e5d04a5a7140bfb3b36e73aed496656e891102e428886d7930318",
+      "review": "Installed wheel LICENSE has source/binary notice retention and non-endorsement clauses."
+    },
+    "pyasn1-modules@0.4.2": {
+      "expression": "BSD-2-Clause",
+      "suffix": "pyasn1_modules-0.4.2.dist-info/licenses/LICENSE.txt",
+      "sha256": "2aad5fc00f705c4a1addb83eed10a6a75d286a3779f0cf8519d87e62bc4735fd",
+      "review": "Installed wheel LICENSE has two source/binary notice retention clauses."
+    }
+  }
+}

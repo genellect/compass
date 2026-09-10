@@ -1,7 +1,7 @@
 # COMPASS Documentation Index
 
 Status: Canonical Index
-Last verified: 2026-08-28
+Last verified: 2026-09-10 (entry documents; external operational states require their own checks)
 
 ## 文書の優先順位
 
@@ -97,3 +97,13 @@ Phase 9/10Aの対象gateは`LOCAL IMPLEMENTATION PASS`だが、現行候補のca
 - secret名は記載できるが、値、recovery情報、個人dataは記載しない。
 - codeと文書の変更を同一taskで行う場合、文書だけを先行して「Production」と記載しない。
 - 古い文書を消す前に、正本への移行、参照link、Git historyを確認する。
+
+## 開発・権利・依存保守
+
+| 文書 | 役割 |
+|---|---|
+| [開発・検証](development-workflows.md) | READMEから分離した環境別コマンドと副作用の境界 |
+| [依存保守](dependency-maintenance.md) | npm/uv監査、ライセンス、固定値、例外review |
+| [利用許可](legal/permissions.md) | 権利者の許可が必要な行為と申請方法 |
+| [素材台帳](legal/asset-register.md) | 第三者素材の出典と既存credits |
+| [文書変更対応表](documentation-maintenance.md) | 規則の保持と事実訂正の根拠 |

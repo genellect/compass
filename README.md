@@ -1,442 +1,168 @@
-<div align="center">
-
-<img src="./public/images/compass-mark.svg" alt="COMPASS" width="88" />
+<img src="./public/images/compass-mark.svg" alt="COMPASS" width="72" />
 
 # COMPASS Platform
 
-### Don’t Just Learn. Build What’s Next.
-
+**Don’t Just Learn. Build What’s Next.**
 **学びを、意思決定の力へ。**
 
-COMPASSは、北里大学薬学部を起点として、公開Web、教育コンテンツ、利用者登録、アクセス制御、学生コミュニティ、教育支援プロダクトを統合する、学生主導の教育・テクノロジープラットフォームです。
+COMPASSは、北里大学薬学部を起点とする、学生主導の教育・テクノロジープラットフォームです。Technology・Resources・Education・Communityの4領域で、学生の「知る」を「選ぶ」「動く」へつなげます。
 
-[![Next.js](https://img.shields.io/badge/Next.js-16.2.11-111111?logo=next.js)](https://nextjs.org/)
-[![React](https://img.shields.io/badge/React-19-149ECA?logo=react&logoColor=white)](https://react.dev/)
-[![FastAPI](https://img.shields.io/badge/FastAPI-Python_3.12+-009688?logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com/)
-[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-17-4169E1?logo=postgresql&logoColor=white)](https://www.postgresql.org/)
-[![Cloudflare](https://img.shields.io/badge/Cloudflare-Pages_%2B_Functions-F38020?logo=cloudflare&logoColor=white)](https://www.cloudflare.com/)
-[![Google Cloud](https://img.shields.io/badge/Google_Cloud-Cloud_Run-4285F4?logo=googlecloud&logoColor=white)](https://cloud.google.com/run)
-[![Open in Codespaces](https://img.shields.io/badge/Open_in-GitHub_Codespaces-24292F?logo=github)](https://codespaces.new/genellect/compass?quickstart=1)
-[![Dev Container Contract](https://github.com/genellect/compass/actions/workflows/devcontainer-contract.yml/badge.svg?branch=main)](https://github.com/genellect/compass/actions/workflows/devcontainer-contract.yml)
+このリポジトリには、3D空間を取り入れた公式Web、未来戦略ライブラリの利用者登録・権限管理基盤、公開フォーム、テスト、インフラ定義、運用ドキュメントを収録しています。体験の設計から配信、認証、データ管理、継続的な検証まで、実装をたどれる構成です。
 
-[公開Web](https://compass-official.pages.dev/) · [Cloud-first Development](#cloud-first-development) · [アーキテクチャ](#プラットフォーム構成) · [技術スタック](#技術構成) · [検証](#検証) · [ドキュメント](#ドキュメント)
+[公開Web](https://compass-official.pages.dev/) · [技術スタック](#技術スタック) · [開発を始める](#開発を始める) · [文書索引](docs/README.md) · [利用許可](#ライセンスと利用許可)
 
-</div>
+## プロダクトと実装範囲
 
----
-
-COMPASS Platformは、公開Webから利用者管理基盤までを一貫して支える、Web・認証・権限管理の統合基盤です。Webフロントエンドだけでなく、Google Workspaceによる本人確認と利用資格判定、PostgreSQLでの状態管理、Google Driveの権限付与までを一つのリポジトリで扱っています。
-
-
-| | |
+| 対象 | このリポジトリで扱う内容 |
 |---|---|
-| **公開Web** | <https://compass-official.pages.dev/> |
-| **メインメッセージ** | **Don’t Just Learn. Build What’s Next.** |
-| **ビジョン** | **学びを、意思決定の力へ。** |
-| **活動領域** | Technology · Resources · Education · Community |
-| **公開導線** | Interactive · Library · Manifesto · Community |
+| 公式Web | 活動紹介、3D Habitat、未来戦略ライブラリ案内、Manifesto、Community、Contact |
+| 公開フォーム | 入力検証、Turnstile、Pages Functions、Google Apps Scriptによる通知 |
+| Library登録基盤 | Google本人確認、利用資格判定、登録・管理API、DB権限、Drive連携、移行・監査ツール |
+| Interactive紹介 | 独立したプロダクトの紹介・開発者向けページ |
+| yuto-matsui.com | 同じ配信成果物を使用する独立Webサイト |
 
-## Cloud-first Development
+COMPASS Interactiveのアプリケーション本体は、別リポジトリ・別環境で開発しています。紹介ページやyuto-matsui.comの編集には、それぞれの対象を指定した依頼が必要です。配置と編集範囲は[Website Boundaries](docs/WEBSITE_BOUNDARIES.md)に記載しています。
 
-> [!IMPORTANT]
-> **開発環境はGitHub上で統一しています。**
-> 通常の開発にはGitHub CodespacesまたはCodex Cloudを使用します。Windows / macOS / ブラウザのどこから入っても、Dev Container、依存関係、環境チェック、CIは共通です。
+以下は現行ソースの構成です。登録基盤の外部認証・実データ・本番運用の確認状況は、[ロードマップ](docs/library-registration/phase-roadmap-v3.md)と対象コミットの検証記録で管理しています。公開ソースには、本番データ、認証情報、保護されたLibrary資料を含めません。
 
-### Codespacesで開始
+## 体験を支える技術
 
-1. **[Open in GitHub Codespaces](https://codespaces.new/genellect/compass?quickstart=1)** を開く。
-2. 初期セットアップの完了後、次を実行する。
+### ブラウザで描く3D空間
+
+公式トップのHabitatは、Three.jsによるWebGL描画とHTMLの情報表示を組み合わせています。9つのセクションに対応する部屋とカメラを設計し、1つのレンダラーで空間を描画します。文章、リンク、フォームは通常のDOMとして操作できます。
+
+建築と家具はBlenderで制作・配置し、間接光をライトマップへ焼き込みます。実行時にはPBR材質、HDR環境光、視点に応じた反射、Bloomを組み合わせ、MeshoptとWebPで配信データを圧縮しています。共有する建築データと部屋ごとの照明を管理し、必要なセクションに応じてアセットを読み込みます。
+
+画面幅と入力方式に応じて3Dを起動し、低フレームレート、読み込み失敗、動きを減らす設定ではポスター表示へ移行します。非表示タブでは描画を停止し、終了時にはGPUリソースを解放します。Web Audioによる環境音は利用者の操作で有効になり、ページ離脱時に停止します。
+
+実装は[Habitat](src/components/Habitat/)、制作手順は[Authoring Guide](scripts/habitat/README.md)、素材の出典は[Asset Credits](scripts/habitat/ASSET_CREDITS.md)を参照してください。通常のWebビルドにBlenderは必要ありません。
+
+### モバイルと映像表現
+
+縦向きのタブレットやスマートフォンでは、NASAのISS写真と短いタイムラプスを使った構成を提供します。動画は表示領域や通信条件に応じて読み込み・再生を制御し、データ節約設定、低速回線、再生失敗時には静止画を表示します。モバイル経路で3DエンジンやGLBを取得しないこともテストしています。
+
+Contactの入口には、手続き的に制作したBlenderの建築映像を使用しています。映像上の扉にHTMLボタンを重ね、選択した導線の映像を読み込みます。スキップ、動きを減らす設定、読み込み失敗の各経路でもフォームへ進める構成です。
+
+制作条件と操作契約は[Mobile Space Media](docs/mobile-space-media.md)と[Contact Door Entry](docs/contact-door-entry.md)に記載しています。
+
+### 登録からアクセス権の反映まで
+
+未来戦略ライブラリの登録基盤は、Public API、Admin API、Drive Workerを個別のエントリーポイントとして実装しています。GoogleのIDトークンをサーバー側で検証し、利用資格と管理者権限を再判定します。
+
+PostgreSQLでは用途ごとのDBロールと限定されたRPCを使用します。Driveへの権限反映はTransactional Outboxへ記録し、WorkerがLease、Retry、操作の署名検証を通じて処理します。管理操作、権限変更、出力処理には監査記録を設けています。
+
+```mermaid
+flowchart LR
+    Browser["ブラウザ"] --> Pages["Cloudflare Pages / 静的Web"]
+    Browser --> Edge["Pages Functions / Turnstile"]
+    Edge --> GAS["Google Apps Script / 公開フォーム通知"]
+    Browser --> Public["Library Public API"]
+    Browser --> Access["Cloudflare Access / 管理API Proxy"]
+    Access --> Admin["Library Admin API"]
+    Public --> DB[("PostgreSQL / 状態・権限・Outbox")]
+    Admin --> DB
+    Scheduler["Cloud Scheduler"] --> Worker["Drive Worker"]
+    Worker --> DB
+    Worker --> Drive["Google Drive"]
+```
+
+図はリポジトリで定義する論理構成です。サービスごとの公開条件と運用状態は[Architecture](docs/ARCHITECTURE.md)、認可の詳細は[Admin Access Security Boundary](docs/library-registration/admin-access-security-boundary.md)を参照してください。
+
+## 技術スタック
+
+バージョンはこのリポジトリの依存定義に対応します。配信済みのバージョンはデプロイ先のコミットで確認します。
+
+| 領域 | 技術と用途 |
+|---|---|
+| Web | Next.js 16.3.4 · React 19 · TypeScript 5.9 · Zod 4 · Static Export |
+| 3D | Three.js 0.185 · WebGL · glTF/GLB · Meshopt · PBR · HDR · 焼き込みライトマップ |
+| 素材制作 | Blender 4.5 LTS · Open Image Denoise · glTF Transform 4.5 · FFmpeg · WebP/H.264 |
+| 音・操作 | Web Audio API · Native DOM · Pointer / Keyboard · Reduced Motion |
+| Edge配信 | Cloudflare Pages · Pages Functions · Turnstile · Cloudflare Access |
+| API・認証 | Python 3.12–3.13 · FastAPI · Pydantic 2 · Uvicorn · Google Identity Services / OpenID Connect |
+| データ | PostgreSQL 17 · Neon · SQLAlchemy 2 · Psycopg 3 · Alembic |
+| 権限処理 | Google Drive API · Transactional Outbox · Lease / Retry · Operation Attestation |
+| 実行環境・IaC | Google Cloud Run / Jobs · Cloud Scheduler · Secret Manager · Terraform · Docker Compose |
+| 通知・計測 | Google Apps Script · Google Analytics 4 · Cloudflare Web Analytics |
+| 検証 | Vitest · Pytest · Playwright · Node.js Test Runner · CodeQL · npm Audit · OSV |
+| 開発環境 | GitHub Codespaces · Dev Containers · Codex Cloud · npm / uv lockfiles |
+
+正確な解決バージョンは[package-lock.json](package-lock.json)と[uv.lock](services/library-api/uv.lock)、ツールの固定値は[toolchain.env](.devcontainer/toolchain.env)にあります。
+
+## 品質と保守
+
+| 検証対象 | 確認する契約 |
+|---|---|
+| フォーム・API | 入力、資格判定、認証・認可、署名、重複処理、通知の異常系 |
+| 配信成果物 | 静的出力、公開ルート、Pages Functionsの適用範囲、Libraryのビルド対象 |
+| レスポンシブ | CSS viewport、実改行、はみ出し、メニュー、キーボード操作、画像差分 |
+| 3D・メディア | 起動条件、遅延読み込み、停止・復帰、フォールバック、モバイルの通信境界 |
+| 公開ソース | 秘密情報・保護資料の混入、Git履歴、Actionとコンテナの固定参照 |
+| 依存関係 | npm / uvの既知脆弱性、ライセンス式、ツール定義の整合、依存一覧 |
+
+CIはこれらの契約を継続確認します。実機の描画性能、外部サービスとの接続、本番の運用確認は、測定条件と検証したコミットを記録します。テストの合格を未検証環境へ一般化しない方針です。
+
+## 開発を始める
+
+通常の開発にはGitHub CodespacesまたはCodex Cloudを使用します。共通のlockfileと検証コマンドを用い、プロジェクトごとの環境を保持します。開発・mock buildに本番の認証情報は必要ありません。
+
+### GitHub Codespaces
+
+1. [Open in GitHub Codespaces](https://codespaces.new/genellect/compass?quickstart=1)を開き、セットアップ完了を待ちます。
+2. 次のコマンドで環境を確認し、開発サーバーを起動します。
 
 ```bash
 npm run dev:doctor
 npm run dev:cloud
 ```
 
-`3000`番ポートが転送され、そのままブラウザまたはVS Codeから開発できます。
+Codespacesの転送ポートから画面を確認できます。Codex Cloudでは[setup script](.codex/setup.sh)が依存を準備します。環境別の起動・復旧手順は[Cloud Development](docs/CLOUD_DEVELOPMENT.md)にあります。
 
-変更後の確認は以下です。
-
-```bash
-npm run cloud:check
-```
-
-commit、push、Pull RequestまでCodespaces内で完結します。
-
-| Environment              | Version / Command         |
-| ------------------------ | ------------------------- |
-| Node.js                  | `22.16.0`                 |
-| Package manager          | npm / `package-lock.json` |
-| pnpm CLI                 | `11.20.0`                 |
-| Python / uv              | `3.12` / `0.11.28`        |
-| Docker / Compose         | `29.7.1` / `5.4.0`        |
-| GitHub CLI / Copilot CLI | `2.97.0` / `1.0.78`       |
-| Environment check        | `npm run dev:doctor`      |
-| Full check               | `npm run cloud:check`     |
-
-### 開発環境
-
-| Environment                 | 用途                |
-| --------------------------- | ----------------- |
-| **GitHub Codespaces**       | ブラウザや別PCからのアクセス   |
-| **Codex Cloud**             | Codexによる実装        |
-| **VS Code Dev Containers**  | ローカルDocker環境での開発  |
-| **Dev Container CLI**       | CI・自動化            |
-| **ChatGPT / GitHub mobile** | PR・CI・Codexタスクの確認 |
-
-各リポジトリのコンテナ、`node_modules`、キャッシュ、ローカルDBは分離されています。COMPASS Interactiveや他プロジェクトの開発環境とは共有しません。
-
-### Secrets
-
-通常の開発とmock buildにはsecretを必要としません。
-
-秘密情報が必要な処理では、GitHub CodespacesまたはCodex CloudのSecretsを使用します。`.env.local`、秘密鍵、API key、token、production dataはリポジトリに含めません。
-
-詳細なセットアップ、Docker構成、Codex / Claude Code / Copilotからの利用方法、復旧手順は `docs/CLOUD_DEVELOPMENT.md` にまとめています。
-
-```mermaid
-flowchart LR
-    GitHub["GitHub"] --> Workspace["Codespaces / Codex Cloud"]
-    Workspace --> Doctor["Environment check"]
-    Doctor --> Develop["Develop / Test"]
-    Develop --> PR["Pull Request"]
-    PR --> CI["CI"]
-    CI --> Review["Review"]
-    Review --> GitHub
-```
-### システム構成
-
-| Component               | 役割                            | Stack                                            |
-| ----------------------- | ----------------------------- | ------------------------------------------------ |
-| **Official Web**        | COMPASS公式サイト、Library案内、公開フォーム | Next.js / Cloudflare Pages                       |
-| **Community / Contact** | フォーム受付、不正送信対策、通知              | Pages Functions / Turnstile / Google Apps Script |
-| **Library API**         | Google認証、利用資格の確認、登録、利用状況の取得   | FastAPI / Cloud Run                              |
-| **Admin API**           | 利用者・申請管理、監査、データ出力             | FastAPI / Cloud Run / Cloudflare Access          |
-| **Drive Worker**        | Google Driveの閲覧権限付与・取消        | Cloud Run / Cloud Scheduler                      |
-| **Migration**           | DB migration、role設定、既存データの移行  | Alembic / Cloud Run Jobs                         |
-| **Database**            | 利用者、申請、権限、処理履歴、監査ログ           | Neon PostgreSQL                                  |
-
-COMPASS Interactiveは、講義中の資料配信、リアルタイム参加、字幕、投票、コメント、AI機能などを扱う独立したプロダクトです。アプリケーション本体は別リポジトリ・別環境で開発、運用しています。
-
----
-
-## リポジトリ構成
-
-本リポジトリでは、COMPASS公式Web、問い合わせフォーム、及び未来戦略ライブラリの登録・運用基盤を管理しています。
-
-### COMPASS Web
-
-公式サイト、Manifesto、未来戦略ライブラリの案内、Community / Contactフォームなど、COMPASSの公開Webを管理します。
-
-### 未来戦略ライブラリ
-
-Google Workspaceを利用した本人確認・利用資格判定、PostgreSQLでの登録状態管理、Google Drive権限の付与・取消、管理者向け運用、データ移行・監査を扱います。
-
-### COMPASS Interactive
-
-COMPASS Interactiveは独立したプロダクトとして、紹介Webサイトを除き別リポジトリ・別環境で開発、運用しています。
-
----
-
-## 公開範囲
-
-本リポジトリでは、アプリケーションコード、データベーススキーマ、Infrastructure as Code、テスト、運用ドキュメントを公開しています。
-
-本番環境の認証情報、APIキー、個人情報、データベース、バックアップ、Google Drive上の保護対象資料は、公開リポジトリでは管理しません。
-
-COMPASS Interactiveのアプリケーション本体と運用データも、独立した非公開環境で管理しています。
-
----
-
-## 技術スタック
-
-| Layer                      | Technology                                                                      |
-| -------------------------- | ------------------------------------------------------------------------------- |
-| **Web Frontend**           | Next.js 16.2.11 · React 19 · TypeScript 5.9 · Zod 4 · Static Export             |
-| **Identity**               | Google Identity Services · OpenID Connect · `google-auth` · Google Picker API   |
-| **Application API**        | Python 3.12–3.13 · FastAPI · Pydantic 2 · Uvicorn                               |
-| **Data Access**            | SQLAlchemy 2 · Psycopg 3 · PostgreSQL 17 · Neon                                 |
-| **Schema**                 | Alembic · Versioned SQL boundary · Database role audit                          |
-| **Access Automation**      | Google Drive API · Transactional Outbox · Lease · Retry · Operation Attestation |
-| **Edge**                   | Cloudflare Pages · Pages Functions · Turnstile · Cloudflare Access              |
-| **Application Runtime**    | Google Cloud Run · Cloud Run Job · Cloud Scheduler                              |
-| **Secrets / Operations**   | Google Secret Manager · Cloud Monitoring · Budget guardrails                    |
-| **Infrastructure as Code** | Terraform · Docker · Docker Compose                                             |
-| **Notifications**          | Google Apps Script · Google Drive standard notification                         |
-| **Analytics**              | Google Analytics 4 · Cloudflare Web Analytics                                   |
-| **Quality**                | Vitest · Pytest · Playwright · CodeQL · GitHub Actions                          |
-
-
-## クラウド開発（推奨）
-
-開発にはGitHub CodespacesまたはCodex Cloudを推奨します。ローカルで開発する場合も、`.devcontainer/devcontainer.json`から同じ環境を立ち上げられます。
-
-セットアップや各環境での使い方は [`docs/CLOUD_DEVELOPMENT.md`](docs/CLOUD_DEVELOPMENT.md) を参照してください。
-
-環境の確認には次を使用します。
+### 変更後の確認
 
 ```bash
-npm run dev:doctor
-```
-
-Node.js、Python、Docker、CLI、依存関係など、開発に必要な環境をまとめて確認できます。追加の依存関係はDev Containerまたはlockfileで管理します。
-
-
----
-
-## ローカル開発
-
-### 必要環境
-
-| Runtime | Version / Tooling |
-|---|---|
-| Node.js | `.node-version` — `22.16.0` |
-| Python | `services/library-api/.python-version` — `3.12` |
-| Python package manager | `uv` |
-| Container runtime | Docker Desktop / Docker Compose |
-| Local database | PostgreSQL 17 container |
-
-Windowsでは、Node.jsコマンドを`npm.cmd`で実行します。
-
-クラウド環境はrepositoryごとに分離し、既存PCの未commit変更やProduction資格情報を引き継ぎません。ローカル環境は障害対応や特殊なデバイス検証の補助経路です。
-
-### Webフロントエンド
-
-```powershell
-npm.cmd ci
-npm.cmd run dev
-```
-
-通常のNext.js開発サーバーは、静的routeとユーザーインターフェースの確認に使用します。Cloudflare Pages Functionsを含む構成は、静的出力を生成した後にPages local runtimeで確認します。
-
-```powershell
-npm.cmd run build
-npm.cmd run dev:pages
-```
-
-### FastAPI
-
-```powershell
-Set-Location services/library-api
-uv sync
-uv run python -m alembic upgrade head
-uv run python -m uvicorn app.main:app --reload
-```
-
-ローカルのcomposite APIは`app.main:app`、分離されたruntime entrypointは`app.public_main:app`、`app.admin_main:app`、`app.worker_main:app`です。
-
-### PostgreSQL / Docker
-
-登録基盤専用wrapperは、Compose project、network、volume、ownership label、localhost portを固定し、他のCOMPASS環境から分離します。同じactionをbashとPowerShellの両方から実行できます。
-
-Linux / Dev Container / Codespaces:
-
-```bash
-./scripts/library-docker-dev.sh Validate
-./scripts/library-docker-dev.sh Up
-./scripts/library-docker-dev.sh Test
-./scripts/library-docker-dev.sh Down
-```
-
-Windows PowerShell:
-
-```powershell
-powershell.exe -NoProfile -ExecutionPolicy Bypass -File `
-  .\scripts\library-docker-dev.ps1 -Action Validate
-
-powershell.exe -NoProfile -ExecutionPolicy Bypass -File `
-  .\scripts\library-docker-dev.ps1 -Action Up
-
-powershell.exe -NoProfile -ExecutionPolicy Bypass -File `
-  .\scripts\library-docker-dev.ps1 -Action Test
-
-powershell.exe -NoProfile -ExecutionPolicy Bypass -File `
-  .\scripts\library-docker-dev.ps1 -Action Down
-```
-
-ローカルAPIは`http://127.0.0.1:58000`、PostgreSQLは`127.0.0.1:55432`を使用します。
-
----
-
-## 検証
-
-### Repository総合検証
-
-```bash
+npm run check:repository
 npm run check
 ```
 
-`check`は、公開ソース境界、Community／Contact、Library登録／管理、release gate、TypeScript、Production build、static export、全公開routeのPlaywright responsive smokeを順に検証します。cloud環境では同一gateの別名`npm run cloud:check`を使用します。Windows PowerShellから直接実行する場合のみ`npm.cmd run check`と読み替えます。
+`check:repository`は文書リンク、ツール定義、ライセンス、保守スクリプトを確認します。`check`はフォーム関連テスト、型検査、ビルド、静的出力、レスポンシブ・Habitatのブラウザ検証を実行します。`cloud:check`は`check`の別名です。Windows PowerShellから直接実行するときは`npm.cmd run`を使用してください。
 
-### API検証
+API・専用ローカルDB・E2Eの手順は[Development Workflows](docs/development-workflows.md)、依存更新と監査は[Dependency Maintenance](docs/dependency-maintenance.md)を参照してください。画像差分の基準画像はWindowsで管理しています。
 
-```bash
-cd services/library-api
-uv run python -m pytest
-```
+## ソースを読む
 
-APIテストでは、認証token検証、利用資格判定、データアクセス、RBAC、rate limit、冪等性、Outbox、Drive operation、管理者操作、旧名簿移行、CSV/XLSX出力、障害時挙動を検証します。
-
-### マイグレーション検証
-
-```bash
-cd services/library-api
-uv run python -m alembic upgrade head
-uv run python -m alembic downgrade -1
-uv run python -m alembic upgrade head
-uv run python -m alembic check
-```
-
-### PostgreSQL統合検証
-
-```bash
-./scripts/library-docker-dev.sh Phase9Phase10Test
-```
-
-このgateは、PostgreSQL migration、database role、旧名簿移行、監査制約、API競合、CSV/XLSX生成を専用container上で検証します。Windowsからは`scripts/library-docker-dev.ps1 -Action Phase9Phase10Test`が同じactionを提供します。
-
-### Infrastructure as Code
-
-```bash
-./scripts/library-docker-dev.sh TerraformValidate
-```
-
-Terraformのformat、backendを使用しないinitialization、validation、activation contract testを実行します。
-
-### レスポンシブ監査
-
-cloud（Codespaces / Codex Cloud / Claude Code / Dev Container）では次を実行します。
-
-```bash
-npm run check:responsive:cloud
-```
-
-visual regression baselineはWindowsで生成された`*-win32.png`のため、Windows専用の完全監査は次になります。
-
-```powershell
-npm.cmd run check:responsive:full
-```
-
-完全監査では、正式なviewport matrix、Windows表示倍率、browser chromeを考慮した実効表示領域、意味を損なわない改行、Mobile menu、CTA hit test、clipping、visual regression、failure artifactを検証します。cloudからはGitHub Actions **Responsive Quality Gate** の結果をvisual regressionの判定に使用します。
-
-詳細は[`docs/responsive-browser-qa.md`](docs/responsive-browser-qa.md)を参照してください。
-
-### Google実環境E2E
-
-```powershell
-powershell.exe -NoProfile -ExecutionPolicy Bypass -File `
-  .\scripts\start-phase6a-local-e2e.ps1
-
-powershell.exe -NoProfile -ExecutionPolicy Bypass -File `
-  .\scripts\start-phase7-drive-e2e.ps1
-```
-
-Google OAuthとGoogle DriveのE2Eでは、次の経路を確認します。
-
-1. Googleアカウントで認証
-2. IDトークンをFastAPIで検証
-3. 登録申請をPostgreSQLへ保存
-4. Outbox operationを作成
-5. WorkerがGoogle Drive APIを実行
-6. Drive権限状態をデータベースへ反映
-7. Clientが処理結果を取得
-8. 権限を取消し、OAuth grantとテスト資産をclean up
-
-実環境E2Eでは、本番利用者の資料や資格情報を使用せず、検証専用のGoogleアカウントとDrive resourceを使用します。
-
----
-
-## ディレクトリ構成
-
-```text
-src/
-├─ app/
-│  ├─ (official)/                  COMPASS公式サイト・公開フォーム
-│  ├─ (interactive)/               Interactive紹介・開発者向けページ
-│  └─ (library)/                   Library登録・管理者route
-├─ components/                     共通UIコンポーネント
-├─ sections/                       公式サイト各section
-├─ interactive/                    Interactive紹介UI
-└─ library-registration/           登録・認証・管理者UI・API client
-
-services/
-└─ library-api/
-   ├─ app/                          Public / Admin / Worker FastAPI
-   ├─ migrations/                   Alembic・SQL boundary
-   ├─ scripts/                      DB role・移行・検証・運用tool
-   └─ tests/                        Python unit / integration test
-
-functions/
-├─ api/                             Community / Contact Pages Functions
-└─ library-registration/admin/api/ Admin same-origin proxy
-
-infra/library-registration/
-└─ terraform/                       Cloud Run・IAM・Secret・Monitoring
-
-contracts/library-registration/     資格判定・旧名簿移行contract
-google-apps-script/                  Community・Contact通知処理
-tests/                               Web・Function・GAS・release gate
-scripts/                             Build・Deploy・E2E・security検証
-docs/                                Architecture・運用・Governance
-Project.guide/                       COMPASS理念・brand・履歴資料
-```
-
-### 公式サイトのエントリーポイント
-
-```text
-src/app/(official)/page.tsx
-  └─ src/App.tsx
-       └─ src/LegacyPageBody.tsx
-```
-
-`LegacyPageBody.tsx`は名称にかかわらず、現在の本番表示経路を構成するmoduleです。ファイルの利用状況は名称から推測せず、import graph、routing、build output、static exportを基に判断してください。
-
----
-
-## セキュリティと信頼性
-
-| Principle | Implementation |
+| ディレクトリ・入口 | 内容 |
 |---|---|
-| **Server-authoritative** | 認証、利用資格、権限状態をAPIとdatabaseで再検証 |
-| **Least privilege** | Surface別service account、DB login、DB role、secret binding |
-| **Secret isolation** | Secret Manager、環境変数、numeric version pinning |
-| **Idempotency** | 登録、管理者mutation、Drive付与・取消の重複実行を制御 |
-| **Fail-closed** | 設定不足、署名不一致、認証失敗、依存異常時に副作用を停止 |
-| **Auditability** | 申請、判定、管理操作、権限処理、exportを追跡可能に記録 |
-| **PII minimization** | Token、検索語、個人情報をlog・analytics・artifactへ出力しない |
-| **Recovery** | Retry、dead state、manual requeue、read-only mode、kill switch |
-| **Public-source security** | Source公開を前提にedge、identity、RBAC、DB roleを多層化 |
+| [`src/app/`](src/app/) | 公式Web、紹介ページ、Libraryのルート |
+| [`src/components/Habitat/`](src/components/Habitat/) | 3Dエンジン、セクション、メディア・音声の制御 |
+| [`scripts/habitat/`](scripts/habitat/) / [`scripts/contact-entry/`](scripts/contact-entry/) | 素材の制作・変換・検査 |
+| [`src/library-registration/`](src/library-registration/) | 登録・管理画面、APIクライアント |
+| [`functions/`](functions/) | 公開フォーム、管理API Proxy、ドメインルーティング |
+| [`services/library-api/`](services/library-api/) | API、Worker、migration、Pythonテスト |
+| [`infra/library-registration/`](infra/library-registration/) | Terraform、実行環境、IAM・運用定義 |
+| [`google-apps-script/`](google-apps-script/) | Community・Contact等の通知処理 |
+| [`tests/`](tests/) / [`.github/workflows/`](.github/workflows/) | 動作契約、公開境界、CI |
 
----
-
-## デプロイメント
-
-| Component | Deployment |
-|---|---|
-| 公開Web | Next.js Static Export / Cloudflare Pages |
-| Community / Contact | Cloudflare Pages Functions / Turnstile / Google Apps Script |
-| 登録API | FastAPI Public Service / Google Cloud Run |
-| 管理API | Cloudflare Access / Pages Proxy / FastAPI Admin Service |
-| 権限処理 | Internal Cloud Run Worker / Cloud Scheduler / Google Drive API |
-| Migration | Cloud Run Job / Alembic / Direct DB Connection |
-| Database | Neon PostgreSQL / Pooled Runtime Connections |
-| Secrets | Google Secret Manager / Cloudflare Encrypted Secrets |
-| Infrastructure | Terraform / Immutable Container Images |
-
-各serviceは独立してデプロイし、公開Web、Public API、Admin API、Worker、Migration、Database、外部権限処理の障害境界を分離します。
-
----
+公式トップの表示経路は`src/app/(official)/page.tsx` → `src/App.tsx` → `src/LegacyPageBody.tsx`です。`LegacyPageBody.tsx`は現在も使用しているモジュールです。
 
 ## ドキュメント
 
-| Document | Responsibility |
+| 文書 | 目的 |
 |---|---|
-| [`AGENTS.md`](AGENTS.md) | Coding Agent向けの実装契約、変更原則、検証要件 |
-| [`Project.guide/PROJECT_GUIDE.md`](Project.guide/PROJECT_GUIDE.md) | COMPASSの理念、brand、project原則 |
-| [`docs/README.md`](docs/README.md) | 文書索引、正本文書、参照関係 |
-| [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) | Repository、deployment、data、外部serviceの境界 |
-| [`docs/CONTENT_GOVERNANCE.md`](docs/CONTENT_GOVERNANCE.md) | Copy、CTA、公開状態、指標の管理方針 |
-| [`docs/responsive-browser-qa.md`](docs/responsive-browser-qa.md) | Responsive検証、viewport matrix、failure artifact |
-| [`docs/library-registration/`](docs/library-registration/) | 登録基盤の認証、data model、privacy、運用、E2E |
-| [`infra/library-registration/README.md`](infra/library-registration/README.md) | Cloud Run、IAM、Secret Manager、Terraform構成 |
-| [`services/library-api/README.md`](services/library-api/README.md) | FastAPI、PostgreSQL、Drive Workerの開発・運用 |
-| [`CODEX_LINKS.md`](CODEX_LINKS.md) | 正式な公開URLと画面遷移契約 |
+| [Documentation Index](docs/README.md) | 正本文書、運用手順、過去の記録への入口 |
+| [Project Guide](Project.guide/PROJECT_GUIDE.md) | 理念、ブランド、プロジェクト原則 |
+| [Architecture](docs/ARCHITECTURE.md) | 配信・認証・データ・外部サービスの構成 |
+| [Content Governance](docs/CONTENT_GOVERNANCE.md) | 正式な文言、CTA、公開状態、指標の管理 |
+| [Responsive QA](docs/responsive-browser-qa.md) | ブラウザ検証と画像差分の手順 |
+| [Library Registration](docs/library-registration/) | 登録基盤の設計、プライバシー、運用・公開ゲート |
+| [AGENTS.md](AGENTS.md) | エージェント向けの作業範囲、実装・検証・承認規則 |
+
+ブランチでの変更とCI確認を経て、レビュー可能なPull Requestを作成します。本番へ影響する操作には権利者の事前承認が必要です。既存CDは維持し、mainへの反映が本番配信を起動する場合は公開操作として扱います。
+
+## ライセンスと利用許可
+
+Copyright © 2026 **Yuto Matsui**. ソースを閲覧・評価できる形で公開しています。
+
+**事前の明示的な書面許可のない商用利用・改変・再配布は禁止します。** 非営利の改変・再配布にも許可が必要です。条件の正文は[LICENSE](LICENSE)、申請方法は[利用許可](docs/legal/permissions.md)を参照してください。
+
+GitHub規約、適用法、既存の個別契約に基づく権利は維持されます。第三者のOSS・写真・映像等には、それぞれのライセンスが適用されます。[Third-party Notices](THIRD_PARTY_NOTICES.md)と[素材台帳](docs/legal/asset-register.md)に出典と取扱いを記載しています。脆弱性の報告は[Security Policy](.github/SECURITY.md)をご確認ください。

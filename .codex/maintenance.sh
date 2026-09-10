@@ -6,3 +6,8 @@ cd "$repo_root"
 
 git fetch --prune
 npm ci
+npx --no-install playwright install chromium
+(
+  cd services/library-api
+  uv sync --locked --dev
+)

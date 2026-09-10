@@ -1,6 +1,7 @@
 {
   "name": "compass-official-site",
   "private": true,
+  "license": "SEE LICENSE IN LICENSE",
   "version": "3.0.0",
   "scripts": {
     "dev": "next dev --webpack --hostname 127.0.0.1",
@@ -37,10 +38,17 @@
     "habitat:planet": "node scripts/habitat/prepare-source-materials.mjs ../habitat-source-materials public/habitat/v3",
     "check": "npm run verify:public-source && npm run test && npm run test:habitat && npm run typecheck && npm run build && npm run verify && npm run test:responsive && npm run test:responsive:habitat",
     "cloud:check": "npm run check",
-    "dev:doctor": "bash .devcontainer/doctor.sh"
+    "dev:doctor": "bash .devcontainer/doctor.sh",
+    "verify:toolchain": "node scripts/verify-toolchain.mjs",
+    "verify:docs": "node scripts/verify-documentation.mjs",
+    "licenses:check": "node scripts/check-dependency-licenses.mjs",
+    "audit:python": "uv run --project services/library-api --locked python scripts/audit-python-dependencies.py",
+    "sbom:npm": "npm sbom --package-lock-only --sbom-format=cyclonedx",
+    "test:repository": "node --test tests/repository-maintenance.test.mjs tests/public-source-boundary.test.mjs tests/git-history-secret-scan.test.mjs",
+    "check:repository": "npm run verify:toolchain && npm run verify:docs && npm run licenses:check && npm run test:repository"
   },
   "dependencies": {
-    "next": "16.2.11",
+    "next": "16.3.4",
     "react": "^19.2.7",
     "react-dom": "^19.2.7",
     "three": "^0.185.1",
@@ -52,15 +60,15 @@
     "@types/react": "^19.2.17",
     "@types/react-dom": "^19.2.3",
     "@types/three": "^0.185.4",
-    "sharp": "0.35.3",
+    "sharp": "0.35.4",
     "typescript": "5.9.3",
-    "vitest": "^4.1.10",
+    "vitest": "^4.1.11",
     "wrangler": "^4.114.0"
   },
   "overrides": {
     "postcss": "8.5.25",
     "undici": "7.29.0",
-    "sharp": "0.35.3",
+    "sharp": "0.35.4",
     "nanoid": "3.3.18"
   }
 }

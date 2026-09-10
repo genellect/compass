@@ -268,8 +268,7 @@ test("Cloudflare routes execute only the reviewed Founder, public API and admini
       "/founder/",
       "/founder/index.html",
       "/en",
-      "/en/",
-      "/en/index.html",
+      "/en/*", // Existing English-entry contract from 84b9662.
       "/robots.txt",
       "/sitemap.xml",
       "/api/community-registration",
