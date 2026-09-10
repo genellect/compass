@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import styles from "./contact-entry.module.css";
+import projection from "./contact-door-projection.json";
 
 type Target = "representative" | "compass";
 type Props = { onSelect: (target: Target) => void; onComplete: () => void };
@@ -72,42 +73,42 @@ export function ContactEntrance({ onSelect, onComplete }: Props) {
 
   return (
     <section className={styles.entrance} aria-labelledby={selected ? undefined : "target-title"} aria-label={selected ? "入室しています" : undefined} data-contact-entrance>
-      <div className={styles.scene} data-entering={Boolean(selected)} data-finishing={finishing}>
+      <div className={styles.heading}>
+        <h2 id="target-title">どちらへのご連絡ですか？</h2>
+      </div>
+      <div className={styles.scene} data-entering={Boolean(selected)} data-film-layout={selected ? layout : undefined} data-finishing={finishing}>
         <picture className={styles.poster}>
           <source media="(max-width: 700px)" srcSet={`${mediaRoot}/lobby-mobile.webp`} />
           {/* The first rendered frame exactly matches both branch films. */}
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src={`${mediaRoot}/lobby-desktop.webp`} alt="" width="1280" height="720" fetchPriority="high" />
         </picture>
-        <div className={styles.shade} />
         {!selected ? <>
-          <div className={styles.heading}>
-            <p>DESTINATION</p>
-            <h2 id="target-title">どちらへのご連絡ですか？</h2>
-          </div>
           <div className={styles.doors}>
-            <button className={styles.door} type="button" onClick={() => choose("representative")} data-door="representative">
-              <span className={styles.number}>01 / 執務室</span>
-              <span className={styles.room}>Yuto Matsui</span>
-              <span className={styles.access} aria-hidden="true">◈ TOUCH TO ENTER</span>
-              <span className={styles.label}>代表へのご連絡 <span aria-hidden="true">↗</span></span>
-            </button>
-            <button className={styles.door} type="button" onClick={() => choose("compass")} data-door="compass">
-              <span className={styles.number}>02 / 会議室</span>
-              <span className={styles.room}>COMPASS</span>
-              <span className={styles.access} aria-hidden="true">◈ TOUCH TO ENTER</span>
-              <span className={styles.label}>COMPASSへのお問い合わせ <span aria-hidden="true">↗</span></span>
-              <span className={styles.description}>活動・サービスに関する公式窓口</span>
-            </button>
+            {(["representative", "compass"] as const).map((target) => {
+              const area = projection[layout][target];
+              return <button key={target} className={styles.door} type="button" onClick={() => choose(target)} data-door={target}
+                style={{ left: `${area.left + area.width / 2}%`, top: `${area.top}%`, width: `max(44px, ${area.width}%)`, height: `${area.height}%` }}
+                aria-label={target === "representative" ? "執務室 Yuto Matsui — 代表へのご連絡" : "会議室 COMPASS — COMPASSへのお問い合わせ"} />;
+            })}
           </div>
         </> : <>
           <video ref={video} className={styles.film} src={`${mediaRoot}/${selected}-${layout}.mp4`} muted playsInline preload="auto" aria-hidden="true" onEnded={finish} onError={finish} onTimeUpdate={() => { if ((video.current?.currentTime ?? 0) >= 1.7) setFinishing(true); }} />
           <div className={styles.fade} />
+        </>}
+      </div>
+      <div className={styles.controls}>
+        {!selected ? <>
+          <div className={styles.alternatives} aria-label="お問い合わせ先">
+            <button type="button" onClick={() => choose("representative")}>代表へのご連絡 <span aria-hidden="true">↗</span></button>
+            <button type="button" onClick={() => choose("compass")}>COMPASSへのお問い合わせ <span aria-hidden="true">↗</span></button>
+          </div>
+          <button className={styles.bypass} type="button" onClick={finish}>演出なしで入力へ <span aria-hidden="true">→</span></button>
+        </> : <>
           <p className={styles.status} role="status">{selected === "representative" ? "Yuto Matsui" : "COMPASS"} — 入室しています</p>
           <button ref={skip} type="button" className={styles.skip} onClick={finish}>スキップ <span aria-hidden="true">→</span></button>
         </>}
       </div>
-      {!selected ? <button className={styles.bypass} type="button" onClick={finish}>演出なしで入力へ <span aria-hidden="true">→</span></button> : null}
     </section>
   );
 }

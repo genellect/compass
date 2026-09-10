@@ -1,0 +1,30 @@
+{
+  "desktop": {
+    "representative": {
+      "left": 32.0172,
+      "top": 36.3163,
+      "width": 10.0792,
+      "height": 30.5123
+    },
+    "compass": {
+      "left": 56.2331,
+      "top": 38.176,
+      "width": 7.1832,
+      "height": 25.6423
+    }
+  },
+  "mobile": {
+    "representative": {
+      "left": 22.7501,
+      "top": 42.5679,
+      "width": 15.0271,
+      "height": 18.8707
+    },
+    "compass": {
+      "left": 58.8606,
+      "top": 43.7137,
+      "width": 10.5954,
+      "height": 15.7653
+    }
+  }
+}

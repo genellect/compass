@@ -116,3 +116,63 @@ test("Contact entry completion keeps focus in an open header menu", async ({ pag
   await expect(menu).toHaveAttribute("aria-expanded","true");
   await expect(page.locator('input[value="compass"]')).toBeChecked();
 });
+
+test("Contact architecture stays unobscured and its door controls remain accessible", async ({ page }) => {
+  await page.emulateMedia({reducedMotion:"reduce"});
+  await page.goto("/contact/");
+  for (const width of [320, 390, 1440]) {
+    await page.setViewportSize({width,height:900});
+    const image=page.locator('[data-contact-entrance] picture');
+    const question=page.getByRole("heading",{name:"どちらへのご連絡ですか？"});
+    await expect(image).toBeVisible();
+    const imageBox=(await image.boundingBox())!;
+    const questionBox=(await question.boundingBox())!;
+    expect(questionBox.y+questionBox.height).toBeLessThanOrEqual(imageBox.y);
+    for (const target of ["representative","compass"]) {
+      const door=page.locator(`[data-door="${target}"]`);
+      await expect(door).toHaveAccessibleName(target==="representative" ? /執務室.*Yuto Matsui/ : /会議室.*COMPASS/);
+      await expect(door).toHaveText("");
+      expect(await door.evaluate(el=>getComputedStyle(el).backgroundColor)).toBe("rgba(0, 0, 0, 0)");
+      const box=(await door.boundingBox())!;
+      expect(box.width).toBeGreaterThanOrEqual(44);
+      expect(box.height).toBeGreaterThanOrEqual(44);
+      expect(box.x).toBeGreaterThanOrEqual(imageBox.x);
+      expect(box.x+box.width).toBeLessThanOrEqual(imageBox.x+imageBox.width+1);
+      await door.focus();
+      await expect(door).toBeFocused();
+    }
+  }
+});
+
+for (const target of ["representative","compass"]) {
+  test(`Contact external text alternative opens ${target} without obscuring the film`, async ({page})=>{
+    await page.setViewportSize({width:390,height:844});
+    await page.emulateMedia({reducedMotion:"reduce"});
+    await page.goto("/contact/");
+    const alternatives=page.locator('[aria-label="お問い合わせ先"]');
+    const button=alternatives.getByRole("button").nth(target==="representative" ? 0 : 1);
+    const imageBox=(await page.locator('[data-contact-entrance] picture').boundingBox())!;
+    const buttonBox=(await button.boundingBox())!;
+    expect(buttonBox.y).toBeGreaterThanOrEqual(imageBox.y+imageBox.height);
+    await button.click();
+    await expect(page.locator(`#name`)).toBeVisible();
+    await expect(page.locator(`input[value="${target}"]`)).toBeChecked();
+  });
+}
+
+test("Contact portrait film keeps its framing when the viewport rotates", async ({page})=>{
+  await page.setViewportSize({width:390,height:844});
+  await page.emulateMedia({reducedMotion:"no-preference"});
+  await page.goto("/contact/");
+  await page.locator('[data-door="compass"]').click();
+  const video=page.locator("video");
+  await expect.poll(()=>video.evaluate((el:HTMLVideoElement)=>el.currentTime)).toBeGreaterThan(.08);
+  await video.evaluate((el:HTMLVideoElement)=>el.pause());
+  await page.setViewportSize({width:1440,height:900});
+  const box=(await video.boundingBox())!;
+  expect(box.width/box.height).toBeCloseTo(.75,2);
+  expect(box.height).toBeLessThanOrEqual(670);
+  await expect(video).toHaveAttribute("src",/compass-mobile\.mp4$/);
+  await page.getByRole("button",{name:"スキップ"}).click();
+  await expect(page.locator('input[value="compass"]')).toBeChecked();
+});
