@@ -1,7 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { ContactForm } from "./ContactForm";
 import { ContactHeader, ContactFooter } from "./ContactChrome";
-import { ContactAtmosphere } from "./ContactAtmosphere";
 import styles from "./contact.module.css";
 
 export const metadata: Metadata = {
@@ -29,7 +28,6 @@ export default function ContactPage() {
     <div className={styles.page} id="contact-top">
       <ContactHeader />
       <div className={styles.gallery}>
-        <ContactAtmosphere />
         <main id="main" className={styles.main}>
           <ContactForm />
         </main>

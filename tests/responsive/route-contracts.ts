@@ -222,14 +222,14 @@ export const routeContracts: RouteContract[] = [
       "#form-title",
       "#contact-form",
       "#target-title",
-      '#contact-form label:has(input[name="contactTarget"][value="representative"])',
-      '#contact-form label:has(input[name="contactTarget"][value="compass"])',
+      '[data-door="representative"]',
+      '[data-door="compass"]',
     ],
     criticalSelectors: [
       "h1#form-title",
       "#target-title",
-      '#contact-form label:has(input[name="contactTarget"][value="representative"])',
-      '#contact-form label:has(input[name="contactTarget"][value="compass"])',
+      '[data-door="representative"]',
+      '[data-door="compass"]',
     ],
   },
 ];

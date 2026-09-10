@@ -431,7 +431,7 @@ export function SiteHeader({
         <div ref={mobilePanelRef} className="mobile-menu-panel">
           <div className="mobile-menu-top">
             <div>
-              <p>{routeContext === "library" ? "未来戦略ライブラリ" : "学生支援団体 COMPASS"}</p>
+              <p><a className="mobile-home-brand" href="/" onClick={() => closeMobileMenu(false)}>{routeContext === "library" ? "未来戦略ライブラリ" : "学生支援団体 COMPASS"}</a></p>
               <span>{routeContext === "library" ? "A COMPASS Resource" : "Strategic Constellation Compass"}</span>
             </div>
             <button className="mobile-menu-close" type="button" aria-label="メニューを閉じる" onClick={() => closeMobileMenu()}>
@@ -483,6 +483,9 @@ export function SiteHeader({
               </section>
             ))}
           </nav>
+          <a className="mobile-menu-home" href="/" onClick={() => closeMobileMenu(false)}>
+            公式サイトへ戻る <span aria-hidden="true">→</span>
+          </a>
         </div>
       </aside>
     </>

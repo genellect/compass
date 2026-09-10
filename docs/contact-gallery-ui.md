@@ -43,3 +43,9 @@ entrance on short viewports. Solid white form panels retain readable text.
 Scroll adds a small depth offset; input focus freezes pointer/scroll response.
 The CSS fallback retains the ring and perspective floor without WebGL.
 ContactForm, schema, Pages Functions, and GAS remain unchanged.
+
+## Superseded by the door entry
+
+The persistent gallery background described above is historical. The current
+implementation uses the Blender sky-office entry in `contact-door-entry.md`;
+no architectural background or WebGL renderer remains behind the input form.

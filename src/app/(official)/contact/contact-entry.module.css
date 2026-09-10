@@ -1,0 +1,52 @@
+.entrance { margin-top: 24px; }
+.heading { margin: 0 0 20px; }
+.heading h2 { margin: 0; color: #263d46; font-size: clamp(16px, 1.5vw, 20px); font-weight: 500; line-height: 1.5; letter-spacing: .025em; }
+.scene { position: relative; aspect-ratio: 16 / 9; overflow: hidden; background: #dedbd3; isolation: isolate; }
+.poster, .film, .fade { position: absolute; inset: 0; width: 100%; height: 100%; }
+.poster img { display: block; width: 100%; height: 100%; object-fit: cover; }
+.doors { position: absolute; inset: 0; }
+/* The camera projection aligns each clear hit area with its physical entrance. */
+.door { position: absolute; transform: translateX(-50%); min-height: 44px; padding: 0; border: 1px solid transparent; border-radius: 1px; background: transparent; cursor: pointer; transition: border-color 160ms, box-shadow 160ms; }
+.door:hover { border-color: #fff9; box-shadow: 0 0 14px #e8cf9c40; }
+.door:focus-visible { border: 2px solid #284f58; outline: 2px solid #fff; outline-offset: 3px; }
+.controls { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0 24px; min-height: 60px; }
+.alternatives { display: flex; flex-wrap: wrap; gap: 0 24px; }
+.alternatives button { align-self: flex-start; text-align: left; }
+.description { display: block; margin-top: 1px; font-size: 10px; line-height: 1.5; color: #63767c; }
+.controls button { min-height: 44px; padding: 10px 0; border: 0; background: transparent; color: #52666d; font: inherit; font-size: 12px; line-height: 1.7; cursor: pointer; }
+.controls button:hover { color: #183c46; text-decoration: underline; text-underline-offset: 4px; }
+.controls button:focus-visible { outline: 2px solid #517d80; outline-offset: 3px; }
+.controls button span { margin-left: 8px; }
+.controls .bypass, .controls .skip { margin-left: auto; font-size: 11px; }
+.film { object-fit: cover; }
+.fade { pointer-events: none; background: #fff; opacity: 0; transition: opacity 280ms linear; }
+.scene[data-finishing="true"] .fade { opacity: 1; }
+.status { margin: 0; font-size: 11px; color: #53666d; }
+@media (min-width: 701px) {
+ .scene { width: min(100%, max(480px, calc((100svh - 230px) * 1.777778))); margin-inline: auto; }
+}
+@media (max-width: 700px) {
+ .scene { aspect-ratio: 3 / 4; }
+ .heading { margin-bottom: 16px; }
+ .controls { min-height: 108px; padding-top: 6px; gap: 0 12px; }
+ .alternatives { width: 100%; justify-content: space-between; gap: 0 10px; }
+ .controls button { font-size: 11px; }
+}
+.scene[data-film-layout="mobile"] { aspect-ratio: 3 / 4; }
+.scene[data-film-layout="desktop"] { aspect-ratio: 16 / 9; }
+@media (min-width: 701px) {
+ .scene[data-film-layout="mobile"] { width: min(100%, max(180px, calc((100svh - 230px) * .75))); }
+}
+@media (prefers-reduced-motion: reduce) { .door, .fade { transition: none; } }
+
+/* Only the small entry heading occupies the clear ceiling area; doors stay unobstructed. */
+.entrance { position: relative; }
+.heading { position: absolute; z-index: 2; top: clamp(68px, 7vw, 106px); left: clamp(20px, 5vw, 80px); margin: 0; pointer-events: none; }
+.heading h2 { color: #fff; font-size: clamp(14px, 1.3vw, 18px); text-shadow: 0 2px 10px #10232f80; }
+.scene { width: 100%; margin: 0; }
+.scene::after { content: ""; position: absolute; z-index: 1; inset: 0 0 auto; height: 36%; background: linear-gradient(#10232fd9, #10232f70 55%, transparent); pointer-events: none; }
+.controls { position: relative; padding: 8px clamp(20px, 5vw, 80px); background: linear-gradient(#10232fcc, #10232f80); }
+.controls button, .description, .status { color: #f0f4f4; }
+.controls button:hover { color: #fff; }
+.controls button:focus-visible { outline-color: #d9f0ef; }
+@media (max-width: 700px) { .controls { padding-block: 6px; } }

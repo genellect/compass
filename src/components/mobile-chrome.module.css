@@ -22,4 +22,7 @@
   .chrome:global(.site-footer) :global(.footer-cta a) { background:transparent; color:var(--chrome-fg); border-color:var(--chrome-line); }
   .chrome:global(.site-footer) :global(:is(.footer-cta,.footer-note)) { border-color:var(--chrome-line); }
   .chrome :global(:is(a,button):focus-visible) { outline:2px solid var(--chrome-secondary); outline-offset:4px; }
+  .chrome :global(.mobile-home-brand) { color:inherit; text-decoration:none; }
+  .chrome :global(.mobile-menu-home) { display:flex; align-items:center; justify-content:space-between; gap:20px; min-height:52px; margin-top:24px; padding:16px 18px; border:1px solid var(--chrome-line); border-radius:8px; background:var(--chrome-button); color:var(--chrome-button-text); font-size:14px; font-weight:650; text-decoration:none; }
+  .chrome :global(.mobile-menu-home span) { color:inherit; }
 }

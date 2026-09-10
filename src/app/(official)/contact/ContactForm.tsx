@@ -1,7 +1,8 @@
 "use client";
 
 import Script from "next/script";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { CONTACT_RETURN_TO_ENTRANCE } from "./contact-entry-events";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   CONTACT_ENDPOINT,
   CONTACT_FORM_ERROR_MESSAGE,
@@ -12,6 +13,7 @@ import {
   getContactFieldErrors
 } from "@/lib/contact-schema";
 import styles from "./contact.module.css";
+import { ContactEntrance } from "./ContactEntrance";
 
 type ContactTarget = "representative" | "compass";
 
@@ -166,6 +168,19 @@ function identityKey(form: LocalFormState) {
 }
 
 export function ContactForm() {
+  const [entryComplete, setEntryComplete] = useState(false);
+  const finishEntry = useCallback(() => {
+    const active = document.activeElement;
+    const focusForm = active === document.body || (active instanceof HTMLElement && Boolean(active.closest("[data-contact-entrance]")));
+    setEntryComplete(true);
+    requestAnimationFrame(() => {
+      // Keep navigation focus if the user has opened the header during the film.
+      if (!focusForm) return;
+      const heading = document.getElementById("form-title");
+      heading?.focus({ preventScroll: true });
+      window.scrollTo({ top: 0, behavior: "instant" });
+    });
+  }, []);
   const [contactTarget, setContactTarget] = useState<ContactTarget | "">("");
   const [form, setForm] = useState<LocalFormState>(initialForm);
   const [verificationCode, setVerificationCode] = useState("");
@@ -176,6 +191,25 @@ export function ContactForm() {
   const [touched, setTouched] = useState<Partial<Record<FieldName | "verificationCode", boolean>>>({});
   const [serverErrors, setServerErrors] = useState<FieldErrors>({});
   const [status, setStatus] = useState<SubmissionState>("idle");
+  useEffect(() => {
+    let focusFrame = 0;
+    const returnToEntrance = (event: Event) => {
+      // A completed submission uses the ordinary link to start a fresh visit.
+      if (status === "success") return;
+      event.preventDefault();
+      setEntryComplete(false);
+      cancelAnimationFrame(focusFrame);
+      focusFrame = requestAnimationFrame(() => {
+        document.getElementById("form-title")?.focus({ preventScroll: true });
+        window.scrollTo({ top: 0, behavior: "instant" });
+      });
+    };
+    window.addEventListener(CONTACT_RETURN_TO_ENTRANCE, returnToEntrance);
+    return () => {
+      window.removeEventListener(CONTACT_RETURN_TO_ENTRANCE, returnToEntrance);
+      cancelAnimationFrame(focusFrame);
+    };
+  }, [status]);
   const [statusMessage, setStatusMessage] = useState("");
   const [noticeMessage, setNoticeMessage] = useState("");
   const [turnstileReady, setTurnstileReady] = useState(false);
@@ -475,17 +509,17 @@ export function ContactForm() {
   }
 
   return (
-    <section className={styles.contactSurface} aria-labelledby="form-title">
+    <section className={styles.contactSurface} aria-labelledby="form-title" data-entry-complete={entryComplete}>
       <form id="contact-form" noValidate aria-busy={status !== "idle"} onSubmit={handleSubmit}>
         <div className={styles.introStage}>
           <div className={styles.formHeading}>
             <p className={styles.formKicker}>CONTACT</p>
-            <h1 id="form-title">お問い合わせ</h1>
+            <h1 id="form-title" tabIndex={-1}>お問い合わせ</h1>
             <p className={styles.formIntro}>COMPASSへの公式お問い合わせと、代表へのご連絡を受け付けています。</p>
             <p>学生・教職員・研究者の方、団体・企業の方など、さまざまな方とのご縁を歓迎しています。</p>
           </div>
 
-          <section className={styles.targetSection} aria-labelledby="target-title">
+          {!entryComplete ? <ContactEntrance onSelect={updateTarget} onComplete={finishEntry} /> : <section className={styles.targetSection} aria-labelledby="target-title">
             <div className={styles.sectionHeading}>
               <p>DESTINATION</p>
               <h2 id="target-title">どちらへのご連絡ですか？</h2>
@@ -497,11 +531,11 @@ export function ContactForm() {
                 <TargetCard checked={contactTarget === "compass"} description="活動・サービスに関する公式窓口" onChange={updateTarget} title="COMPASSへのお問い合わせ" value="compass" />
               </div>
             </fieldset>
-          </section>
+          </section>}
         </div>
 
         {contactTarget ? (
-          <div className={styles.revealedFlow} id="contact-flow">
+          <div className={styles.revealedFlow} id="contact-flow" hidden={!entryComplete}>
             <AudiencePanel target={contactTarget} />
 
             <div className={styles.formColumns}>

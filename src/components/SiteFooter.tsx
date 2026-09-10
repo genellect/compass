@@ -18,7 +18,7 @@ export function SiteFooter({ routeContext = "root" }: { routeContext?: SiteRoute
   return (
     <>
 <footer
-  className={`site-footer${routeContext === "root" ? "" : ` ${styles.footer}`} ${mobileChrome.chrome} ${['root','messages'].includes(routeContext) ? mobileChrome.dark : ''}`}
+  className={`site-footer${routeContext === "root" ? "" : ` ${styles.footer}`} ${mobileChrome.chrome} ${['root','messages','community'].includes(routeContext) ? mobileChrome.dark : ''}`}
   data-route-context={routeContext}
   data-ui-variant="root"
 >
