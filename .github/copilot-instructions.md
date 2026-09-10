@@ -8,4 +8,5 @@
 - Keep COMPASS and COMPASS Interactive in separate repositories, containers, branches, and pull requests.
 - Never generate, paste, log, or commit secrets, credentials, personal data, protected materials, or Production environment files.
 - Keep runtime and deployment behavior unchanged unless the task explicitly places it in scope.
-- Prefer a Draft Pull Request and include the exact validation performed.
+- When Git operations are authorized, prefer a Draft Pull Request and include the exact validation performed. A merge that triggers production CD needs production authorization under AGENTS.md.
+- For dependency and license work, follow docs/dependency-maintenance.md; preserve third-party rights.

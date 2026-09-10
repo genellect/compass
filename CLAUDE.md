@@ -26,6 +26,6 @@ Codex Desktop is the primary agent environment for COMPASS. Claude Code is a sec
 |---|---|
 | Repository-wide | `npm run cloud:check` |
 | UI / navigation / font / breakpoint / animation | `npm run check:responsive:cloud` |
-| Environment contract | `npm run dev:doctor` |
+| Dev Container environment contract | `npm run dev:doctor`（Codex Cloud単体では必須ではない） |
 
 `npm run check:responsive:full` and every `.ps1` script are Windows-only. Do not invoke them from a cloud session; report visual regression as owned by the GitHub Actions **Responsive Quality Gate**.

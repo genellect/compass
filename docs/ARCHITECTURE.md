@@ -74,14 +74,17 @@ src/app/(official)/page.tsx
 
 ```text
 npm run check
-  ├─ test:registration  → Vitest: schema / Pages Function / GAS
+  ├─ verify:public-source → 公開ソース・秘密情報境界
+  ├─ test                → form / Library / release gate
+  ├─ test:habitat        → Habitat contract
   ├─ typecheck          → TypeScript
   ├─ build
   │   ├─ clean
   │   ├─ optimize:images
   │   ├─ next build --webpack
   │   └─ assemble-next-export.mjs
-  └─ verify             → route / copy / CTA / asset / CSP / backend contract
+  ├─ verify             → route / copy / CTA / asset / CSP / backend contract
+  └─ responsive smoke  → 全公開routeとHabitatのPlaywright検証
 ```
 
 `scripts/assemble-next-export.mjs`は`.nojekyll`、`_headers`、`_redirects`、Search Console verification、`robots.txt`、`sitemap.xml`を`out/`へ組み込む。

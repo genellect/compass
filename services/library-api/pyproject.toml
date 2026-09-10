@@ -1,7 +1,8 @@
 [project]
 name = "compass-library-api"
 version = "0.1.0"
-description = "Phase 5 local persistence foundation for the Future Strategy Library"
+description = "Registration, identity and access services for the Future Strategy Library"
+license = "LicenseRef-COMPASS-Proprietary"
 requires-python = ">=3.12,<3.14"
 dependencies = [
   "alembic>=1.18.5,<2",
@@ -19,7 +20,7 @@ dependencies = [
 
 [dependency-groups]
 dev = [
-  "httpx2>=2.5,<3",
+  "httpx2>=2.12,<3",
   "pytest>=8.4,<10",
 ]
 
