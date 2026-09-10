@@ -83,7 +83,6 @@ const officialDesktopRoutes = [
   { path: "/future-strategy-library/", active: "Resources" },
   { path: "/messages/", active: "Resources" },
   { path: "/community/join/", active: "Community" },
-  { path: "/contact/", active: "Contact" },
 ];
 
 test("Community form separates required focus areas from the compressed activity choices", async ({ page }) => {

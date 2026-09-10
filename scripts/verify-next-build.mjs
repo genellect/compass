@@ -975,10 +975,17 @@ for (const expected of [
 ]) expectIncludes(contact, expected, "Contact page");
 
 for (const expected of [
-  "Don’t Just Learn. Build What’s Next.",
-  "COMPASS source code on GitHub",
-  'data-ui-variant="root"'
-]) expectIncludes(contact, expected, "Contact root footer UI");
+  'data-contact-header="true"',
+  'data-contact-footer="true"',
+  "Contact | お問い合わせ",
+  "Yuto Matsui. All rights reserved.",
+  "COMPASS Platform",
+  "COMPASS Interactive",
+  'href="https://yuto-matsui.com/en/"'
+]) expectIncludes(contact, expected, "Independent Contact chrome");
+for (const unexpected of ["Don’t Just Learn. Build What’s Next.", "COMPASS source code on GitHub", 'data-ui-variant="root"']) {
+  expectExcludes(contact, unexpected, "Retired Contact chrome");
+}
 
 for (const expected of [
   "共同開発、受託開発、プロジェクトのご依頼、講演",

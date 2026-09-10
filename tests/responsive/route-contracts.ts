@@ -216,6 +216,7 @@ export const routeContracts: RouteContract[] = [
   {
     name: "contact",
     path: "/contact/",
+    sharedMobileMenu: false,
     h1Lines: { min: 1, max: 3 },
     requiredSelectors: [
       "#form-title",

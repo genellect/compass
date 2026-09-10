@@ -1,31 +1,40 @@
-import type { Metadata } from "next";
-import { SiteFooter } from "@/components/SiteFooter";
-import { SiteHeader } from "@/components/SiteHeader";
+import type { Metadata, Viewport } from "next";
 import { ContactForm } from "./ContactForm";
+import { ContactHeader, ContactFooter } from "./ContactChrome";
+import { ContactAtmosphere } from "./ContactAtmosphere";
 import styles from "./contact.module.css";
 
 export const metadata: Metadata = {
-  title: "お問い合わせ | COMPASS",
+  title: "Contact | お問い合わせ",
   description: "COMPASSへの公式お問い合わせと、代表へのご連絡を受け付けています。",
   alternates: { canonical: "/contact/" },
   robots: { index: false, follow: true },
   openGraph: {
-    title: "お問い合わせ | COMPASS",
+    title: "Contact | お問い合わせ",
+    siteName: "Contact",
     description: "COMPASSへの公式お問い合わせと、代表へのご連絡を受け付けています。",
     url: "/contact/"
+  },
+  twitter: {
+    card: "summary",
+    title: "Contact | お問い合わせ",
+    description: "COMPASSへの公式お問い合わせと、代表へのご連絡を受け付けています。"
   }
 };
 
+export const viewport: Viewport = { themeColor: "#f6f8f7" };
+
 export default function ContactPage() {
   return (
-    <>
-      <SiteHeader routeContext="contact" />
-      <div className={styles.page}>
+    <div className={styles.page} id="contact-top">
+      <ContactHeader />
+      <div className={styles.gallery}>
+        <ContactAtmosphere />
         <main id="main" className={styles.main}>
           <ContactForm />
         </main>
       </div>
-      <SiteFooter routeContext="contact" />
-    </>
+      <ContactFooter />
+    </div>
   );
 }

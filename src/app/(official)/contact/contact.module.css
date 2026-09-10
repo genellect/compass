@@ -867,3 +867,69 @@
     transition-duration: 0.01ms !important;
   }
 }
+
+/* Contact's independent gallery skin. Form geometry and flow stay unchanged. */
+.page {
+  --header-height: 76px;
+  --ink: #182f3d;
+  --copy: #52636d;
+  --paper: #f4f6f4;
+  --cyan: #8bb6b2;
+  --cyan-deep: #386c73;
+  --line: #d3dedc;
+  background: #f4f6f4;
+  color-scheme: light;
+}
+.gallery {
+  position: relative;
+  isolation: isolate;
+  background: linear-gradient(110deg, #253d49 -24%, #e8edeb 8%, #f7f9f6 46%, #edf1ef 89%, #19323f 122%);
+}
+.atmosphere {
+  position: absolute;
+  inset: 0 0 auto;
+  height: min(1100px, 130svh);
+  overflow: hidden;
+  pointer-events: none;
+  z-index: -1;
+}
+.architecture {
+  position: absolute;
+  inset: 76px 0 0;
+  background:
+    linear-gradient(90deg, transparent 3%, #213c4826 3.05%, transparent 3.15%, transparent 96.8%, #213c4826 96.9%, transparent 97%),
+    linear-gradient(167deg, transparent 7%, #fff9 7.15%, #ffffff20 16%, transparent 16.1%),
+    linear-gradient(12deg, transparent 68%, #96b8b71a 68.2%, transparent 80%);
+  mask-image: linear-gradient(#000 70%, transparent);
+}
+.architecture::before, .architecture::after {
+  content: "";
+  position: absolute;
+  top: 42px;
+  width: 14%;
+  height: 68%;
+  border: 1px solid #afc5c455;
+  background: linear-gradient(120deg, #fff9, #bdd1ce26);
+  box-shadow: 12px 16px 32px #193a4620;
+}
+.architecture::before { left: -8%; transform: skewY(-19deg); }
+.architecture::after { right: -8%; transform: skewY(19deg); }
+.scene { position: absolute; inset: 0; mask-image: linear-gradient(#000 75%, transparent); }
+.scene canvas { display: block; width: 100%; height: 100%; }
+.page .main { position: relative; }
+.page .introStage, .page .audiencePanel, .page .formStage, .page .successCard {
+  border-color: #cbd8d6;
+  border-radius: 4px 24px 4px 4px;
+  background: #fffffff7;
+  box-shadow: 0 18px 60px #1b35460a, 0 2px 4px #1b354605;
+}
+.page .introStage::before { height: 2px; background: linear-gradient(90deg, #416f78, #bed4d0 46%, transparent 85%); }
+.page .targetCard { border-color: #d0dcdb; border-radius: 4px 16px 4px 4px; background: #f7faf9; }
+.page .targetCardSelected { border-color: #608e8f; background: linear-gradient(125deg, #edf5f1, #f9fcfb); box-shadow: inset 3px 0 #608e8f, 0 8px 24px #2d565e0a; }
+.page .submitStage { border-color: #cbd8d6; border-radius: 4px 20px 4px 4px; background: linear-gradient(130deg, #e7efec, #f4f7f3); }
+.page .submitButton, .page .homeButton { background: linear-gradient(125deg, #173440, #355c63); border-color: #355c63; }
+@media (max-width: 900px) {
+  .page { --header-height: 68px; }
+  .architecture { inset-block-start: 68px; }
+  .page .introStage, .page .audiencePanel, .page .formStage, .page .successCard { border-radius: 3px 20px 3px 3px; }
+}
