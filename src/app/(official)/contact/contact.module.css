@@ -868,97 +868,37 @@
   }
 }
 
-/* Contact's independent gallery skin. Form geometry and flow stay unchanged. */
-.page {
-  --header-height: 76px;
-  --ink: #182f3d;
-  --copy: #52636d;
-  --paper: #f4f6f4;
-  --cyan: #8bb6b2;
-  --cyan-deep: #386c73;
-  --line: #d3dedc;
-  background: #f4f6f4;
-  color-scheme: light;
-}
-.gallery {
-  position: relative;
-  isolation: isolate;
-  background: linear-gradient(110deg, #253d49 -24%, #e8edeb 8%, #f7f9f6 46%, #edf1ef 89%, #19323f 122%);
-}
-.atmosphere {
-  position: absolute;
-  inset: 0 0 auto;
-  height: min(1100px, 130svh);
-  overflow: hidden;
-  pointer-events: none;
-  z-index: -1;
-}
-.architecture {
-  position: absolute;
-  inset: 76px 0 0;
-  background:
-    linear-gradient(90deg, transparent 3%, #213c4826 3.05%, transparent 3.15%, transparent 96.8%, #213c4826 96.9%, transparent 97%),
-    linear-gradient(167deg, transparent 7%, #fff9 7.15%, #ffffff20 16%, transparent 16.1%),
-    linear-gradient(12deg, transparent 68%, #96b8b71a 68.2%, transparent 80%);
-  mask-image: linear-gradient(#000 70%, transparent);
-}
-.architecture::before, .architecture::after {
-  content: "";
-  position: absolute;
-  top: 42px;
-  width: 14%;
-  height: 68%;
-  border: 1px solid #afc5c455;
-  background: linear-gradient(120deg, #fff9, #bdd1ce26);
-  box-shadow: 12px 16px 32px #193a4620;
-}
-.architecture::before { left: -8%; transform: skewY(-19deg); }
-.architecture::after { right: -8%; transform: skewY(19deg); }
-.scene { position: absolute; inset: 0; mask-image: linear-gradient(#000 75%, transparent); }
-.scene canvas { display: block; width: 100%; height: 100%; }
-.page .main { position: relative; }
-.page .introStage, .page .audiencePanel, .page .formStage, .page .successCard {
-  border-color: #cbd8d6;
-  border-radius: 4px 24px 4px 4px;
-  background: #fffffff7;
-  box-shadow: 0 18px 60px #1b35460a, 0 2px 4px #1b354605;
-}
+
+/* The cinematic entry and the quiet writing surface never overlap. */
+.page { --header-height: 76px; --ink: #182f3d; --copy: #52636d; --paper: #fff; --cyan: #8bb6b2; --cyan-deep: #386c73; --line: #d3dedc; background: #fff; color-scheme: light; }
+.gallery { background: #fff; }
+.page .main { width: min(880px, calc(100% - 64px)); padding: 120px 0 80px; }
+.page .main:has([data-entry-complete="false"]) { width: min(1280px, calc(100% - 64px)); }
+.page .introStage, .page .audiencePanel, .page .formStage, .page .successCard { border-color: #d9e1df; border-radius: 4px 20px 4px 4px; background: #fff; box-shadow: 0 14px 48px #1b354608; }
+.page .introStage { padding: clamp(28px, 4vw, 48px); }
 .page .introStage::before { height: 2px; background: linear-gradient(90deg, #416f78, #bed4d0 46%, transparent 85%); }
+.page [data-entry-complete="false"] .introStage { padding: 0; border: 0; box-shadow: none; overflow: visible; }
+.page [data-entry-complete="false"] .introStage::before { display: none; }
+.page [data-entry-complete="false"] .formHeading { max-width: none; }
+.page [data-entry-complete="false"] .formHeading h1 { font-size: clamp(28px, 3vw, 42px); }
+.page [data-entry-complete="false"] .formKicker { display: none; }
+.page [data-entry-complete="false"] .formIntro:not(.formKicker) { margin-top: 14px; font-size: 14px; }
+.page [data-entry-complete="false"] .formHeading > p:not(.formKicker):not(.formIntro) { margin-top: 8px; font-size: 12px; max-width: none; }
 .page .targetCard { border-color: #d0dcdb; border-radius: 4px 16px 4px 4px; background: #f7faf9; }
-.page .targetCardSelected { border-color: #608e8f; background: linear-gradient(125deg, #edf5f1, #f9fcfb); box-shadow: inset 3px 0 #608e8f, 0 8px 24px #2d565e0a; }
-.page .submitStage { border-color: #cbd8d6; border-radius: 4px 20px 4px 4px; background: linear-gradient(130deg, #e7efec, #f4f7f3); }
+.page .targetCardSelected { border-color: #608e8f; background: #f0f6f3; box-shadow: inset 3px 0 #608e8f; }
+.page .submitStage { border-color: #d1dcda; border-radius: 4px 16px 4px 4px; background: #f3f7f5; }
 .page .submitButton, .page .homeButton { background: linear-gradient(125deg, #173440, #355c63); border-color: #355c63; }
-@media (max-width: 900px) {
-  .page { --header-height: 68px; }
-  .architecture { inset-block-start: 68px; }
-  .page .introStage, .page .audiencePanel, .page .formStage, .page .successCard { border-radius: 3px 20px 3px 3px; }
+.page [hidden] { display: none !important; }
+@media (max-width: 900px) { .page { --header-height: 68px; } .page .main { padding-top: 100px; } }
+@media (max-width: 700px) {
+ .page .main, .page .main:has([data-entry-complete="false"]) { width: calc(100% - 32px); padding-top: 94px; padding-bottom: 48px; }
+ .page [data-entry-complete="false"] .formHeading { padding-inline: 4px; }
+ .page [data-entry-complete="false"] .formIntro:not(.formKicker) { font-size: 12px; line-height: 1.8; margin-top: 12px; }
+ .page [data-entry-complete="false"] .formHeading > p:not(.formKicker):not(.formIntro) { font-size: 11px; line-height: 1.8; }
+ .page .introStage { padding: 28px 22px; }
 }
-
-/* An open atrium surrounds a solid, quiet writing desk. */
-.gallery { background: linear-gradient(#b6c9ce 0, #e5eeec 600px, #f4f6f4 1120px); }
-.atmosphere { height: 1120px; }
-.scene { mask-image: linear-gradient(#000 66%, transparent 99%); }
-.page .main { width: min(880px, calc(100% - 160px)); padding-top: 264px; }
-.page .introStage, .page .audiencePanel, .page .formStage, .page .successCard {
-  background: #fff; box-shadow: 0 36px 100px #16344426, 0 1px 0 #ffffff;
-}
-.page .introStage { padding: clamp(32px, 4vw, 52px); }
-.architecture {
-  inset: 76px 0 0;
-  background: radial-gradient(ellipse at 50% 15%, #fff 0, #e9f5f1a0 24%, transparent 57%),
-    repeating-conic-gradient(from 72deg at 50% 8%, transparent 0deg 12deg, #e9f2eeaa 12.1deg 13deg, transparent 13.1deg 25deg),
-    linear-gradient(110deg, #173544, #8aa4ad 22%, #ecf3ed 50%, #8aa4ad 78%, #173544);
-}
-.architecture::before { left: 12%; top: 32px; width: 76%; height: 280px; border: 22px solid #f6faf7; border-radius: 50%; transform: rotate(-12deg); background: transparent; box-shadow: 0 25px 40px #18344240, inset 0 8px 18px #18344240; }
-.architecture::after { left: 5%; top: 250px; width: 90%; height: 460px; border: 18px solid #e9f0ed; transform: perspective(500px) rotateX(65deg); background: repeating-linear-gradient(90deg, transparent 0 90px, #819caa40 91px 92px); box-shadow: 0 25px 60px #102f4630; }
-@media (max-width: 900px) {
-  .page .main { width: calc(100% - 40px); padding-top: 238px; }
-  .page .introStage { padding: 28px 24px; }
-  .architecture { inset-block-start: 68px; }
-  .architecture::before { left: -20%; width: 140%; height: 220px; top: 20px; border-width: 16px; }
-}
-@media (max-width: 600px) { .page .main { width: calc(100% - 28px); padding-top: 220px; } .page .introStage { padding: 26px 22px; } }
-@media (max-width: 340px) { .page .main { width: calc(100% - 20px); } .page .introStage { padding: 22px 16px; } }
-@media (max-height: 600px) { .page .main { padding-top: 170px; } }
-
-.atmosphere:has(canvas:not([style*="display: none"])) .architecture::before, .atmosphere:has(canvas:not([style*="display: none"])) .architecture::after { opacity: 0; }
+@media (max-width: 340px) { .page .main, .page .main:has([data-entry-complete="false"]) { width: calc(100% - 20px); } .page .introStage { padding: 22px 16px; } }
+/* The destination lobby is the first visual scene; explanatory copy follows it. */
+.page [data-entry-complete="false"] .introStage { display: flex; flex-direction: column; }
+.page [data-entry-complete="false"] [data-contact-entrance] { order: -1; margin-top: 0; }
+.page [data-entry-complete="false"] .formHeading { margin-top: 24px; }

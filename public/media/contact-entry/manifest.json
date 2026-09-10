@@ -1,0 +1,39 @@
+{
+  "author": "Yuto Matsui / CONTACT",
+  "source": "scripts/contact-entry/render.py",
+  "frames": 48,
+  "fps": 24,
+  "durationSeconds": 2,
+  "assets": [
+    {
+      "file": "lobby-desktop.webp",
+      "bytes": 67080,
+      "sha256": "c37bb7730724950e2cfb9710f4f6e14644fe238778488c645f5d2a48331f54a8"
+    },
+    {
+      "file": "lobby-mobile.webp",
+      "bytes": 45646,
+      "sha256": "4603f7465cd18e50b5348c4c0bcbeefaef8e0cd6d58e67ab9ccf1092448831e3"
+    },
+    {
+      "file": "representative-desktop.mp4",
+      "bytes": 840861,
+      "sha256": "456377a0efee7305cb6a165a3970345a5b4ee930b79a5eaaf4b86a6abfa26f01"
+    },
+    {
+      "file": "compass-desktop.mp4",
+      "bytes": 747060,
+      "sha256": "55c9476c49e9ead95336130afa00b9c4862d67cf01bd1c15face7493bfee38bb"
+    },
+    {
+      "file": "representative-mobile.mp4",
+      "bytes": 770459,
+      "sha256": "fa875d157163519274f1751eff6158885307f6ee3f1f6cc758d37d07d4be11cc"
+    },
+    {
+      "file": "compass-mobile.mp4",
+      "bytes": 588919,
+      "sha256": "9d1733a06e0194e81c8f37b2f7c5e11453fdf7baf0f4d10d4dcf6e559f374002"
+    }
+  ]
+}

@@ -1,0 +1,45 @@
+.entrance { margin-top: 30px; }
+.scene { position: relative; aspect-ratio: 16 / 9; overflow: hidden; background: #d9d9d1; border-radius: 3px; isolation: isolate; }
+.poster, .film, .shade, .fade { position: absolute; inset: 0; width: 100%; height: 100%; }
+.poster img { display: block; width: 100%; height: 100%; object-fit: cover; }
+.shade { pointer-events: none; background: linear-gradient(#07191866, transparent 34%, transparent 59%, #10222435); }
+.heading { position: absolute; top: 7%; left: 6%; right: 6%; color: #fff; text-align: center; text-shadow: 0 1px 12px #152b3455; }
+.heading p { margin: 0 0 12px; font-size: 10px; font-weight: 700; letter-spacing: .24em; }
+.heading h2 { margin: 0; font-size: clamp(20px, 2.5vw, 32px); line-height: 1.4; font-weight: 600; letter-spacing: .025em; }
+.doors { position: absolute; inset: 0; }
+/* Accessible smart panels align with the physical portals in the Blender shot. */
+.door { position: absolute; left: 25%; width: 22%; top: 30%; bottom: 9%; display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-end; padding: 14px; text-align: left; border: 1px solid #b5f0f230; border-radius: 5px; color: #fff; background: linear-gradient(transparent 40%, #0c2736ee); cursor: pointer; transition: border-color 160ms, box-shadow 160ms; }
+.door + .door { left: 55%; }
+.door:hover, .door:focus-visible { border-color: #a3ece9; box-shadow: 0 0 24px #75eeee50, inset 0 0 22px #5ed9dc18; outline: none; }
+.number { font-size: 9px; letter-spacing: .1em; line-height: 1.6; color: #d4e3dc; }
+.room { display: block; margin: 10px 0; font-size: clamp(18px, 2.1vw, 30px); letter-spacing: .03em; font-weight: 500; line-height: 1.25; }
+.access { display: block; font-size: 9px; color: #b1f2ee; letter-spacing: .08em; margin-bottom: 15px; }
+.label { display: flex; justify-content: space-between; gap: 10px; width: 100%; font-size: 12px; line-height: 1.7; font-weight: 600; }
+.description { display: block; margin-top: 5px; font-size: 9px; line-height: 1.6; color: #d4e3dc; }
+.bypass { display: block; margin: 8px 0 0 auto; padding: 12px 0 12px 14px; min-height: 44px; border: 0; background: transparent; color: #53666d; font: inherit; font-size: 11px; cursor: pointer; }
+.bypass span { margin-left: 16px; }
+.bypass:focus-visible, .skip:focus-visible { outline: 2px solid #517d80; outline-offset: 3px; }
+.film { object-fit: cover; }
+.fade { pointer-events: none; background: #fff; opacity: 0; transition: opacity 280ms linear; }
+.scene[data-finishing="true"] .fade { opacity: 1; }
+.status { position: absolute; left: 24px; bottom: 22px; margin: 0; color: #fff; padding: 6px 10px; background: #102323a8; font-size: 11px; border-radius: 3px; }
+.skip { position: absolute; right: 18px; bottom: 12px; min-height: 44px; padding: 12px; border: 0; border-radius: 3px; background: #fffffff0; color: #29404a; font: inherit; font-size: 11px; cursor: pointer; }
+.skip span { margin-left: 12px; }
+@media (min-width: 701px) { .scene { width: min(100%, max(720px, calc((100svh - 150px) * 1.777778))); margin-inline: auto; } }
+@media (max-width: 700px) {
+  .entrance { margin-top: 22px; }
+  .scene { aspect-ratio: 3 / 4; }
+  .heading { top: 7%; left: 10px; right: 10px; }
+  .heading p { font-size: 9px; margin-bottom: 10px; }
+  .heading h2 { font-size: clamp(17px, 4.5vw, 25px); }
+  .door { left: 20%; width: 28%; top: 39%; bottom: 15%; padding: 10px 7px; }
+  .door + .door { left: 53%; }
+  .number { font-size: 10px; letter-spacing: .02em; }
+  .room { font-size: clamp(14px, 4vw, 24px); margin-top: 9px; }
+  .access { font-size: 8px; letter-spacing: 0; margin-bottom: 10px; }
+  .label { font-size: 11px; gap: 4px; }
+  .description { font-size: 9px; }
+  .status { left: 8px; right: 90px; bottom: 23px; font-size: 10px; padding: 5px; }
+  .skip { right: 8px; }
+}
+@media (prefers-reduced-motion: reduce) { .door, .fade { transition: none; } }

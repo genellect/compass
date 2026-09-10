@@ -145,6 +145,7 @@ test("Contact reveals only the selected destination and preserves the form while
     height: 844,
   });
 
+  await page.getByRole("button", { name: "演出なしで入力へ" }).click();
   const representative = page.locator('input[name="contactTarget"][value="representative"]');
   const compass = page.locator('input[name="contactTarget"][value="compass"]');
 

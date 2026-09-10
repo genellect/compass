@@ -26,9 +26,7 @@ for (const width of [320, 340, 341, 390, 430, 768, 900, 901, 1024, 1280, 1440]) 
     await expect(page.locator(".site-header, .site-footer")).toHaveCount(0);
     await expect(page).toHaveTitle("Contact | お問い合わせ");
     await expect(page.locator("[data-contact-footer]")).toContainText("Yuto Matsui. All rights reserved.");
-    const desk = await page.locator('[class*="introStage"]').boundingBox();
-    expect(desk!.y).toBeGreaterThanOrEqual(200);
-    if (width >= 1024) expect(desk!.width / width).toBeLessThan(.86);
+    await expect(page.locator("[data-contact-entrance]")).toBeVisible();
     const h1 = await page.locator("h1").boundingBox();
     const headerBox = await header.boundingBox();
     expect(h1!.y).toBeGreaterThan(headerBox!.height);
@@ -59,7 +57,7 @@ for (const width of [320, 340, 341, 390, 430, 768, 900, 901, 1024, 1280, 1440]) 
       await page.mouse.click(4, 400);
       await expect(nav).toBeHidden();
     }
-    await page.locator('input[value="representative"]').check();
+    await page.locator('[data-door="representative"]').click();
     await page.locator("#name").fill("テスト利用者");
     if (width <= 900) { await menu.click(); await menu.click(); }
     await expect(page.locator("#name")).toHaveValue("テスト利用者");
@@ -108,21 +106,10 @@ test("Contact remains usable without WebGL", async ({ page }) => {
     } as typeof original;
   });
   await page.goto("/contact/");
+  await page.getByRole("button", { name: "演出なしで入力へ" }).click();
   await page.locator('input[value="compass"]').check();
   await expect(page.locator("#name")).toBeVisible();
   await expect(page.locator("canvas")).toHaveCount(0);
-});
-
-for (const sceneWidth of [390, 1440]) test(`Contact renders its decorative gallery at ${sceneWidth}px and releases it on reduced motion`, async ({ page }, testInfo) => {
-  await page.setViewportSize({ width: sceneWidth, height: 900 });
-  await page.emulateMedia({ reducedMotion: "no-preference" });
-  await page.goto("/contact/");
-  await expect(page.locator("canvas")).toBeVisible();
-  await page.waitForTimeout(1500);
-  await page.screenshot({ path: testInfo.outputPath("gallery-webgl.png") });
-  await page.emulateMedia({ reducedMotion: "reduce" });
-  await expect(page.locator("canvas")).toHaveCount(0);
-  await expect(page.locator("h1")).toBeVisible();
 });
 
 test.describe("Contact touch navigation", () => {
@@ -130,7 +117,7 @@ test.describe("Contact touch navigation", () => {
   test("bubble opens above the form and closes without changing the destination", async ({ page }) => {
     await page.emulateMedia({ reducedMotion: "reduce" });
     await page.goto("/contact/");
-    await page.locator('label:has(input[value="compass"])').tap();
+    await page.locator('[data-door="compass"]').tap();
     await page.getByRole("button", { name: "Menu" }).tap();
     await expect(page.locator("#contact-navigation")).toBeVisible();
     expect(await page.evaluate(() => ({ width: innerWidth, coarse: matchMedia("(pointer: coarse)").matches }))).toEqual({ width: 390, coarse: true });
@@ -163,7 +150,7 @@ for (const target of ["representative", "compass"]) {
       await route.fulfill({ status: response.ok ? 200 : 400, contentType: "application/json", body: JSON.stringify(response) });
     });
     await page.goto("/contact/");
-    await page.locator(`input[value="${target}"]`).check();
+    await page.locator(`[data-door="${target}"]`).click();
     await page.locator("#name").fill("テスト利用者");
     await page.locator("#affiliation").fill("テスト機関");
     await page.locator("#email").fill("contact-test@example.com");
