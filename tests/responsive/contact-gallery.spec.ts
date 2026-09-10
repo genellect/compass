@@ -22,10 +22,13 @@ for (const width of [320, 340, 341, 390, 430, 768, 900, 901, 1024, 1280, 1440]) 
     expect(skipBox!.y).toBeGreaterThanOrEqual(0);
     expect(skipBox!.x + skipBox!.width).toBeLessThanOrEqual(width);
     await page.keyboard.press("Tab");
-    await expect(header).toContainText("Contact");
+    await expect(header).toContainText("CONTACT");
     await expect(page.locator(".site-header, .site-footer")).toHaveCount(0);
     await expect(page).toHaveTitle("Contact | お問い合わせ");
     await expect(page.locator("[data-contact-footer]")).toContainText("Yuto Matsui. All rights reserved.");
+    const desk = await page.locator('[class*="introStage"]').boundingBox();
+    expect(desk!.y).toBeGreaterThanOrEqual(200);
+    if (width >= 1024) expect(desk!.width / width).toBeLessThan(.86);
     const h1 = await page.locator("h1").boundingBox();
     const headerBox = await header.boundingBox();
     expect(h1!.y).toBeGreaterThan(headerBox!.height);
@@ -110,11 +113,12 @@ test("Contact remains usable without WebGL", async ({ page }) => {
   await expect(page.locator("canvas")).toHaveCount(0);
 });
 
-test("Contact renders its decorative gallery and releases it on reduced motion", async ({ page }, testInfo) => {
-  await page.setViewportSize({ width: 1440, height: 900 });
+for (const sceneWidth of [390, 1440]) test(`Contact renders its decorative gallery at ${sceneWidth}px and releases it on reduced motion`, async ({ page }, testInfo) => {
+  await page.setViewportSize({ width: sceneWidth, height: 900 });
   await page.emulateMedia({ reducedMotion: "no-preference" });
   await page.goto("/contact/");
   await expect(page.locator("canvas")).toBeVisible();
+  await page.waitForTimeout(1500);
   await page.screenshot({ path: testInfo.outputPath("gallery-webgl.png") });
   await page.emulateMedia({ reducedMotion: "reduce" });
   await expect(page.locator("canvas")).toHaveCount(0);
