@@ -32,22 +32,22 @@
   .root :global(:is(.v4-label,.v4-resources__label,.v4-manifesto__label,.section-label,.v4-card-kicker,.v4-founder__role)) { color:#8fcec9; font-size:11px; letter-spacing:.12em; }
   .root :global(:is(.v4-vision__grid,.v4-resources__layout,.v4-resources__content)) { display:block; padding:0; background:transparent; border:0; box-shadow:none; }
   .root :global(.v4-vision__body + .v4-vision__body) { margin-top:18px; }
-  .root :global(.hero) { min-height:100svh; padding:94px 0 28px; display:block; }
+  .root :global(.hero) { min-height:100svh; padding:clamp(88px,15svh,144px) 0 clamp(18px,3.5svh,28px); display:block; box-sizing:border-box; }
   .root :global(.hero)::before,.root :global(.hero)::after { display:none; }
   .root :global(.li-hero-layout) { display:block; min-height:0; padding:0; }
   .root :global(:is(.li-hero-layout,.li-hero-copy,.li-hero-support)::before),
   .root :global(:is(.li-hero-layout,.li-hero-copy,.li-hero-support)::after) { display:none; }
   .root :global(.li-hero-copy) { display:flex; flex-direction:column; align-items:stretch; gap:0; width:100%; max-width:none; text-align:left; }
-  .root :global(.li-hero-origin) { order:0; display:flex; flex-direction:column; align-items:flex-start; gap:7px; margin:0 0 18px; }
+  .root :global(.li-hero-origin) { order:0; display:flex; flex-direction:column; align-items:flex-start; gap:6px; margin:0 0 14px; }
   .root :global(.li-hero-eyebrow),.root :global(.li-hero-trust) { color:#bbd5d9; background:none; padding:0; border:0; box-shadow:none; font-size:clamp(9px,2.55vw,12px); letter-spacing:.02em; white-space:normal; }
   .root :global(.li-hero-eyebrow__signal) { display:none; }
   .root :global(.li-hero-title) { order:initial; font-size:clamp(34px,10.7vw,64px); font-weight:800; letter-spacing:-.05em; line-height:1.04; color:#f4f7f4; margin:0; overflow:visible; }
   .root :global(.hero .li-hero-title__line),.root :global(.hero .li-hero-title__line--active>span) { white-space:normal; color:#f4f7f4; -webkit-text-fill-color:currentColor; text-align:left; }
   .root :global(.li-hero-title__line--active>span:last-child) { color:#c6f1e9; background:none; -webkit-text-fill-color:currentColor; }
-  .root :global(.hero .li-hero-lead) { order:initial; color:#e3eded; font-size:15px; line-height:1.7; margin:clamp(120px,19svh,180px) 0 0; text-align:left; }
-  .root :global(.hero .li-hero-support) { order:initial; color:#bacbd0; font-size:13px; line-height:1.85; margin:14px 0 0; max-width:none; text-align:left; }
+  .root :global(.hero .li-hero-lead) { order:initial; color:#e3eded; font-size:15px; line-height:1.62; margin:clamp(32px,5.5svh,48px) 0 0; text-align:left; }
+  .root :global(.hero .li-hero-support) { order:initial; color:#bacbd0; font-size:13px; line-height:1.72; margin:10px 0 0; max-width:none; text-align:left; }
   .root :global(.li-hero-support>span) { display:block; }
-  .root :global(.li-system-index) { order:initial; display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:0; margin:24px 0 0; width:100%; border-block:1px solid #54727b; }
+  .root :global(.li-system-index) { order:initial; display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:0; margin:clamp(14px,2.7svh,22px) 0 0; width:100%; border-block:1px solid #54727b; }
   .root :global(.li-system-index__item) { display:grid; grid-template-columns:12px minmax(0,1fr); column-gap:6px; align-items:start; position:relative; min-width:0; min-height:58px; padding:12px 8px; color:#f3f7f3; border:0; border-radius:0; background:#07121bc9; box-shadow:none; }
   .root :global(.li-system-index__copy),.root :global(.li-system-index__copy>*) { width:100%; min-width:0; overflow:visible; white-space:normal; text-overflow:clip; }
   .root :global(.li-system-index__arrow) { position:absolute; top:12px; right:8px; font-size:10px; }
@@ -60,7 +60,7 @@
   .root :global(#top) .scene img,.root :global(#top) .scene video { object-position:50% 50%; opacity:1; }
   .root :global(#top) .scene video:not(.playing) { opacity:0; }
   .root :global(#top) .veil { background:linear-gradient(180deg,#07121b33 0%,transparent 28%,transparent 56%,#07121baa 72%,var(--mobile-paper) 100%); }
-  .root :global(#top) .control { top:var(--mobile-controls-top,37%); bottom:auto; background:#07121bcc; }
+  .root :global(#top) .control { top:auto; bottom:20px; background:#07121bcc; }
   .root :global(.v4-experience__grid) { display:grid; grid-template-columns:1fr; gap:14px; }
   .root :global(.v4-experience-card) { padding:24px; color:var(--mobile-ink); background:#0d1d28; border:1px solid #2c4651; border-radius:12px; box-shadow:none; }
   .root :global(.v4-experience-card)::before,.root :global(.v4-experience-card)::after { display:none; }
@@ -81,8 +81,15 @@
   .root :global(.v4-manifesto__frame) { display:block; background:transparent; border:0; border-radius:0; box-shadow:none; padding:0; min-height:0; }
   .root :global(.v4-manifesto__declaration),.root :global(.v4-manifesto__invitation),.root :global(.v4-manifesto__folio) { color:#bacbd0; }
   .root :global(.v4-community__experience) { background:transparent; border:0; padding:0; box-shadow:none; }
-  .root :global(.v4-community__details) { background:#0d1d28; border:1px solid #314c58; color:#bacbd0; }
-  .root :global(.v4-community__details summary),.root :global(.v4-community__details-copy) { color:#bacbd0; }
+  .root :global(.v4-community__details) { margin:30px 0 0; overflow:hidden; border:1px solid #355560; border-radius:16px; color:#bacbd0; background:linear-gradient(145deg,#10252f,#0b1923); box-shadow:0 18px 42px #02090e52,inset 0 1px 0 #d8fff00a; transition:border-color 180ms ease,background 180ms ease; }
+  .root :global(.v4-community__details[open]) { border-color:#547985; background:linear-gradient(160deg,#102832,#0a1821 45%,#0c2029); }
+  .root :global(.v4-community__details summary) { min-height:68px; padding:0 18px; color:#e7f3f2; font-size:13px; letter-spacing:.075em; }
+  .root :global(.v4-community__details summary::after) { width:34px; height:34px; flex:0 0 34px; border-color:#6f9aa2; color:#b9eee5; background:#16323b; box-shadow:inset 0 1px 0 #e6fff014; }
+  .root :global(.v4-community__details[open] summary) { border-bottom:1px solid #314c58; color:#b9eee5; background:#122b35; }
+  .root :global(.v4-community__details-copy) { gap:0; padding:6px 20px 20px; color:#bacbd0; }
+  .root :global(.v4-community__details-copy p) { margin:0; padding:20px 0; border-top:1px solid #294550; font-size:14px; line-height:1.9; }
+  .root :global(.v4-community__details-copy p:first-child) { border-top:0; }
+  .root :global(.v4-community__details-copy p:last-child) { padding-bottom:4px; color:#e7f3f2; font-weight:650; }
   .root :global(.v4-founder__profile) { background:#0d1d28; color:#eff4f1; border:1px solid #314c58; border-radius:12px; padding:20px; box-shadow:none; }
   .root :global(.v4-founder__profile-copy h3) { color:#eff4f1; }
   .root :global(.v4-founder__metrics) { color:#bacbd0; }
@@ -123,6 +130,19 @@
   .root :global(#manifesto .v4-manifesto__frame)::before,.root :global(#manifesto .v4-manifesto__frame)::after,
   .root :global(#resources .v4-resources__story)::before,.root :global(#resources .v4-resources__story)::after,
   .root :global(.v4-technology__mesh),.root :global(.v4-community__network) { display:none; }
+}
+@media (max-height:650px) and (max-width:900px) {
+  .root :global(.hero) { padding-top:72px; padding-bottom:14px; }
+  .root :global(.li-hero-origin) { gap:3px; margin-bottom:9px; }
+  .root :global(.li-hero-eyebrow),.root :global(.li-hero-trust) { font-size:9px; line-height:1.35; }
+  .root :global(.li-hero-title) { font-size:clamp(31px,9.7vw,40px); line-height:1; }
+  .root :global(.hero .li-hero-lead) { margin-top:24px; font-size:13px; line-height:1.5; }
+  .root :global(.hero .li-hero-support) { margin-top:7px; font-size:11.5px; line-height:1.52; }
+  .root :global(.li-system-index) { margin-top:11px; }
+  .root :global(.li-system-index__item) { min-height:46px; padding:7px 8px; }
+  .root :global(.li-system-index__copy strong) { font-size:11px; }
+  .root :global(.li-system-index__copy small) { font-size:8.5px; line-height:1.2; }
+  .root :global(.li-system-index__number),.root :global(.li-system-index__arrow) { font-size:9px; }
 }
 @media (max-width:360px) { .root :global(:is(.container,.v4-container)),.root :global(:is(#manifesto,#contact) .container) { width:calc(100% - 32px); } }
 @media (min-width:600px) and (pointer:coarse) and (orientation:portrait) {
