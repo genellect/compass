@@ -15,6 +15,13 @@ for (const width of [320, 340, 341, 390, 430, 768, 900, 901, 1024, 1280, 1440]) 
     await page.emulateMedia({ reducedMotion: "reduce" });
     await page.goto("/contact/");
     const header = page.locator("[data-contact-header]");
+    await page.keyboard.press("Tab");
+    const skip = header.getByRole("link", { name: "本文へスキップ" });
+    await expect(skip).toBeFocused();
+    const skipBox = await skip.boundingBox();
+    expect(skipBox!.y).toBeGreaterThanOrEqual(0);
+    expect(skipBox!.x + skipBox!.width).toBeLessThanOrEqual(width);
+    await page.keyboard.press("Tab");
     await expect(header).toContainText("Contact");
     await expect(page.locator(".site-header, .site-footer")).toHaveCount(0);
     await expect(page).toHaveTitle("Contact | お問い合わせ");
