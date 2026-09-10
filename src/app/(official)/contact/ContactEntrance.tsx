@@ -101,7 +101,7 @@ export function ContactEntrance({ onSelect, onComplete }: Props) {
         {!selected ? <>
           <div className={styles.alternatives} aria-label="お問い合わせ先">
             <button type="button" onClick={() => choose("representative")}>代表へのご連絡 <span aria-hidden="true">↗</span></button>
-            <button type="button" onClick={() => choose("compass")}>COMPASSへのお問い合わせ <span aria-hidden="true">↗</span></button>
+            <button type="button" onClick={() => choose("compass")}>COMPASSへのお問い合わせ <span aria-hidden="true">↗</span><small className={styles.description}>活動・サービスに関する公式窓口</small></button>
           </div>
           <button className={styles.bypass} type="button" onClick={finish}>演出なしで入力へ <span aria-hidden="true">→</span></button>
         </> : <>

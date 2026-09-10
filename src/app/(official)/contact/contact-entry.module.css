@@ -11,6 +11,8 @@
 .door:focus-visible { border: 2px solid #284f58; outline: 2px solid #fff; outline-offset: 3px; }
 .controls { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0 24px; min-height: 60px; }
 .alternatives { display: flex; flex-wrap: wrap; gap: 0 24px; }
+.alternatives button { align-self: flex-start; text-align: left; }
+.description { display: block; margin-top: 1px; font-size: 10px; line-height: 1.5; color: #63767c; }
 .controls button { min-height: 44px; padding: 10px 0; border: 0; background: transparent; color: #52666d; font: inherit; font-size: 12px; line-height: 1.7; cursor: pointer; }
 .controls button:hover { color: #183c46; text-decoration: underline; text-underline-offset: 4px; }
 .controls button:focus-visible { outline: 2px solid #517d80; outline-offset: 3px; }
@@ -26,7 +28,7 @@
 @media (max-width: 700px) {
  .scene { aspect-ratio: 3 / 4; }
  .heading { margin-bottom: 16px; }
- .controls { min-height: 94px; padding-top: 6px; gap: 0 12px; }
+ .controls { min-height: 108px; padding-top: 6px; gap: 0 12px; }
  .alternatives { width: 100%; justify-content: space-between; gap: 0 10px; }
  .controls button { font-size: 11px; }
 }
