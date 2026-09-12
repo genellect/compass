@@ -4,9 +4,9 @@ Read and follow `AGENTS.md` first. Use `docs/CLOUD_DEVELOPMENT.md` for environme
 
 - Treat GitHub as the canonical source and work on a dedicated branch.
 - Use the repository Dev Container instead of creating a separate machine-specific environment.
-- Run `npm run cloud:check` before handing work off.
+- Select risk-proportionate checks using `docs/agent-delivery-policy.md`. Reserve `npm run cloud:check` for broad changes, explicit full audits, and CI; do not repeat the full suite for local UI refinements.
 - Never copy local `.env*`, credentials, protected materials, or Production data into this repository or a cloud environment.
-- Do not deploy, submit Production forms, send real email, migrate databases, or change secrets without an explicit user request for that external action.
+- Web UI implementation includes a dedicated branch, commit/push, PR, Cloudflare Preview, and browser verification of its target routes under AGENTS.md, including explicitly requested independent sites. Do not stop at localhost. Production deployment/merge, real forms/email, migrations, and secret changes require separate authorization.
 
 ## Position in this repository
 
@@ -25,7 +25,8 @@ Codex Desktop is the primary agent environment for COMPASS. Claude Code is a sec
 | Scope | Command |
 |---|---|
 | Repository-wide | `npm run cloud:check` |
-| UI / navigation / font / breakpoint / animation | `npm run check:responsive:cloud` |
+| Local UI / navigation / animation | Target routes, Desktop/Mobile, changed interactions; follow `docs/agent-delivery-policy.md` |
+| Broad responsive changes / explicit full audit | `npm run check:responsive:cloud` |
 | Dev Container environment contract | `npm run dev:doctor`（Codex Cloud単体では必須ではない） |
 
 `npm run check:responsive:full` and every `.ps1` script are Windows-only. Do not invoke them from a cloud session; report visual regression as owned by the GitHub Actions **Responsive Quality Gate**.

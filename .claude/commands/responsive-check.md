@@ -1,8 +1,8 @@
 ---
-description: Run the cloud-executable responsive audit for a UI, navigation, font, breakpoint, or animation change.
+description: Select and run risk-proportionate responsive checks; reserve the full matrix for broad changes or an explicit full audit.
 ---
 
-Run the responsive gate that is executable on Linux and in the cloud.
+Read `docs/agent-delivery-policy.md` and select target routes, Desktop/Mobile and changed interactions. Do not apply the full matrix to every local UI adjustment. For broad changes or an explicitly requested full audit, run the Linux/cloud gate below.
 
 ```bash
 npm run check:responsive:cloud

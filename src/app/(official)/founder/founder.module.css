@@ -664,6 +664,26 @@
 
 .fieldImage img { object-fit: cover; transition: transform 650ms ease, filter 350ms ease; }
 .fieldCard:hover .fieldImage img { filter: saturate(1.06); transform: scale(1.035); }
+
+/* A visible supporting edge gives the first impression depth, even on touch. */
+.fieldCard[data-depth-card="expertise"] {
+  box-shadow: 0 2px 0 rgba(39,79,115,.12), 0 7px 0 -1px #f1f5f8,
+    0 8px 0 -1px rgba(39,79,115,.18), 0 26px 42px -14px rgba(39,79,115,.23);
+}
+@media (max-width: 900px) {
+  .fieldCard[data-depth-card="expertise"] {
+    box-shadow: 0 1px 0 rgba(39,79,115,.12), 0 4px 0 -1px #f1f5f8,
+      0 5px 0 -1px rgba(39,79,115,.16), 0 17px 28px -15px rgba(39,79,115,.23);
+  }
+}
+
+@media (min-width: 901px) and (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+  .fieldCard[data-depth-card] { overflow: visible; }
+  .fieldCard[data-depth-active="true"] { box-shadow: 0 2px 0 rgba(39,79,115,.16), 0 8px 0 -1px #f1f5f8, 0 9px 0 -1px rgba(39,79,115,.18), 0 38px 62px -16px rgba(39,79,115,.28); }
+  .fieldCard[data-depth-card] .fieldImage { border-radius: 3px 21px 0 0; }
+  .fieldCard[data-depth-card] .fieldCopy { border-radius: 0 0 3px 3px; }
+  .fieldCard[data-depth-card]:hover .fieldImage img { filter: none; transform: translate(var(--depth-px), var(--depth-py)) scale(1.02); }
+}
 .fieldCard[data-accent="bio"] .fieldImage img { object-position: 52% 50%; }
 .fieldCard[data-accent="ai"] .fieldImage img { object-position: 58% 50%; }
 .fieldCard[data-accent="education"] .fieldImage img { object-position: 50% 45%; }
@@ -2153,6 +2173,13 @@
 }
 
 .experienceVisual img { object-fit: cover; }
+
+@media (min-width: 901px) and (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+  .experienceCard[data-depth-card] { overflow: visible; }
+  .experienceCard[data-depth-active="true"] { box-shadow: 0 20px 40px rgba(40, 80, 114, 0.095); }
+  .experienceCard[data-depth-card] .experienceVisual { border-radius: 3px 17px 0 0; }
+  .experienceCard[data-depth-card] .experienceBody { transform-style: preserve-3d; }
+}
 .experienceCard[data-accent="bio"] .experienceVisual img { object-position: 50% 54%; }
 .experienceCard[data-accent="ai"] .experienceVisual img { object-position: 57% 50%; }
 .experienceCard[data-accent="education"] .experienceVisual img { object-position: 50% 56%; }
@@ -2275,6 +2302,11 @@
 }
 
 .offHoursCard:hover .offHoursVisual img { transform: scale(1.025); }
+
+@media (min-width: 901px) and (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+  .offHoursCard[data-depth-active="true"] .offHoursVisual { box-shadow: 0 30px 58px rgba(48, 65, 75, 0.17); }
+  .offHoursCard[data-depth-card]:hover .offHoursVisual img { transform: translate(var(--depth-px), var(--depth-py)) scale(1.02); }
+}
 
 .offHoursVisual > span {
   position: absolute;

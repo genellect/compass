@@ -8,6 +8,8 @@ import { EssayContinuation } from "./EssayContinuation";
 import { FounderFragments } from "./FounderFragments";
 import { FounderHeroGallery } from "./FounderHeroGallery";
 import { MobileExternalMenu } from "./MobileExternalMenu";
+import { DepthCard } from "../../../components/portfolio/DepthCard";
+import { OffHoursGallery } from "../../../components/portfolio/OffHoursGallery";
 import styles from "./founder.module.css";
 
 const FOUNDER_URL = "https://yuto-matsui.com/";
@@ -321,18 +323,18 @@ export default function FounderPage() {
             </header>
             <div className={styles.fieldGrid}>
               {fields.map((field) => (
-                <article key={field.id} className={styles.fieldCard} data-reveal data-accent={field.accent}>
-                  <div className={styles.fieldImage}>
+                <DepthCard key={field.id} depth="expertise" className={styles.fieldCard} data-accent={field.accent}>
+                  <div className={styles.fieldImage} data-depth-layer="image">
                     <Image src={field.image} alt={field.alt} fill sizes="(min-width: 901px) 32vw, (min-width: 641px) 50vw, 100vw" />
                     <div className={styles.fieldOverlay} aria-hidden="true" />
                     <span className={styles.fieldNumber}>{field.id}</span>
                   </div>
-                  <div className={styles.fieldCopy}>
+                  <div className={styles.fieldCopy} data-depth-layer="copy">
                     <p>{field.english}</p>
                     <h3>{field.title}</h3>
                     <span>{field.description}</span>
                   </div>
-                </article>
+                </DepthCard>
               ))}
             </div>
           </div>
@@ -425,8 +427,8 @@ export default function FounderPage() {
             </header>
             <div className={styles.experienceGrid}>
               {experience.map((item) => (
-                <article key={item.area} className={styles.experienceCard} data-accent={item.accent} data-reveal>
-                  <div className={styles.experienceVisual}>
+                <DepthCard key={item.area} depth="experience" className={styles.experienceCard} data-accent={item.accent}>
+                  <div className={styles.experienceVisual} data-depth-layer="image">
                     <Image src={item.image} alt={item.alt} fill sizes="(min-width: 901px) 31vw, (min-width: 641px) 31vw, 100vw" />
                   </div>
                   <div className={styles.experienceBody}>
@@ -440,12 +442,12 @@ export default function FounderPage() {
                         <strong>{item.years}</strong>
                       </div>
                     </div>
-                    <div className={styles.experienceFocus}>
+                    <div className={styles.experienceFocus} data-depth-layer="detail">
                       <span className={styles.experienceLabel}>Focus</span>
                       <p>{item.focus.map((line) => <span key={line}>{line}</span>)}</p>
                     </div>
                   </div>
-                </article>
+                </DepthCard>
               ))}
             </div>
           </div>
@@ -474,20 +476,9 @@ export default function FounderPage() {
               <p className={styles.sectionKicker}>Away from the desk</p>
               <h2 id="off-hours-title">OFF HOURS</h2>
             </header>
-            <div className={styles.offHoursGrid}>
-              {offHours.map((item) => (
-                <article key={item.label} className={styles.offHoursCard}>
-                  <div className={styles.offHoursVisual}>
-                    <Image src={item.image} alt={item.alt} fill sizes="(min-width: 901px) 32vw, 100vw" />
-                    <span aria-hidden="true">{item.id}</span>
-                  </div>
-                  <div className={styles.offHoursCopy}>
-                    <h3>{item.label}</h3>
-                    <p>{item.copy.map((line) => <span key={line}>{line}</span>)}</p>
-                  </div>
-                </article>
-              ))}
-            </div>
+            <OffHoursGallery language="ja"
+              photos={offHours.map(item => ({ ...item, number: item.id }))}
+              classes={{ grid: styles.offHoursGrid, card: styles.offHoursCard, visual: styles.offHoursVisual, copy: styles.offHoursCopy }} />
           </div>
         </section>
 

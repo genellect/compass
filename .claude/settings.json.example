@@ -40,16 +40,15 @@
       "Bash(git rebase *)",
       "Bash(docker *)",
       "Bash(./scripts/library-docker-dev.sh *)",
-      "Bash(npx wrangler *)"
+      "Bash(npx wrangler *)",
+      "Bash(wrangler pages deploy *)"
     ],
     "deny": [
       "Bash(npm run deploy:*)",
       "Bash(npm run rehearse:*)",
       "Bash(npx wrangler deploy *)",
-      "Bash(npx wrangler pages deploy *)",
       "Bash(npx wrangler secret *)",
       "Bash(wrangler deploy *)",
-      "Bash(wrangler pages deploy *)",
       "Bash(wrangler secret *)",
       "Bash(clasp *)",
       "Bash(terraform apply *)",

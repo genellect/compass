@@ -43,7 +43,7 @@ npm run cloud:check
 1. repository accessを確認し、最新`main`からCodespaceまたは専用branchを作る。
 2. container作成が自動完了し、doctorが`READY`を返すことを確認する。
 3. `npm run dev:cloud`でprivate port `3000`を開く。
-4. 小さな非本番変更で`npm run cloud:check`を実行する。Git操作が許可されていればcommit、push、Draft PRまで進める。CDによる本番公開は別の許可境界とする。
+4. 小さな非本番変更は`docs/agent-delivery-policy.md`に従い対象の検証を行う。Web UI依頼ではcommit、push、PR、Cloudflare Preview、対象URL確認まで進める。CDによる本番公開は別の許可境界とする。
 5. PR checksとreview権限を確認し、Production権限や秘密値なしで通常開発できることを記録する。
 
 ## 5分で開始する
@@ -121,7 +121,7 @@ npm run build
 npm run verify
 ```
 
-UI、navigation、font、breakpoint、animationを変更した場合はcloudで実行可能なresponsive gateを使う。
+通常の局所変更は[Agentの検証とPreview完了契約](agent-delivery-policy.md)に従って対象spec・viewportを選ぶ。以下の総合コマンドは広範囲のUI、navigation、font、breakpoint変更または明示された完全監査で使い、局所変更の既定にはしない。
 
 ```bash
 npm run check:responsive:cloud
@@ -145,15 +145,15 @@ FastAPIはVS Code task **Library: start FastAPI**、composite PostgreSQL環境�
 | `npm run check:responsive:full` | visual regression baselineがWindows生成の`*-win32.png` | GitHub Actions `Responsive Quality Gate` |
 | `npm run test:responsive:update-snapshots` | Windows baselineの横にLinux baselineを作ってしまう | UI承認後にWindowsで人が実行 |
 | `npm run rehearse:library-production` | PowerShell script | GitHub Actions `Library Security Quality Gate` |
-| `npm run deploy:*` | Production side effect | ユーザーの明示承認を伴う別workflow |
+| Production向けdeploy | Production side effect | ユーザーの明示承認を伴う別workflow。Web UI依頼に含まれる非本番PreviewはAGENTS.mdに従う |
 
 ## 環境ごとの検証の使い分け
 
 | 実行環境 | 初期整備 | 受入条件 |
 |---|---|---|
 | Codespaces / Dev Container | `.devcontainer/post-create.sh` | `npm run dev:doctor`と該当test |
-| Codex Cloud | `.codex/setup.sh` | `npm run cloud:check`。Docker専用doctorは要求しない |
-| Windowsの補助検証 | lockfileで導入、Windows専用手順 | `npm.cmd run check`と必要なvisual regression |
+| Codex Cloud | `.codex/setup.sh` | 変更リスクに対応する検証。総合監査は`npm run cloud:check`。Docker専用doctorは要求しない |
+| Windowsの補助検証 | lockfileで導入、Windows専用手順 | 変更リスクに対応する検証。総合監査は`npm.cmd run check`と必要なvisual regression |
 
 pnpmは補助CLIとして固定し、依存管理はnpm/uvのlockfileで行います。Git操作は依頼の許可範囲で実行します。
 固定バージョンの整合は `npm run verify:toolchain`、非本番コマンドの詳細は
@@ -186,7 +186,7 @@ bash .codex/maintenance.sh
 
 Codex CloudはDev Containerそのものを起動する経路ではないため、Node.jsは`.node-version`、Pythonは`3.12`へ固定する。DockerやProduction接続を必要としない通常の実装・review・非live testに使用する。
 
-Codex Cloud環境では`.devcontainer/doctor.sh`のDev Container専用checkが失敗する。これは想定挙動であり、doctorは全項目を報告してからexit 1する。Codex Cloudの受入基準は`npm run cloud:check`である。
+Codex Cloud環境では`.devcontainer/doctor.sh`のDev Container専用checkが失敗する。これは想定挙動であり、doctorは全項目を報告してからexit 1する。Codex Cloudの受入基準は変更リスクに対応する検証とし、総合監査のコマンドは`npm run cloud:check`である。
 
 ## Claude Codeから参加する
 
@@ -202,7 +202,7 @@ repository側で共有するもの:
 | `.claude/agents/` | read-onlyの`repo-mapper`、`quality-reviewer`、`security-reviewer` |
 | `.claude/commands/` | `/cloud-check`、`/responsive-check`、`/handoff` |
 
-`.claude/settings.json`はrepositoryへcommitしていない。権限のallowlistを共有するかは各利用者の判断とし、有効化する場合は`.claude/settings.json.example`の全ruleをreviewしてからcopyする。`deny`はAGENTS.mdの安全境界（deploy、wrangler secret、terraform apply、force push、`.env*`とcredentialの読み取り）をpermission層へ写したものである。
+`.claude/settings.json`はrepositoryへcommitしていない。権限のallowlistを共有するかは各利用者の判断とし、有効化する場合は`.claude/settings.json.example`の全ruleをreviewしてからcopyする。`deny`はsecret操作、Terraform apply、force push、credential読み取り等の境界を保持する。Pages deployは非本番Previewまで一律拒否しないよう`ask`とし、AGENTS.mdに基づく既存の実装依頼と非本番branchの根拠をtoolの権限reviewへ提示する。Productionへの許可へ読み替えない。このtemplateの変更は各利用者の有効な設定を自動変更しない。
 
 Claude CodeのsubscriptionログインはGitへ保存しない。`.claude/settings.local.json`は個人設定であり共有しない。
 
@@ -237,7 +237,7 @@ QR、MFA、SSO、passkeyは本人だけが扱う。pairing情報、認証code、
 
 - `.env*`、secret、credential、token、OTP、個人情報、保護資料、Production dataをcommitまたはcloudへcopyしない。
 - Codespacesの転送portはprivateを既定とする。
-- 通常taskからProduction form、実email、Cloudflare deploy、GAS deploy、Terraform apply、database migration、secret変更を行わない。
+- 通常taskからProduction form、実email、Production deploy、GAS deploy、Terraform apply、database migration、secret変更を行わない。依頼されたWeb UIの非本番Cloudflare PreviewはAGENTS.mdの完了契約に含む。
 - COMPASSとCOMPASS Interactiveのcontainer、branch、secret、port、volumeを共有しない。
 - 外部AIの出力は人間reviewと該当testが完了するまで公開事実として扱わない。
 
@@ -251,6 +251,7 @@ cloud taskは次を満たしてからhandoffする。
 4. secret scanと`git diff`を確認している。
 5. commitとpushが完了し、Draft PRでreview可能である。
 6. Local、CI、Hosted、Human、Productionの確認結果を混同していない。
+7. Web UI実装ではCloudflare Previewを作成し、対象routeの実表示を確認してPR URLとPreview URLを報告する。依頼された独立surfaceにも適用する。未作成なら具体的な障害を示し、localhostで代替完了にしない。
 
 ## Troubleshooting
 

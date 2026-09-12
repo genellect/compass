@@ -819,8 +819,8 @@ expectExcludes(englishMobileMenu, `href="${compassOrigin}/"`, "English Founder M
 
 expectOrdered(
   founderEnglish,
-  ['id="expertise"', 'id="experience"', 'id="statement"', 'id="work"', 'id="fragments"', 'id="off-hours"', 'id="contact"'],
-  "English Founder experience-first section order"
+  ['id="expertise"', 'id="experience"', 'id="fragments"', 'id="statement"', 'id="work"', 'id="off-hours"', 'id="contact"'],
+  "English Founder experience / fragments / statement section order"
 );
 expectOrdered(
   founderEnglish,

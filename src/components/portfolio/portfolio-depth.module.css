@@ -1,0 +1,144 @@
+.card {
+  --depth-rx: 0deg;
+  --depth-ry: 0deg;
+  --depth-px: 0px;
+  --depth-py: 0px;
+}
+
+@media (min-width: 901px) and (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+  .card[data-depth-card] {
+    position: relative;
+    transform-style: preserve-3d;
+    overflow: visible;
+    transition: box-shadow 350ms ease;
+  }
+  /* The photo rotates as one surface. A shared 3D context lets its back half
+     fall behind the article's hit plane, swallowing clicks after a tilt. */
+  .card[data-depth-card="photo"] { transform-style: flat; }
+  .card[data-depth-moving="true"]:not([data-depth-card="photo"]) {
+    transform: perspective(1200px) translateY(var(--depth-lift, 0px)) rotateX(var(--depth-rx)) rotateY(var(--depth-ry));
+  }
+  .card[data-depth-active="true"] { z-index: 2; }
+  .card [data-depth-layer] { transition: transform 350ms cubic-bezier(.22,.7,.2,1); }
+  .card[data-depth-active="true"] [data-depth-layer="image"] { transform: translateZ(9px); }
+  .card[data-depth-active="true"] [data-depth-layer="copy"] { transform: translateZ(4px); }
+  .card[data-depth-active="true"] [data-depth-layer="detail"] { transform: translateZ(12px); }
+  .card[data-depth-editorial="true"][data-depth-active="true"] [data-depth-layer="copy"] { transform: translateZ(2px); }
+  .card[data-depth-card="expertise"][data-depth-active="true"] [data-depth-layer="image"] { transform: translateZ(28px); }
+  .card[data-depth-card="expertise"][data-depth-active="true"] [data-depth-layer="copy"] { transform: translateZ(14px); }
+  .card[data-depth-card="expertise"][data-depth-active="true"] [data-depth-layer="detail"] { transform: translateZ(38px); }
+  .card[data-depth-card="expertise"][data-depth-editorial="true"][data-depth-active="true"] [data-depth-layer="copy"] { transform: translateZ(10px); }
+  .card [data-depth-photo] { transition: box-shadow 350ms ease; }
+  .card[data-depth-moving="true"] [data-depth-photo] {
+    transform: perspective(1200px) translateY(var(--depth-lift, 0px)) rotateX(var(--depth-rx)) rotateY(var(--depth-ry));
+  }
+  .card[data-photo-open="true"] [data-depth-photo] { transform: none; }
+}
+
+.photoTrigger {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  border: 0;
+  border-radius: inherit;
+  color: #142b3c;
+  background: transparent;
+  cursor: zoom-in;
+}
+.expandIcon {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  display: grid;
+  width: 30px;
+  height: 30px;
+  place-items: center;
+  border: 1px solid rgba(255,255,255,.55);
+  border-radius: 50%;
+  background: rgba(255,253,250,.88);
+  opacity: .75;
+  transition: opacity 180ms ease;
+}
+.expandIcon svg { width: 16px; height: 16px; }
+.photoTrigger:hover .expandIcon, .photoTrigger:focus-visible .expandIcon { opacity: 1; }
+.photoTrigger:focus-visible { outline: 3px solid #316fd7; outline-offset: -5px; }
+.card[data-depth-editorial="true"] .expandIcon { color: #17161d; background: #f0eff4; }
+.card[data-depth-editorial="true"] .photoTrigger:focus-visible { outline-color: #8b78f0; }
+/* Keep the origin button focusable while the native dialog restores focus. */
+.card[data-photo-open="true"] [data-depth-photo] > :not(button),
+.card[data-photo-open="true"] .expandIcon { visibility: hidden; }
+
+.dialog {
+  box-sizing: border-box;
+  --photo-paper: #fffdfa;
+  --photo-ink: #334b5b;
+  --photo-accent: #9a7354;
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  max-height: none;
+  margin: 0;
+  padding: 60px 48px 40px;
+  border: 0;
+  color: var(--photo-ink);
+  background: transparent;
+  overflow: auto;
+  overscroll-behavior: contain;
+  font-family: Inter, "Noto Sans JP", "Hiragino Kaku Gothic ProN", "Yu Gothic", sans-serif;
+}
+.dialog *, .dialog *::before, .dialog *::after { box-sizing: border-box; }
+.dialog[open] { display: grid; place-items: center; }
+.dialog::backdrop { background: transparent; }
+.dialog[data-language="en"] {
+  --photo-paper: #e5e3eb;
+  --photo-ink: #4d4956;
+  --photo-accent: #17161d;
+  font-family: var(--font-en-sans), Arial, sans-serif;
+}
+.veil { position: fixed; inset: 0; z-index: -1; background: var(--photo-paper); opacity: .97; pointer-events: none; }
+.figure { display: flex; max-width: 1120px; width: 100%; min-width: 0; flex-direction: column; align-items: center; margin: 0; pointer-events: none; }
+.expandedPhoto {
+  display: block;
+  width: auto;
+  height: auto;
+  max-width: 100%;
+  max-height: calc(100svh - 240px);
+  object-fit: contain;
+  border-radius: 3px;
+  box-shadow: 0 24px 70px rgba(25,35,40,.14);
+  pointer-events: auto;
+}
+.caption { max-width: 68ch; margin-top: 26px; text-align: center; pointer-events: auto; }
+.caption h3 { margin: 0; color: var(--photo-accent); font-size: .71rem; font-weight: 800; letter-spacing: .18em; }
+.caption p { display: grid; gap: 5px; margin: 14px 0 0; color: var(--photo-ink); font-size: .92rem; line-height: 1.8; }
+.dialog[data-language="en"] .caption p { font-family: var(--font-en-editorial), Georgia, serif; font-size: 1.08rem; line-height: 1.55; }
+.close { position: fixed; top: 20px; right: 24px; display: grid; width: 44px; height: 44px; padding: 10px; place-items: center; border: 1px solid currentColor; border-radius: 50%; background: var(--photo-paper); color: var(--photo-ink); cursor: pointer; }
+.close svg { width: 22px; height: 22px; }
+.close:focus-visible { outline: 3px solid #316fd7; outline-offset: 4px; }
+.dialog[data-language="en"] .close:focus-visible { outline-color: #8b78f0; }
+.flight { display: none; position: fixed; overflow: hidden; pointer-events: none; box-shadow: 0 24px 70px rgba(25,35,40,.14); }
+.flight img { object-fit: cover; }
+.dialog[data-traveling="true"] .flight { display: block; }
+.dialog[data-traveling="true"] .expandedPhoto { visibility: hidden; }
+.dialog[data-traveling="true"] .caption { opacity: 0; }
+
+@media (prefers-reduced-motion: no-preference) {
+  .veil { animation: veilIn 350ms ease both; }
+  .caption { transition: opacity 220ms ease; }
+  .dialog[data-closing="true"] .veil { animation: veilOut 430ms ease both; }
+  .dialog[data-closing="true"] .close { opacity: 0; }
+}
+@media (max-height: 600px) {
+  .dialog { padding: 56px 32px 24px; }
+  .expandedPhoto { max-height: calc(100svh - 195px); }
+  .caption { margin-top: 16px; }
+  .caption p { font-size: .85rem; margin-top: 10px; }
+}
+@media (max-width: 900px) { .photoTrigger { display: none; } }
+@keyframes veilIn { from { opacity: 0; } to { opacity: .97; } }
+@keyframes veilOut { from { opacity: .97; } to { opacity: 0; } }
