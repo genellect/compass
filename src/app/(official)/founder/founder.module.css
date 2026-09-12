@@ -643,34 +643,31 @@
 .fieldGrid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 15px;
+  gap: 24px;
 }
 
 .fieldCard {
+  display: flex;
+  flex-direction: column;
   min-width: 0;
-  overflow: hidden;
+  overflow: visible;
   border: 1px solid rgba(33, 76, 116, 0.12);
-  border-radius: 4px 22px 4px 4px;
+  border-radius: 12px;
   background: #fff;
-  box-shadow: 0 14px 38px rgba(39, 79, 115, 0.085);
 }
 
 .fieldImage {
   position: relative;
-  min-height: clamp(190px, 19vw, 250px);
-  overflow: hidden;
+  height: clamp(240px, 24vw, 300px);
+  flex-shrink: 0;
+  min-height: 0;
+  margin: 24px 24px 0;
+  border-radius: 4px;
   background: #142434;
 }
 
-.fieldImage img { object-fit: cover; transition: transform 650ms ease, filter 350ms ease; }
-.fieldCard:hover .fieldImage img { filter: saturate(1.06); transform: scale(1.035); }
+.fieldImage img { object-fit: cover; }
 
-@media (min-width: 901px) and (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
-  .fieldCard[data-depth-card] { overflow: visible; }
-  .fieldCard[data-depth-card] .fieldImage { border-radius: 3px 21px 0 0; }
-  .fieldCard[data-depth-card] .fieldCopy { border-radius: 0 0 3px 3px; }
-  .fieldCard[data-depth-card]:hover .fieldImage img { filter: none; transform: translate(var(--depth-px), var(--depth-py)) scale(1.02); }
-}
 .fieldCard[data-accent="bio"] .fieldImage img { object-position: 52% 50%; }
 .fieldCard[data-accent="ai"] .fieldImage img { object-position: 58% 50%; }
 .fieldCard[data-accent="education"] .fieldImage img { object-position: 50% 45%; }
@@ -694,10 +691,9 @@
 }
 
 .fieldCopy {
-  min-height: 166px;
-  padding: 21px 22px 24px;
-  border-top: 3px solid var(--field-accent);
-  background: #fff;
+  min-height: 158px;
+  padding: 30px;
+  background: transparent;
 }
 
 .fieldCard[data-accent="bio"] { --field-accent: var(--bio); --field-accent-ink: #24775d; }
@@ -707,16 +703,16 @@
 .fieldCopy p {
   margin: 0;
   color: var(--field-accent-ink);
-  font-size: 0.57rem;
-  font-weight: 850;
-  letter-spacing: 0.11em;
+  font-size: 0.61rem;
+  font-weight: 750;
+  letter-spacing: 0.07em;
   text-transform: uppercase;
 }
 
 .fieldCopy h3 {
   margin: 11px 0 0;
   color: #102435;
-  font-size: clamp(1.05rem, 1.45vw, 1.28rem);
+  font-size: clamp(1.2rem, 1.65vw, 1.48rem);
   font-weight: 760;
   letter-spacing: -0.035em;
   line-height: 1.3;
@@ -726,9 +722,9 @@
   display: block;
   margin-top: 11px;
   color: #334a5d;
-  font-size: 0.78rem;
+  font-size: 0.875rem;
   font-weight: 520;
-  line-height: 1.72;
+  line-height: 1.8;
 }
 
 .fragments {
@@ -2073,7 +2069,7 @@
   gap: 18px;
   padding: 22px;
   border: 1px solid rgba(36, 80, 117, 0.13);
-  border-radius: 4px 18px 4px 4px;
+  border-radius: 12px;
   background: rgba(255, 255, 255, 0.82);
   box-shadow: 0 12px 34px rgba(40, 80, 114, 0.055);
 }
@@ -2122,7 +2118,7 @@
 .experienceGrid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 18px;
+  gap: 24px;
 }
 
 .experienceHeading { text-align: right; }
@@ -2152,7 +2148,9 @@
 
 .experienceVisual {
   position: relative;
-  width: 100%;
+  width: auto;
+  margin: 24px 24px 0;
+  border-radius: 3px;
   height: clamp(110px, 8.5vw, 126px);
   overflow: hidden;
   border-bottom: 1px solid rgba(58, 111, 164, 0.13);
@@ -2161,11 +2159,6 @@
 
 .experienceVisual img { object-fit: cover; }
 
-@media (min-width: 901px) and (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
-  .experienceCard[data-depth-card] { overflow: visible; }
-  .experienceCard[data-depth-card] .experienceVisual { border-radius: 3px 17px 0 0; }
-  .experienceCard[data-depth-card] .experienceBody { transform-style: preserve-3d; }
-}
 .experienceCard[data-accent="bio"] .experienceVisual img { object-position: 50% 54%; }
 .experienceCard[data-accent="ai"] .experienceVisual img { object-position: 57% 50%; }
 .experienceCard[data-accent="education"] .experienceVisual img { object-position: 50% 56%; }
@@ -2174,7 +2167,7 @@
   display: grid;
   grid-template-rows: auto 1fr;
   gap: 17px;
-  padding: 21px 21px 23px;
+  padding: 30px;
 }
 
 .experienceMeta {
@@ -2189,10 +2182,9 @@
 .experienceTenure { min-width: max-content; text-align: right; }
 .experienceFocus {
   min-width: 0;
-  padding: 13px 15px 14px 17px;
-  border-left: 3px solid var(--experience-accent);
-  border-radius: 0 10px 10px 0;
-  background: var(--experience-tint);
+  padding: 16px 0 0;
+  border-top: 1px solid var(--experience-accent);
+  background: transparent;
 }
 
 .experienceLabel {
@@ -2269,7 +2261,7 @@
   position: relative;
   aspect-ratio: 16 / 11;
   overflow: hidden;
-  border-radius: 5px 26px 5px 5px;
+  border-radius: 3px;
   background: #e9eef0;
   box-shadow: 0 22px 54px rgba(48, 65, 75, 0.11);
 }
@@ -2284,16 +2276,10 @@
 
 .offHoursVisual img {
   object-fit: cover;
-  transition: transform 650ms cubic-bezier(0.22, 0.7, 0.2, 1);
+
 }
 
-.offHoursCard:hover .offHoursVisual img { transform: scale(1.025); }
-
-@media (min-width: 901px) and (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
-  .offHoursCard[data-depth-card]:hover .offHoursVisual img { transform: translate(var(--depth-px), var(--depth-py)) scale(1.02); }
-}
-
-.offHoursVisual > span {
+.offHoursVisual [data-photo-number] {
   position: absolute;
   right: 15px;
   bottom: 13px;
@@ -2566,9 +2552,7 @@
   .socialLinks { margin-top: 24px; }
   .interfaceGraphic { bottom: 20px; opacity: 0.32; transform: scale(0.76); transform-origin: right bottom; }
 
-  .fieldGrid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .fieldCard:last-child { grid-column: 1 / -1; display: grid; grid-template-columns: 1fr 1fr; }
-  .fieldCard:last-child .fieldImage { min-height: 230px; }
+  .fieldGrid { grid-template-columns: 1fr; max-width: 600px; margin-inline: auto; }
   .offHoursGrid { grid-template-columns: 1fr; gap: 52px; }
 
   .storyShell { grid-template-columns: 1fr; }
@@ -2612,10 +2596,9 @@
   .contact { padding: 48px 0 64px; }
   .compactHeading { margin-bottom: 28px; }
 
-  .fieldGrid { grid-template-columns: 1fr; gap: 13px; }
-  .fieldCard:last-child { grid-column: auto; display: block; }
-  .fieldImage, .fieldCard:last-child .fieldImage { min-height: min(64vw, 250px); }
-  .fieldCopy { min-height: 0; }
+  .fieldGrid { grid-template-columns: 1fr; gap: 24px; }
+  .fieldImage { height: min(68vw, 320px); margin: 24px 24px 0; }
+  .fieldCopy { min-height: 0; padding: 30px 28px; }
 
   .story { padding: 70px 0; }
   .storyPortrait { height: min(85svh, 690px); min-height: 490px; }
@@ -2648,7 +2631,7 @@
   .credentialGrid { grid-template-columns: 1fr; }
   .experienceGrid { grid-template-columns: 1fr; }
   .experienceVisual { height: min(32vw, 138px); }
-  .experienceBody { gap: 15px; padding: 19px 19px 21px; }
+  .experienceBody { gap: 18px; padding: 24px; }
   .offHoursGrid { grid-template-columns: 1fr; gap: 48px; }
   .offHoursHeading { margin-bottom: 34px; }
   .offHoursVisual { aspect-ratio: 16 / 11; }

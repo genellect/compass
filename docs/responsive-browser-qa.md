@@ -164,3 +164,7 @@ Local / CI PASSとProduction acceptanceは別です。Productionではcanonical 
 ## 9. Human acceptance gate
 
 Hero、navigation、font、breakpoint、animation、authentication、registration、form基盤を変更した場合は、自動監査後も実機またはEdge responsive modeで最終確認します。合格報告には、検証URL、CSS viewport、DPR、commit SHA、未実施のmanual gateを明記します。
+
+### 写真・本文の初期描画
+
+画像の`complete`・`naturalWidth`やDOMの可視性だけでは、3D合成面に内容が隠れる不具合を検出できない。写真・本文の描画やtransformを変更した場合は、対象カードをタップする前のスクリーンショットで内容も確認する。Safari系へ影響する変更はMobile WebKitを対象に含める。portfolioの対象検証は`PORTFOLIO_WEBKIT=1`を指定でき、WindowsのResponsive Quality Gateではこれを有効にする。無関係な全routeを追加で再実行する理由にはしない。
