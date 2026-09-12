@@ -16,7 +16,7 @@ import { EnglishHeroGallery } from "./EnglishHeroGallery";
 import { EnglishMobileMenu } from "./EnglishMobileMenu";
 import { GitHubIcon, InstagramIcon } from "./EnglishSocialIcons";
 import { EnglishStatement } from "./EnglishStatement";
-import { DepthCard } from "../../../components/portfolio/DepthCard";
+import { DepthCard, DepthVisual, ExpertiseModel } from "../../../components/portfolio/DepthCard";
 import { OffHoursGallery } from "../../../components/portfolio/OffHoursGallery";
 import styles from "./english-founder.module.css";
 
@@ -186,14 +186,15 @@ export default function EnglishFounderPage() {
             <div className={styles.expertiseGrid}>
               {expertise.map((item, index) => (
                 <DepthCard key={item.number} depth="expertise" editorial className={styles.expertisePlate} data-accent={item.accent} data-order={index + 1}>
-                  <div className={styles.expertiseImage} data-depth-layer="image">
-                    <Image src={item.image} alt={item.alt} fill sizes="(min-width: 901px) 38vw, 92vw" />
-                  </div>
-                  <div className={styles.expertiseNumber} data-depth-layer="detail">{item.number}</div>
+                  <ExpertiseModel kind={index === 0 ? "bio" : index === 1 ? "ai" : "education"} language="en" />
                   <div className={styles.expertiseCopy} data-depth-layer="copy">
                     <h3>{item.title}</h3>
                     <p>{item.description}</p>
                   </div>
+                  <DepthVisual className={styles.expertiseImage} data-depth-layer="image">
+                    <Image decoding="sync" loading="eager" src={item.image} alt={item.alt} fill sizes="(min-width: 901px) 38vw, 92vw" />
+                    <div className={styles.expertiseNumber} data-depth-layer="detail">{item.number}</div>
+                  </DepthVisual>
                 </DepthCard>
               ))}
             </div>
@@ -209,9 +210,9 @@ export default function EnglishFounderPage() {
             <div className={styles.experienceGrid}>
               {experience.map((item) => (
                 <DepthCard key={item.area} depth="experience" editorial className={styles.experienceItem}>
-                  <div className={styles.experienceImage} data-depth-layer="image">
-                    <Image src={item.image} alt={item.alt} fill sizes="(min-width: 901px) 31vw, 92vw" />
-                  </div>
+                  <DepthVisual className={styles.experienceImage} data-depth-layer="image">
+                    <Image decoding="sync" loading="eager" src={item.image} alt={item.alt} fill sizes="(min-width: 901px) 31vw, 92vw" />
+                  </DepthVisual>
                   <div className={styles.experienceMeta} data-depth-layer="copy"><span>{item.area}</span><strong>{item.years}</strong></div>
                   <p>{item.focus.map((focus) => <span key={focus}>{focus}</span>)}</p>
                 </DepthCard>
