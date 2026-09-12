@@ -1,4 +1,17 @@
 .root { --explorer-ink: #17353e; --explorer-accent: #365d61; }
+.root[data-explorer-managed="true"] :global([data-habitat-media]) { display: none; }
+.mode { position: relative; display: flex; flex: 0 0 auto; align-items: center; gap: 0; min-width: 0; margin: 0 0 0 6px; padding: 0 0 0 31px; border: 0; border-left: 1px solid #34555e40; color: #24454f; font: 600 10px/1 var(--font-sans),sans-serif; }
+.mode legend { position: absolute; left: 9px; top: 50%; transform: translateY(-50%); padding: 0; font-size: 10px; letter-spacing: .03em; }
+.mode label { position: relative; cursor: pointer; }
+.mode input { position: absolute; width: 1px; height: 1px; opacity: 0; }
+.mode label span { display: grid; place-items: center; width: 32px; height: 44px; color: #4b646a; letter-spacing: .04em; text-decoration-color: transparent; text-underline-offset: 7px; text-decoration-thickness: 2px; transition: color .18s,text-decoration-color .18s; }
+.mode input:checked + span { color: #173b44; text-decoration-line: underline; text-decoration-color: currentColor; }
+.mode input:focus-visible + span { outline: 2px solid #238aaa; outline-offset: 2px; }
+.mode label:hover span { color: #197284; }
+.mode[data-active="true"] { color: #eef4f0; border-color: #b5cbc659; }
+.mode[data-active="true"] label span { color: #b7ccc7; }
+.mode[data-active="true"] input:checked + span, .mode[data-active="true"] label:hover span { color: #f0f5ef; }
+.loadingDot { position: absolute; left: 14px; bottom: 8px; width: 5px; height: 2px; background: #428c84; }
 .canvas, .markers { position: fixed; inset: 0; visibility: hidden; pointer-events: none; }
 .canvas { z-index: 2; background: #13222a; }
 .canvas[data-visible="true"] { visibility: visible; pointer-events: auto; }
@@ -10,15 +23,18 @@
 .markers button:focus-visible { outline: 3px solid #eaf5cc; outline-offset: 5px; background: #153537; color: #f3f5ea; }
 .controls { position: fixed; bottom: 22px; right: 24px; z-index: 110; color: #e8efeb; font: 500 12px/1.5 var(--font-sans), sans-serif; }
 .controls > button, .controls .notice button { appearance: none; border: 1px solid #718883; border-radius: 100px; background: #162a2dee; color: #f0f4ec; padding: 10px 17px; min-height: 42px; font: inherit; cursor: pointer; }
-.controls[data-active="false"] { bottom: 24px; right: 230px; }
-.controls[data-active="true"] { left: 50%; right: auto; bottom: 32px; transform: translateX(-50%); display: flex; align-items: center; gap: 3px; padding: 6px; border: 1px solid #afc8bc4a; border-radius: 100px; background: #13272aef; box-shadow: 0 16px 44px #03101422; width: max-content; max-width: calc(100vw - 40px); }
+.controls[data-active="false"] { bottom: auto; top: 176px; right: 32px; }
+.controls[data-active="true"] { left: 32px; right: 32px; bottom: 24px; display: flex; align-items: center; gap: 12px; padding: 5px 12px; border: 1px solid #a8c4bd40; border-radius: 4px; background: #10272eea; box-shadow: none; width: auto; max-width: calc(100vw - 64px); }
 .controls[data-active="true"] > button { border-color: transparent; background: transparent; white-space: nowrap; }
+.controls[data-active="true"] > button { background: transparent; border: 0; border-radius: 2px; min-height: 44px; padding: 10px 16px; }
+.controls[data-active="true"] > button:hover { background: #365459; }
+.controls[data-active="true"] > button:last-of-type { margin-left: auto; }
 .controls > button:hover { background: #365051; }
 .controls button:focus-visible { outline: 2px solid #e5efb9; outline-offset: 3px; }
-.location { display: flex; align-items: center; gap: 9px; padding: 0 18px; letter-spacing: .04em; white-space: nowrap; }
+.location { display: flex; align-items: center; gap: 9px; padding: 12px 18px; margin-right: 8px; border-right: 1px solid #b7d7cd55; letter-spacing: .05em; white-space: nowrap; }
 .location > span { font-size: 10px; color: #b3c8b4; }
 .separator { height: 20px; width: 1px; margin: 0 6px; background: #607574; }
-.hint { position: absolute; margin: 0; bottom: -26px; left: 50%; transform: translateX(-50%); width: max-content; padding: 3px 10px; border-radius: 20px; background: #10252df5; text-align: center; white-space: nowrap; font-size: 11px; letter-spacing: .04em; color: #e1e9e3; pointer-events: none; }
+.hint { position: absolute; margin: 0; top: 50%; left: 60%; transform: translate(-50%,-50%); width: max-content; white-space: nowrap; font-size: 10px; letter-spacing: .04em; color: #cfdfd9; pointer-events: none; }
 .settings, .guide { position: absolute; right: 0; bottom: calc(100% + 12px); width: 245px; padding: 8px; border-radius: 18px; border: 1px solid #809a9380; background: #172e31fc; box-shadow: 0 16px 50px #03101466; max-height: calc(100svh - 150px); overflow: auto; }
 .settings button { display: flex; justify-content: space-between; width: 100%; border: 0; border-radius: 10px; background: transparent; color: #f1f4ee; padding: 13px 16px; font: inherit; text-align: left; cursor: pointer; }
 .settings button:hover, .settings button[aria-pressed="true"] { background: #344d4c; }
@@ -29,7 +45,7 @@
 .guide button:first-child > span { margin-left: auto; }
 .guide small { color: #b7cfbc; font-size: 10px; }
 .guide button:hover, .guide button[aria-current] { background: #38524c; }
-.notice { position: absolute; right: 0; bottom: 100%; min-width: 230px; padding: 14px 18px; border-radius: 15px; background: #153033; color: #edf3ef; box-shadow: 0 10px 30px #0003; }
+.notice { margin: 0; max-width: 240px; padding: 10px 14px; border-left: 2px solid #4f7d7b; border-radius: 2px; background: #eff3edf5; color: #244951; font-size: 12px; line-height: 1.8; }
 .notice button { margin-top: 10px; display: block; }
 .settings label { display: grid; gap: 8px; padding: 13px 16px; }
 .settings input { width: 100%; accent-color: #bed9b9; }
@@ -129,17 +145,12 @@
 .root[data-explorer-active="true"][data-explorer-reading="true"] :global(#main #top[data-explorer-panel]) { width: min(740px,52vw) !important; }
 @media (max-width:1100px),(max-height:680px) { .root[data-explorer-active="true"][data-explorer-reading="true"] :global(#main #top[data-explorer-panel]) { width: 62vw !important; } }
 
-.destinations { position: fixed; z-index: 6; bottom: 150px; left: 50%; transform: translateX(-50%); width: min(710px,75vw); display: flex; gap: 36px; transition: opacity .25s; }
-.destinations[data-moving="true"] { opacity: .55; }
-.destinations button { appearance: none; flex: 1; display: flex; align-items: center; gap: 12px; background: #0b1e27ed; border: 0; border-top: 1px solid #d7e4de; padding: 18px 16px; min-height: 58px; color: #f2f6f0; cursor: pointer; font: 500 16px/1.2 var(--font-sans),sans-serif; text-align: left; transition: background .2s,transform .2s; }
-.destinations button small { font-size: 10px; color: #bed3cf; }
-.destinations button span:last-child { margin-left: auto; }
-.destinations button:hover, .destinations button:focus-visible { background: #204650; transform: translateY(-4px); outline: 2px solid #e2f0e7; outline-offset: 4px; }
 /* Keep the canonical H1 accessible while its mesh is the visible title. No
    extra heading or copied article tree is added to the page. */
 .root[data-explorer-active="true"][data-explorer-reading="false"] :global(#main #top) { display: block !important; position: absolute !important; width: 1px !important; height: 1px !important; min-height: 0 !important; margin: -1px !important; padding: 0 !important; overflow: hidden !important; clip-path: inset(50%); }
 .root[data-explorer-active="true"][data-explorer-reading="false"] :global(#top .hero-copy > :not(h1)),
 .root[data-explorer-active="true"][data-explorer-reading="false"] :global(#top .hero-visual),
 .root[data-explorer-active="true"][data-explorer-reading="false"] :global(#top .hero-particles) { display: none !important; }
-@media (max-height:680px) { .destinations { bottom: 126px; gap: 20px; } .destinations button { padding: 12px 15px; min-height: 48px; } }
-@media (prefers-reduced-motion:reduce) { .destinations,.destinations button { transition: none; } }
+@media (max-height:680px) { .hint { display: none; } }
+@media (max-width:1200px) { .hint { display: none; } }
+@media (prefers-reduced-motion:reduce) { .mode label span { transition: none; } }

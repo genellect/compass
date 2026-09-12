@@ -18,7 +18,9 @@ export class FrameWindow {
 }
 
 export function passesEntry(sample: FrameSample) {
-  return sample.frames >= 100 && sample.fps >= 55 && sample.p95 <= 25 && (sample.gpuMs === null || sample.gpuMs <= 16.7);
+  // A stable 30–60fps render is usable. A 60fps target is not an admission
+  // requirement; 33ms frames are normal on an integrated GPU / 30Hz display.
+  return sample.frames >= 60 && sample.fps >= 28 && sample.p95 <= 55 && (sample.gpuMs === null || sample.gpuMs <= 40);
 }
 
 /** Optional, nonblocking WebGL2 GPU timer. Never reads unavailable or disjoint data. */

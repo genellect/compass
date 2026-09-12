@@ -10,7 +10,7 @@ test.beforeEach(async({page})=>{await page.route(/google-analytics|googletagmana
 async function fixture(page:Page){
   // These are controlled rendering/interaction checks, never hardware FPS proof.
   await page.addInitScript(()=>{
-    localStorage.setItem('compass-explorer-preference','explore');
+    localStorage.setItem('compass-3d-mode','on');
     const native=requestAnimationFrame.bind(window),clocks=new WeakMap<FrameRequestCallback,number>();
     window.requestAnimationFrame=callback=>native(()=>{const time=(clocks.get(callback)??performance.now())+1000/60;clocks.set(callback,time);callback(time);});
     const extension=WebGL2RenderingContext.prototype.getExtension as (this:WebGL2RenderingContext,name:string)=>unknown;
@@ -52,7 +52,7 @@ test('all nine room panels preserve source text, links, usable contrast and disc
   const text=await disclosure.locator('.v4-community__details-copy').textContent();
   await enter(page,'founder','Founder');await expect(page.locator('#founder .v4-founder__web-portfolio')).toHaveAttribute('href','https://yuto-matsui.com/');
   await enter(page,'community','Community');await expect(disclosure).toHaveAttribute('open','');expect(await disclosure.locator('.v4-community__details-copy').textContent()).toBe(text);
-  await page.getByRole('button',{name:'表示',exact:false}).click();await page.getByRole('button',{name:'サイト情報',exact:true}).click();
+  await page.getByRole('button',{name:'設定',exact:false}).click();await page.getByRole('button',{name:'サイト情報',exact:true}).click();
   await expect(page.locator('.site-footer')).toBeVisible();await page.keyboard.press('Escape');await expect(page.locator('.site-footer')).toBeHidden();
   expect(errors).toEqual([]);await page.screenshot({path:'test-results/explorer-community.png'});
 });
@@ -73,7 +73,7 @@ test('navigation can turn, stop, skip, return through history, and release the r
   const position=await page.locator('[data-explorer-canvas]').getAttribute('data-position');
   await page.mouse.move(1300,400);await page.mouse.down();await page.mouse.move(900,480,{steps:20});await page.mouse.up();await page.waitForTimeout(200);
   expect(await page.locator('[data-explorer-canvas]').getAttribute('data-position')).toBe(position);
-  await page.getByRole('button',{name:'表示',exact:false}).click();await page.getByRole('button',{name:'通常表示',exact:true}).click();
+  await page.getByRole('radio',{name:'3D OFF',exact:true}).check();
   await expect(root).not.toHaveAttribute('data-explorer-active','true');await expect(page.locator('[data-explorer-canvas] canvas')).toHaveCount(0);
   expect(await page.locator('body').evaluate(el=>getComputedStyle(el).overflow)).not.toBe('hidden');
 });
@@ -85,6 +85,9 @@ test('short and zoom-equivalent viewports keep actual text sizes, controls and p
     const bounds=await page.locator('#community[data-explorer-panel]').boundingBox();expect(bounds!.x).toBeGreaterThanOrEqual(0);expect(bounds!.x+bounds!.width).toBeLessThanOrEqual(width+1);
     expect(bounds!.y).toBeGreaterThanOrEqual(80);expect(bounds!.y+bounds!.height).toBeLessThan(height-75);
     const controls=await page.locator('[data-explorer-controls]').boundingBox();expect(controls!.width).toBeLessThanOrEqual(width-24);
+    const header=await page.locator('.site-header').boundingBox(),toggle=await page.locator('.site-header [data-3d-toggle]').boundingBox();
+    expect(toggle!.x).toBeGreaterThan(header!.x);expect(toggle!.x+toggle!.width).toBeLessThanOrEqual(header!.x+header!.width);
+    expect(toggle!.y+toggle!.height).toBeLessThanOrEqual(header!.y+header!.height);
     const overflow=await page.evaluate(()=>document.documentElement.scrollWidth-innerWidth);expect(overflow).toBeLessThanOrEqual(1);
   }
 });
@@ -93,13 +96,14 @@ test('context loss restores current content and prevents automatic re-entry',asy
   test.setTimeout(120000);await fixture(page);await page.goto('/');const root=page.locator('[data-habitat]');await expect(root).toHaveAttribute('data-explorer-active','true',{timeout:90000});
   await enter(page,'founder','Founder');await page.locator('[data-explorer-canvas] canvas').evaluate(canvas=>{(canvas as HTMLCanvasElement).getContext('webgl2')?.getExtension('WEBGL_lose_context')?.loseContext();});
   await expect(root).not.toHaveAttribute('data-explorer-active','true');await expect(page.locator('[data-explorer-canvas] canvas')).toHaveCount(0);
-  await expect(page.locator('#founder .v4-founder__web-portfolio')).toBeVisible();expect(await page.evaluate(()=>sessionStorage.getItem('compass-explorer-failed-1'))).toBe('true');
+  await expect(page.locator('#founder .v4-founder__web-portfolio')).toBeVisible();expect(await page.evaluate(()=>sessionStorage.getItem('compass-explorer-failed-2'))).toBe('true');
+  await expect(page.getByRole('radio',{name:'3D OFF',exact:true})).toBeChecked();
 });
 
 test('sound only loads after consent and decodes real buffers',async({page})=>{
   test.setTimeout(150000);await fixture(page);const soundRequests:string[]=[];page.on('request',request=>{if(request.url().includes('/media/explorer/audio/'))soundRequests.push(request.url());});
   await page.goto('/');await expect(page.locator('[data-habitat]')).toHaveAttribute('data-explorer-active','true',{timeout:90000});expect(soundRequests).toEqual([]);
-  await page.getByRole('button',{name:'音響 OFF',exact:true}).click();await expect(page.getByRole('button',{name:'音響 ON',exact:true})).toHaveAttribute('aria-pressed','true',{timeout:20000});
+  await page.getByRole('button',{name:'設定',exact:false}).click();await page.getByRole('button',{name:'音響 OFF',exact:true}).click();await expect(page.getByRole('button',{name:'音響 ON',exact:true})).toHaveAttribute('aria-pressed','true',{timeout:20000});
   expect(soundRequests.filter(url=>url.endsWith('.mp3'))).toHaveLength(4);
   await page.getByRole('button',{name:'音響 ON',exact:true}).click();await expect(page.getByRole('button',{name:'音響 OFF',exact:true})).toHaveAttribute('aria-pressed','false');
 });
@@ -110,7 +114,7 @@ test('protected devices and standard preference never fetch the new renderer or 
     const context=await browser.newContext(kind==='mobile'?devices['iPhone 13']:kind==='ipad-landscape'?{...devices['iPad Pro 11'],viewport:{width:1194,height:834}}:{viewport:{width:kind==='900'?900:1440,height:900},reducedMotion:kind==='reduced'?'reduce':'no-preference'});
     const page=await context.newPage();await page.route(/google-analytics|googletagmanager|cloudflareinsights|challenges\.cloudflare/,route=>route.fulfill({status:200,body:''}));
     await page.addInitScript(kind=>{
-      localStorage.setItem('compass-explorer-preference',kind==='standard'?'standard':'explore');
+      localStorage.setItem('compass-3d-mode',kind==='standard'?'off':'on');
       if(kind==='paused')sessionStorage.setItem('compass-habitat-paused','true');
       if(kind==='ipad-mouse'){Object.defineProperty(navigator,'platform',{get:()=> 'MacIntel'});Object.defineProperty(navigator,'maxTouchPoints',{get:()=>5});}
     },kind);
@@ -127,11 +131,44 @@ test('the photographic TV film loads in its room, advances, pauses and preserves
   await enter(page,'technology','Interactive',false);await page.getByRole('button',{name:'移動をスキップ',exact:true}).click();
   await expect(root).toHaveAttribute('data-explorer-room','technology');await expect(page.locator('[data-explorer-panel]')).toHaveCount(0);
   await expect.poll(async()=>Number(await host.getAttribute('data-film-time'))).toBeGreaterThan(.5);
-  await page.getByRole('button',{name:'動きを止める',exact:true}).click();await page.waitForTimeout(250);
+  await page.getByRole('button',{name:'設定',exact:false}).click();await page.getByRole('button',{name:'動きを止める',exact:true}).click();await page.waitForTimeout(250);
   const stopped=Number(await host.getAttribute('data-film-time'));await page.waitForTimeout(800);
   expect(Number(await host.getAttribute('data-film-time'))).toBeCloseTo(stopped,1);
   await page.getByRole('button',{name:'動きを再開',exact:true}).click();await expect.poll(async()=>Number(await host.getAttribute('data-film-time'))).toBeGreaterThan(stopped+.2);
+  await page.getByRole('button',{name:'設定',exact:false}).click();
   await page.getByRole('button',{name:'紹介を読む',exact:true}).click();await expect(page.locator('#technology[data-explorer-panel]')).toBeVisible();
   await page.keyboard.press('Escape');await expect(page.getByRole('button',{name:'紹介を読む',exact:true})).toBeFocused();
   expect(films.length).toBeGreaterThan(0);await page.screenshot({path:'test-results/explorer-physical-tv.png'});
+});
+
+test('a fresh PC starts real 3D automatically and OFF disposes both renderers',async({page})=>{
+  test.setTimeout(150000);
+  // No clock or GPU timer overrides: this verifies real admission on the test
+  // machine. It is not a certification for other hardware or 15-minute use.
+  const errors:string[]=[];page.on('pageerror',error=>errors.push(error.message));
+  await page.goto('/');
+  const root=page.locator('[data-habitat]');
+  await expect(root).toHaveAttribute('data-explorer-active','true',{timeout:90000});
+  await expect(page.getByRole('radio',{name:'3D ON',exact:true})).toBeChecked();
+  await expect(page.locator('[data-3d-toggle] input')).toHaveCount(2);
+  await expect(page.locator('.site-header .header-actions [data-3d-toggle]')).toBeVisible();
+  await expect(page.getByRole('navigation',{name:'行き先',exact:true})).toHaveCount(0);
+  await expect(page.getByText('空間を探索',{exact:true})).toHaveCount(0);
+  await expect(page.locator('[data-habitat-backdrop] canvas')).toHaveCount(0);
+  await page.screenshot({path:'outputs/explorer-on-off-real-pc.png'});
+  const library=page.locator('.site-header .header-cta--optional');
+  await expect(library).toHaveAttribute('href','/future-strategy-library/');
+  await library.click();await expect(page).toHaveURL(/\/#resources$/);
+  await page.getByRole('button',{name:'移動をスキップ',exact:true}).click();
+  await expect(root).toHaveAttribute('data-explorer-room','resources');
+  await page.getByRole('button',{name:'紹介を読む',exact:true}).click();
+  await expect(page.locator('#resources[data-explorer-panel] a[href="/future-strategy-library/"]').first()).toBeVisible();
+  await page.getByRole('radio',{name:'3D OFF',exact:true}).check();
+  await expect(page.locator('[data-explorer-canvas] canvas,[data-habitat-backdrop] canvas')).toHaveCount(0);
+  await expect(root).not.toHaveAttribute('data-explorer-active','true');
+  await page.reload();await expect(page.getByRole('radio',{name:'3D OFF',exact:true})).toBeChecked();
+  await page.waitForTimeout(1000);await expect(page.locator('[data-explorer-canvas] canvas,[data-habitat-backdrop] canvas')).toHaveCount(0);
+  await page.getByRole('radio',{name:'3D ON',exact:true}).check();
+  await expect(root).toHaveAttribute('data-explorer-active','true',{timeout:60000});
+  expect(errors).toEqual([]);
 });

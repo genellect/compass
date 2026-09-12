@@ -27,6 +27,7 @@ export function createExplorer(root: HTMLElement, host: HTMLElement, markers: HT
   let finishProbe:((value:boolean)=>void)|null=null,dirty=true,soundVolume=.65;
   let viewportWidth=innerWidth, viewportHeight=innerHeight, sourceOpacity=host.style.opacity;
   let readingReturn:ExplorerSnapshot|null=null;
+  let qualityStep=0;
   const aborters=new Set<AbortController>(), listeners:(()=>void)[]=[], templates=new Map<string,THREE.Group>();
   const ownedModels=new Set<THREE.Group>();
   const models=new Map<SectionId,THREE.Group>(), loads=new Map<SectionId,Promise<void>>(), shells:THREE.Group[]=[];
@@ -38,6 +39,8 @@ export function createExplorer(root: HTMLElement, host: HTMLElement, markers: HT
   const renderer=new THREE.WebGLRenderer({antialias:false,alpha:false,powerPreference:'high-performance'});
   renderer.outputColorSpace=THREE.SRGBColorSpace;renderer.toneMapping=THREE.AgXToneMapping;renderer.toneMappingExposure=1.1;
   renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFShadowMap;
+  // Architecture and lighting are static between room/door changes.
+  renderer.shadowMap.autoUpdate=false;renderer.shadowMap.needsUpdate=true;
   renderer.info.autoReset=false;
   renderer.domElement.setAttribute('aria-hidden','true');host.append(renderer.domElement);
   const composer=new EffectComposer(renderer);
@@ -145,6 +148,7 @@ export function createExplorer(root: HTMLElement, host: HTMLElement, markers: HT
     const promise=model(room.model,false,roomBytes.get(room.id)).then(group=>{
       if(disposed||accepted&&room.id!==current.id&&room.id!==targetRoom?.id){disposeGroup(group);return;}
       group.position.fromArray(room.origin);group.rotation.y=room.yaw;scene.add(group);models.set(room.id,group);
+      renderer.shadowMap.needsUpdate=true;
       if(room.id==='top')group.traverse(object=>{if(/^(Float_Core|Spin_Orbit)/.test(object.name))object.visible=false;});
       if(accepted)resize();
       loadingUntil=performance.now()+2000;
@@ -156,6 +160,7 @@ export function createExplorer(root: HTMLElement, host: HTMLElement, markers: HT
     for(const [id,group] of models) {
       if(id===current.id||id===targetRoom?.id||id==='top'&&Math.hypot(camera.position.x,camera.position.z)<34)continue;
       scene.remove(group);disposeGroup(group);models.delete(id);
+      renderer.shadowMap.needsUpdate=true;
       probes.get(id)?.dispose();probes.delete(id);
     }
     resize();
@@ -210,6 +215,7 @@ export function createExplorer(root: HTMLElement, host: HTMLElement, markers: HT
     sun.target.position.set(camera.position.x,0,camera.position.z);
     sun.position.set(camera.position.x-35,65,camera.position.z+25);
     fill.position.set(current.origin[0],4.4,current.origin[2]);
+    renderer.shadowMap.needsUpdate=true;
   }
   function showPanel(value:boolean) {
     reading=value;dirty=true;root.dataset.explorerReading=String(value);
@@ -261,11 +267,22 @@ export function createExplorer(root: HTMLElement, host: HTMLElement, markers: HT
     viewportWidth=innerWidth;viewportHeight=innerHeight;
     camera.aspect=viewportWidth/viewportHeight;camera.updateProjectionMatrix();
     const resident=estimateResidentBytes();
-    const pixels=Math.min(6e6,Math.max(600000,(512*1024*1024-resident-64*1024*1024)/90));
+    const pixels=Math.min([2.8e6,1.65e6,.95e6][qualityStep],Math.max(600000,(512*1024*1024-resident-64*1024*1024)/90));
     const dpr=Math.min(devicePixelRatio||1,2,Math.sqrt(pixels/(viewportWidth*viewportHeight)));
     renderer.setPixelRatio(dpr);renderer.setSize(viewportWidth,viewportHeight,false);composer.setPixelRatio(dpr);composer.setSize(viewportWidth,viewportHeight);
     host.dataset.gpuEstimatedMiB=((resident+64*1024*1024+viewportWidth*viewportHeight*dpr*dpr*90)/1024/1024).toFixed(1);
+    host.dataset.quality=['full','balanced','light'][qualityStep];
+    host.dataset.renderPixels=String(Math.round(viewportWidth*viewportHeight*dpr*dpr));
     loadingUntil=performance.now()+1500;samples.reset();sampleAt=0;
+  }
+  function reduceLoad(){
+    if(qualityStep>=2)return false;
+    qualityStep++;bloom.enabled=false;
+    if(qualityStep===2){
+      sun.shadow.mapSize.set(1024,1024);sun.shadow.map?.dispose();sun.shadow.map=null;
+      renderer.shadowMap.needsUpdate=true;
+    }
+    resize();timer.clear();samples.reset();sampleAt=0;slowWindows=0;return true;
   }
   function estimateResidentBytes(){
     const textures=new Set<THREE.Texture>(),geometries=new Set<THREE.BufferGeometry>();
@@ -347,13 +364,16 @@ export function createExplorer(root: HTMLElement, host: HTMLElement, markers: HT
       const gap=camera.position.distanceTo(scratch.fromArray(door.room.door));
       const wanted=models.has(door.room.id)&&(gap<4.3||targetRoom?.id===door.room.id&&gap<7);
       const old=door.open;door.open=THREE.MathUtils.damp(door.open,wanted?1:0,4,dt);
+      if(Math.abs(old-door.open)>.001)renderer.shadowMap.needsUpdate=true;
       for(const leaf of door.leaves)leaf.object.position.x=leaf.x+leaf.side*1.43*door.open;
       if(old<.05&&door.open>=.05)sound?.cue('door',door.room.door);
       if(gap<2.2&&door.open<.8)waiting=true;
     }
     for(const [id,group] of models){
       const door=doors.find(item=>item.room.id===id);
-      group.visible=id===current.id||id==='top'&&Math.hypot(camera.position.x,camera.position.z)<34||Boolean(door&&door.open>.01);
+      const visible=id===current.id||id==='top'&&Math.hypot(camera.position.x,camera.position.z)<34||Boolean(door&&door.open>.01);
+      if(group.visible!==visible)renderer.shadowMap.needsUpdate=true;
+      group.visible=visible;
     }
     const exhibits=templates.get('exhibits');
     exhibits?.traverse(object=>{
@@ -423,8 +443,8 @@ export function createExplorer(root: HTMLElement, host: HTMLElement, markers: HT
       samples.add(time);
       if(time-sampleAt>=3000){
         const result=samples.result(timer.value());hooks.metrics(result);
-        slowWindows=samples.averageFPS()<45?slowWindows+1:0;samples.reset();sampleAt=0;
-        if(slowWindows>=2)fatal('performance');
+        slowWindows=samples.averageFPS()<27?slowWindows+1:0;samples.reset();sampleAt=0;
+        if(slowWindows>=2&&!reduceLoad())fatal('performance');
       }
     }
     sound?.listener(camera.position,camera.getWorldDirection(forward));
@@ -475,20 +495,28 @@ export function createExplorer(root: HTMLElement, host: HTMLElement, markers: HT
       // Probe is the real composed scene, never a synthetic GPU-name allowlist.
       // The existing static poster and HTML remain visible until it passes.
       const probe=new FrameWindow();let began=0,warm=0,probeLast=0;
-      const pass=await new Promise<boolean>(resolve=>{
+      const probeScene=()=>new Promise<boolean>(resolve=>{
         finishProbe=resolve;
         const sample=(time:number)=>{
-          if(disposed||failed||document.hidden){resolve(false);return;}
+          if(disposed||failed){resolve(false);return;}
+          if(document.hidden){
+            probe.reset();timer.clear();began=0;warm=0;probeLast=0;
+            frame=requestAnimationFrame(sample);return;
+          }
           if(!warm)warm=time;
           if(time-probeLast>=1000/60-.8){
             probeLast=time;
             try{paint(time);}catch{resolve(false);return;}
-            if(time-warm>2000){if(!began)began=time;probe.add(time);}
+            if(time-warm>800){if(!began)began=time;probe.add(time);}
           }
           if(began&&time-began>=3000){const metrics=probe.result(timer.value());hooks.metrics(metrics);resolve(passesEntry(metrics));return;}
           frame=requestAnimationFrame(sample);
         };frame=requestAnimationFrame(sample);
       });
+      let pass=await probeScene();
+      while(!pass&&!disposed&&!failed&&!document.hidden&&reduceLoad()){
+        probe.reset();began=0;warm=0;probeLast=0;pass=await probeScene();
+      }
       finishProbe=null;
       if(!pass||disposed)return false;
       accepted=true;last=0;loadingUntil=performance.now()+2500;

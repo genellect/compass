@@ -2,7 +2,7 @@ import type { SectionId } from '../Habitat/scene-config';
 
 export type Point = readonly [number, number];
 export type Vector = readonly [number, number, number];
-export type Preference = 'auto' | 'explore' | 'standard';
+export type Preference = 'on' | 'off';
 export type ExplorerPhase = 'preparing' | 'walking' | 'entering' | 'idle' | 'reading' | 'paused';
 export interface Room {
   id: SectionId;

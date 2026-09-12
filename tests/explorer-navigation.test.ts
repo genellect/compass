@@ -42,5 +42,11 @@ test('startup rejects long stalls even with a good median frame rate',()=>{
   expect(passesEntry(sample.result())).toBe(false);
   sample.reset();for(let n=0;n<182;n++)sample.add(1+n*1000/60);
   expect(passesEntry(sample.result(8))).toBe(true);
-  expect(passesEntry(sample.result(24))).toBe(false);
+  expect(passesEntry(sample.result(24))).toBe(true);
+  expect(passesEntry(sample.result(50))).toBe(false);
+  sample.reset();for(let n=0;n<92;n++)sample.add(1+n*1000/30);
+  expect(passesEntry(sample.result(28))).toBe(true);
+  // Actual Iris Xe observation from the previous Preview: drawing was possible,
+  // but the old 60fps admission rule hid the result from the user.
+  expect(passesEntry({fps:59.9,p95:33.5,gpuMs:21.5,frames:150})).toBe(true);
 });

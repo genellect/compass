@@ -1,7 +1,7 @@
-export const EXPLORER_VERSION = '1';
+export const EXPLORER_VERSION = '2';
 // Emergency switch: disabling this leaves the existing Habitat and ISS path intact.
 export const EXPLORER_ENABLED = process.env.NEXT_PUBLIC_COMPASS_EXPLORER !== 'off';
-export const PREFERENCE_KEY = 'compass-explorer-preference';
+export const PREFERENCE_KEY = 'compass-3d-mode';
 export const FAILURE_KEY = 'compass-explorer-failed-' + EXPLORER_VERSION;
 export const PC_QUERY = '(min-width: 901px) and (pointer: fine) and (hover: hover)';
 
@@ -12,9 +12,12 @@ export function isPC(input: { eligible: boolean; fine: boolean; userAgent: strin
 }
 
 /** Storage can be unavailable in private sessions; it must never break navigation. */
-export function readPreference(): 'auto' | 'explore' | 'standard' {
+export function readPreference(): 'on' | 'off' {
   try {
     const value = localStorage.getItem(PREFERENCE_KEY);
-    return value === 'explore' || value === 'standard' ? value : 'auto';
-  } catch { return 'auto'; }
+    if (value === 'on' || value === 'off') return value;
+    // v1 "standard" still meant realtime 3D, so none of its three choices
+    // represents a 3D OFF request. Only this explicit binary setting persists.
+    return 'on';
+  } catch { return 'on'; }
 }
