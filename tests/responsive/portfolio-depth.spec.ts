@@ -21,7 +21,8 @@ for (const language of ["ja", "en"] as const) {
       const box = (await image.boundingBox())!;
       await page.mouse.move(box.x + box.width * .8, box.y + Math.min(60, box.height * .25));
       await expect(card).toHaveAttribute("data-depth-active", "true");
-      const plane = id === "off-hours" ? card.locator("[data-depth-photo]") : card;
+      expect(await card.evaluate(el => { const m = new DOMMatrix(getComputedStyle(el).transform); return [m.b, m.c, m.m13, m.m23]; })).toEqual([0, 0, 0, 0]);
+      const plane = card.locator('[data-depth-face="right"]');
       await expect.poll(() => plane.evaluate(el => getComputedStyle(el).transform)).toMatch(/^matrix3d/);
       if (id === "off-hours") {
         // A tilted photo must stay in front of the parent article's hit plane.
@@ -34,7 +35,10 @@ for (const language of ["ja", "en"] as const) {
       expect(await card.innerText()).toBe(content);
       await expect(section.locator("canvas")).toHaveCount(0);
       await page.mouse.move(1, 100);
-      await expect.poll(() => plane.evaluate(el => getComputedStyle(el).transform)).toBe("none");
+      await expect(card).not.toHaveAttribute("data-depth-moving", "true");
+      await expect(card.locator("[data-depth-face]")).toHaveCount(5);
+      await expect(card).toHaveCSS("transform", "none");
+      await expect.poll(() => plane.evaluate(el => getComputedStyle(el).transform)).toMatch(/^matrix3d/);
     }
     await page.setViewportSize({ width: 900, height: 900 });
     await expect(page.getByRole("button", { name: enlarge, exact: true })).toHaveCount(0);
@@ -162,3 +166,23 @@ test.describe("coarse-pointer desktop", () => {
     await expect(page.getByRole("dialog")).toHaveCount(0);
   });
 });
+
+for (const language of ["ja", "en"]) {
+  test.describe(language + ": mobile solid cards", () => {
+    test.use({ isMobile: true, hasTouch: true, viewport: { width: 390, height: 844 } });
+    test("touch keeps the reading plane horizontal and returns to rest", async ({ page }) => {
+      await page.goto(language === "ja" ? "/founder/" : "/en/");
+      for (const id of ["expertise", "experience", "off-hours"]) {
+        const card = page.locator("#" + id + " [data-depth-card]").first();
+        await card.scrollIntoViewIfNeeded();
+        const box = (await card.locator("img").boundingBox())!;
+        await page.touchscreen.tap(box.x + box.width * .5, box.y + Math.min(60, box.height * .25));
+        expect(await card.evaluate(el => { const m = new DOMMatrix(getComputedStyle(el).transform); return [m.b, m.c, m.m13, m.m23]; })).toEqual([0, 0, 0, 0]);
+        await expect(card).not.toHaveAttribute("data-depth-moving", "true");
+        await expect(card).toHaveCSS("transform", "none");
+        await expect(card.locator("[data-depth-face]")).toHaveCount(5);
+      }
+      expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+    });
+  });
+}

@@ -18,6 +18,7 @@ export function DepthCard({ depth, editorial = false, className, children, ...pr
     const element = ref.current;
     if (!element) return;
     const media = window.matchMedia(MOTION);
+    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)");
     let frame = 0;
     let last = 0;
     let x = 0;
@@ -27,16 +28,12 @@ export function DepthCard({ depth, editorial = false, className, children, ...pr
     let lift = 0;
     let targetLift = 0;
     let bounds: DOMRect | undefined;
-    let entrance: Animation | undefined;
-    let appeared = false;
-    const angle = depth === "experience" ? 1.6 : depth === "expertise" ? (editorial ? 3.2 : 5.2) : editorial ? 2 : 3.4;
 
     const paint = () => {
-      element.style.setProperty("--depth-rx", `${-y * angle}deg`);
-      element.style.setProperty("--depth-ry", `${x * angle}deg`);
+      element.style.setProperty("--depth-extension", `${lift * 14}px`);
       element.style.setProperty("--depth-px", `${x * 2}px`);
       element.style.setProperty("--depth-py", `${y * 2}px`);
-      element.style.setProperty("--depth-lift", `${-lift * (depth === "experience" ? 3 : depth === "expertise" ? 8 : 5)}px`);
+      element.style.setProperty("--depth-lift", `${-lift * 10}px`);
     };
     const draw = (now: number) => {
       frame = 0;
@@ -63,14 +60,12 @@ export function DepthCard({ depth, editorial = false, className, children, ...pr
       bounds = undefined;
       element.removeAttribute("data-depth-active");
       element.removeAttribute("data-depth-moving");
-      entrance?.cancel();
       paint();
     };
     const move = (event: PointerEvent) => {
-      if (!media.matches || event.pointerType === "touch" || document.hidden) return;
+      if (!media.matches || document.hidden) return;
       if (element.hasAttribute("data-photo-open")) return;
       if (!bounds) bounds = element.getBoundingClientRect();
-      entrance?.cancel();
       element.dataset.depthActive = "true";
       element.dataset.depthMoving = "true";
       targetLift = 1;
@@ -83,7 +78,7 @@ export function DepthCard({ depth, editorial = false, className, children, ...pr
       targetX = targetY = 0;
       targetLift = 0;
       element.removeAttribute("data-depth-active");
-      if (media.matches) schedule();
+      if (!reduced.matches) schedule();
       else reset();
     };
     const sync = () => {
@@ -91,20 +86,25 @@ export function DepthCard({ depth, editorial = false, className, children, ...pr
       element.dataset.depthEnabled = String(media.matches);
     };
     const observer = new IntersectionObserver(([entry]) => {
-      if (!entry.isIntersecting) { reset(); return; }
-      if (appeared || !media.matches || document.hidden) return;
-      appeared = true;
-      // One short arrival, never a looping float. The reading surface stays visible.
-      if (depth !== "expertise") return;
-      const index = Array.from(element.parentElement?.children ?? []).indexOf(element);
-      entrance = element.animate([
-        { transform: "perspective(1200px) translateY(16px) rotateX(5deg)" },
-        { transform: "perspective(1200px) translateY(0) rotateX(0deg)" },
-      ], { duration: 620, delay: editorial ? 0 : Math.max(0, index) * 65, easing: "cubic-bezier(.22,.7,.2,1)" });
+      if (!entry.isIntersecting) reset();
     }, { threshold: 0.12 });
 
+    const press = (event: PointerEvent) => {
+      if (reduced.matches || document.hidden || element.hasAttribute("data-photo-open")) return;
+      bounds = element.getBoundingClientRect();
+      element.dataset.depthActive = "true";
+      element.dataset.depthMoving = "true";
+      targetX = (event.clientX - bounds.left) / bounds.width * 2 - 1;
+      targetY = (event.clientY - bounds.top) / bounds.height * 2 - 1;
+      targetLift = lift = .6;
+      paint();
+      schedule();
+    };
     sync();
     observer.observe(element);
+    element.addEventListener("pointerdown", press);
+    window.addEventListener("pointerup", leave);
+    reduced.addEventListener("change", sync);
     element.addEventListener("pointerenter", move);
     element.addEventListener("pointermove", move);
     element.addEventListener("pointerleave", leave);
@@ -116,6 +116,9 @@ export function DepthCard({ depth, editorial = false, className, children, ...pr
     return () => {
       reset();
       observer.disconnect();
+      element.removeEventListener("pointerdown", press);
+      window.removeEventListener("pointerup", leave);
+      reduced.removeEventListener("change", sync);
       element.removeEventListener("pointerenter", move);
       element.removeEventListener("pointermove", move);
       element.removeEventListener("pointerleave", leave);
@@ -128,5 +131,9 @@ export function DepthCard({ depth, editorial = false, className, children, ...pr
   }, [depth, editorial]);
 
   return <article {...props} ref={ref} className={`${className ?? ""} ${styles.card}`}
-    data-depth-card={depth} data-depth-editorial={editorial || undefined}>{children}</article>;
+    data-depth-card={depth} data-depth-editorial={editorial || undefined}>
+    {(["back", "left", "right", "top", "bottom"] as const).map(face =>
+      <span key={face} className={styles.face} data-depth-face={face} aria-hidden="true" />)}
+    {children}
+  </article>;
 }

@@ -1,39 +1,55 @@
-.card {
+.card[data-depth-card] {
   --depth-rx: 0deg;
   --depth-ry: 0deg;
   --depth-px: 0px;
   --depth-py: 0px;
+  --depth-base: 24px;
+  --depth-thickness: calc(var(--depth-base) + var(--depth-extension, 0px));
+  --depth-paper: #fff;
+  --depth-edge: #cedbe4;
+  position: relative;
+  overflow: visible;
+  transform-style: preserve-3d;
+  perspective: 1600px;
+  perspective-origin: 180% 180%;
+  background-color: var(--depth-paper);
+  /* Only a cast shadow. Physical thickness comes from the five separate faces. */
+  box-shadow: 0 24px 38px -22px rgba(25, 40, 48, .3);
 }
-
-@media (min-width: 901px) and (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
-  .card[data-depth-card] {
-    position: relative;
-    transform-style: preserve-3d;
-    overflow: visible;
-    transition: box-shadow 350ms ease;
-  }
-  /* The photo rotates as one surface. A shared 3D context lets its back half
-     fall behind the article's hit plane, swallowing clicks after a tilt. */
-  .card[data-depth-card="photo"] { transform-style: flat; }
-  .card[data-depth-moving="true"]:not([data-depth-card="photo"]) {
-    transform: perspective(1200px) translateY(var(--depth-lift, 0px)) rotateX(var(--depth-rx)) rotateY(var(--depth-ry));
-  }
-  .card[data-depth-active="true"] { z-index: 2; }
-  .card [data-depth-layer] { transition: transform 350ms cubic-bezier(.22,.7,.2,1); }
-  .card[data-depth-active="true"] [data-depth-layer="image"] { transform: translateZ(9px); }
-  .card[data-depth-active="true"] [data-depth-layer="copy"] { transform: translateZ(4px); }
-  .card[data-depth-active="true"] [data-depth-layer="detail"] { transform: translateZ(12px); }
-  .card[data-depth-editorial="true"][data-depth-active="true"] [data-depth-layer="copy"] { transform: translateZ(2px); }
-  .card[data-depth-card="expertise"][data-depth-active="true"] [data-depth-layer="image"] { transform: translateZ(28px); }
-  .card[data-depth-card="expertise"][data-depth-active="true"] [data-depth-layer="copy"] { transform: translateZ(14px); }
-  .card[data-depth-card="expertise"][data-depth-active="true"] [data-depth-layer="detail"] { transform: translateZ(38px); }
-  .card[data-depth-card="expertise"][data-depth-editorial="true"][data-depth-active="true"] [data-depth-layer="copy"] { transform: translateZ(10px); }
-  .card [data-depth-photo] { transition: box-shadow 350ms ease; }
-  .card[data-depth-moving="true"] [data-depth-photo] {
-    transform: perspective(1200px) translateY(var(--depth-lift, 0px)) rotateX(var(--depth-rx)) rotateY(var(--depth-ry));
-  }
-  .card[data-photo-open="true"] [data-depth-photo] { transform: none; }
+.card[data-depth-editorial="true"] { --depth-paper: #f0eff4; --depth-edge: #c2becf; }
+.card[data-depth-card="photo"] { --depth-paper: #fffdfa; --depth-edge: #d7c9bb; }
+.card[data-depth-editorial="true"][data-depth-card="photo"] { --depth-paper: #e5e3eb; --depth-edge: #c2becf; }
+.card[data-depth-editorial="true"][data-depth-card="experience"] { --depth-paper: #0a1713; --depth-edge: #233e34; }
+.card[data-depth-active="true"] { z-index: 2; }
+.card[data-depth-moving="true"] { transform: translateY(var(--depth-lift, 0px)); }
+/* The reading plane stays parallel to the screen; only the solid extends back. */
+.card[data-depth-card] > :not([data-depth-face]) { transform: none; }
+.card[data-depth-card] > [data-depth-layer="image"],
+.card[data-depth-card] > [data-depth-photo] { border-radius: inherit; }
+.face {
+  position: absolute;
+  display: block;
+  pointer-events: none;
+  background: var(--depth-edge);
+  backface-visibility: hidden;
 }
+.face[data-depth-face="back"] { inset: 0; border-radius: inherit; transform: translateZ(calc(-1 * var(--depth-thickness))) rotateY(180deg); }
+.card[data-depth-card="expertise"]:not([data-depth-editorial]) { --depth-corner: 21px; }
+.card[data-depth-card="experience"]:not([data-depth-editorial]) { --depth-corner: 17px; }
+.face[data-depth-face="right"] { clip-path: inset(var(--depth-corner, 0px) 0 0); left: 100%; top: 0; width: var(--depth-thickness); height: 100%; transform-origin: left center; transform: rotateY(90deg); background: color-mix(in srgb, var(--depth-edge), black 10%); }
+.face[data-depth-face="left"] { right: 100%; top: 0; width: var(--depth-thickness); height: 100%; transform-origin: right center; transform: rotateY(-90deg); }
+.face[data-depth-face="top"] { bottom: 100%; left: 0; height: var(--depth-thickness); width: 100%; transform-origin: center bottom; transform: rotateX(90deg); background: color-mix(in srgb, var(--depth-edge), white 28%); }
+.face[data-depth-face="bottom"] { top: 100%; left: 0; height: var(--depth-thickness); width: 100%; transform-origin: center top; transform: rotateX(-90deg); background: color-mix(in srgb, var(--depth-edge), black 15%); }
+@media (max-width: 900px) {
+  .card[data-depth-card] { --depth-base: 18px; perspective: 1200px; }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .card [data-depth-layer], .card [data-depth-photo] { transition: transform 350ms cubic-bezier(.22,.7,.2,1); }
+  .card[data-depth-active="true"] > [data-depth-layer="image"],
+  .card[data-depth-active="true"] > [data-depth-photo] { transform: translateZ(12px); }
+}
+.card[data-photo-open="true"] { --depth-rx: 0deg; --depth-ry: 0deg; --depth-lift: 0px; }
+.card[data-photo-open="true"] > [data-depth-photo] { transform: none; }
 
 .photoTrigger {
   position: absolute;
