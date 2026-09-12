@@ -1,174 +1,108 @@
-import {test,expect,devices,type Page} from '@playwright/test';
-import {Navigation} from '../../src/components/Explorer/navigation';
-import floor from '../../public/habitat/explorer/v1/navigation.json';
+import { expect, test, devices, type Page } from '@playwright/test';
+import manifest from '../../public/habitat/explorer/v1/manifest.json';
 
-const rooms=[['top','COMPASS'],['vision','Vision'],['experience','Experience'],['technology','Interactive'],['resources','Library'],['manifesto','Manifesto'],['community','Community'],['founder','Founder'],['contact','Contact']] as const;
-const nav=new Navigation({cellSize:floor.cellSize,cells:floor.cells.map(([x,z])=>[x,z])});
-test.use({viewport:{width:1440,height:900},launchOptions:{args:['--enable-gpu','--use-angle=d3d11']}});
-test.beforeEach(async({page})=>{await page.route(/google-analytics|googletagmanager|cloudflareinsights|challenges\.cloudflare/,route=>route.fulfill({status:200,body:''}));});
+test.use({viewport:{width:1440,height:900},launchOptions:{channel:'msedge',args:['--enable-gpu','--use-angle=d3d11']}});
+const prepare=async(page:Page)=>{await page.route(/google-analytics|googletagmanager|cloudflareinsights|challenges\.cloudflare/,route=>route.fulfill({status:200,body:''}));};
+const ready=async(page:Page,hash='')=>{await prepare(page);await page.goto('/3d/'+hash);await expect(page.locator('[data-explorer-page]')).toHaveAttribute('data-status','ready',{timeout:60000});};
+const position=async(page:Page)=>(await page.locator('[data-explorer-canvas]').getAttribute('data-position'))!.split(',').map(Number);
+const visit=async(page:Page,id:string)=>{const label=manifest.rooms.find(room=>room.id===id)!.label;await page.getByRole('button',{name:'館内案内',exact:true}).click();await page.getByRole('button',{name:label+'へ移動',exact:true}).click();await expect(page.locator('[data-explorer-canvas]')).toHaveAttribute('data-room',id,{timeout:30000});};
 
-async function fixture(page:Page){
-  // These are controlled rendering/interaction checks, never hardware FPS proof.
-  await page.addInitScript(()=>{
-    localStorage.setItem('compass-3d-mode','on');
-    const native=requestAnimationFrame.bind(window),clocks=new WeakMap<FrameRequestCallback,number>();
-    window.requestAnimationFrame=callback=>native(()=>{const time=(clocks.get(callback)??performance.now())+1000/60;clocks.set(callback,time);callback(time);});
-    const extension=WebGL2RenderingContext.prototype.getExtension as (this:WebGL2RenderingContext,name:string)=>unknown;
-    Object.defineProperty(WebGL2RenderingContext.prototype,'getExtension',{value:function(this:WebGL2RenderingContext,name:string){return name==='EXT_disjoint_timer_query_webgl2'?null:extension.call(this,name);}});
-  });
-}
-async function enter(page:Page,id:string,label:string,instant=true){
-  await page.getByRole('button',{name:'館内案内',exact:false}).click();
-  if(instant)await page.getByRole('button',{name:label+'の紹介を移動せずに読む',exact:true}).click();
-  else await page.locator('#explorer-guide').getByRole('button',{name:new RegExp(label+'$')}).click();
-  if(instant)await expect(page.locator('#'+id+'[data-explorer-panel]')).toBeVisible();
-}
-const luminance=(rgb:number[])=>rgb.map(n=>n/255).map(n=>n<=.04045?n/12.92:((n+.055)/1.055)**2.4).reduce((s,n,i)=>s+n*[.2126,.7152,.0722][i],0);
+test('parent page has one integrated entry and never requests the new 3D assets',async({page})=>{
+  await prepare(page);const requests:string[]=[];page.on('request',request=>{if(/\/habitat\/explorer\/|\/media\/explorer\/|Explorer_engine/.test(request.url()))requests.push(request.url());});
+  await page.goto('/');await expect(page.locator('[data-habitat-media] [data-explorer-entry]')).toBeVisible();
+  await expect(page.locator('[data-explorer-page]')).toHaveCount(0);await expect(page.locator('h1')).toHaveCount(1);
+  await page.waitForTimeout(1200);expect(requests).toEqual([]);
+  await page.locator('[data-explorer-entry]').click();await expect(page).toHaveURL(/\/3d\//);
+});
 
-test('all nine room panels preserve source text, links, usable contrast and disclosures',async({page})=>{
-  test.setTimeout(240000);await fixture(page);
-  const errors:string[]=[];page.on('pageerror',e=>errors.push(e.message));
-  await page.goto('/');
-  const original=await page.locator('#main > section,#main .v4-closing > section').evaluateAll(elements=>elements.map(el=>({id:el.id,text:el.textContent,links:[...el.querySelectorAll('a')].map(a=>[a.textContent,a.getAttribute('href')])})));
-  await expect(page.locator('[data-habitat]')).toHaveAttribute('data-explorer-active','true',{timeout:90000});
-  await expect(page.locator('[data-explorer-panel]')).toHaveCount(0);
-  for(const [id,label] of rooms){
-    await enter(page,id,label);
-    const panel=page.locator('#'+id+'[data-explorer-panel]');
-    const actual=await panel.evaluate(el=>({id:el.id,text:el.textContent,links:[...el.querySelectorAll('a')].map(a=>[a.textContent,a.getAttribute('href')])}));
-    expect(actual).toEqual(original.find(item=>item.id===id));
-    const content=await panel.locator('h1,h2,h3,p').evaluateAll(nodes=>nodes.filter(n=>n.getClientRects().length).map(n=>({text:n.textContent,color:getComputedStyle(n).color,font:parseFloat(getComputedStyle(n).fontSize)})));
-    // Explicit reading has an opaque, bounded surface; sample the actual CSS
-    // surface colour rather than assuming a photographic frame underneath it.
-    const paper=await panel.evaluate(el=>getComputedStyle(el).backgroundColor);
-    const background=luminance(paper.match(/[\d.]+/g)!.slice(0,3).map(Number));
-    for(const item of content){const ink=luminance(item.color.match(/[\d.]+/g)!.slice(0,3).map(Number));const contrast=(Math.max(ink,background)+.05)/(Math.min(ink,background)+.05);expect(contrast,id+':'+item.text).toBeGreaterThanOrEqual(4.5);}
-    const box=await panel.boundingBox();expect(box).not.toBeNull();expect(box!.y).toBeGreaterThan(80);expect(box!.y+box!.height).toBeLessThan(790);
-    const overflow=await panel.evaluate(el=>el.scrollWidth-el.clientWidth);expect(overflow,id).toBeLessThanOrEqual(1);
+test('fresh arrival stays still; walking, release, look and glass collisions respect direct input',async({page})=>{
+  test.setTimeout(100000);await page.addInitScript(()=>sessionStorage.setItem('compass-3d-page-visit',JSON.stringify({room:'top',position:[-5,1.65,-10.5],yaw:0,pitch:0,reading:false})));
+  await ready(page);const before=await position(page);await page.waitForTimeout(500);expect(await position(page)).toEqual(before);
+  await page.keyboard.down('KeyW');await page.waitForTimeout(1400);await page.keyboard.up('KeyW');
+  const stopped=await position(page);expect(stopped[2]).toBeGreaterThan(-10.84);await page.waitForTimeout(350);expect(await position(page)).toEqual(stopped);
+  await page.keyboard.down('KeyS');await page.waitForTimeout(700);await page.keyboard.up('KeyS');expect((await position(page))[2]).toBeGreaterThan(stopped[2]+.7);
+  await page.mouse.move(700,460);await page.mouse.down();await page.mouse.move(920,460,{steps:12});await page.mouse.up();
+  const afterDrag=await position(page);await page.waitForTimeout(2800);expect(await position(page)).toEqual(afterDrag);
+  await page.screenshot({path:'outputs/3d-manual-glass.png'});
+});
+
+test('all rooms have their contextual source CTA and no generic reader',async({page})=>{
+  test.setTimeout(180000);const errors:string[]=[];page.on('pageerror',error=>errors.push(error.message));await ready(page);
+  await page.screenshot({path:'outputs/3d-hero-review.png'});
+  await page.locator('[data-explorer-canvas] canvas').screenshot({path:'outputs/3d-arrival-canvas.png'});
+  for(const room of manifest.rooms.slice(1)){
+    await visit(page,room.id);
+    const exhibit=page.locator('[data-room-exhibit="'+room.id+'"]');await expect(exhibit).toBeVisible({timeout:10000});
+    await expect(exhibit.locator('a')).toHaveAttribute('href',/^\/(#|INTRO_Interactive|future-strategy-library|messages|community|contact)|^https:\/\/yuto-matsui\.com/);
+    if(['technology','resources','contact'].includes(room.id))await page.screenshot({path:'outputs/3d-room-'+room.id+'.png'});
+    await exhibit.locator('a').focus();const before=await position(page);await page.keyboard.press('ArrowDown');expect(await position(page)).toEqual(before);
   }
-  await enter(page,'community','Community');
-  const disclosure=page.locator('#community details');await disclosure.locator('summary').focus();await page.keyboard.press('Enter');
-  await expect(disclosure).toHaveAttribute('open','');
-  const text=await disclosure.locator('.v4-community__details-copy').textContent();
-  await enter(page,'founder','Founder');await expect(page.locator('#founder .v4-founder__web-portfolio')).toHaveAttribute('href','https://yuto-matsui.com/');
-  await enter(page,'community','Community');await expect(disclosure).toHaveAttribute('open','');expect(await disclosure.locator('.v4-community__details-copy').textContent()).toBe(text);
-  await page.getByRole('button',{name:'設定',exact:false}).click();await page.getByRole('button',{name:'サイト情報',exact:true}).click();
-  await expect(page.locator('.site-footer')).toBeVisible();await page.keyboard.press('Escape');await expect(page.locator('.site-footer')).toBeHidden();
-  expect(errors).toEqual([]);await page.screenshot({path:'test-results/explorer-community.png'});
+  await expect(page.getByRole('button',{name:'紹介を読む',exact:true})).toHaveCount(0);expect(errors).toEqual([]);
 });
 
-test('navigation can turn, stop, skip, return through history, and release the renderer',async({page})=>{
-  test.setTimeout(180000);await fixture(page);await page.goto('/');
-  const root=page.locator('[data-habitat]');await expect(root).toHaveAttribute('data-explorer-active','true',{timeout:90000});
-  await enter(page,'technology','Interactive',false);
-  const locations:number[][]=[];
-  for(let n=0;n<20;n++){await page.waitForTimeout(150);locations.push((await page.locator('[data-explorer-canvas]').getAttribute('data-position'))!.split(',').map(Number));}
-  expect(new Set(locations.map(p=>p.join(','))).size).toBeGreaterThan(5);
-  for(const p of locations)expect(nav.contains([p[0],p[2]])).toBe(true);
-  await page.keyboard.press('Escape');const stopped=await page.locator('[data-explorer-canvas]').getAttribute('data-position');await page.waitForTimeout(350);expect(await page.locator('[data-explorer-canvas]').getAttribute('data-position')).toBe(stopped);
-  await enter(page,'resources','Library',false);await page.getByRole('button',{name:'移動をスキップ',exact:true}).click();await expect(root).toHaveAttribute('data-explorer-room','resources');await expect(page.locator('[data-explorer-panel]')).toHaveCount(0);
-  await page.getByRole('button',{name:'紹介を読む',exact:true}).click();await expect(page.locator('#resources[data-explorer-panel]')).toBeVisible();
-  await enter(page,'contact','Contact');await page.goBack();await expect(page.locator('#resources[data-explorer-panel]')).toBeVisible();
-  await page.getByRole('button',{name:'空間に戻る',exact:true}).click();
-  const position=await page.locator('[data-explorer-canvas]').getAttribute('data-position');
-  await page.mouse.move(1300,400);await page.mouse.down();await page.mouse.move(900,480,{steps:20});await page.mouse.up();await page.waitForTimeout(200);
-  expect(await page.locator('[data-explorer-canvas]').getAttribute('data-position')).toBe(position);
-  await page.getByRole('radio',{name:'3D OFF',exact:true}).check();
-  await expect(root).not.toHaveAttribute('data-explorer-active','true');await expect(page.locator('[data-explorer-canvas] canvas')).toHaveCount(0);
-  expect(await page.locator('body').evaluate(el=>getComputedStyle(el).overflow)).not.toBe('hidden');
+test('closed doors block walking and explicit opening allows forward/backward passage',async({page})=>{
+  test.setTimeout(100000);const room=manifest.rooms.find(room=>room.id==='technology')!;
+  const point=[room.origin[0]+10*Math.sin(room.yaw),1.65,room.origin[2]+10*Math.cos(room.yaw)];
+  await page.addInitScript(({point,yaw})=>sessionStorage.setItem('compass-3d-page-visit',JSON.stringify({room:'technology',position:point,yaw,pitch:0,reading:false})),{point,yaw:room.yaw});
+  await ready(page,'#technology');
+  const localZ=async()=>{const p=await position(page);return (p[0]-room.origin[0])*Math.sin(room.yaw)+(p[2]-room.origin[2])*Math.cos(room.yaw);};
+  await page.keyboard.down('KeyS');await page.waitForTimeout(1500);await page.keyboard.up('KeyS');expect(await localZ()).toBeLessThan(11.72);
+  await page.keyboard.press('KeyE');await page.waitForTimeout(1200);const before=await position(page);await page.waitForTimeout(400);expect(await position(page)).toEqual(before);
+  await page.keyboard.down('KeyS');await page.waitForTimeout(1800);await page.keyboard.up('KeyS');expect(await localZ()).toBeGreaterThan(12.6);
+  await page.keyboard.down('KeyW');try{await expect.poll(localZ,{timeout:6000}).toBeLessThan(11.5);}finally{await page.keyboard.up('KeyW');}
 });
 
-test('short and zoom-equivalent viewports keep actual text sizes, controls and panel scrolling',async({page})=>{
-  test.setTimeout(180000);await fixture(page);await page.goto('/');await expect(page.locator('[data-habitat]')).toHaveAttribute('data-explorer-active','true',{timeout:90000});
-  for(const [width,height] of [[901,768],[1024,768],[1275,553],[960,540],[1920,1080],[3840,2160]]){
-    await page.setViewportSize({width,height});await enter(page,'community','Community');
-    const bounds=await page.locator('#community[data-explorer-panel]').boundingBox();expect(bounds!.x).toBeGreaterThanOrEqual(0);expect(bounds!.x+bounds!.width).toBeLessThanOrEqual(width+1);
-    expect(bounds!.y).toBeGreaterThanOrEqual(80);expect(bounds!.y+bounds!.height).toBeLessThan(height-75);
-    const controls=await page.locator('[data-explorer-controls]').boundingBox();expect(controls!.width).toBeLessThanOrEqual(width-24);
-    const header=await page.locator('.site-header').boundingBox(),toggle=await page.locator('.site-header [data-3d-toggle]').boundingBox();
-    expect(toggle!.x).toBeGreaterThan(header!.x);expect(toggle!.x+toggle!.width).toBeLessThanOrEqual(header!.x+header!.width);
-    expect(toggle!.y+toggle!.height).toBeLessThanOrEqual(header!.y+header!.height);
-    const overflow=await page.evaluate(()=>document.documentElement.scrollWidth-innerWidth);expect(overflow).toBeLessThanOrEqual(1);
-  }
+test('context loss releases the renderer and keeps direct links and return available',async({page})=>{
+  test.setTimeout(100000);await ready(page);
+  await page.locator('[data-explorer-canvas] canvas').evaluate(canvas=>(canvas as HTMLCanvasElement).getContext('webgl2')?.getExtension('WEBGL_lose_context')?.loseContext());
+  await expect(page.locator('[data-explorer-page]')).toHaveAttribute('data-status','failed');await expect(page.locator('canvas')).toHaveCount(0);
+  await expect(page.getByRole('button',{name:'もう一度試す'})).toBeVisible();await page.getByRole('button',{name:'館内案内',exact:true}).click();await expect(page.getByRole('link',{name:'Contactのサイトを開く',exact:true})).toBeVisible();
 });
 
-test('context loss restores current content and prevents automatic re-entry',async({page})=>{
-  test.setTimeout(120000);await fixture(page);await page.goto('/');const root=page.locator('[data-habitat]');await expect(root).toHaveAttribute('data-explorer-active','true',{timeout:90000});
-  await enter(page,'founder','Founder');await page.locator('[data-explorer-canvas] canvas').evaluate(canvas=>{(canvas as HTMLCanvasElement).getContext('webgl2')?.getExtension('WEBGL_lose_context')?.loseContext();});
-  await expect(root).not.toHaveAttribute('data-explorer-active','true');await expect(page.locator('[data-explorer-canvas] canvas')).toHaveCount(0);
-  await expect(page.locator('#founder .v4-founder__web-portfolio')).toBeVisible();expect(await page.evaluate(()=>sessionStorage.getItem('compass-explorer-failed-2'))).toBe('true');
-  await expect(page.getByRole('radio',{name:'3D OFF',exact:true})).toBeChecked();
-});
-
-test('sound only loads after consent and decodes real buffers',async({page})=>{
-  test.setTimeout(150000);await fixture(page);const soundRequests:string[]=[];page.on('request',request=>{if(request.url().includes('/media/explorer/audio/'))soundRequests.push(request.url());});
-  await page.goto('/');await expect(page.locator('[data-habitat]')).toHaveAttribute('data-explorer-active','true',{timeout:90000});expect(soundRequests).toEqual([]);
-  await page.getByRole('button',{name:'設定',exact:false}).click();await page.getByRole('button',{name:'音響 OFF',exact:true}).click();await expect(page.getByRole('button',{name:'音響 ON',exact:true})).toHaveAttribute('aria-pressed','true',{timeout:20000});
-  expect(soundRequests.filter(url=>url.endsWith('.mp3'))).toHaveLength(4);
-  await page.getByRole('button',{name:'音響 ON',exact:true}).click();await expect(page.getByRole('button',{name:'音響 OFF',exact:true})).toHaveAttribute('aria-pressed','false');
-});
-
-test('protected devices and standard preference never fetch the new renderer or assets',async({browser})=>{
+test('Mobile, iPad and reduced motion never start the independent renderer',async({browser})=>{
   test.setTimeout(120000);
-  for(const kind of ['mobile','ipad-landscape','ipad-mouse','standard','reduced','paused','900']){
-    const context=await browser.newContext(kind==='mobile'?devices['iPhone 13']:kind==='ipad-landscape'?{...devices['iPad Pro 11'],viewport:{width:1194,height:834}}:{viewport:{width:kind==='900'?900:1440,height:900},reducedMotion:kind==='reduced'?'reduce':'no-preference'});
-    const page=await context.newPage();await page.route(/google-analytics|googletagmanager|cloudflareinsights|challenges\.cloudflare/,route=>route.fulfill({status:200,body:''}));
-    await page.addInitScript(kind=>{
-      localStorage.setItem('compass-3d-mode',kind==='standard'?'off':'on');
-      if(kind==='paused')sessionStorage.setItem('compass-habitat-paused','true');
-      if(kind==='ipad-mouse'){Object.defineProperty(navigator,'platform',{get:()=> 'MacIntel'});Object.defineProperty(navigator,'maxTouchPoints',{get:()=>5});}
-    },kind);
+  for(const kind of ['mobile','ipad','ipad-mouse','900','reduced']){
+    const context=await browser.newContext(kind==='mobile'?devices['iPhone 13']:kind==='ipad'?{...devices['iPad Pro 11'],viewport:{width:1194,height:834}}:{viewport:{width:kind==='900'?900:1440,height:900},reducedMotion:kind==='reduced'?'reduce':'no-preference'});
+    const page=await context.newPage();await prepare(page);
+    if(kind==='ipad-mouse')await page.addInitScript(()=>{Object.defineProperty(navigator,'platform',{get:()=> 'MacIntel'});Object.defineProperty(navigator,'maxTouchPoints',{get:()=>5});});
     const requests:string[]=[];page.on('request',request=>{if(/\/habitat\/explorer\/|\/media\/explorer\/|Explorer_engine/.test(request.url()))requests.push(request.url());});
-    await page.goto('/');await page.waitForTimeout(1200);expect(requests,kind).toEqual([]);await expect(page.locator('[data-habitat]')).not.toHaveAttribute('data-explorer-active','true');await context.close();
+    await page.goto('/');if(kind!=='reduced')await expect(page.locator('[data-explorer-entry]')).toHaveCount(0);
+    await page.goto('/3d/');await expect(page.locator('[data-explorer-page]')).toHaveAttribute('data-status',kind==='reduced'?'stopped':'unsupported');expect(requests,kind).toEqual([]);await context.close();
   }
 });
 
-test('the photographic TV film loads in its room, advances, pauses and preserves its frame',async({page})=>{
-  test.setTimeout(150000);await fixture(page);
-  const films:string[]=[];page.on('request',request=>{if(request.url().endsWith('/iss-film.mp4'))films.push(request.url());});
-  await page.goto('/');const root=page.locator('[data-habitat]'),host=page.locator('[data-explorer-canvas]');
-  await expect(root).toHaveAttribute('data-explorer-active','true',{timeout:90000});expect(films).toEqual([]);
-  await enter(page,'technology','Interactive',false);await page.getByRole('button',{name:'移動をスキップ',exact:true}).click();
-  await expect(root).toHaveAttribute('data-explorer-room','technology');await expect(page.locator('[data-explorer-panel]')).toHaveCount(0);
-  await expect.poll(async()=>Number(await host.getAttribute('data-film-time'))).toBeGreaterThan(.5);
-  await page.getByRole('button',{name:'設定',exact:false}).click();await page.getByRole('button',{name:'動きを止める',exact:true}).click();await page.waitForTimeout(250);
-  const stopped=Number(await host.getAttribute('data-film-time'));await page.waitForTimeout(800);
-  expect(Number(await host.getAttribute('data-film-time'))).toBeCloseTo(stopped,1);
-  await page.getByRole('button',{name:'動きを再開',exact:true}).click();await expect.poll(async()=>Number(await host.getAttribute('data-film-time'))).toBeGreaterThan(stopped+.2);
-  await page.getByRole('button',{name:'設定',exact:false}).click();
-  await page.getByRole('button',{name:'紹介を読む',exact:true}).click();await expect(page.locator('#technology[data-explorer-panel]')).toBeVisible();
-  await page.keyboard.press('Escape');await expect(page.getByRole('button',{name:'紹介を読む',exact:true})).toBeFocused();
-  expect(films.length).toBeGreaterThan(0);await page.screenshot({path:'test-results/explorer-physical-tv.png'});
+test('room CTA and controls fit short and wide PC viewports; resizing back restores the page',async({page})=>{
+  test.setTimeout(150000);await ready(page);await visit(page,'contact');
+  for(const [width,height] of [[901,768],[1024,768],[1275,553],[1440,900],[1920,1080],[3840,2160]]){
+    await page.setViewportSize({width,height});
+    const exhibit=page.locator('[data-room-exhibit="contact"]');await expect(exhibit).toBeVisible();
+    await exhibit.locator('a').scrollIntoViewIfNeeded();
+    const bounds=await exhibit.locator('a').boundingBox();expect(bounds).not.toBeNull();
+    expect(bounds!.x,width+'px').toBeGreaterThanOrEqual(0);expect(bounds!.x+bounds!.width).toBeLessThanOrEqual(width+1);
+    expect(bounds!.y).toBeGreaterThanOrEqual(68);expect(bounds!.y+bounds!.height).toBeLessThanOrEqual(height-65);
+    expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
+    await expect(page.getByRole('link',{name:'通常サイトへ戻る',exact:false}).first()).toBeVisible();
+    await page.getByRole('button',{name:'館内案内',exact:true}).click();
+    await page.getByRole('button',{name:'Contactへ移動',exact:true}).scrollIntoViewIfNeeded();await expect(page.getByRole('button',{name:'Contactへ移動',exact:true})).toBeInViewport();
+    await page.getByRole('button',{name:'館内案内',exact:true}).click();
+    if(height===553)await page.screenshot({path:'outputs/3d-low-screen.png'});
+  }
+  await page.setViewportSize({width:900,height:768});await expect(page.locator('[data-explorer-page]')).toHaveAttribute('data-status','unsupported');await expect(page.locator('canvas')).toHaveCount(0);
+  await page.setViewportSize({width:1440,height:900});await expect(page.locator('[data-explorer-page]')).toHaveAttribute('data-status','ready',{timeout:60000});await expect(page.locator('canvas')).toHaveCount(1);
 });
 
-test('a fresh PC starts real 3D automatically and OFF disposes both renderers',async({page})=>{
-  test.setTimeout(150000);
-  // No clock or GPU timer overrides: this verifies real admission on the test
-  // machine. It is not a certification for other hardware or 15-minute use.
-  const errors:string[]=[];page.on('pageerror',error=>errors.push(error.message));
-  await page.goto('/');
-  const root=page.locator('[data-habitat]');
-  await expect(root).toHaveAttribute('data-explorer-active','true',{timeout:90000});
-  await expect(page.getByRole('radio',{name:'3D ON',exact:true})).toBeChecked();
-  await expect(page.locator('[data-3d-toggle] input')).toHaveCount(2);
-  await expect(page.locator('.site-header .header-actions [data-3d-toggle]')).toBeVisible();
-  await expect(page.getByRole('navigation',{name:'行き先',exact:true})).toHaveCount(0);
-  await expect(page.getByText('空間を探索',{exact:true})).toHaveCount(0);
-  await expect(page.locator('[data-habitat-backdrop] canvas')).toHaveCount(0);
-  await page.screenshot({path:'outputs/explorer-on-off-real-pc.png'});
-  const library=page.locator('.site-header .header-cta--optional');
-  await expect(library).toHaveAttribute('href','/future-strategy-library/');
-  await library.click();await expect(page).toHaveURL(/\/#resources$/);
-  await page.getByRole('button',{name:'移動をスキップ',exact:true}).click();
-  await expect(root).toHaveAttribute('data-explorer-room','resources');
-  await page.getByRole('button',{name:'紹介を読む',exact:true}).click();
-  await expect(page.locator('#resources[data-explorer-panel] a[href="/future-strategy-library/"]').first()).toBeVisible();
-  await page.getByRole('radio',{name:'3D OFF',exact:true}).check();
-  await expect(page.locator('[data-explorer-canvas] canvas,[data-habitat-backdrop] canvas')).toHaveCount(0);
-  await expect(root).not.toHaveAttribute('data-explorer-active','true');
-  await page.reload();await expect(page.getByRole('radio',{name:'3D OFF',exact:true})).toBeChecked();
-  await page.waitForTimeout(1000);await expect(page.locator('[data-explorer-canvas] canvas,[data-habitat-backdrop] canvas')).toHaveCount(0);
-  await page.getByRole('radio',{name:'3D ON',exact:true}).check();
-  await expect(root).toHaveAttribute('data-explorer-active','true',{timeout:60000});
-  expect(errors).toEqual([]);
+test('navigation history, reload, pause, sound opt-in and return retain usable state',async({page})=>{
+  test.setTimeout(180000);await prepare(page);await page.goto('/');
+  await expect(page.locator('[data-explorer-entry]')).toBeVisible();await page.locator('#community').scrollIntoViewIfNeeded();
+  const scroll=await page.evaluate(()=>scrollY);
+  await page.locator('[data-explorer-entry]').click();await expect(page.locator('[data-explorer-page]')).toHaveAttribute('data-status','ready',{timeout:60000});
+  const audio:string[]=[];page.on('request',r=>{if(r.url().includes('/media/explorer/audio/'))audio.push(r.url());});
+  await visit(page,'resources');await visit(page,'contact');await page.goBack();await expect(page.locator('[data-explorer-canvas]')).toHaveAttribute('data-room','resources',{timeout:30000});
+  await page.reload();await expect(page.locator('[data-explorer-page]')).toHaveAttribute('data-status','ready',{timeout:60000});await expect(page.locator('[data-explorer-canvas]')).toHaveAttribute('data-room','resources');expect(audio).toEqual([]);
+  await page.getByRole('button',{name:'設定',exact:true}).click();await page.getByRole('button',{name:'動きを止める',exact:true}).click();
+  await expect(page.locator('[data-explorer-page]')).toHaveAttribute('data-explorer-paused','true');await page.getByRole('button',{name:'動きを再開',exact:true}).click();
+  await page.getByRole('button',{name:'音響 OFF',exact:true}).click();await expect(page.getByRole('button',{name:'音響 ON',exact:true})).toHaveAttribute('aria-pressed','true',{timeout:20000});expect(audio.length).toBeGreaterThan(0);
+  await page.getByRole('button',{name:'音響 ON',exact:true}).click();await expect(page.getByRole('button',{name:'音響 OFF',exact:true})).toHaveAttribute('aria-pressed','false');
+  await page.getByRole('link',{name:'通常サイトへ戻る',exact:false}).first().click();await expect(page).toHaveURL(/\/$/);
+  await expect.poll(()=>page.evaluate(savedScroll=>Math.abs(scrollY-savedScroll),scroll),{timeout:10000}).toBeLessThan(12);await expect(page.locator('[data-explorer-page]')).toHaveCount(0);
 });

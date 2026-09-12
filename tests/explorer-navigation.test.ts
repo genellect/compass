@@ -3,7 +3,7 @@ import { Navigation } from '../src/components/Explorer/navigation';
 import { isPC } from '../src/components/Explorer/policy';
 import { FrameWindow, passesEntry } from '../src/components/Explorer/performance';
 import type { NavMesh, Point } from '../src/components/Explorer/contracts';
-import floor from '../public/habitat/explorer/v1/navigation.json';
+import floor from '../public/habitat/explorer/v1/floor.json';
 import manifest from '../public/habitat/explorer/v1/manifest.json';
 
 const navigation=new Navigation({cellSize:floor.cellSize,cells:floor.cells.map(([x,z]):Point=>[x,z])});

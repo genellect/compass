@@ -5,6 +5,7 @@ import { ASSET_BASE, DESKTOP_QUERY, locateTour, sectionIds, chapters, chapterInd
 import type { SceneController } from './scene-engine';
 import type { Soundscape } from './soundscape';
 import styles from './habitat.module.css';
+import { ExplorerEntry } from '../Explorer/ExplorerEntry';
 
 const storageKey = 'compass-habitat-paused';
 export function Habitat() {
@@ -53,7 +54,7 @@ export function Habitat() {
     const desktop = matchMedia(DESKTOP_QUERY);
     const motion = matchMedia('(prefers-reduced-motion: reduce)');
     let disposed = false, generation = 0, starts: number[] = [], ends: number[] = [], frame = 0;
-    let currentPoster = '', active = false, suspended = false, lastScroll = window.scrollY;
+    let currentPoster = '', active = false, lastScroll = window.scrollY;
     let userInteracted = false;
     const initialHash = location.hash.slice(1);
     const noteInteraction = () => { userInteracted = true; };
@@ -115,8 +116,6 @@ export function Habitat() {
         return;
       }
       measure(); update();
-      // Parent-only mode handoff. Eligibility, camera, assets and quality stay unchanged.
-      if (suspended) { setSceneState('static'); return; }
       if (motion.matches || pausedRef.current) { setSceneState('static'); return; }
       setSceneState('loading');
       const token = generation;
@@ -145,16 +144,6 @@ export function Habitat() {
         controller.current.setPaused(pausedRef.current); update();
       } else sync();
     };
-    const suspend = (event: Event) => {
-      suspended = Boolean((event as CustomEvent<{ suspended: boolean }>).detail?.suspended);
-      if (suspended) {
-        stop();
-        setSceneState('static');
-        void sound.current?.setEnabled(false); soundEnabled.current = false; setAudible(false);
-        void pendingAudio.current?.close(); pendingAudio.current = null;
-      } else sync();
-    };
-    root.addEventListener('compass:habitat-suspend', suspend);
     const observer = new ResizeObserver(remeasure);
     observer.observe(root);
     for (const id of sectionIds) { const element = root.querySelector('#' + id); if (element) observer.observe(element); }
@@ -199,7 +188,6 @@ export function Habitat() {
       root.removeEventListener('pointerover',hoverSound);root.removeEventListener('click',activateSound);
       window.removeEventListener('wheel', noteInteraction); window.removeEventListener('pointerdown', noteInteraction); window.removeEventListener('keydown', noteInteraction);
       root.removeEventListener('compass:habitat-toggle', toggle);
-      root.removeEventListener('compass:habitat-suspend', suspend);
       for (const picture of pictures.values()) picture.onload = null;
       delete root.dataset.enabled; delete root.dataset.sceneState; delete root.dataset.sceneSection;
       root.style.removeProperty('--tour-progress');
@@ -221,6 +209,7 @@ export function Habitat() {
         </a>)}
       </nav>
       <div className={styles.mediaControls} data-habitat-media>
+      <ExplorerEntry className={styles.sound} />
       <button type="button" className={styles.sound} aria-pressed={audible} onClick={()=>void toggleSound()}>
         <span className={styles.soundBars} data-audible={audible} aria-hidden="true"><i/><i/><i/></span>
         {audible?'音声OFF':'音声ON'}

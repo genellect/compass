@@ -1,47 +1,61 @@
-# PC空間探索モード
+# COMPASS 3D 独立ページ
 
 Status: Implemented, verification pending
+対象: `/3d/` と、親サイトの既存操作群に加える入口のみ。
 
-ルート親サイトにのみ追加する独立した探索モード。既存の通常3D、ISS Mobile、iPad条件、関連サイト、フォームは保護する。新しい情報の出し方は [INFORMATION_DESIGN.md](INFORMATION_DESIGN.md) に記録する。
+## 通常サイトとの境界
 
-## 実装
+`LegacyPageBody.tsx` は基準 main の構成へ戻す。`Habitat.tsx` の変更は `ExplorerEntry` の import と操作群内への追加だけである。旧3Dの画質・対象条件・音響・停止設定、ISS Mobile、iPad、関連ページ、独立サイト、フォームを変更しない。
 
-`ExplorerGate.tsx` が対象PCを確認し、`engine.ts` を遅延読み込みする。ユーザーの2026-09-13の訂正に基づき、表示選択は`3D ON / OFF`だけとし、初期値はON。旧3Dの55fpsを待つ二重判定を撤去した。旧rendererを破棄し、その静止画を介して新rendererへ移る。OFF・描画失敗時は対応するセクションの静止表示へ戻り、別のリアルタイム3Dを再開しない。MobileとiPadの既存条件は維持する。
+入口は既存 `scene-config.ts` の条件とPC入力を参照する。iPadOSのDesktop UAも除外する。親ページには新renderer、モデル、性能測定、先読みを置かない。通常の `<a href="/3d/">` による文書間移動を使い、Nextのprefetchやrendererの並行稼働を避ける。保存済みの旧ON/OFFは新ページの選択として使わない。
 
-起動判定は実描画の約3秒の安定区間で、中央値28fps以上、フレーム間隔p95が55ms以内、取得できるGPU時間p95が40ms以内を基準とする。60fpsは上限目標であり、起動の必須条件ではない。基準未達時は描画画素数と発光処理、影の解像度を段階調整してから再判定する。稼働中も平均27fps未満が2区間続けば同様に軽量化し、最低段階でも維持できない場合はOFFへ戻る。静的な影は部屋・扉・配置が変わった時だけ更新する。
+`src/app/(spatial)/` は専用layoutを持ち、通常サイトのCSS・初期化処理を読み込まない。`ExplorerPage.tsx` が対応条件・停止設定を確認してから `engine.ts` を動的importする。描画失敗時は通常サイト、館内案内の既存リンク、再試行を維持する。ページ離脱でGPU/音声/イベント/取得を破棄し、BFCacheからの再表示では再初期化する。
 
-初期到着・入室時は空間を表示し、読む操作で既存コンポーネントを表示する。HTMLを複製せず、CommunityのdetailsやFounderの写真・リンクを共有する。Blenderの文字とナビゲーションの名称は既存文言を使用する。
+## 操作
 
-全9室をA*で接続し、Blender由来の床メッシュと家具の占有領域で移動を制限する。ポインターのクリック／ドラッグを区別する。行き先のホバー・フォーカスは経路を示し、クリックすると往復可能な移動を開始する。
+- WASD / 矢印キーで歩き、キーを離すと停止。ドラッグの視線を自動補正しない。
+- 床クリックは補助移動。先に見える壁やガラスがあれば奥の床を選択しない。
+- 近くの扉をクリック、またはEで開閉。開いても自動入室しない。閉じた扉と未取得の室内へ進めない。
+- 館内案内からの直接移動だけ、短いフェードを用いる。普段の歩行には演出経路を使わない。
+- Esc、blur、非表示、メニュー表示で移動を停止。入力要素とリンクのキー操作を奪わない。
 
-表示切替はルート専用portalで既存ヘッダーの操作領域に配置し、独立した切替CTAや重複する行き先CTAを追加しない。3D表示中の既存ヘッダーから各部屋へ移動する。共有ヘッダーのソース、室内の最終リンク、外部サイト、修飾キーによる別タブ操作は変更しない。
+## 衝突・移動データ
+
+`build-floor.mjs` は配信用建築GLBの床面から `floor.json` を作る。古い家具の占有セルは流用しない。
+
+`collision.ts` は描画に使う建築、ガラス、家具、展示、扉の実形状に対し、半径0.3mの直立bodyを使う。平面施設に合わせたXZ索引で候補三角形を絞り、最大5cmの移動ごとに衝突補正と壁沿いの移動を行う。薄いガラスも両面で扱う。扉の当たり判定は葉の変換が変わった時だけ更新する。経路用マスクは静的bodyとの衝突で更新するが、実移動でも独立して衝突を確認する。
+
+前版の格子内A*検証だけでは、観測窓の壁抜けを発見できなかった。新しいテストは実配信GLBを読み、格子と独立した形状への衝突、往復・扉・大きな移動量を検証する。
+
+## 情報と描画
+
+Heroは床、家具、行き先と立体文字を同時に見せる。旧家具モデルに混在した別建築の床・天井は、新ページ専用の `top.glb` から除く。v3は上書きしない。
+
+各室では現行本文の抜粋と元のCTAを室内端末に配置する。長文、Community開閉、フォームは通常サイトに保持する。コピーは `exhibit-content.ts` に収め、通常サイトのソースとの照合テストを行う。汎用の「紹介を読む」パネルは撤去する。InteractiveのTVには既存の製品紹介映像のポスターを使い、当該部屋に入るまで取得しない。
+
+描画は直接のMSAAレンダリングとし、全画面の後処理bufferや本文を開く度のcubemap生成を使わない。現在の部屋と近い開口を優先し、離れた室内のGPU資源を解放する。旧モデルの圧縮済み先読みは隣接2室まで。60fps上限、継続的に遅い場合は解像度と影を落とし、維持できなければ3Dを破棄する。音響は明示操作後だけ取得・再生する。
 
 ## 再生成
 
-必要なのはBlender 4.5.11 LTS、FFmpeg、Node.js、作業用の`@gltf-transform` 4.5.0環境。WebのbuildではBlenderを使用しない。4.5.13は当該Windowsで起動できなかったため使用していない。
+制作用: Blender 4.5.11 LTS、既存の `@gltf-transform` 作業用環境。Web buildにBlenderは不要。
 
-作業用の入力・マスター・未最適化素材を`public/`やGitへ置かない。各コマンドのパスは制作用環境に合わせて指定する。WindowsでBlenderに渡すパスは絶対パスにする。
+1. 元施設を必要に応じて `create_facility.py`、`bake_architecture.py`、`prepare-assets.mjs` で生成する。
+2. ベイク済みmasterで `compose_exhibits.py --repo REPO --output RAW --font FONT --master MASTER` を実行する。
+3. `node scripts/explorer/prepare-exhibits.mjs TOOLCHAIN RAW`
+4. `node scripts/explorer/prepare-arrival.mjs TOOLCHAIN`
+5. `node scripts/explorer/build-floor.mjs`
+6. 開発サーバー上の初期Canvasを `node scripts/explorer/inspect-browser.mjs` で記録する。
+7. `node scripts/explorer/prepare-poster.mjs` で同じ構図の軽量WebPを生成する。
+8. `node scripts/explorer/report-assets.mjs`
 
-1. `unpack-assets.mjs`で変更していないv3素材を制作用に展開する。
-2. `create_facility.py`に`--source --output --master --materials --font`を渡し、施設、家具、移動範囲を生成する。
-3. 生成マスターを開いて`bake_architecture.py --output RAW --resolution 2048 --samples 32`を実行する。間接光と接地影を別UVへベイクする。
-4. `node scripts/explorer/prepare-assets.mjs TOOLCHAIN RAW`で共通建築・部屋・案内を最適化する。
-5. ベイク済みマスターを開いて`compose_exhibits.py --repo REPO --output RAW --font FONT --master EDITABLE_MASTER`を実行する。立体文字・構造補修・InteractiveのTVを別モデルへ書き出す。
-6. `node scripts/explorer/prepare-exhibits.mjs TOOLCHAIN RAW`で展示を最適化する。この段階で最新のカメラ構図・展示マニフェストを確定する。
-7. `prepare-photography.mjs SOURCE_PHOTO`、`prepare-film.mjs FFMPEG SOURCE_CLIP`、`prepare-audio.mjs FFMPEG SOURCE_AUDIO_DIRECTORY`で配信用メディアを生成する。
+`prepare-arrival.mjs` は旧室名文字の座標変換も一度だけ補正する。制作masterと未最適化ファイルはpublic/Gitへ入れない。配信素材は `/habitat/explorer/v1/`、音響は `/media/explorer/audio/`。NASA・CC0・OFLの出典は目立つCTAにせず館内案内から参照する。
 
-`public/habitat/explorer/v1/` と `public/media/explorer/audio/`だけが新規の配信素材。NASA・CC0・OFLの出典は配信側`credits.txt`に記載する。既存`/habitat/v3/`は上書きしない。
+## 検証と公開
 
-## 検証と公開境界
-
-- `npx vitest run tests/explorer-navigation.test.ts`
+- `npx vitest run tests/explorer-navigation.test.ts tests/explorer-collision.test.ts tests/explorer-content.test.tsx`
 - `npx playwright test tests/responsive/explorer.spec.ts`
-- 広範囲の親ページ変更として`npm run check`とWindowsのresponsive gate
+- 通常の `npm run check` と変更境界のresponsive確認
 
-専用テストの決定的な描画時間は機能・画像比較用であり、実機fpsを証明しない。実機性能は通常の時計で別に測る。`inspect-browser.mjs --deterministic`も同じ制限がある。
+機能テスト、ソフトウェアGPU、エミュレーションの結果を実機認定としない。実行結果と未確認事項は [VERIFICATION.md](VERIFICATION.md) に記録する。
 
-確認スクリプトの配信先は`EXPLORER_BASE_URL`で指定できる。未指定時はローカル開発用の`http://127.0.0.1:8813/`を使用する。
-
-`NEXT_PUBLIC_COMPASS_EXPLORER=off`で新しいPC表示全体を無効化できる。保存するのは`compass-3d-mode`のON/OFF、部屋・カメラ、停止状態のみで、フォームや解析へ項目を追加しない。旧3択の「通常表示」は旧リアルタイム3Dを意味していたため、OFFとは見なさず、新規ON/OFF設定だけを引き継ぐ。
-
-このモードはPR・Cloudflare Previewで確認する。Production公開はこのPreviewへの明示承認後に行う。機能テスト合格を実写級品質や高性能PCの実機合格と扱わない。
+PR #125 とCloudflare Previewで提供する。Production公開は新Previewの明示承認後。`NEXT_PUBLIC_COMPASS_EXPLORER=off` で入口と新ページの起動を停止でき、通常サイトは維持される。

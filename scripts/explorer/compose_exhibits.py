@@ -46,11 +46,15 @@ source=(repo/'src/components/Hero/NewHero.tsx').read_text(encoding='utf8')
 headline=re.search(r'<h1\b[^>]*>([\s\S]*?)</h1>',source).group(1)
 words=re.sub(r'\s+',' ',re.sub(r'<[^>]+>',' ',headline)).strip()
 first,second=words.split(' Build ',1)
-for phrase,y,width,height in [(first,4.65,5.6,.58),('Build '+second,3.48,6.6,.72)]:
-    obj=text(phrase,[-5,y,-14],width,height,.035);obj['explorer_hero_type']=True
+for phrase,y,width,height in [(first,4.65,10.5,1.1),('Build '+second,3.35,12,1.4)]:
+    obj=text(phrase,[-1,y,-4.2],width,height,.045);obj['explorer_hero_type']=True
 # A slim visible anchor ties the letter installation to the observation window.
-box('letter installation structural rail',[-5,2.9,-14.06],[6.8,.022,.025],metal)
-for x in [-8.3,-1.7]:box('letter installation cable',[x,4.65,-14.06],[.008,3.5,.008],metal)
+box('letter installation structural rail',[-1,2.65,-4.27],[12,.035,.045],metal)
+for x in [-6.9,4.9]:box('letter installation suspension',[x,4.95,-4.29],[.016,4.5,.018],metal)
+# Grounded wayfinding, visible without starting an automatic tour.
+box('atrium wayfinding plinth',[6,1.05,-2.5],[2.8,2.1,.16],graphite)
+for name,y in [('Interactive',1.68),('Library',1.15),('Contact',.62)]:
+    obj=text(name,[6,y,-2.4],2.4,.26,.006)
 
 # Structural edge and balustrade resolve the unsupported, black floor cut-outs.
 for radius in [13.9,25.45,30.55]:
@@ -75,8 +79,21 @@ box('Interactive television foot',[0,.035,-8],[1.6,.07,.55],graphite)
 for obj in set(coll.objects)-before:
     x,y,z=obj.location;local=Vector((x,z,-y));a=room['yaw'];origin=room['origin']
     pos=(origin[0]+local.x*math.cos(a)+local.z*math.sin(a),local.y,origin[2]-local.x*math.sin(a)+local.z*math.cos(a))
-    obj.location=(pos[0],-pos[2],pos[1]);obj.rotation_euler.z-=a
+    obj.location=(pos[0],-pos[2],pos[1]);obj.rotation_euler.z+=a
     obj['explorer_exhibit_room']='technology'
+
+# Room-owned reading terminals with a real chassis, thickness and floor support.
+# HTML labels use the same local transform in engine.ts; full articles stay on /.
+for room in manifest['rooms'][1:]:
+    before=set(coll.objects)
+    box('room information terminal',[4.8,2.05,-1.065],[3.34,3.65,.12],graphite)
+    box('room terminal support',[4.8,.22,-1.09],[.12,.44,.15],metal)
+    box('room terminal foot',[4.8,.035,-1],[1.7,.07,.75],metal)
+    for obj in set(coll.objects)-before:
+        x,y,z=obj.location;local=Vector((x,z,-y));a=room['yaw'];origin=room['origin']
+        pos=(origin[0]+local.x*math.cos(a)+local.z*math.sin(a),local.y,origin[2]-local.x*math.sin(a)+local.z*math.cos(a))
+        obj.location=(pos[0],-pos[2],pos[1]);obj.rotation_euler.z+=a
+        obj['explorer_exhibit_room']=room['id']
 
 # Merge only fixtures sharing a material, keeping the Hero installation separate.
 for material in [graphite,metal,stone]:
@@ -89,9 +106,12 @@ bpy.ops.object.select_all(action='DESELECT')
 for obj in coll.objects:obj.select_set(True)
 bpy.ops.export_scene.gltf(filepath=str(out/'exhibits.glb'),use_selection=True,export_format='GLB',export_extras=True,export_animations=False)
 manifest['exhibits']='exhibits.glb';manifest.pop('environment',None)
-hero=manifest['rooms'][0];hero['reading']=[-5,1.65,-8];hero['panel']=[-5,3.85,-14]
+hero=manifest['rooms'][0];hero['reading']=[-5,1.65,6];hero['panel']=[4,1.85,-5]
+for room in manifest['rooms'][1:]:
+    a=room['yaw'];origin=room['origin'];room['panel']=[origin[0]+4.8*math.cos(a)-math.sin(a),2.05,origin[2]-4.8*math.sin(a)-math.cos(a)]
 (repo/'public/habitat/explorer/v1/manifest.json').write_text(json.dumps(manifest,ensure_ascii=False,indent=2)+'\n',encoding='utf8')
 camera=bpy.data.objects.get('Reading_top')
 if camera:
-    camera.location=(-5,8,1.65);target=Vector((-5,14,3.85));camera.rotation_euler=(target-camera.location).to_track_quat('-Z','Y').to_euler()
+    camera.location=(-5,-6,1.65);target=Vector((4,5,1.85));camera.rotation_euler=(target-camera.location).to_track_quat('-Z','Y').to_euler()
+bpy.ops.file.pack_all()
 bpy.ops.wm.save_as_mainfile(filepath=o.master)

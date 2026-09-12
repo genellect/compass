@@ -8,7 +8,7 @@ export async function addExterior(scene:THREE.Scene,bytes:(url:string)=>Promise<
   let texture:THREE.Texture|null=null,bitmap:ImageBitmap|null=null;
   const geometry=new THREE.CylinderGeometry(2200,2200,2304,128,1,true);
   const material=new THREE.MeshBasicMaterial({side:THREE.BackSide,fog:false,toneMapped:false});
-  const sky=new THREE.Mesh(geometry,material);sky.position.y=650;sky.rotation.y=.45;scene.add(sky);
+  const sky=new THREE.Mesh(geometry,material);sky.position.y=1070;sky.rotation.y=.45;scene.add(sky);
   const dispose=()=>{scene.remove(sky);geometry.dispose();material.dispose();texture?.dispose();bitmap?.close();};
   try{
     const data=await bytes('/habitat/explorer/v1/iss-horizon.webp');

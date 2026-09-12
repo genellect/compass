@@ -2,13 +2,10 @@ import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { MeshoptDecoder } from 'three/addons/libs/meshopt_decoder.module.js';
 import { HDRLoader } from 'three/addons/loaders/HDRLoader.js';
-import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
-import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
-import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
-import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
 import type { SectionId } from '../Habitat/scene-config';
 import type { ExplorerController, ExplorerHooks, ExplorerPhase, ExplorerSnapshot, NavMesh, Point, Room, SpatialManifest } from './contracts';
 import { Navigation } from './navigation';
+import { CollisionWorld } from './collision';
 import { FrameWindow, GPUTimer, passesEntry } from './performance';
 import { projectHTML } from './projection';
 import { addExterior } from './exterior';
@@ -21,13 +18,16 @@ const wrap=(a:number)=>Math.atan2(Math.sin(a),Math.cos(a));
 
 export function createExplorer(root: HTMLElement, host: HTMLElement, markers: HTMLElement, hooks: ExplorerHooks): ExplorerController {
   let disposed=false, accepted=false, paused=false, failed=false, frame=0, last=0, token=0;
-  let manifest:SpatialManifest, navigation:Navigation, current:Room, targetRoom:Room|null=null;
+  let manifest:SpatialManifest, floorMesh:NavMesh, navigation:Navigation, current:Room, targetRoom:Room|null=null;
   let phase:ExplorerPhase='preparing', reading=false, path:Point[]=[], autoRead=false, yaw=0, pitch=0;
-  let lastDrag=0, loadingUntil=0, sampleAt=0, slowWindows=0, stepping=false;
+  let loadingUntil=0, sampleAt=0, slowWindows=0, stepping=false;
   let finishProbe:((value:boolean)=>void)|null=null,dirty=true,soundVolume=.65;
   let viewportWidth=innerWidth, viewportHeight=innerHeight, sourceOpacity=host.style.opacity;
-  let readingReturn:ExplorerSnapshot|null=null;
+
   let qualityStep=0;
+  const solids=new CollisionWorld(), movingDoors=new CollisionWorld(), keys=new Set<string>();
+  const doorRequests=new Set<SectionId>();
+  let metricsAt=0, lightAt=0;
   const aborters=new Set<AbortController>(), listeners:(()=>void)[]=[], templates=new Map<string,THREE.Group>();
   const ownedModels=new Set<THREE.Group>();
   const models=new Map<SectionId,THREE.Group>(), loads=new Map<SectionId,Promise<void>>(), shells:THREE.Group[]=[];
@@ -35,21 +35,14 @@ export function createExplorer(root: HTMLElement, host: HTMLElement, markers: HT
   const probes=new Map<SectionId,THREE.WebGLRenderTarget>();
   const buttons=new Map<SectionId,HTMLButtonElement>(), doors:{room:Room;group:THREE.Group;leaves:{object:THREE.Object3D;x:number;side:number}[];open:number}[]=[];
   const scene=new THREE.Scene();scene.background=new THREE.Color('#16232b');scene.fog=new THREE.FogExp2('#16232b',.0008);
-  const camera=new THREE.PerspectiveCamera(52,viewportWidth/viewportHeight,.08,6000);
-  const renderer=new THREE.WebGLRenderer({antialias:false,alpha:false,powerPreference:'high-performance'});
+  const camera=new THREE.PerspectiveCamera(58,viewportWidth/viewportHeight,.08,6000);
+  const renderer=new THREE.WebGLRenderer({antialias:true,alpha:false,powerPreference:'high-performance'});
   renderer.outputColorSpace=THREE.SRGBColorSpace;renderer.toneMapping=THREE.AgXToneMapping;renderer.toneMappingExposure=1.1;
   renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFShadowMap;
   // Architecture and lighting are static between room/door changes.
   renderer.shadowMap.autoUpdate=false;renderer.shadowMap.needsUpdate=true;
   renderer.info.autoReset=false;
   renderer.domElement.setAttribute('aria-hidden','true');host.append(renderer.domElement);
-  const composer=new EffectComposer(renderer);
-  const renderPass=new RenderPass(scene,camera);composer.addPass(renderPass);
-  const bloom=new UnrealBloomPass(new THREE.Vector2(viewportWidth/2,viewportHeight/2),.13,.35,1.3);composer.addPass(bloom);
-  const output=new OutputPass();composer.addPass(output);
-  // Composer swaps the scene target each frame; both buffers need depth.
-  composer.renderTarget1.samples=Math.min(2,renderer.capabilities.maxSamples);
-  composer.renderTarget2.samples=composer.renderTarget1.samples;
   const timer=new GPUTimer(renderer.getContext() as WebGL2RenderingContext), samples=new FrameWindow();
   const loader=new GLTFLoader();loader.setMeshoptDecoder(MeshoptDecoder);
   const sun=new THREE.DirectionalLight('#fff1dd',2.4);sun.position.set(-45,72,32);sun.castShadow=true;
@@ -146,27 +139,32 @@ export function createExplorer(root: HTMLElement, host: HTMLElement, markers: HT
     if(models.has(room.id))return;
     const existing=loads.get(room.id);if(existing)return existing;
     const promise=model(room.model,false,roomBytes.get(room.id)).then(group=>{
-      if(disposed||accepted&&room.id!==current.id&&room.id!==targetRoom?.id){disposeGroup(group);return;}
-      group.position.fromArray(room.origin);group.rotation.y=room.yaw;scene.add(group);models.set(room.id,group);
+      if(disposed){disposeGroup(group);return;}
+      group.position.fromArray(room.origin);group.rotation.y=room.yaw;scene.add(group);models.set(room.id,group);solids.add(group);
       renderer.shadowMap.needsUpdate=true;
       if(room.id==='top')group.traverse(object=>{if(/^(Float_Core|Spin_Orbit)/.test(object.name))object.visible=false;});
-      if(accepted)resize();
+      if(accepted){refreshNavigation();resize();}
       loadingUntil=performance.now()+2000;
     }).finally(()=>loads.delete(room.id));
     loads.set(room.id,promise);return promise;
   }
   function releaseDistant() {
     if(!current)return;
+    let changed=false;
     for(const [id,group] of models) {
-      if(id===current.id||id===targetRoom?.id||id==='top'&&Math.hypot(camera.position.x,camera.position.z)<34)continue;
-      scene.remove(group);disposeGroup(group);models.delete(id);
+      const entrance=doors.find(door=>door.room.id===id);
+      if(id===current.id||id===targetRoom?.id||entrance&&camera.position.distanceTo(new THREE.Vector3().fromArray(entrance.room.door))<8||id==='top'&&Math.hypot(camera.position.x,camera.position.z)<34)continue;
+      changed=true;scene.remove(group);solids.remove(group);disposeGroup(group);models.delete(id);doorRequests.delete(id);
       renderer.shadowMap.needsUpdate=true;
       probes.get(id)?.dispose();probes.delete(id);
     }
-    resize();
+    if(changed){refreshNavigation();resize();}
     // Neighbours are compressed CPU buffers, not decoded GPU textures. Upload
     // only the destination before its door opens; no empty room is exposed.
     void prefetchNeighbours(current.id);
+  }
+  function refreshNavigation(){
+    navigation=new Navigation({...floorMesh,cells:floorMesh.cells.filter(([x,z])=>!solids.blocked(new THREE.Vector3(x*floorMesh.cellSize,1.65,z*floorMesh.cellSize)))});
   }
   async function prefetchNeighbours(id:SectionId) {
     const origin=manifest.rooms.find(room=>room.id===id);
@@ -182,23 +180,22 @@ export function createExplorer(root: HTMLElement, host: HTMLElement, markers: HT
     const keep=new Set([id,...origin.neighbours.slice(0,2)]);
     for(const cached of roomBytes.keys())if(!keep.has(cached))roomBytes.delete(cached);
   }
-  function reflectRoom(){
-    const group=models.get(current.id);if(!group)return;
-    let target=probes.get(current.id);
-    if(!target){
-      const cube=new THREE.WebGLCubeRenderTarget(128,{type:THREE.HalfFloatType,generateMipmaps:true,minFilter:THREE.LinearMipmapLinearFilter});
-      const eye=new THREE.CubeCamera(.2,1500,cube);eye.position.set(current.origin[0],2.4,current.origin[2]);
-      eye.update(renderer,scene);
-      const generator=new THREE.PMREMGenerator(renderer);target=generator.fromCubemap(cube.texture);generator.dispose();cube.dispose();probes.set(current.id,target);
-      loadingUntil=performance.now()+2000;
-    }
-    group.traverse(object=>{if(object instanceof THREE.Mesh)for(const mat of Array.isArray(object.material)?object.material:[object.material]){
-      if(mat instanceof THREE.MeshStandardMaterial){mat.envMap=target!.texture;mat.envMapIntensity=.7;mat.needsUpdate=true;}
-    }});
-  }
   function place(room:Room) {
     current=room;dirty=true;
-    const available=navigation.nearest([room.reading[0],room.reading[2]],4);
+    let available=navigation.nearest([room.reading[0],room.reading[2]],4);
+    if(room.id!=='top'){
+      const panel=new THREE.Vector3().fromArray(room.panel),normal=new THREE.Vector3(Math.sin(room.yaw),0,Math.cos(room.yaw));
+      let best=Infinity;
+      for(let x=-8;x<=8;x++)for(let z=-8;z<=8;z++){
+        const point=new THREE.Vector3(room.reading[0]+x*.5,1.65,room.reading[2]+z*.5);
+        const gap=point.distanceTo(panel),facing=point.clone().sub(panel).dot(normal);
+        if(gap<4||gap>9||facing/gap<.85||!navigation.contains([point.x,point.z])||solids.blocked(point))continue;
+        raycaster.set(point,panel.clone().sub(point).normalize());const hit=firstSolidHit();
+        if(hit&&hit.distance<gap-.2)continue;
+        const score=Math.hypot(x,z)*.25+Math.abs(gap-7)*2;
+        if(score<best){best=score;available=[point.x,point.z];}
+      }
+    }
     if(!available)throw new Error('Reading position is not navigable');
     camera.position.set(available[0],1.65,available[1]);velocity.set(0,0,0);
     facePanel(true);positionLighting();
@@ -217,15 +214,8 @@ export function createExplorer(root: HTMLElement, host: HTMLElement, markers: HT
     fill.position.set(current.origin[0],4.4,current.origin[2]);
     renderer.shadowMap.needsUpdate=true;
   }
-  function showPanel(value:boolean) {
-    reading=value;dirty=true;root.dataset.explorerReading=String(value);
-    preview(null);
-    for(const room of manifest.rooms){const element=root.querySelector<HTMLElement>('#'+room.id);if(!element)continue;
-      if(value&&room.id===current.id)element.setAttribute('data-explorer-panel','');
-      else{element.removeAttribute('data-explorer-panel');element.style.removeProperty('transform');element.style.removeProperty('visibility');}
-    }
-    if(value){path=[];velocity.set(0,0,0);facePanel(true);reflectRoom();publish('reading');}
-    else publish(paused?'paused':'idle');
+  function showPanel(_value:boolean) {
+    reading=false;dirty=true;publish(paused?'paused':'idle');
   }
   function roomAt(point:THREE.Vector3) {
     for(const room of manifest.rooms.slice(1)){
@@ -234,50 +224,37 @@ export function createExplorer(root: HTMLElement, host: HTMLElement, markers: HT
     }
     return Math.hypot(point.x,point.z)<14?manifest.rooms[0]:null;
   }
-  async function goTo(id:SectionId,instant=false,read=false) {
+  async function goTo(id:SectionId) {
     if(disposed||!accepted)return;
     const room=manifest.rooms.find(item=>item.id===id);if(!room)return;
-    if(id!==current.id)readingReturn=null;
-    const request=++token;targetRoom=room;autoRead=read;showPanel(false);publish('entering');
+    stop();const request=++token;targetRoom=room;publish('entering');
     try {
-      await ensureRoom(room);
+      await ensureRoom(room);if(disposed||request!==token)return;
+      host.style.transition='opacity 140ms ease';host.style.opacity='0';
+      await new Promise(resolve=>setTimeout(resolve,140));
       if(disposed||request!==token)return;
-      if(instant||paused){place(room);path=[];targetRoom=null;showPanel(read);releaseDistant();return;}
-      const destination=navigation.nearest([room.reading[0],room.reading[2]],4);
-      if(destination&&Math.hypot(destination[0]-camera.position.x,destination[1]-camera.position.z)<.25){
-        place(room);path=[];targetRoom=null;showPanel(read);releaseDistant();return;
-      }
-      const route=destination&&navigation.path([camera.position.x,camera.position.z],destination);
-      if(!route){targetRoom=null;publish('idle');return;}
-      path=route;stepping=route.length>0;lastDrag=0;publish('walking');
+      place(room);targetRoom=null;showPanel(false);releaseDistant();
     }catch{if(!disposed&&request===token)fatal('asset');}
+    finally{if(!disposed)host.style.opacity='1';}
   }
-  function read() { if(current){if(!reading)readingReturn=snapshot();void goTo(current.id,false,true);} }
-  function stop() {token++;path=[];targetRoom=null;velocity.set(0,0,0);stepping=false;sound?.movement(0);publish(reading?'reading':paused?'paused':'idle');if(accepted&&!disposed)releaseDistant();}
-  function close() {
-    showPanel(false);
-    if(readingReturn?.room===current.id){camera.position.fromArray(readingReturn.position);yaw=readingReturn.yaw;pitch=readingReturn.pitch;positionLighting();}
-    readingReturn=null;
-    requestAnimationFrame(()=>{if(!disposed)root.querySelector<HTMLElement>('[data-explorer-read]')?.focus({preventScroll:true});});
-  }
-  function skip() {if(targetRoom)void goTo(targetRoom.id,true,autoRead);else if(path.length){const point=path.at(-1)!;camera.position.set(point[0],1.65,point[1]);stop();}}
+  function stop() {keys.clear();token++;path=[];targetRoom=null;velocity.set(0,0,0);stepping=false;sound?.movement(0);publish(paused?'paused':'idle');if(accepted&&!disposed)releaseDistant();}
   function setPaused(value:boolean) {paused=value;dirty=true;root.dataset.explorerPaused=String(value);samples.reset();sampleAt=0;slowWindows=0;last=0;if(value)stop();else publish(reading?'reading':'idle');}
   function resize() {
     dirty=true;
     viewportWidth=innerWidth;viewportHeight=innerHeight;
     camera.aspect=viewportWidth/viewportHeight;camera.updateProjectionMatrix();
     const resident=estimateResidentBytes();
-    const pixels=Math.min([2.8e6,1.65e6,.95e6][qualityStep],Math.max(600000,(512*1024*1024-resident-64*1024*1024)/90));
+    const pixels=Math.min([3.6e6,2e6,1e6][qualityStep],Math.max(600000,(512*1024*1024-resident-64*1024*1024)/24));
     const dpr=Math.min(devicePixelRatio||1,2,Math.sqrt(pixels/(viewportWidth*viewportHeight)));
-    renderer.setPixelRatio(dpr);renderer.setSize(viewportWidth,viewportHeight,false);composer.setPixelRatio(dpr);composer.setSize(viewportWidth,viewportHeight);
-    host.dataset.gpuEstimatedMiB=((resident+64*1024*1024+viewportWidth*viewportHeight*dpr*dpr*90)/1024/1024).toFixed(1);
+    renderer.setPixelRatio(dpr);renderer.setSize(viewportWidth,viewportHeight,false);
+    host.dataset.gpuEstimatedMiB=((resident+64*1024*1024+viewportWidth*viewportHeight*dpr*dpr*24)/1024/1024).toFixed(1);
     host.dataset.quality=['full','balanced','light'][qualityStep];
     host.dataset.renderPixels=String(Math.round(viewportWidth*viewportHeight*dpr*dpr));
     loadingUntil=performance.now()+1500;samples.reset();sampleAt=0;
   }
   function reduceLoad(){
     if(qualityStep>=2)return false;
-    qualityStep++;bloom.enabled=false;
+    qualityStep++;
     if(qualityStep===2){
       sun.shadow.mapSize.set(1024,1024);sun.shadow.map?.dispose();sun.shadow.map=null;
       renderer.shadowMap.needsUpdate=true;
@@ -300,10 +277,28 @@ export function createExplorer(root: HTMLElement, host: HTMLElement, markers: HT
     host.dataset.geometryMiB=(bytes/1024/1024).toFixed(1);host.dataset.textureMiB=(textureBytes/1024/1024).toFixed(1);
     return bytes+textureBytes;
   }
-  const pointAt=(event:PointerEvent)=>{pointer.set(event.clientX/viewportWidth*2-1,1-event.clientY/viewportHeight*2);raycaster.setFromCamera(pointer,camera);return raycaster.ray.intersectPlane(ground,scratch);};
+  function cast(event:PointerEvent) { pointer.set(event.clientX/viewportWidth*2-1,1-event.clientY/viewportHeight*2);raycaster.setFromCamera(pointer,camera); }
+  function firstSolidHit() {
+    return raycaster.intersectObjects([templates.get('architecture')!,templates.get('exhibits')!,...shells,...models.values()].filter(Boolean),true)[0];
+  }
+  const pointAt=(event:PointerEvent)=>{
+    cast(event);const point=raycaster.ray.intersectPlane(ground,new THREE.Vector3());if(!point)return null;
+    const hit=firstSolidHit();
+    // Transparency is optical, never permission to click through glass.
+    if(hit&&hit.distance<camera.position.distanceTo(point)-.08)return null;
+    return point;
+  };
+  async function toggleDoor(door:typeof doors[number]) {
+    if(camera.position.distanceTo(new THREE.Vector3().fromArray(door.room.door))>5.5)return;
+    stop();
+    if(doorRequests.has(door.room.id)){doorRequests.delete(door.room.id);return;}
+    doorRequests.add(door.room.id);publish('entering');
+    try{await ensureRoom(door.room);if(!disposed){publish('idle');dirty=true;}}
+    catch{if(!disposed)fatal('asset');}
+  }
   let down:{x:number;y:number;yaw:number;pitch:number;pointer:number;drag:boolean}|null=null;
   function onDown(event:PointerEvent) {
-    if(event.button!==0||!accepted)return;
+    if(event.button!==0||!accepted||paused||root.dataset.explorerModal==='true')return;
     down={x:event.clientX,y:event.clientY,yaw,pitch,pointer:event.pointerId,drag:false};
     renderer.domElement.setPointerCapture(event.pointerId);
   }
@@ -315,7 +310,7 @@ export function createExplorer(root: HTMLElement, host: HTMLElement, markers: HT
       if(Math.hypot(dx,dy)>6)down.drag=true;
       if(down.drag&&!paused){
         if(reading)showPanel(false);
-        yaw=down.yaw-dx*.0035;pitch=THREE.MathUtils.clamp(down.pitch-dy*.003,-.65,.65);lastDrag=performance.now();cursor.visible=false;
+        yaw=down.yaw-dx*.0035;pitch=THREE.MathUtils.clamp(down.pitch-dy*.003,-.65,.65);cursor.visible=false;
       }
       return;
     }
@@ -328,22 +323,9 @@ export function createExplorer(root: HTMLElement, host: HTMLElement, markers: HT
     const dragged=down.drag;down=null;
     if(renderer.domElement.hasPointerCapture(event.pointerId))renderer.domElement.releasePointerCapture(event.pointerId);
     if(dragged)return;
-    // Pick the physical doorway as well as its HTML sign. Test door hits before
-    // the floor ray so a click on glazing never walks to a point behind a wall.
-    pointer.set(event.clientX/viewportWidth*2-1,1-event.clientY/viewportHeight*2);raycaster.setFromCamera(pointer,camera);
-    const doorHits=raycaster.intersectObjects(doors.flatMap(door=>door.leaves.map(leaf=>leaf.object)),true);
-    const firstDoor=doorHits[0];
-    if(film?.screen.visible){
-      const hit=raycaster.intersectObject(film.screen)[0];
-      if(hit&&hit.distance<20){
-        const obstruction=raycaster.intersectObjects(scene.children,true).find(item=>item.object!==cursor&&item.object!==routePreview&&!(item.object instanceof THREE.Mesh&&Array.isArray(item.object.material)===false&&item.object.material.transparent));
-        if(!obstruction||obstruction.distance>=hit.distance-.05){read();return;}
-      }
-    }
-    if(firstDoor&&firstDoor.distance<25){
-      const door=doors.find(item=>item.leaves.some(leaf=>leaf.object===firstDoor.object||leaf.object.children.includes(firstDoor.object)));
-      if(door&&navigation.clearLine([camera.position.x,camera.position.z],[door.room.door[0],door.room.door[2]])){void goTo(door.room.id);return;}
-    }
+    cast(event);const hit=firstSolidHit();
+    if(hit){const door=doors.find(item=>item.leaves.some(leaf=>leaf.object===hit.object||leaf.object.children.includes(hit.object)));
+      if(door){void toggleDoor(door);return;}}
     const point=pointAt(event);if(!point||!navigation.contains([point.x,point.z]))return;
     const destination:Point=[point.x,point.z],room=roomAt(point);
     const request=++token;
@@ -352,90 +334,99 @@ export function createExplorer(root: HTMLElement, host: HTMLElement, markers: HT
       if(disposed||request!==token)return;
       const route=navigation.path([camera.position.x,camera.position.z],destination);if(!route)return;
       showPanel(false);targetRoom=room;autoRead=false;
-      if(paused){camera.position.set(destination[0],1.65,destination[1]);if(room)current=room;path=[];publish('paused');hooks.visit(current.id);return;}
+      if(paused)return;
       path=route;stepping=route.length>0;publish('walking');sound?.cue('select');
     };
     if(room&&!models.has(room.id))void ensureRoom(room).then(move).catch(()=>{if(request===token)fatal('asset');});else move();
   }
   function step(dt:number,time:number) {
     if(paused)return;
-    let waiting=false;
-    for(const door of doors) {
+    const modal=root.dataset.explorerModal==='true';
+    if(modal){keys.clear();path=[];velocity.set(0,0,0);}
+    for(const door of doors){
       const gap=camera.position.distanceTo(scratch.fromArray(door.room.door));
-      const wanted=models.has(door.room.id)&&(gap<4.3||targetRoom?.id===door.room.id&&gap<7);
+      // An occupied threshold stays open so closing cannot trap or crush the body.
+      const wanted=models.has(door.room.id)&&(doorRequests.has(door.room.id)||gap<1.5&&door.open>.8);
       const old=door.open;door.open=THREE.MathUtils.damp(door.open,wanted?1:0,4,dt);
-      if(Math.abs(old-door.open)>.001)renderer.shadowMap.needsUpdate=true;
-      for(const leaf of door.leaves)leaf.object.position.x=leaf.x+leaf.side*1.43*door.open;
+      if(Math.abs(old-door.open)>.001){
+        renderer.shadowMap.needsUpdate=true;
+        for(const leaf of door.leaves){leaf.object.position.x=leaf.x+leaf.side*1.43*door.open;movingDoors.updateDoor(leaf.object);}
+        dirty=true;
+      }
       if(old<.05&&door.open>=.05)sound?.cue('door',door.room.door);
-      if(gap<2.2&&door.open<.8)waiting=true;
     }
+    const manual=keys.size>0&&!modal;
+    const previous=camera.position.clone();
+    if(manual){
+      path=[];targetRoom=null;
+      const right=Number(keys.has('KeyD')||keys.has('ArrowRight'))-Number(keys.has('KeyA')||keys.has('ArrowLeft'));
+      const ahead=Number(keys.has('KeyW')||keys.has('ArrowUp'))-Number(keys.has('KeyS')||keys.has('ArrowDown'));
+      desired.set(right*Math.cos(yaw)-ahead*Math.sin(yaw),0,-right*Math.sin(yaw)-ahead*Math.cos(yaw));
+      if(desired.lengthSq()>0)desired.normalize();
+      velocity.lerp(desired.multiplyScalar(2.4),1-Math.exp(-dt*12));
+    }else if(path.length&&!modal){
+      let destination=path[0];let gap=Math.hypot(destination[0]-camera.position.x,destination[1]-camera.position.z);
+      if(gap<.15){path.shift();destination=path[0];if(destination)gap=Math.hypot(destination[0]-camera.position.x,destination[1]-camera.position.z);}
+      if(destination){desired.set(destination[0]-camera.position.x,0,destination[1]-camera.position.z).normalize();velocity.lerp(desired.multiplyScalar(Math.min(2.2,path.length===1?gap*3:2.2)),1-Math.exp(-dt*10));}
+      else velocity.set(0,0,0);
+    }else velocity.set(0,0,0);
+    if(velocity.lengthSq()>.00001){
+      // The geometric body is authoritative; A* only proposes destinations.
+      const displacement=velocity.clone().multiplyScalar(dt);
+      const floor=(x:number,z:number)=>navigation.contains([x,z]);
+      solids.move(camera.position,displacement,(x,z)=>floor(x,z)&&!movingDoors.blocked(new THREE.Vector3(x,1.65,z)));
+      if(!manual&&path.length&&camera.position.distanceToSquared(previous)<.000001){path=[];targetRoom=null;velocity.set(0,0,0);}
+    }
+    const moving=camera.position.distanceToSquared(previous)>.000001;
+    if(moving){
+      dirty=true;
+      const occupied=roomAt(camera.position);
+      if(occupied&&occupied.id!==current.id){current=occupied;positionLighting();hooks.visit(current.id);void prefetchNeighbours(current.id);}
+      if(time-lightAt>1000&&camera.position.distanceTo(sun.target.position)>7){positionLighting();lightAt=time;}
+    }
+    if(phase!=='entering'&&(moving?'walking':'idle')!==phase)publish(moving?'walking':'idle');
+    stepping=moving;
     for(const [id,group] of models){
       const door=doors.find(item=>item.room.id===id);
       const visible=id===current.id||id==='top'&&Math.hypot(camera.position.x,camera.position.z)<34||Boolean(door&&door.open>.01);
-      if(group.visible!==visible)renderer.shadowMap.needsUpdate=true;
-      group.visible=visible;
+      if(group.visible!==visible)renderer.shadowMap.needsUpdate=true;group.visible=visible;
     }
-    const exhibits=templates.get('exhibits');
-    exhibits?.traverse(object=>{
-      if(object.userData.explorer_hero_type)object.visible=current.id==='top'&&!reading;
-      if(object.userData.explorer_exhibit_room)object.visible=object.userData.explorer_exhibit_room===current.id;
-    });
-    if(previewRoom)routePreview.material.opacity=.6+.2*Math.sin(time*.002);
-    if(path.length&&!waiting){
-      let destination=path[0];let gap=Math.hypot(destination[0]-camera.position.x,destination[1]-camera.position.z);
-      if(gap<.2){path.shift();destination=path[0];if(destination)gap=Math.hypot(destination[0]-camera.position.x,destination[1]-camera.position.z);}
-      if(destination){
-        desired.set(destination[0]-camera.position.x,0,destination[1]-camera.position.z).normalize();
-        const inEntrance=autoRead&&targetRoom?.id===current.id;
-        const maximumSpeed=inEntrance?5.5:2.2;
-        const speed=Math.min(maximumSpeed,path.length===1?gap*3:maximumSpeed);
-        velocity.lerp(desired.clone().multiplyScalar(speed),1-Math.exp(-dt*7));
-        const next:Point=[camera.position.x+velocity.x*dt,camera.position.z+velocity.z*dt];
-        if(navigation.clearLine([camera.position.x,camera.position.z],next)){camera.position.x=next[0];camera.position.z=next[1];}
-        else{
-          velocity.copy(desired).multiplyScalar(Math.min(speed,.6));
-          const corrected:Point=[camera.position.x+velocity.x*dt,camera.position.z+velocity.z*dt];
-          if(navigation.clearLine([camera.position.x,camera.position.z],corrected))camera.position.addScaledVector(velocity,dt);
-          else velocity.set(0,0,0);
-        }
-        if(time-lastDrag>2500){
-          if(inEntrance)facePanel();
-          else {const heading=Math.atan2(-desired.x,-desired.z);yaw+=wrap(heading-yaw)*(1-Math.exp(-dt*1.7));pitch*=Math.exp(-dt*1.5);}
-        }
-        stepping=true;
-      }
-      const occupied=roomAt(camera.position);
-      if(occupied&&occupied.id!==current.id){current=occupied;publish(autoRead&&targetRoom?.id===occupied.id?'entering':'walking');positionLighting();}
-    }
-    if(!path.length&&stepping){
-      stepping=false;velocity.set(0,0,0);
-      if(targetRoom){current=targetRoom;targetRoom=null;positionLighting();}
-      showPanel(autoRead);autoRead=false;releaseDistant();
-      hooks.visit(current.id);
-    }
-    sound?.movement(stepping?velocity.length()/2.2:0);
-    if(reading)facePanel();
+    if(time-metricsAt>1500){releaseDistant();metricsAt=time;}
+    sound?.movement(moving?velocity.length()/2.4:0);
   }
-  function project() {
+  function visiblePoint(point:THREE.Vector3){
+    const direction=point.clone().sub(camera.position),distance=direction.length();raycaster.set(camera.position,direction.normalize());
+    const hit=firstSolidHit();return !hit||hit.distance>=distance-.2;
+  }
+  function project(){
     for(const room of manifest.rooms){
       const button=buttons.get(room.id)!;
       if(room.id==='top'){button.style.visibility='hidden';continue;}
-      const point=new THREE.Vector3().fromArray(room.door);point.y=4.4;
-      if(camera.position.distanceTo(point)>45||reading||
-        !navigation.clearLine([camera.position.x,camera.position.z],[room.door[0],room.door[2]])){button.style.visibility='hidden';continue;}
-      projectHTML(button,camera,point,room.yaw,4.5,520,76,viewportWidth,viewportHeight);
+      const point=new THREE.Vector3().fromArray(room.door);point.y=2.2;
+      const gap=camera.position.distanceTo(point);
+      if(gap>6||!visiblePoint(point)){button.style.visibility='hidden';continue;}
+      button.textContent=(doorRequests.has(room.id)?'閉じる — ':'開く — ')+room.label;
+      projectHTML(button,camera,point,room.yaw,2.5,520,76,viewportWidth,viewportHeight);
     }
-    // Reading shares the room's composed camera view. Typography remains upright
-    // in CSS pixels rather than being pasted into a perspective TV rectangle.
+    for(const element of root.querySelectorAll<HTMLElement>('[data-room-exhibit]')){
+      const room=manifest.rooms.find(item=>item.id===element.dataset.roomExhibit)!;
+      // A focused link stays fixed and actionable until focus leaves it.
+      if(element.contains(document.activeElement)){keys.clear();path=[];velocity.set(0,0,0);continue;}
+      const local=new THREE.Vector3(4.8,2.05,-1),point=local.applyAxisAngle(THREE.Object3D.DEFAULT_UP,room.yaw).add(new THREE.Vector3().fromArray(room.origin));
+      const show=current.id===room.id&&camera.position.distanceTo(point)<12&&visiblePoint(point);
+      element.dataset.visible=String(show);element.inert=!show;
+      if(!show){element.style.visibility='hidden';continue;}
+      projectHTML(element,camera,point,room.yaw,3.2,560,element.offsetHeight,viewportWidth,viewportHeight);
+    }
   }
   function paint(time:number) {
     const dt=Math.min(.06,(time-last)/1000||1/60);last=time;
     if(accepted)step(dt,time);
-    film?.update(accepted&&current.id==='technology'&&!reading,!paused);
+    film?.update(accepted&&current.id==='technology',!paused&&root.dataset.explorerModal!=='true');
     if(film)host.dataset.filmTime=film.time().toFixed(2);
     camera.rotation.set(pitch,yaw,0,'YXZ');camera.updateMatrixWorld();
     if(accepted)project();
-    renderer.info.reset();timer.begin();composer.render();timer.end();timer.poll();
+    renderer.info.reset();timer.begin();renderer.render(scene,camera);timer.end();timer.poll();
     host.dataset.drawCalls=String(renderer.info.render.calls);host.dataset.triangles=String(renderer.info.render.triangles);
     host.dataset.room=current.id;host.dataset.position=camera.position.toArray().map(n=>n.toFixed(2)).join(',');
     if(accepted&&!paused&&time>loadingUntil){
@@ -457,11 +448,11 @@ export function createExplorer(root: HTMLElement, host: HTMLElement, markers: HT
   async function start(id:SectionId,snapshot?:ExplorerSnapshot) {
     try{
       manifest=JSON.parse(new TextDecoder().decode(await bytes('manifest.json')));
-      const mesh:NavMesh=JSON.parse(new TextDecoder().decode(await bytes(manifest.nav)));navigation=new Navigation(mesh);
+      floorMesh=JSON.parse(new TextDecoder().decode(await bytes(manifest.nav)));navigation=new Navigation(floorMesh);
       current=manifest.rooms.find(room=>room.id===id)??manifest.rooms[0];
       const [architecture,shell,hdrBytes]=await Promise.all([model(manifest.architecture),model(manifest.rooms[1].shell),bytes(manifest.lighting),ensureRoom(current)]);
       if(disposed)return false;
-      scene.add(architecture);templates.set('architecture',architecture);templates.set('shell',shell);
+      scene.add(architecture);solids.add(architecture);templates.set('architecture',architecture);templates.set('shell',shell);
       const hdr=new HDRLoader().parse(hdrBytes);
       const hdrTexture=new THREE.DataTexture(hdr.data,hdr.width,hdr.height,THREE.RGBAFormat,THREE.HalfFloatType);
       hdrTexture.mapping=THREE.EquirectangularReflectionMapping;hdrTexture.needsUpdate=true;
@@ -471,22 +462,23 @@ export function createExplorer(root: HTMLElement, host: HTMLElement, markers: HT
       if(disposed){exterior.dispose();return false;}listeners.push(exterior.dispose);
       film=createExhibitFilm(scene,manifest.rooms.find(room=>room.id==='technology')!,exterior.texture);
       const signs=await model(manifest.signs);scene.add(signs);templates.set('signs',signs);
-      const exhibits=await model(manifest.exhibits);scene.add(exhibits);templates.set('exhibits',exhibits);
+      const exhibits=await model(manifest.exhibits);scene.add(exhibits);solids.add(exhibits);templates.set('exhibits',exhibits);
       exhibits.traverse(object=>{if(object.userData.explorer_hero_type)object.castShadow=false;});
       signs.traverse(object=>{if(object instanceof THREE.Mesh)object.castShadow=false;});
       for(const room of manifest.rooms){
         const button=document.createElement('button');button.type='button';button.textContent=room.label;
-        button.setAttribute('aria-label',room.label+'に入る');button.addEventListener('click',()=>void goTo(room.id));markers.append(button);buttons.set(room.id,button);
+        button.setAttribute('aria-label',room.label+'の扉を開閉');button.addEventListener('click',()=>{const door=doors.find(item=>item.room.id===room.id);if(door)void toggleDoor(door);});markers.append(button);buttons.set(room.id,button);
         button.dataset.roomLabel=room.id;
         if(room.id==='top')continue;
-        const group=shell.clone(true);group.position.fromArray(room.origin);group.rotation.y=room.yaw;scene.add(group);shells.push(group);
+        const group=shell.clone(true);group.position.fromArray(room.origin);group.rotation.y=room.yaw;scene.add(group);shells.push(group);solids.add(group);
         const leaves:{object:THREE.Object3D;x:number;side:number}[]=[];
         group.traverse(object=>{if(object.userData.explorer_door)leaves.push({object,x:object.position.x,side:object.userData.side});});
-        doors.push({room,group,leaves,open:0});
+        doors.push({room,group,leaves,open:0});for(const leaf of leaves)movingDoors.add(leaf.object,true);
       }
+      refreshNavigation();
       place(current);
       if(snapshot&&Array.isArray(snapshot.position)&&snapshot.position.every(Number.isFinite)&&Number.isFinite(snapshot.yaw)&&Number.isFinite(snapshot.pitch)
-        &&navigation.contains([snapshot.position[0],snapshot.position[2]])){
+        &&navigation.contains([snapshot.position[0],snapshot.position[2]])&&!solids.blocked(new THREE.Vector3().fromArray(snapshot.position))){
         camera.position.fromArray(snapshot.position);camera.position.y=1.65;yaw=snapshot.yaw;pitch=THREE.MathUtils.clamp(snapshot.pitch,-.65,.65);
       }
       resize();camera.rotation.set(pitch,yaw,0,'YXZ');camera.updateMatrixWorld();
@@ -530,13 +522,23 @@ export function createExplorer(root: HTMLElement, host: HTMLElement, markers: HT
       listen(renderer.domElement,'lostpointercapture',()=>{down=null;});
       listen(root,'click',event=>{if(event.target instanceof Element&&event.target.closest('button,a,summary'))sound?.cue('select');});
       listen(window,'resize',resize);
+      const blockedInput=(event:KeyboardEvent)=>event.defaultPrevented||event.ctrlKey||event.metaKey||event.altKey||root.dataset.explorerModal==='true'||Boolean((event.target as Element)?.closest?.('input,textarea,select,a,button,summary,[contenteditable="true"]'));
       listen(window,'keydown',event=>{
         const key=event as KeyboardEvent;
-        if(key.key!=='Escape'||key.defaultPrevented||root.querySelector('#explorer-guide,#explorer-settings'))return;
-        if(reading)close();else stop();
+        if(key.key==='Escape'){stop();return;}
+        if(blockedInput(key)||paused)return;
+        if(['KeyW','KeyA','KeyS','KeyD','ArrowUp','ArrowLeft','ArrowDown','ArrowRight'].includes(key.code)){
+          key.preventDefault();if(!keys.size){path=[];targetRoom=null;token++;if(phase==='entering')publish('idle');}keys.add(key.code);dirty=true;
+        }
+        if(key.code==='KeyE'&&!key.repeat){
+          const near=doors.filter(door=>camera.position.distanceTo(new THREE.Vector3().fromArray(door.room.door))<5.5).sort((a,b)=>camera.position.distanceTo(new THREE.Vector3().fromArray(a.room.door))-camera.position.distanceTo(new THREE.Vector3().fromArray(b.room.door)))[0];
+          if(near){key.preventDefault();void toggleDoor(near);}
+        }
       });
+      listen(window,'keyup',event=>{keys.delete((event as KeyboardEvent).code);if(!keys.size)velocity.set(0,0,0);});
+      listen(window,'blur',()=>{stop();down=null;});
       listen(document,'visibilitychange',()=>{
-        samples.reset();sampleAt=0;slowWindows=0;down=null;
+        samples.reset();sampleAt=0;slowWindows=0;down=null;keys.clear();velocity.set(0,0,0);path=[];
         if(document.hidden){cancelAnimationFrame(frame);frame=0;film?.update(false,false);void sound?.suspend();}
         else{loadingUntil=performance.now()+2000;last=0;if(!frame)frame=requestAnimationFrame(draw);void sound?.resume();}
       });
@@ -556,10 +558,10 @@ export function createExplorer(root: HTMLElement, host: HTMLElement, markers: HT
   function snapshot():ExplorerSnapshot {return {room:current?.id??'top',position:camera.position.toArray() as [number,number,number],yaw,pitch,reading};}
   function dispose(){
     if(disposed)return;disposed=true;token++;cancelAnimationFrame(frame);frame=0;finishProbe?.(false);finishProbe=null;aborters.forEach(abort=>abort.abort());listeners.forEach(remove=>remove());
-    soundAbort.abort();sound?.dispose();film?.dispose();void pendingSound?.close();timer.dispose();[...ownedModels].forEach(disposeGroup);models.clear();templates.clear();roomBytes.clear();probes.forEach(target=>target.dispose());probes.clear();
-    cursor.geometry.dispose();cursor.material.dispose();routePreview.geometry.dispose();routePreview.material.dispose();sun.shadow.dispose();bloom.dispose();output.dispose();composer.dispose();renderer.dispose();renderer.forceContextLoss();
+    solids.clear();movingDoors.clear();keys.clear();soundAbort.abort();sound?.dispose();film?.dispose();void pendingSound?.close();timer.dispose();[...ownedModels].forEach(disposeGroup);models.clear();templates.clear();roomBytes.clear();probes.forEach(target=>target.dispose());probes.clear();
+    cursor.geometry.dispose();cursor.material.dispose();routePreview.geometry.dispose();routePreview.material.dispose();sun.shadow.dispose();renderer.dispose();renderer.forceContextLoss();
     renderer.domElement.remove();markers.replaceChildren();host.style.opacity=sourceOpacity;
   }
   const setVolume=(value:number)=>{soundVolume=Math.max(0,Math.min(1,value));sound?.setVolume(soundVolume);};
-  return {start,goTo,read,preview,close,stop,skip,setPaused,setSound,setVolume,snapshot,dispose};
+  return {start,goTo,stop,setPaused,setSound,setVolume,snapshot,dispose};
 }

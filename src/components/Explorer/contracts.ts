@@ -39,12 +39,8 @@ export interface ExplorerSnapshot {
 export interface FrameSample { fps: number; p95: number; frames: number; gpuMs: number | null }
 export interface ExplorerController {
   start(room: SectionId, snapshot?: ExplorerSnapshot): Promise<boolean>;
-  goTo(room: SectionId, instant?: boolean, read?: boolean): Promise<void>;
-  read(): void;
-  preview(room: SectionId | null): void;
-  close(): void;
+  goTo(room: SectionId): Promise<void>;
   stop(): void;
-  skip(): void;
   setPaused(paused: boolean): void;
   setSound(enabled: boolean): Promise<boolean>;
   setVolume(value: number): void;
