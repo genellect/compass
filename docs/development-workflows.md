@@ -85,6 +85,8 @@ powershell.exe -NoProfile -ExecutionPolicy Bypass -File `
 
 ## 検証
 
+通常の変更では[Agentの検証とPreview完了契約](agent-delivery-policy.md)に従い、変更したリスクに対応する最小の検証を選びます。以下の総合コマンドを毎回全部実行する運用ではありません。局所UIは対象Desktop/Mobileと操作、文書のみは`npm run verify:docs`と差分確認を基本とし、同じ成果物・合格済み検証を再利用します。
+
 ### Repository総合検証
 
 ```bash
@@ -130,7 +132,7 @@ Terraformのformat、backendを使用しないinitialization、validation、acti
 
 ### レスポンシブ監査
 
-cloud（Codespaces / Codex Cloud / Claude Code / Dev Container）では次を実行します。
+広範囲のresponsive変更または明示された完全監査では、cloud（Codespaces / Codex Cloud / Claude Code / Dev Container）で次を実行します。局所変更は対象spec・操作・viewportに絞ります。
 
 ```bash
 npm run check:responsive:cloud

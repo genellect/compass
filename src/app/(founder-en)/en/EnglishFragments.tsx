@@ -128,7 +128,7 @@ export function EnglishFragments() {
       <div className={styles.sectionShell}>
         <header className={styles.fragmentsHeading}>
           <div>
-            <p className={styles.sectionIndex}>06 / Archive</p>
+            <p className={styles.sectionIndex}>04 / Archive</p>
             <h2 id="fragments-title">FRAGMENTS</h2>
           </div>
           <p>Research, systems, cities, and the quiet moments between them.</p>

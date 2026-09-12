@@ -16,6 +16,8 @@ import { EnglishHeroGallery } from "./EnglishHeroGallery";
 import { EnglishMobileMenu } from "./EnglishMobileMenu";
 import { GitHubIcon, InstagramIcon } from "./EnglishSocialIcons";
 import { EnglishStatement } from "./EnglishStatement";
+import { DepthCard } from "../../../components/portfolio/DepthCard";
+import { OffHoursGallery } from "../../../components/portfolio/OffHoursGallery";
 import styles from "./english-founder.module.css";
 
 const canonicalUrl = `${founderOrigin}/en/`;
@@ -144,9 +146,9 @@ export default function EnglishFounderPage() {
         <nav className={styles.desktopNav} aria-label="Portfolio navigation">
           <a href="#expertise">Expertise</a>
           <a href="#experience">Experience</a>
+          <a href="#fragments">Fragments</a>
           <a href="#statement">Statement</a>
           <a href="#work">Work</a>
-          <a href="#fragments">Fragments</a>
           <a href="#contact">Contact</a>
           <span className={styles.languageSwitch} aria-label="Language">
             <FounderJapaneseLink>JP</FounderJapaneseLink><span>/</span><a href={canonicalUrl} aria-current="page">EN</a>
@@ -183,16 +185,16 @@ export default function EnglishFounderPage() {
             </header>
             <div className={styles.expertiseGrid}>
               {expertise.map((item, index) => (
-                <article key={item.number} className={styles.expertisePlate} data-accent={item.accent} data-order={index + 1}>
-                  <div className={styles.expertiseImage}>
+                <DepthCard key={item.number} depth="expertise" editorial className={styles.expertisePlate} data-accent={item.accent} data-order={index + 1}>
+                  <div className={styles.expertiseImage} data-depth-layer="image">
                     <Image src={item.image} alt={item.alt} fill sizes="(min-width: 901px) 38vw, 92vw" />
                   </div>
-                  <div className={styles.expertiseNumber}>{item.number}</div>
-                  <div className={styles.expertiseCopy}>
+                  <div className={styles.expertiseNumber} data-depth-layer="detail">{item.number}</div>
+                  <div className={styles.expertiseCopy} data-depth-layer="copy">
                     <h3>{item.title}</h3>
                     <p>{item.description}</p>
                   </div>
-                </article>
+                </DepthCard>
               ))}
             </div>
           </div>
@@ -206,13 +208,13 @@ export default function EnglishFounderPage() {
             </header>
             <div className={styles.experienceGrid}>
               {experience.map((item) => (
-                <article key={item.area} className={styles.experienceItem}>
-                  <div className={styles.experienceImage}>
+                <DepthCard key={item.area} depth="experience" editorial className={styles.experienceItem}>
+                  <div className={styles.experienceImage} data-depth-layer="image">
                     <Image src={item.image} alt={item.alt} fill sizes="(min-width: 901px) 31vw, 92vw" />
                   </div>
-                  <div className={styles.experienceMeta}><span>{item.area}</span><strong>{item.years}</strong></div>
+                  <div className={styles.experienceMeta} data-depth-layer="copy"><span>{item.area}</span><strong>{item.years}</strong></div>
                   <p>{item.focus.map((focus) => <span key={focus}>{focus}</span>)}</p>
-                </article>
+                </DepthCard>
               ))}
             </div>
             <div className={styles.credentialsGrid} aria-label="English language credentials">
@@ -226,10 +228,12 @@ export default function EnglishFounderPage() {
           </div>
         </section>
 
+        <EnglishFragments />
+
         <section id="statement" className={styles.statement} aria-labelledby="statement-title">
           <div className={styles.statementShell}>
             <aside className={styles.statementIdentity}>
-              <p className={styles.sectionIndex}>04 / Personal Statement</p>
+              <p className={styles.sectionIndex}>05 / Personal Statement</p>
               <h2 id="statement-title">Between Life Science and Engineering</h2>
               <div className={styles.statementPortrait}>
                 <Image
@@ -247,14 +251,12 @@ export default function EnglishFounderPage() {
         <section id="work" className={styles.work} aria-labelledby="work-title">
           <div className={styles.sectionShell}>
             <header className={styles.workHeading}>
-              <div><p className={styles.sectionIndex}>05 / Selected Work</p><h2 id="work-title">Selected Work</h2></div>
+              <div><p className={styles.sectionIndex}>06 / Selected Work</p><h2 id="work-title">Selected Work</h2></div>
             </header>
 
             <FounderProducts products={products} language="en" />
           </div>
         </section>
-
-        <EnglishFragments />
 
         <section id="off-hours" className={styles.offHours} aria-labelledby="off-hours-title">
           <div className={styles.sectionShell}>
@@ -262,17 +264,9 @@ export default function EnglishFounderPage() {
               <p className={styles.sectionIndex}>07 / Away from the desk</p>
               <h2 id="off-hours-title">OFF HOURS</h2>
             </header>
-            <div className={styles.offHoursGrid}>
-              {offHours.map((item) => (
-                <article key={item.label} className={styles.offHoursCard}>
-                  <div className={styles.offHoursImage}>
-                    <Image src={item.image} alt={item.alt} fill sizes="(min-width: 901px) 32vw, 92vw" />
-                    <span aria-hidden="true">{item.number}</span>
-                  </div>
-                  <div><h3>{item.label}</h3><p>{item.copy}</p></div>
-                </article>
-              ))}
-            </div>
+            <OffHoursGallery language="en"
+              photos={offHours.map(item => ({ ...item, copy: [item.copy] }))}
+              classes={{ grid: styles.offHoursGrid, card: styles.offHoursCard, visual: styles.offHoursImage }} />
           </div>
         </section>
 

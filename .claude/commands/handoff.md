@@ -14,7 +14,7 @@ Then output exactly these sections:
 
 **実行した検証** — each command you ran and its real result. Separate what passed, what failed, and what you did not run. Anything not executed in this environment (for example the browser gate without Chromium, or the Windows-only visual regression) is listed as not executed, never as passing.
 
-**実施したGit・Production操作** — commits, pushes, and branch. Cloudflare, GAS, Terraform, database, and secret operations must be listed as none unless the user explicitly requested them.
+**実施したGit・Production操作** — commits, pushes, and branch. Web UI implementation includes non-production PR/Cloudflare Preview under AGENTS.md. Report the real PR URL, Preview URLs, and browser verification; localhost is not a substitute. Other external actions require separate authorization.
 
 **未確認事項と残存risk** — external state this repository cannot prove: Cloudflare dashboard configuration, GAS deployment state, real email delivery, Production data.
 

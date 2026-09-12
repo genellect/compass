@@ -105,7 +105,17 @@ COMPASS Interactiveプロダクト本体、Productionデータベース、保護
 
 ## Verification
 
-repository-wide gateは次のコマンドである。
+検証は変更のリスクとROIから選ぶ。通常の局所変更にrepository-wide gateを毎回適用しない。詳細は`docs/agent-delivery-policy.md`を正本とする。
+
+- 着手時に、壊れ得る契約、最小の検証、Preview作成経路を決める。テストの数ではなく、重要な失敗を検出できるかで判断する。
+- 局所的なUI変更は対象routeのDesktop/Mobile・変更した境界・操作に絞る。合格済みの無関係な機能を繰り返し検証しない。
+- 文書だけの変更は文書リンク・差分確認を基本とする。型検査・build・ブラウザー・依存監査を一律には実行しない。
+- buildはPreview用成果物の作成時にまとめて1回行い、静的検証・対象ブラウザー確認・Previewへ同じ成果物を使用する。反復調整には開発サーバーを使う。
+- 同じ変更に対する合格済み検証は、関連する追加変更・新しい失敗・未解決リスクがない限り繰り返さない。失敗時は原因に関係する最小ケースへ絞る。
+- 無関係な既存失敗は一度切り分けて記録する。期待値・timeout・retryを緩めたり、無変更で総合テストを反復したりしない。
+- 検証が実装に比べ過大、または局所変更の検証が約5分を超える場合、追加実行前に対象と費用対効果を見直す。時間超過を合格扱いや検証省略の理由にはしない。
+
+repository-wide gate（広範囲変更、明示された総合監査、CI向け）は次のコマンドである。
 
 ```bash
 npm run check
@@ -115,7 +125,7 @@ npm run check
 
 これはform関連テスト、TypeScript検査、Production build、static export検証、全公開routeのPlaywright responsive smokeを実行する。変更範囲に応じて個別commandを使う場合も、実行したもの・省略したもの・理由を最終報告へ記載する。
 
-文書・環境・依存保守の変更では、追加で`npm run check:repository`を実行する。
+環境・依存・権利インベントリ・保守ツール変更では`npm run check:repository`を実行する。文書のみの変更では`npm run verify:docs`と差分確認を行う。
 Python依存の監査・テストは`docs/dependency-maintenance.md`に従う。
 
 ## Git and Deployment
@@ -125,7 +135,12 @@ Python依存の監査・テストは`docs/dependency-maintenance.md`に従う。
 - 既存CDを無断で解除しない。依頼で指定された公開条件を守る。
 - 既存の未関連変更を保持する。破壊的なGit操作で消去しない。
 
-COMPASS Web UIの実装・改装仕様を受けた場合は、実装と検証後にPRを作成し、Cloudflare Previewで確認可能な状態まで進めることを標準フローとする。Production公開は、常にユーザーの明示指示を必要とする。
+このrepository内のWeb UI実装・改装依頼は、対象surfaceの実装、必要な検証、専用branchへのcommit/push、PR作成、Cloudflare Preview作成、Preview URLでの実表示確認までを一つの完了契約とする。これは明示的に依頼されたyuto-matsui.comのJP/EN、Interactive紹介・開発者紹介にも適用する。Independent Website Boundariesは編集対象の境界であり、依頼済みsurfaceをPreview契約から除外する理由ではない。
+
+- 上記の非本番PR/Preview操作は実装依頼に含まれる。ユーザーが禁止・ローカル限定・調査のみと指定した場合はその指定を優先する。既存の認証と非本番設定を使い、同じ操作の許可を再度求めない。
+- localhost、パッチ、スクリーンショットだけをCloudflare Previewの代わりとして完了報告しない。PR URLと実際に開けるPreview URLを報告する。JP/EN等の対象routeをそれぞれ確認する。
+- 着手時にPreview経路・認証・非本番branchを確認する。権限不足などの実在する障害は早期に具体的に報告し、実装を進めながら解消する。未作成を作成済みと扱わない。
+- PreviewではProduction branchを指定しない。PR/Previewの許可からmerge、Production公開、secret/認証設定変更を推定しない。Production公開はユーザーの明示指示を必要とする。
 
 文言、リンク、CTA、余白、軽微なレスポンシブ調整など、影響範囲が限定された微調整についてユーザーがProduction公開を明示した場合は、Cloudflare Previewを省略し、必要な検証、PR、merge、Production公開、canonical URL確認までを最速経路で完了してよい。Previewを省略した場合は、最終報告にその旨とProduction検証結果を記載する。
 
@@ -136,7 +151,7 @@ COMPASS Web UIの実装・改装仕様を受けた場合は、実装と検証後
 - repositoryごとに環境とbranchを分離し、COMPASS Interactiveのcheckout、secret、runtimeを共有しない。
 - Codespacesでは`.devcontainer/devcontainer.json`と`docs/CLOUD_DEVELOPMENT.md`を正本とする。
 - 既存PCの`.env*`、credential、Production dataをcloud環境へcopyしない。
-- 通常のcloud taskはnon-live testのみとし、Production form、実email、deploy、migration、secret変更を実行しない。
+- 通常のcloud taskはnon-live testを基本とし、Production form、実email、Production deploy、migration、secret変更を実行しない。Web UI依頼の非本番PR/Cloudflare Previewは上記の完了契約に従う。
 - Codex taskは完了前に該当testを実行する。Git操作まで依頼された実装taskではbranchへcommitし、Draft PRでreview可能にする。調査・提案だけの依頼や、本番影響を伴うGit操作にはこの自動実行規則を適用しない。
 - Dev Containerの初回作成後と環境定義変更後は`npm run dev:doctor`を実行し、手作業のglobal package導入で不足を隠さない。
 - cloud経路はLinuxである。`.ps1` script、`npm.cmd`、`Get-NetTCPConnection`等のWindows専用手順をcloud taskの前提にしない。Docker composeを使うLibrary環境は`scripts/library-docker-dev.sh`を使用する。
@@ -152,7 +167,7 @@ COMPASS Web UIの実装・改装仕様を受けた場合は、実装と検証後
 ## Responsive Browser Gate
 
 - UI、navigation、font、breakpoint、animationを変更した場合は、`docs/responsive-browser-qa.md`に従い責任gateを実行する。
-- Linux・cloud（Codespaces、Codex Cloud、Claude Code、Dev Container）では`npm run check:responsive:cloud`を実行する。これはvisual regression以外の全responsive contractを含む。
+- 局所的な変更では対象route・操作・viewportの検証を選ぶ。Linux・cloudで全responsive contractが必要な変更や明示的な総合監査では`npm run check:responsive:cloud`を使う。CIの責任gateは維持し、同じ全範囲をローカルとCIで機械的に重複実行しない。
 - visual regression baselineはWindowsで生成された`*-win32.png`であり、Linuxからは実行も更新もしない。`npm run check:responsive:full`はWindows専用gateであり、cloudからの合格判定にはGitHub Actions `Responsive Quality Gate`の結果を使う。
 - 物理解像度だけで合格にせず、CSS viewport、height境界、DPR、実描画行、overflow、consoleを記録する。
 - responsive testを通すためにcanonical copy、背景、layoutを無関係に変更しない。意図的なcontract変更では、差分を人間が確認してからtest expectationを更新する。
@@ -165,4 +180,5 @@ COMPASS Web UIの実装・改装仕様を受けた場合は、実装と検証後
 - user-visible behaviorの有無
 - 実行したtest・build・verification
 - 実施したGit・Production操作
+- PR URL、対象routeのCloudflare Preview URLと確認結果（未作成なら具体的な障害）
 - 未確認事項と残存risk

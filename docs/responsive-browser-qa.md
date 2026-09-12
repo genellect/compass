@@ -8,6 +8,8 @@ Last verified: 2026-08-02
 
 ## 1. Purpose
 
+局所変更の検証範囲・実行頻度は[Agentの検証とPreview完了契約](agent-delivery-policy.md)に従います。この文書の全viewport matrixは総合監査・CIの責任範囲です。カード表現などの局所変更に全route・全matrixを毎回適用せず、対象のDesktop/Mobileと変更した境界・操作を選びます。既存の失敗を一度切り分けた後に、同じ総合監査やbuildを機械的に繰り返しません。
+
 このrunbookは、物理解像度だけでは見落とすレスポンシブ崩れを、実際のCSS viewportで再現・検出するための正本です。静的HTML、CSS文字列、build成功だけでは合格にしません。Chromiumでページを描画し、文字、改行、CTA、navigation、展開状態、consoleを統合監査します。
 
 今回のFSL不具合では、1920px級の物理画面でもWindows 150%表示とbrowser chromeによりCSS viewportが約`1275×553`となり、`max-height: 760px`の縮小ruleが発火しました。`1024×768`や`3840×2160`をCSS viewportとして直接試すだけでは、この条件を再現できません。
@@ -140,6 +142,8 @@ Remove-Item Env:RESPONSIVE_BASE_URL
 failure時は`test-results/`と`playwright-report/`へviewport、DPR、実描画行、element geometry、clipping violation、console error、screenshot、Playwright traceを保存します。GitHub Actionsはfailure artifactを14日間保持します。artifactを確認せず、閾値を緩めてテストを通してはいけません。
 
 ## 7. CI and deployment
+
+Web UI実装はPRとCloudflare Previewの作成、対象Preview URLの実ブラウザー確認までを完了契約とします。明示依頼された独立surfaceにも適用し、localhostだけで完了としません。必要なローカル検証と総合CIを区別し、同じ全範囲を二重に走らせません。Production公開は別の明示指示が必要です。
 
 `.github/workflows/responsive-quality.yml`はpull request、`main` push、manual dispatchで完全gateを実行します。branch protectionでは、このjobをrequired checkに設定してください。
 
