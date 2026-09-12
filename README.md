@@ -5,51 +5,57 @@
 **Don’t Just Learn. Build What’s Next.**
 **学びを、意思決定の力へ。**
 
-COMPASSは、北里大学薬学部を起点とする、学生主導の教育・テクノロジープラットフォームです。Technology・Resources・Education・Communityの4領域で、学生の「知る」を「選ぶ」「動く」へつなげます。
+COMPASS Platformは、主に北里大学の学生に向けて、学習・進路・コミュニティを横断したデジタル体験を提供する教育・テクノロジープラットフォームです。
 
-このリポジトリには、3D空間を取り入れた公式Web、未来戦略ライブラリの利用者登録・権限管理基盤、公開フォーム、テスト、インフラ定義、運用ドキュメントを収録しています。体験の設計から配信、認証、データ管理、継続的な検証まで、実装をたどれる構成です。
+本リポジトリは、3Dレンダリングを取り入れた公式Webサイトと、利用者データ基盤、認証、API、データベース、クラウド、CI/E2Eなど、その運用を支えるシステムを管理しています。
+
 
 [公開Web](https://compass-official.pages.dev/) · [技術スタック](#技術スタック) · [開発を始める](#開発を始める) · [文書索引](docs/README.md) · [利用許可](#ライセンスと利用許可)
 
 ## プロダクトと実装範囲
 
-| 対象 | このリポジトリで扱う内容 |
+| 対象 | システム構成 |
 |---|---|
-| 公式Web | 活動紹介、3D Habitat、未来戦略ライブラリ案内、Manifesto、Community、Contact |
-| 公開フォーム | 入力検証、Turnstile、Pages Functions、Google Apps Scriptによる通知 |
-| Library登録基盤 | Google本人確認、利用資格判定、登録・管理API、DB権限、Drive連携、移行・監査ツール |
-| Interactive紹介 | 独立したプロダクトの紹介・開発者向けページ |
-| yuto-matsui.com | 同じ配信成果物を使用する独立Webサイト |
+| 公式Web | Next.js / React / TypeScript、Three.js / WebGLによる3D Habitat、Blenderアセット、レスポンシブ・メディア制御 |
+| Contact / Community申請基盤 | Cloudflare Pages Functions、Turnstile、入力検証、Google Apps Scriptによる通知処理 |
+| 未来戦略ライブラリ登録基盤 | FastAPI、Neon PostgreSQL、Google Identity / OIDC、Cloud Run / Scheduler、SQLAlchemy / Alembic、Google Drive API、Cloudflare Access、Secret Manager、Terraform、DB RBAC、Transactional Outbox、監査ログ |
+| Interactive紹介 | COMPASS Interactiveのプロダクト紹介・技術情報を提供するWebサイト |
 
-COMPASS Interactiveのアプリケーション本体は、別リポジトリ・別環境で開発しています。紹介ページやyuto-matsui.comの編集には、それぞれの対象を指定した依頼が必要です。配置と編集範囲は[Website Boundaries](docs/WEBSITE_BOUNDARIES.md)に記載しています。
-
-以下は現行ソースの構成です。登録基盤の外部認証・実データ・本番運用の確認状況は、[ロードマップ](docs/library-registration/phase-roadmap-v3.md)と対象コミットの検証記録で管理しています。公開ソースには、本番データ、認証情報、保護されたLibrary資料を含めません。
+COMPASS Interactiveのアプリケーション本体は、別リポジトリ・別環境で開発しています。配置と編集範囲は[Website Boundaries](docs/WEBSITE_BOUNDARIES.md)に記載しています。
 
 ## 体験を支える技術
 
 ### ブラウザで描く3D空間
 
-公式トップのHabitatは、Three.jsによるWebGL描画とHTMLの情報表示を組み合わせています。9つのセクションに対応する部屋とカメラを設計し、1つのレンダラーで空間を描画します。文章、リンク、フォームは通常のDOMとして操作できます。
+公式トップのHabitatは、Three.jsによるWebGL描画とHTML UIで構成されています。9つのセクションに対応する空間とカメラを持ち、単一のレンダラーで描画しています。文章、リンク、フォームは通常のDOMとして実装されています。
 
-建築と家具はBlenderで制作・配置し、間接光をライトマップへ焼き込みます。実行時にはPBR材質、HDR環境光、視点に応じた反射、Bloomを組み合わせ、MeshoptとWebPで配信データを圧縮しています。共有する建築データと部屋ごとの照明を管理し、必要なセクションに応じてアセットを読み込みます。
+建築と家具はBlenderで制作し、間接光はライトマップにベイクしています。ランタイムではPBR材質、HDR環境光、反射、Bloomを使用し、glTF/GLBはMeshopt、画像はWebPで圧縮しています。
 
-画面幅と入力方式に応じて3Dを起動し、低フレームレート、読み込み失敗、動きを減らす設定ではポスター表示へ移行します。非表示タブでは描画を停止し、終了時にはGPUリソースを解放します。Web Audioによる環境音は利用者の操作で有効になり、ページ離脱時に停止します。
+3Dの有効化は画面幅と入力方式を基準に制御しています。低フレームレート、読み込み失敗、Reduced Motionでは静止画へフォールバックします。非表示タブでは描画を停止し、アンマウント時にはGPUリソースを解放しています。環境音にはWeb Audio APIを使用しています。
 
-実装は[Habitat](src/components/Habitat/)、制作手順は[Authoring Guide](scripts/habitat/README.md)、素材の出典は[Asset Credits](scripts/habitat/ASSET_CREDITS.md)を参照してください。通常のWebビルドにBlenderは必要ありません。
+実装は[Habitat](src/components/Habitat/)、制作手順は[Authoring Guide](scripts/habitat/README.md)、素材の出典は[Asset Credits](scripts/habitat/ASSET_CREDITS.md)に記載しています。通常のWebビルドにBlenderは必要ありません。
 
 ### モバイルと映像表現
 
-縦向きのタブレットやスマートフォンでは、NASAのISS写真と短いタイムラプスを使った構成を提供します。動画は表示領域や通信条件に応じて読み込み・再生を制御し、データ節約設定、低速回線、再生失敗時には静止画を表示します。モバイル経路で3DエンジンやGLBを取得しないこともテストしています。
+縦向きのタブレットやスマートフォンでは、NASAのISS写真と短いタイムラプスを使用しています。動画は表示領域や通信状態に応じて読み込みと再生を制御し、データ節約設定、低速回線、再生失敗時には静止画へ切り替わります。モバイルでは3DエンジンやGLBを読み込まないこともテストで確認しています。
 
-Contactの入口には、手続き的に制作したBlenderの建築映像を使用しています。映像上の扉にHTMLボタンを重ね、選択した導線の映像を読み込みます。スキップ、動きを減らす設定、読み込み失敗の各経路でもフォームへ進める構成です。
+Contactの導入には、Blenderで制作した建築映像を使用しています。映像上の扉にはHTMLボタンを重ね、選択に応じて映像を切り替えます。演出はスキップ可能で、Reduced Motionや読み込み失敗時にもフォームへ遷移できます。
 
-制作条件と操作契約は[Mobile Space Media](docs/mobile-space-media.md)と[Contact Door Entry](docs/contact-door-entry.md)に記載しています。
+制作条件と挙動の詳細は[Mobile Space Media](docs/mobile-space-media.md)と[Contact Door Entry](docs/contact-door-entry.md)に記載しています。
 
-### 登録からアクセス権の反映まで
+### 利用者データ基盤および未来戦略ライブラリ登録基盤
 
-未来戦略ライブラリの登録基盤は、Public API、Admin API、Drive Workerを個別のエントリーポイントとして実装しています。GoogleのIDトークンをサーバー側で検証し、利用資格と管理者権限を再判定します。
+未来戦略ライブラリの登録基盤は、FastAPI、Neon PostgreSQL、Google Cloud Runを中心に構成しています。Public API、Admin API、Drive Worker、Migration Jobを分離し、それぞれに必要な権限だけを持たせています。Google IDトークンはバックエンドで検証し、利用資格や管理者権限もサーバー側で判定します。
 
-PostgreSQLでは用途ごとのDBロールと限定されたRPCを使用します。Driveへの権限反映はTransactional Outboxへ記録し、WorkerがLease、Retry、操作の署名検証を通じて処理します。管理操作、権限変更、出力処理には監査記録を設けています。
+PostgreSQLではPublic API、Admin API、Worker、MigrationごとにDBロールを分け、各サービスから実行できる操作を限定しています。SQLAlchemy / Psycopgで接続し、スキーマ変更はAlembicで管理しています。登録や管理操作のうち、権限境界を越える処理はRPCに寄せ、アプリケーションから直接触れる範囲を絞っています。
+
+Google Driveへの権限反映は同期処理にせず、Transactional Outboxを介してWorkerへ渡しています。WorkerはCloud SchedulerからOIDC付きで起動し、Lease、Retry、操作署名を確認したうえでDrive APIを実行します。これにより、DB更新と外部API呼び出しを分離しつつ、重複実行や途中失敗を扱える構成にしています。
+
+管理APIはCloudflare側のプロキシと共有シークレットを経由し、Google認証とDB側の権限判定を重ねています。Secret ManagerではDB接続情報やDrive OAuth情報を用途ごとに分離し、Cloud Runの各サービスには必要なSecretだけを渡します。
+
+インフラはTerraformで定義し、Cloud Run、Cloud Run Jobs、Cloud Scheduler、IAM、Secret Managerまでコード化しています。Migration、Public API、Admin API、Drive処理は個別に有効化できるようにし、本番反映時には段階的に公開範囲を広げられる構成です。管理操作、権限変更、エクスポート処理は監査ログに記録しています。
+
+
 
 ```mermaid
 flowchart LR
@@ -65,8 +71,8 @@ flowchart LR
     Worker --> DB
     Worker --> Drive["Google Drive"]
 ```
+上図の構成や各サービスの役割は[Architecture](docs/ARCHITECTURE.md)、管理APIの認可設計は[Admin Access Security Boundary](docs/library-registration/admin-access-security-boundary.md)を参照してください。
 
-図はリポジトリで定義する論理構成です。サービスごとの公開条件と運用状態は[Architecture](docs/ARCHITECTURE.md)、認可の詳細は[Admin Access Security Boundary](docs/library-registration/admin-access-security-boundary.md)を参照してください。
 
 ## 技術スタック
 
@@ -89,18 +95,21 @@ flowchart LR
 
 正確な解決バージョンは[package-lock.json](package-lock.json)と[uv.lock](services/library-api/uv.lock)、ツールの固定値は[toolchain.env](.devcontainer/toolchain.env)にあります。
 
-## 品質と保守
+## テストとCI
 
-| 検証対象 | 確認する契約 |
-|---|---|
-| フォーム・API | 入力、資格判定、認証・認可、署名、重複処理、通知の異常系 |
-| 配信成果物 | 静的出力、公開ルート、Pages Functionsの適用範囲、Libraryのビルド対象 |
-| レスポンシブ | CSS viewport、実改行、はみ出し、メニュー、キーボード操作、画像差分 |
-| 3D・メディア | 起動条件、遅延読み込み、停止・復帰、フォールバック、モバイルの通信境界 |
-| 公開ソース | 秘密情報・保護資料の混入、Git履歴、Actionとコンテナの固定参照 |
-| 依存関係 | npm / uvの既知脆弱性、ライセンス式、ツール定義の整合、依存一覧 |
+| 対象       | 主なテスト・チェック                                               |
+| -------- | -------------------------------------------------------- |
+| フォーム・API | 入力検証、資格判定、認証・認可、署名検証、重複処理、通知失敗時の挙動                       |
+| ビルド・配信   | Next.js静的出力、公開ルート、Pages Functionsの適用範囲、Library関連ページのビルド  |
+| レスポンシブ   | viewport、改行、overflow、ナビゲーション、キーボード操作、Visual Regression   |
+| 3D・メディア  | 3D起動条件、遅延読み込み、描画停止・復帰、フォールバック、モバイルでの不要アセット取得             |
+| セキュリティ   | 秘密情報・保護資料の混入、Git履歴、依存関係の脆弱性、固定されていないAction / Container参照 |
+| 依存関係     | npm / uv audit、ライセンス、lockfile、ツールチェーン定義の整合性              |
 
-CIはこれらの契約を継続確認します。実機の描画性能、外部サービスとの接続、本番の運用確認は、測定条件と検証したコミットを記録します。テストの合格を未検証環境へ一般化しない方針です。
+テストはVitest、Pytest、Playwright、Node.js Test Runnerを使用しています。CIでは型検査、ビルド、静的出力、ブラウザテスト、依存関係監査、公開リポジトリ向けのセキュリティチェックまで実行します。
+
+3Dの描画性能や実際の外部サービス接続など、CIだけでは確認できない項目は開発者の目視によるレスポンシブテストを必須としています。
+
 
 ## 開発を始める
 
@@ -129,21 +138,22 @@ npm run check
 
 API・専用ローカルDB・E2Eの手順は[Development Workflows](docs/development-workflows.md)、依存更新と監査は[Dependency Maintenance](docs/dependency-maintenance.md)を参照してください。画像差分の基準画像はWindowsで管理しています。
 
-## ソースを読む
+## リポジトリ構成
 
-| ディレクトリ・入口 | 内容 |
-|---|---|
-| [`src/app/`](src/app/) | 公式Web、紹介ページ、Libraryのルート |
-| [`src/components/Habitat/`](src/components/Habitat/) | 3Dエンジン、セクション、メディア・音声の制御 |
-| [`scripts/habitat/`](scripts/habitat/) / [`scripts/contact-entry/`](scripts/contact-entry/) | 素材の制作・変換・検査 |
-| [`src/library-registration/`](src/library-registration/) | 登録・管理画面、APIクライアント |
-| [`functions/`](functions/) | 公開フォーム、管理API Proxy、ドメインルーティング |
-| [`services/library-api/`](services/library-api/) | API、Worker、migration、Pythonテスト |
-| [`infra/library-registration/`](infra/library-registration/) | Terraform、実行環境、IAM・運用定義 |
-| [`google-apps-script/`](google-apps-script/) | Community・Contact等の通知処理 |
-| [`tests/`](tests/) / [`.github/workflows/`](.github/workflows/) | 動作契約、公開境界、CI |
+| パス                                                                                          | 内容                                               |
+| ------------------------------------------------------------------------------------------- | ------------------------------------------------ |
+| [`src/app/`](src/app/)                                                                      | 公式Web、Interactive紹介、Library関連ルート                 |
+| [`src/components/Habitat/`](src/components/Habitat/)                                        | 3D描画、セクション制御、メディア・音声処理                           |
+| [`scripts/habitat/`](scripts/habitat/) / [`scripts/contact-entry/`](scripts/contact-entry/) | 3D・映像アセットの生成、変換、検証                               |
+| [`src/library-registration/`](src/library-registration/)                                    | Library登録・管理UI、APIクライアント                         |
+| [`functions/`](functions/)                                                                  | Contact / Community、管理API Proxy、ドメインルーティング       |
+| [`services/library-api/`](services/library-api/)                                            | FastAPI、Drive Worker、Migration、Pythonテスト         |
+| [`infra/library-registration/`](infra/library-registration/)                                | Terraform、Cloud Run、IAM、Secret Manager、Scheduler |
+| [`google-apps-script/`](google-apps-script/)                                                | Contact / Communityの通知処理                         |
+| [`tests/`](tests/)                                                                          | フロントエンド、レスポンシブ、3D、配信まわりのテスト                      |
+| [`.github/workflows/`](.github/workflows/)                                                  | CI、セキュリティチェック、依存関係監査                             |
 
-公式トップの表示経路は`src/app/(official)/page.tsx` → `src/App.tsx` → `src/LegacyPageBody.tsx`です。`LegacyPageBody.tsx`は現在も使用しているモジュールです。
+公式トップは `src/app/(official)/page.tsx` → `src/App.tsx` → `src/LegacyPageBody.tsx` の順に描画されます。`LegacyPageBody.tsx` は名称に反して現行実装です。
 
 ## ドキュメント
 
@@ -161,8 +171,12 @@ API・専用ローカルDB・E2Eの手順は[Development Workflows](docs/develop
 
 ## ライセンスと利用許可
 
-Copyright © 2026 **Yuto Matsui**. ソースを閲覧・評価できる形で公開しています。
+Copyright © 2026 **Yuto Matsui**. All rights reserved.
 
-**事前の明示的な書面許可のない商用利用・改変・再配布は禁止します。** 非営利の改変・再配布にも許可が必要です。条件の正文は[LICENSE](LICENSE)、申請方法は[利用許可](docs/legal/permissions.md)を参照してください。
+本リポジトリは、ソースコードの閲覧および技術評価を目的として公開しています。
 
-GitHub規約、適用法、既存の個別契約に基づく権利は維持されます。第三者のOSS・写真・映像等には、それぞれのライセンスが適用されます。[Third-party Notices](THIRD_PARTY_NOTICES.md)と[素材台帳](docs/legal/asset-register.md)に出典と取扱いを記載しています。脆弱性の報告は[Security Policy](.github/SECURITY.md)をご確認ください。
+**商用利用、改変、再配布には、事前の書面による許可が必要です。** 非営利目的の場合も同様です。詳細な利用条件は[LICENSE](LICENSE)、利用許可に関する案内は[Permissions](docs/legal/permissions.md)を参照してください。
+
+第三者のOSS、写真、映像、その他の素材には、それぞれのライセンスおよび利用条件が適用されます。出典とライセンス情報は[Third-party Notices](THIRD_PARTY_NOTICES.md)および[Asset Register](docs/legal/asset-register.md)に記載しています。
+
+セキュリティ上の問題を発見した場合は、[Security Policy](.github/SECURITY.md)に従って報告してください。
