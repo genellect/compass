@@ -45,6 +45,8 @@ Contactの導入には、Blenderで制作した建築映像を使用していま
 
 ### 利用者データ基盤および未来戦略ライブラリ登録基盤
 
+> 注: 本節は現行ソース上の論理構成を説明するもので、Library公開登録API・管理API・Drive WorkerのProduction検証は未完了です。
+
 未来戦略ライブラリの登録基盤は、FastAPI、Neon PostgreSQL、Google Cloud Runを中心に構成しています。Public API、Admin API、Drive Worker、Migration Jobを分離し、それぞれに必要な権限だけを持たせています。Google IDトークンはバックエンドで検証し、利用資格や管理者権限もサーバー側で判定します。
 
 PostgreSQLではPublic API、Admin API、Worker、MigrationごとにDBロールを分け、各サービスから実行できる操作を限定しています。SQLAlchemy / Psycopgで接続し、スキーマ変更はAlembicで管理しています。登録や管理操作のうち、権限境界を越える処理はRPCに寄せ、アプリケーションから直接触れる範囲を絞っています。
