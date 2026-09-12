@@ -14,6 +14,9 @@ Last verified: 2026-09-10
 | Contactの建築映像・文字造形 | リポジトリの手続き的Blender制作 | [制作記録](../contact-door-entry.md) | 外部写真・HDRI・モデルを同梱しない。文字はmesh化しフォントファイルを再配布しない |
 | COMPASSのロゴ・独自文章・独自造形 | 権利者保有分 | [LICENSE](../../LICENSE) | 第三者権利が混在する場合は該当部分を除外 |
 | Manrope / Newsreader | 各フォントのProject Authors | [Manrope OFL](fonts/Manrope-OFL.txt)、[Newsreader OFL](fonts/Newsreader-OFL.txt) | `next/font/google`でビルド時取得・自己配信。OFL 1.1を維持 |
+| PC探索の写真・映像 `public/habitat/explorer/v1/` | NASA / Earth Science and Remote Sensing Unit, Johnson Space Center。映像編集Marit Jentoft-Nilsen | [配信credits](../../public/habitat/explorer/v1/credits.txt)、[写真hash](../../public/habitat/explorer/v1/photography.json)、[映像hash](../../public/habitat/explorer/v1/film.json) | 2026-09-13 Codex確認。既存の実写原素材を縮小・符号化。AI生成・実在施設の写真とは扱わない |
+| PC探索の環境音・操作音 `public/media/explorer/audio/` | Kinoton、Kenney | 同上の配信creditsに原URL・CC0、[音声hash](../../public/media/explorer/audio/manifest.json) | 2026-09-13 Codex確認。作者提供音源の抜粋・フィルタ・音量調整・MP3化。利用者の操作後のみ取得 |
+| PC探索の立体文字 Inter | The Inter Project Authors | [SIL OFL 1.1全文](../../public/habitat/explorer/v1/Inter-OFL.txt) | 2026-09-13 Codex確認。既存Hero文言のmesh化。素材自体をCOMPASSの独占著作物として扱わない |
 
 この表は素材群ごとの索引です。全ファイルについて著作権帰属を断定したものではありません。
 新規素材や、上記証跡で特定できない素材には、パス、作者、原URL、取得時の条件、加工内容、

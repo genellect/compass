@@ -1,0 +1,45 @@
+COMPASS spatial exploration — asset credits
+
+The COMPASS facility is original, fictional architecture. The photographs do
+not depict a real COMPASS building, and are not measured 360-degree panoramas.
+NASA does not endorse COMPASS.
+
+ISS061-E-110527 photograph
+NASA / Earth Science and Remote Sensing Unit, Johnson Space Center
+https://eol.jsc.nasa.gov/SearchPhotos/photo.pl?mission=ISS061&roll=E&frame=110527
+Resized and encoded as WebP; no generative editing.
+
+ISS aurora photographic timelapse (November 12, 2025)
+Earth Science and Remote Sensing Unit, NASA Johnson Space Center
+Video editor: Marit Jentoft-Nilsen (Global Science and Technology, Inc.)
+https://svs.gsfc.nasa.gov/31375/
+Eight-second silent excerpt, resized and H.264 encoded; no generative editing.
+NASA media guidelines:
+https://www.nasa.gov/nasa-brand-center/images-and-media/
+
+Room Tone / Sci-Fi Large Hall — Kinoton — CC0
+https://freesound.org/people/Kinoton/sounds/353159/
+Source: author's official high-quality MP3 preview, not the original WAV.
+Excerpt, filtering, loudness normalization and loop editing.
+
+Sci-Fi Sounds — Kenney — CC0
+https://kenney.nl/assets/sci-fi-sounds
+doorOpen_001 and computerNoise_003: trimming, filtering and MP3 encoding.
+
+Interface Sounds — Kenney — CC0
+https://opengameart.org/content/interface-sounds
+click_003: trimming, filtering and MP3 encoding.
+
+Inter — Copyright 2020 The Inter Project Authors — SIL Open Font License 1.1
+https://github.com/google/fonts/tree/main/ofl/inter
+Converted to 3D letter outlines. License: Inter-OFL.txt in this directory.
+
+Reused furniture and PBR surfaces — CC0
+Marble 01 — Rob Tuytel — https://polyhaven.com/a/marble_01
+Rough Linen — colormass / Rico Cilliers — https://polyhaven.com/a/rough_linen
+Potted Plant 01 — Rico Cilliers — https://polyhaven.com/a/potted_plant_01
+Modern Arm Chair 01 — Vibrant Nordic — https://polyhaven.com/a/modern_arm_chair_01
+https://polyhaven.com/license
+The original Habitat v3 files remain unchanged; see /habitat/v3/credits.md.
+
+No paid asset, external media API or AI-generated photography is used.

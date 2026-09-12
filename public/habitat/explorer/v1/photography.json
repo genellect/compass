@@ -1,0 +1,8 @@
+{
+  "source": "https://eol.jsc.nasa.gov/SearchPhotos/photo.pl?mission=ISS061&roll=E&frame=110527",
+  "credit": "NASA / Earth Science and Remote Sensing Unit, Johnson Space Center",
+  "sourceSha256": "f595ae42793b434d3b436bfc1cce6b66955e5e5466d850fe1e6a0a6c98450293",
+  "outputSha256": "1fa7607d72171a7f648b9a2e897df05133854dfad2a418c5ca57478ad96fa8da",
+  "bytes": 1918836,
+  "processing": "Resize and WebP encoding only; no generative editing. Distant repeating cyclorama, not a measured panoramic reconstruction."
+}
