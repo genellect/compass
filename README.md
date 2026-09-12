@@ -2,12 +2,12 @@
 
 # COMPASS Platform
 
-**Don’t Just Learn. Build What’s Next.**
+**Don’t Just Learn. Build What’s Next.**  
 **学びを、意思決定の力へ。**
 
-COMPASSは、北里大学薬学部を起点とする、学生主導の教育・テクノロジープラットフォームです。Technology・Resources・Education・Communityの4領域で、学生の「知る」を「選ぶ」「動く」へつなげます。
+COMPASSは、北里大学薬学部を起点とする学生主導の教育・テクノロジープラットフォームです。Technology・Resources・Education・Communityの4領域を通じて、学生の「知る」を「選ぶ」「動く」へつなげます。
 
-このリポジトリには、3D空間を取り入れた公式Web、未来戦略ライブラリの利用者登録・権限管理基盤、公開フォーム、テスト、インフラ定義、運用ドキュメントを収録しています。体験の設計から配信、認証、データ管理、継続的な検証まで、実装をたどれる構成です。
+このリポジトリには、3D空間を取り入れた公式Web、未来戦略ライブラリの利用者登録・権限管理基盤、公開フォーム、テスト、インフラ定義、運用ドキュメントを収録しています。Web体験から認証、データ管理、配信、継続的な検証まで、COMPASS公式サイトを支える実装をまとめています。
 
 [公開Web](https://compass-official.pages.dev/) · [技術スタック](#技術スタック) · [開発を始める](#開発を始める) · [文書索引](docs/README.md) · [利用許可](#ライセンスと利用許可)
 
@@ -21,35 +21,35 @@ COMPASSは、北里大学薬学部を起点とする、学生主導の教育・�
 | Interactive紹介 | 独立したプロダクトの紹介・開発者向けページ |
 | yuto-matsui.com | 同じ配信成果物を使用する独立Webサイト |
 
-COMPASS Interactiveのアプリケーション本体は、別リポジトリ・別環境で開発しています。紹介ページやyuto-matsui.comの編集には、それぞれの対象を指定した依頼が必要です。配置と編集範囲は[Website Boundaries](docs/WEBSITE_BOUNDARIES.md)に記載しています。
+COMPASS Interactiveのアプリケーション本体は、別リポジトリ・別環境で開発しています。紹介ページとyuto-matsui.comも、それぞれ独立した編集対象です。配置と編集範囲は[Website Boundaries](docs/WEBSITE_BOUNDARIES.md)にまとめています。
 
-以下は現行ソースの構成です。登録基盤の外部認証・実データ・本番運用の確認状況は、[ロードマップ](docs/library-registration/phase-roadmap-v3.md)と対象コミットの検証記録で管理しています。公開ソースには、本番データ、認証情報、保護されたLibrary資料を含めません。
+登録基盤の外部認証・実データ・本番運用の確認状況は、[ロードマップ](docs/library-registration/phase-roadmap-v3.md)と対象コミットの検証記録で管理しています。公開リポジトリには、本番データ、認証情報、保護されたLibrary資料を含めません。
 
-## 体験を支える技術
+## 主要な実装
 
 ### ブラウザで描く3D空間
 
-公式トップのHabitatは、Three.jsによるWebGL描画とHTMLの情報表示を組み合わせています。9つのセクションに対応する部屋とカメラを設計し、1つのレンダラーで空間を描画します。文章、リンク、フォームは通常のDOMとして操作できます。
+公式トップのHabitatは、Three.jsによるWebGL描画とHTMLの情報表示を組み合わせています。9つのセクションに対応する部屋とカメラを配置し、単一のレンダラーで空間を描画します。文章、リンク、フォームは通常のDOMとして操作できます。
 
-建築と家具はBlenderで制作・配置し、間接光をライトマップへ焼き込みます。実行時にはPBR材質、HDR環境光、視点に応じた反射、Bloomを組み合わせ、MeshoptとWebPで配信データを圧縮しています。共有する建築データと部屋ごとの照明を管理し、必要なセクションに応じてアセットを読み込みます。
+建築と家具はBlenderで制作・配置し、間接光をライトマップに焼き込んでいます。実行時にはPBR材質、HDR環境光、視点に応じた反射、Bloomを組み合わせ、MeshoptとWebPで配信データを圧縮しています。建築データを共有しつつ、部屋ごとの照明を分け、必要なセクションに応じてアセットを読み込みます。
 
-画面幅と入力方式に応じて3Dを起動し、低フレームレート、読み込み失敗、動きを減らす設定ではポスター表示へ移行します。非表示タブでは描画を停止し、終了時にはGPUリソースを解放します。Web Audioによる環境音は利用者の操作で有効になり、ページ離脱時に停止します。
+画面幅と入力方式に応じて3Dを起動し、低フレームレート、読み込み失敗、Reduced Motion設定時にはポスター表示へ切り替えます。非表示タブでは描画を停止し、終了時にはGPUリソースを解放します。Web Audioによる環境音はユーザー操作後に有効化し、ページ離脱時に停止します。
 
 実装は[Habitat](src/components/Habitat/)、制作手順は[Authoring Guide](scripts/habitat/README.md)、素材の出典は[Asset Credits](scripts/habitat/ASSET_CREDITS.md)を参照してください。通常のWebビルドにBlenderは必要ありません。
 
 ### モバイルと映像表現
 
-縦向きのタブレットやスマートフォンでは、NASAのISS写真と短いタイムラプスを使った構成を提供します。動画は表示領域や通信条件に応じて読み込み・再生を制御し、データ節約設定、低速回線、再生失敗時には静止画を表示します。モバイル経路で3DエンジンやGLBを取得しないこともテストしています。
+縦向きのタブレットやスマートフォンでは、NASAのISS写真と短いタイムラプスを使った画面を表示します。動画は表示領域や通信条件に応じて読み込み・再生を制御し、データ節約設定、低速回線、再生失敗時には静止画へ切り替えます。モバイルでは3DエンジンやGLBを取得しないこともテストで確認しています。
 
-Contactの入口には、手続き的に制作したBlenderの建築映像を使用しています。映像上の扉にHTMLボタンを重ね、選択した導線の映像を読み込みます。スキップ、動きを減らす設定、読み込み失敗の各経路でもフォームへ進める構成です。
+Contactの入口には、Blenderで手続き的に制作した建築映像を使用しています。映像上の扉にHTMLボタンを重ね、選択した導線に対応する映像を読み込みます。演出のスキップ、Reduced Motion設定、読み込み失敗時にもフォームへ進めます。
 
-制作条件と操作契約は[Mobile Space Media](docs/mobile-space-media.md)と[Contact Door Entry](docs/contact-door-entry.md)に記載しています。
+制作条件と操作仕様は[Mobile Space Media](docs/mobile-space-media.md)と[Contact Door Entry](docs/contact-door-entry.md)に記載しています。
 
 ### 登録からアクセス権の反映まで
 
-未来戦略ライブラリの登録基盤は、Public API、Admin API、Drive Workerを個別のエントリーポイントとして実装しています。GoogleのIDトークンをサーバー側で検証し、利用資格と管理者権限を再判定します。
+未来戦略ライブラリの登録基盤は、Public API、Admin API、Drive Workerを個別のエントリーポイントとして実装しています。GoogleのIDトークンをサーバー側で検証し、利用資格と管理者権限をその都度判定します。
 
-PostgreSQLでは用途ごとのDBロールと限定されたRPCを使用します。Driveへの権限反映はTransactional Outboxへ記録し、WorkerがLease、Retry、操作の署名検証を通じて処理します。管理操作、権限変更、出力処理には監査記録を設けています。
+PostgreSQLでは用途ごとのDBロールと限定されたRPCを使用します。Driveへの権限反映はTransactional Outboxに記録し、WorkerがLease、Retry、操作の署名検証を行ったうえで処理します。管理操作、権限変更、出力処理には監査記録を残します。
 
 ```mermaid
 flowchart LR
@@ -66,11 +66,11 @@ flowchart LR
     Worker --> Drive["Google Drive"]
 ```
 
-図はリポジトリで定義する論理構成です。サービスごとの公開条件と運用状態は[Architecture](docs/ARCHITECTURE.md)、認可の詳細は[Admin Access Security Boundary](docs/library-registration/admin-access-security-boundary.md)を参照してください。
+上図は、このリポジトリで定義している論理構成です。サービスごとの公開条件と運用状態は[Architecture](docs/ARCHITECTURE.md)、認可の詳細は[Admin Access Security Boundary](docs/library-registration/admin-access-security-boundary.md)を参照してください。
 
 ## 技術スタック
 
-バージョンはこのリポジトリの依存定義に対応します。配信済みのバージョンはデプロイ先のコミットで確認します。
+記載しているバージョンは、このリポジトリの依存定義に対応しています。実際に配信されているバージョンは、デプロイ先のコミットで確認できます。
 
 | 領域 | 技術と用途 |
 |---|---|
@@ -91,7 +91,7 @@ flowchart LR
 
 ## 品質と保守
 
-| 検証対象 | 確認する契約 |
+| 検証対象 | 主な確認内容 |
 |---|---|
 | フォーム・API | 入力、資格判定、認証・認可、署名、重複処理、通知の異常系 |
 | 配信成果物 | 静的出力、公開ルート、Pages Functionsの適用範囲、Libraryのビルド対象 |
@@ -100,11 +100,11 @@ flowchart LR
 | 公開ソース | 秘密情報・保護資料の混入、Git履歴、Actionとコンテナの固定参照 |
 | 依存関係 | npm / uvの既知脆弱性、ライセンス式、ツール定義の整合、依存一覧 |
 
-CIはこれらの契約を継続確認します。実機の描画性能、外部サービスとの接続、本番の運用確認は、測定条件と検証したコミットを記録します。テストの合格を未検証環境へ一般化しない方針です。
+CIでは、上記を継続的に検証しています。実機での描画性能、外部サービスとの接続、本番環境での動作については、測定条件と検証対象のコミットを記録しています。CIの結果と実環境での確認は分けて扱います。
 
 ## 開発を始める
 
-通常の開発にはGitHub CodespacesまたはCodex Cloudを使用します。共通のlockfileと検証コマンドを用い、プロジェクトごとの環境を保持します。開発・mock buildに本番の認証情報は必要ありません。
+通常の開発にはGitHub CodespacesまたはCodex Cloudを使用します。共通のlockfileと検証コマンドを使い、プロジェクトごとの環境を維持します。開発環境やmock buildに本番の認証情報は必要ありません。
 
 ### GitHub Codespaces
 
@@ -125,11 +125,11 @@ npm run check:repository
 npm run check
 ```
 
-`check:repository`は文書リンク、ツール定義、ライセンス、保守スクリプトを確認します。`check`はフォーム関連テスト、型検査、ビルド、静的出力、レスポンシブ・Habitatのブラウザ検証を実行します。`cloud:check`は`check`の別名です。Windows PowerShellから直接実行するときは`npm.cmd run`を使用してください。
+`check:repository`は、文書リンク、ツール定義、ライセンス、保守スクリプトを確認します。`check`は、フォーム関連テスト、型検査、ビルド、静的出力、レスポンシブ・Habitatのブラウザ検証を実行します。`cloud:check`は`check`の別名です。Windows PowerShellから直接実行する場合は`npm.cmd run`を使用してください。
 
 API・専用ローカルDB・E2Eの手順は[Development Workflows](docs/development-workflows.md)、依存更新と監査は[Dependency Maintenance](docs/dependency-maintenance.md)を参照してください。画像差分の基準画像はWindowsで管理しています。
 
-## ソースを読む
+## リポジトリ構成
 
 | ディレクトリ・入口 | 内容 |
 |---|---|
@@ -143,7 +143,7 @@ API・専用ローカルDB・E2Eの手順は[Development Workflows](docs/develop
 | [`google-apps-script/`](google-apps-script/) | Community・Contact等の通知処理 |
 | [`tests/`](tests/) / [`.github/workflows/`](.github/workflows/) | 動作契約、公開境界、CI |
 
-公式トップの表示経路は`src/app/(official)/page.tsx` → `src/App.tsx` → `src/LegacyPageBody.tsx`です。`LegacyPageBody.tsx`は現在も使用しているモジュールです。
+公式トップの表示経路は`src/app/(official)/page.tsx` → `src/App.tsx` → `src/LegacyPageBody.tsx`です。`LegacyPageBody.tsx`は名前にLegacyを含みますが、現在も使用しています。
 
 ## ドキュメント
 
@@ -157,7 +157,7 @@ API・専用ローカルDB・E2Eの手順は[Development Workflows](docs/develop
 | [Library Registration](docs/library-registration/) | 登録基盤の設計、プライバシー、運用・公開ゲート |
 | [AGENTS.md](AGENTS.md) | エージェント向けの作業範囲、実装・検証・承認規則 |
 
-ブランチでの変更とCI確認を経て、レビュー可能なPull Requestを作成します。本番へ影響する操作には権利者の事前承認が必要です。既存CDは維持し、mainへの反映が本番配信を起動する場合は公開操作として扱います。
+変更はブランチ上で行い、CIを確認したうえでレビュー可能なPull Requestとして提出します。本番へ影響する操作には権利者の事前承認が必要です。既存のCDは維持し、mainへの反映によって本番配信が起動する場合は公開操作として扱います。
 
 ## ライセンスと利用許可
 
