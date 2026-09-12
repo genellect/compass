@@ -8,7 +8,7 @@ import { EssayContinuation } from "./EssayContinuation";
 import { FounderFragments } from "./FounderFragments";
 import { FounderHeroGallery } from "./FounderHeroGallery";
 import { MobileExternalMenu } from "./MobileExternalMenu";
-import { DepthCard, DepthVisual, ExpertiseModel } from "../../../components/portfolio/DepthCard";
+import { DepthCard, DepthVisual } from "../../../components/portfolio/DepthCard";
 import { OffHoursGallery } from "../../../components/portfolio/OffHoursGallery";
 import styles from "./founder.module.css";
 
@@ -324,17 +324,16 @@ export default function FounderPage() {
             <div className={styles.fieldGrid}>
               {fields.map((field) => (
                 <DepthCard key={field.id} depth="expertise" className={styles.fieldCard} data-accent={field.accent}>
-                  <ExpertiseModel kind={field.accent} language="ja" />
-                  <div className={styles.fieldCopy} data-depth-layer="copy">
-                    <p>{field.english}</p>
-                    <h3>{field.title}</h3>
-                    <span>{field.description}</span>
-                  </div>
                   <DepthVisual className={styles.fieldImage} data-depth-layer="image">
                     <Image decoding="sync" loading="eager" src={field.image} alt={field.alt} fill sizes="(min-width: 901px) 32vw, (min-width: 641px) 50vw, 100vw" />
                     <div className={styles.fieldOverlay} aria-hidden="true" />
                     <span className={styles.fieldNumber}>{field.id}</span>
                   </DepthVisual>
+                  <div className={styles.fieldCopy} data-depth-layer="copy">
+                    <p>{field.english}</p>
+                    <h3>{field.title}</h3>
+                    <span>{field.description}</span>
+                  </div>
                 </DepthCard>
               ))}
             </div>

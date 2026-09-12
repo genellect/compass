@@ -16,7 +16,7 @@ for (const language of ["ja", "en"] as const) {
         page.on("pageerror", error => errors.push(error.message));
         await page.goto(language === "ja" ? "/founder/" : "/en/");
         await page.evaluate(() => document.fonts.ready);
-        // Photos and pre-rendered models start before scrolling or touching a card.
+        // Photos start before scrolling or touching a card.
         await expect.poll(() => page.locator("[data-depth-card] img").evaluateAll(images => images.every(img => (img as HTMLImageElement).complete && (img as HTMLImageElement).naturalWidth > 0))).toBe(true);
         for (const id of ["expertise", "experience", "off-hours"]) {
           const cards = page.locator(`#${id} [data-depth-card]`);

@@ -16,7 +16,7 @@ import { EnglishHeroGallery } from "./EnglishHeroGallery";
 import { EnglishMobileMenu } from "./EnglishMobileMenu";
 import { GitHubIcon, InstagramIcon } from "./EnglishSocialIcons";
 import { EnglishStatement } from "./EnglishStatement";
-import { DepthCard, DepthVisual, ExpertiseModel } from "../../../components/portfolio/DepthCard";
+import { DepthCard, DepthVisual } from "../../../components/portfolio/DepthCard";
 import { OffHoursGallery } from "../../../components/portfolio/OffHoursGallery";
 import styles from "./english-founder.module.css";
 
@@ -186,15 +186,14 @@ export default function EnglishFounderPage() {
             <div className={styles.expertiseGrid}>
               {expertise.map((item, index) => (
                 <DepthCard key={item.number} depth="expertise" editorial className={styles.expertisePlate} data-accent={item.accent} data-order={index + 1}>
-                  <ExpertiseModel kind={index === 0 ? "bio" : index === 1 ? "ai" : "education"} language="en" />
-                  <div className={styles.expertiseCopy} data-depth-layer="copy">
-                    <h3>{item.title}</h3>
-                    <p>{item.description}</p>
-                  </div>
                   <DepthVisual className={styles.expertiseImage} data-depth-layer="image">
                     <Image decoding="sync" loading="eager" src={item.image} alt={item.alt} fill sizes="(min-width: 901px) 38vw, 92vw" />
                     <div className={styles.expertiseNumber} data-depth-layer="detail">{item.number}</div>
                   </DepthVisual>
+                  <div className={styles.expertiseCopy} data-depth-layer="copy">
+                    <h3>{item.title}</h3>
+                    <p>{item.description}</p>
+                  </div>
                 </DepthCard>
               ))}
             </div>

@@ -658,9 +658,10 @@
 
 .fieldImage {
   position: relative;
-  height: clamp(190px, 17vw, 224px);
+  height: clamp(240px, 24vw, 300px);
+  flex-shrink: 0;
   min-height: 0;
-  margin: auto 24px 28px;
+  margin: 24px 24px 0;
   border-radius: 4px;
   background: #142434;
 }
@@ -691,7 +692,7 @@
 
 .fieldCopy {
   min-height: 158px;
-  padding: 18px 30px 30px;
+  padding: 30px;
   background: transparent;
 }
 
@@ -2596,8 +2597,8 @@
   .compactHeading { margin-bottom: 28px; }
 
   .fieldGrid { grid-template-columns: 1fr; gap: 24px; }
-  .fieldImage { height: min(58vw, 250px); margin: 0 24px 28px; }
-  .fieldCopy { min-height: 0; padding: 18px 28px 30px; }
+  .fieldImage { height: min(68vw, 320px); margin: 24px 24px 0; }
+  .fieldCopy { min-height: 0; padding: 30px 28px; }
 
   .story { padding: 70px 0; }
   .storyPortrait { height: min(85svh, 690px); min-height: 490px; }
