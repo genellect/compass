@@ -52,6 +52,7 @@ See the [asset register](docs/legal/asset-register.md). Existing notices are pre
 - [NASA mobile media provenance](docs/mobile-space-media.md) and [manifest](public/habitat/mobile-v1/manifest.json)
 - [Independent portfolio image credits](docs/founder-image-credits.md)
 - [Original Contact rendering](docs/contact-door-entry.md)
+- [PC spatial exploration credits](public/habitat/explorer/v1/credits.txt): NASA photography and timelapse, Kinoton and Kenney CC0 audio, and Inter SIL OFL 1.1 outlines. Existing Habitat CC0 furniture and materials are reused without changing their licenses.
 
 Poly Haven CC0 assets remain CC0. NASA imagery is governed by NASA's media policy
 and any item-specific third-party rights; NASA logos and endorsement are not granted.

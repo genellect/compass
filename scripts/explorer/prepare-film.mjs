@@ -1,0 +1,11 @@
+import {spawnSync} from 'node:child_process';
+import {readFile,writeFile} from 'node:fs/promises';
+import {createHash} from 'node:crypto';
+const [ffmpeg,source]=process.argv.slice(2);
+if(!ffmpeg||!source)throw new Error('Usage: node prepare-film.mjs FFMPEG NASA_SOURCE_CLIP');
+const folder='public/habitat/explorer/v1',target=folder+'/iss-film.mp4';
+const result=spawnSync(ffmpeg,['-hide_banner','-loglevel','error','-y','-i',source,'-t','8','-an','-vf','scale=1920:1080:flags=lanczos,fps=24','-c:v','libx264','-preset','slow','-crf','21','-maxrate','2M','-bufsize','4M','-pix_fmt','yuv420p','-movflags','+faststart','-map_metadata','-1',target],{encoding:'utf8'});
+if(result.status!==0)throw new Error(result.stderr);
+const input=await readFile(source),output=await readFile(target);
+await writeFile(folder+'/film.json',JSON.stringify({source:'https://svs.gsfc.nasa.gov/31375/',credit:'Earth Science and Remote Sensing Unit, NASA Johnson Space Center; video editor Marit Jentoft-Nilsen',sourceSha256:createHash('sha256').update(input).digest('hex'),outputSha256:createHash('sha256').update(output).digest('hex'),file:'iss-film.mp4',bytes:output.length,width:1920,height:1080,fps:24,duration:8,audio:false,processing:'Eight-second excerpt from the existing NASA source clip; scaling and H.264 encoding, no generative editing.'},null,2)+'\n');
+console.log({bytes:output.length});

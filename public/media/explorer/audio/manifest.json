@@ -1,0 +1,31 @@
+{
+  "version": "1",
+  "sampleRate": 48000,
+  "channels": 2,
+  "assets": [
+    {
+      "file": "room.mp3",
+      "bytes": 961388,
+      "sha256": "d7f28334fb732dfc80b63158849bbae4e79e01ba0edeee2b52ee76845acf942b",
+      "source": "room-tone.mp3"
+    },
+    {
+      "file": "door.mp3",
+      "bytes": 12044,
+      "sha256": "2bd2e58b009caa6aec88d7e1d62caa87997199fb99927999970e764e3a8e859f",
+      "source": "scifi/Audio/doorOpen_001.ogg"
+    },
+    {
+      "file": "select.mp3",
+      "bytes": 1484,
+      "sha256": "30d845714474540340becce2291ea3b797dc134fa9a46f53cf16a42e66d8314f",
+      "source": "interface/Audio/click_003.ogg"
+    },
+    {
+      "file": "equipment.mp3",
+      "bytes": 19244,
+      "sha256": "510a0de614e2d19a73756cbed01907d0446cf5e04ec4b655bd709a2bcf7247ba",
+      "source": "scifi/Audio/computerNoise_003.ogg"
+    }
+  ]
+}

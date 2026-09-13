@@ -5,6 +5,7 @@ import { ASSET_BASE, DESKTOP_QUERY, locateTour, sectionIds, chapters, chapterInd
 import type { SceneController } from './scene-engine';
 import type { Soundscape } from './soundscape';
 import styles from './habitat.module.css';
+import { ExplorerEntry } from '../Explorer/ExplorerEntry';
 
 const storageKey = 'compass-habitat-paused';
 export function Habitat() {
@@ -208,6 +209,7 @@ export function Habitat() {
         </a>)}
       </nav>
       <div className={styles.mediaControls} data-habitat-media>
+      <ExplorerEntry className={styles.sound} />
       <button type="button" className={styles.sound} aria-pressed={audible} onClick={()=>void toggleSound()}>
         <span className={styles.soundBars} data-audible={audible} aria-hidden="true"><i/><i/><i/></span>
         {audible?'音声OFF':'音声ON'}

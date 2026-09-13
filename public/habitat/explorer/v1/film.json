@@ -1,0 +1,14 @@
+{
+  "source": "https://svs.gsfc.nasa.gov/31375/",
+  "credit": "Earth Science and Remote Sensing Unit, NASA Johnson Space Center; video editor Marit Jentoft-Nilsen",
+  "sourceSha256": "813e5e56df2a13cb86a4f3501f18a5da1475176f6fcf6877133ac51a8d7afa86",
+  "outputSha256": "b31da316317398c0637a422f6aaeb551aa9a6860ef61253c9c3fbff740091cf6",
+  "file": "iss-film.mp4",
+  "bytes": 1046381,
+  "width": 1920,
+  "height": 1080,
+  "fps": 24,
+  "duration": 8,
+  "audio": false,
+  "processing": "Eight-second excerpt from the existing NASA source clip; scaling and H.264 encoding, no generative editing."
+}

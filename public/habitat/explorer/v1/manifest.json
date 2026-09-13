@@ -1,0 +1,330 @@
+{
+  "version": "1",
+  "blender": "4.5.11 LTS",
+  "architecture": "concourse.glb",
+  "signs": "signs.glb",
+  "lighting": "/habitat/v3/room.hdr",
+  "nav": "floor.json",
+  "rooms": [
+    {
+      "id": "top",
+      "label": "COMPASS",
+      "origin": [
+        0,
+        0,
+        0
+      ],
+      "yaw": 0,
+      "model": "/habitat/explorer/v1/top.glb",
+      "shell": "concourse.glb",
+      "door": [
+        6,
+        1.65,
+        7
+      ],
+      "panel": [
+        -1,
+        1.85,
+        -6
+      ],
+      "reading": [
+        -3,
+        1.65,
+        7
+      ],
+      "panelYaw": 0,
+      "neighbours": [
+        "technology",
+        "resources",
+        "contact"
+      ]
+    },
+    {
+      "id": "vision",
+      "label": "Vision",
+      "origin": [
+        0,
+        0,
+        42
+      ],
+      "yaw": 3.141592653589793,
+      "model": "/habitat/v3/vision.glb",
+      "shell": "room-shell.glb",
+      "door": [
+        1.4695761589768238e-15,
+        1.9,
+        30
+      ],
+      "panel": [
+        -4.8,
+        2.05,
+        43
+      ],
+      "reading": [
+        -4.8,
+        1.65,
+        39
+      ],
+      "panelYaw": 1.5707963267948966,
+      "neighbours": [
+        "contact",
+        "experience"
+      ]
+    },
+    {
+      "id": "experience",
+      "label": "Experience",
+      "origin": [
+        29.698484809834998,
+        0,
+        29.698484809834998
+      ],
+      "yaw": 3.9269908169872414,
+      "model": "/habitat/v3/experience.glb",
+      "shell": "room-shell.glb",
+      "door": [
+        21.213203435596427,
+        1.9,
+        21.213203435596427
+      ],
+      "panel": [
+        27.011479041326115,
+        2.05,
+        33.79970414071697
+      ],
+      "reading": [
+        24.183051916579927,
+        1.65,
+        30.97127701597078
+      ],
+      "panelYaw": 2.356194490192345,
+      "neighbours": [
+        "vision",
+        "technology"
+      ]
+    },
+    {
+      "id": "technology",
+      "label": "Interactive",
+      "origin": [
+        42,
+        0,
+        2.5717582782094417e-15
+      ],
+      "yaw": 4.71238898038469,
+      "model": "/habitat/v3/technology.glb",
+      "shell": "room-shell.glb",
+      "door": [
+        30,
+        1.9,
+        3.6739403974420584e-16
+      ],
+      "panel": [
+        43,
+        2.05,
+        4.8000000000000025
+      ],
+      "reading": [
+        39,
+        1.65,
+        4.800000000000002
+      ],
+      "panelYaw": 3.141592653589793,
+      "neighbours": [
+        "experience",
+        "resources",
+        "top"
+      ]
+    },
+    {
+      "id": "resources",
+      "label": "Library",
+      "origin": [
+        29.698484809834998,
+        0,
+        -29.698484809834994
+      ],
+      "yaw": 5.497787143782138,
+      "model": "/habitat/v3/resources.glb",
+      "shell": "room-shell.glb",
+      "door": [
+        21.213203435596427,
+        1.9,
+        -21.213203435596427
+      ],
+      "panel": [
+        33.79970414071697,
+        2.05,
+        -27.011479041326112
+      ],
+      "reading": [
+        30.97127701597078,
+        1.65,
+        -24.183051916579924
+      ],
+      "panelYaw": 3.9269908169872414,
+      "neighbours": [
+        "technology",
+        "manifesto",
+        "top"
+      ]
+    },
+    {
+      "id": "manifesto",
+      "label": "Manifesto",
+      "origin": [
+        5.143516556418883e-15,
+        0,
+        -42
+      ],
+      "yaw": 6.283185307179586,
+      "model": "/habitat/v3/manifesto.glb",
+      "shell": "room-shell.glb",
+      "door": [
+        2.204364238465236e-15,
+        1.9,
+        -30
+      ],
+      "panel": [
+        4.800000000000005,
+        2.05,
+        -43
+      ],
+      "reading": [
+        4.800000000000004,
+        1.65,
+        -39
+      ],
+      "panelYaw": 4.71238898038469,
+      "neighbours": [
+        "resources",
+        "community"
+      ]
+    },
+    {
+      "id": "community",
+      "label": "Community",
+      "origin": [
+        -29.698484809834994,
+        0,
+        -29.698484809835
+      ],
+      "yaw": 7.0685834705770345,
+      "model": "/habitat/v3/community.glb",
+      "shell": "room-shell.glb",
+      "door": [
+        -21.213203435596427,
+        1.9,
+        -21.21320343559643
+      ],
+      "panel": [
+        -27.011479041326112,
+        2.05,
+        -33.799704140716976
+      ],
+      "reading": [
+        -24.183051916579924,
+        1.65,
+        -30.971277015970788
+      ],
+      "panelYaw": 5.497787143782138,
+      "neighbours": [
+        "manifesto",
+        "founder"
+      ]
+    },
+    {
+      "id": "founder",
+      "label": "Founder",
+      "origin": [
+        -42,
+        0,
+        -7.715274834628325e-15
+      ],
+      "yaw": 7.853981633974483,
+      "model": "/habitat/v3/founder.glb",
+      "shell": "room-shell.glb",
+      "door": [
+        -30,
+        1.9,
+        -4.0413344371862654e-15
+      ],
+      "panel": [
+        -43,
+        2.05,
+        -4.800000000000008
+      ],
+      "reading": [
+        -39,
+        1.65,
+        -4.800000000000007
+      ],
+      "panelYaw": 6.283185307179586,
+      "neighbours": [
+        "community",
+        "contact"
+      ]
+    },
+    {
+      "id": "contact",
+      "label": "Contact",
+      "origin": [
+        -29.698484809835,
+        0,
+        29.698484809834987
+      ],
+      "yaw": 8.63937979737193,
+      "model": "/habitat/v3/contact.glb",
+      "shell": "room-shell.glb",
+      "door": [
+        -21.21320343559642,
+        1.9,
+        21.213203435596427
+      ],
+      "panel": [
+        -33.79970414071697,
+        2.05,
+        27.0114790413261
+      ],
+      "reading": [
+        -30.971277015970777,
+        1.65,
+        24.183051916579913
+      ],
+      "panelYaw": 7.068583470577034,
+      "neighbours": [
+        "founder",
+        "vision",
+        "top"
+      ]
+    }
+  ],
+  "assets": [
+    {
+      "file": "concourse.glb",
+      "bytes": 2077132,
+      "triangles": 22976
+    },
+    {
+      "file": "room-shell.glb",
+      "bytes": 1394436,
+      "triangles": 5304
+    },
+    {
+      "file": "signs.glb",
+      "bytes": 585800,
+      "triangles": 121608
+    },
+    {
+      "file": "exhibits.glb",
+      "bytes": 1137216,
+      "triangles": 156236
+    },
+    {
+      "file": "top.glb",
+      "bytes": 1938760,
+      "triangles": 52672
+    }
+  ],
+  "exhibits": "exhibits.glb"
+}
