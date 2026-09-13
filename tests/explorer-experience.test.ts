@@ -1,5 +1,8 @@
 import { expect, test } from 'vitest';
-import { readFileSync } from 'node:fs';
+import React from 'react';
+import { renderToStaticMarkup } from 'react-dom/server';
+import { CompassExperienceSection, CommunityExperienceSection } from '../src/sections/OfficialCoreSections';
+import { copyText, markupText } from './explorer-copy-helpers';
 import { BoxGeometry, DoubleSide, Group, Mesh, MeshBasicMaterial, Ray, Raycaster, Vector3 } from 'three';
 import { OcclusionWorld } from '../src/components/Explorer/occlusion';
 import { CollisionWorld } from '../src/components/Explorer/collision';
@@ -8,6 +11,8 @@ import { activityItems, chapterIds, communityCopy, libraryItems, questionExample
 import { exhibitDocuments } from '../src/components/Explorer/exhibit-documents';
 import type { Room } from '../src/components/Explorer/contracts';
 import manifest from '../public/habitat/explorer/v1/manifest.json';
+
+Object.assign(globalThis, { React });
 
 test('entry and exit approach the correct side of every actual doorway without crossing it first', () => {
   for (const room of manifest.rooms.slice(1) as unknown as Room[]) {
@@ -58,7 +63,7 @@ test('exhibits reuse actual public copy and complete Manifesto chapters', async 
   const chapters = await exhibitDocuments(); expect(chapters.map(chapter => chapter.id)).toEqual(chapterIds);
   expect(chapters.every(chapter => chapter.blocks.length > 2)).toBe(true);
   expect(libraryItems).toHaveLength(3); expect(questionExamples).toHaveLength(3);
-  const source = readFileSync('src/sections/OfficialCoreSections.tsx', 'utf8').replace(/<[^>]*>/g, '').replace(/\s+/g, '');
-  for (const item of activityItems) for (const text of [item.label, item.title, item.text]) expect(source).toContain(text.replace(/\s+/g, ''));
-  for (const text of [communityCopy.introduction, ...communityCopy.paragraphs]) expect(source).toContain(text.replace(/\s+/g, ''));
+  const source = markupText(renderToStaticMarkup(React.createElement(React.Fragment, null, React.createElement(CompassExperienceSection), React.createElement(CommunityExperienceSection))));
+  for (const item of activityItems) for (const text of [item.label, item.title, item.text]) expect(source).toContain(copyText(text));
+  for (const text of [communityCopy.introduction, ...communityCopy.paragraphs]) expect(source).toContain(copyText(text));
 });

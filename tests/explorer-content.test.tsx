@@ -6,21 +6,21 @@ import { VisionExperienceSection, CompassExperienceSection, TechnologyCoreSectio
 import { ManifestoSection } from '../src/sections/ManifestoSection';
 import { ContactSection } from '../src/sections/ContactSection';
 import { exhibits } from '../src/components/Explorer/exhibit-content';
+import { copyText, markupText } from './explorer-copy-helpers';
 
 // Some production components use the classic JSX transform under Vitest.
 Object.assign(globalThis, { React });
-const normalize = (text: string) => text.replace(/<[^>]+>/g, '').replace(/&#x27;|&#39;/g, "'").replace(/&amp;/g, '&').replace(/&quot;/g, '"').replace(/\s/g, '');
 const sources = { top: NewHero, vision: VisionExperienceSection, experience: CompassExperienceSection, technology: TechnologyCoreSection, resources: ResourcesExperienceSection, manifesto: ManifestoSection, community: CommunityExperienceSection, founder: FounderPortfolioSection, contact: ContactSection };
 
 describe('the 3D exhibits select existing production copy', () => {
   for (const [id, Component] of Object.entries(sources)) it(id, () => {
     const source = renderToStaticMarkup(React.createElement(Component));
     const copy = exhibits[id as keyof typeof exhibits];
-    expect(normalize(source)).toContain(normalize(copy.title));
-    expect(normalize(source)).toContain(normalize(copy.body));
+    expect(markupText(source)).toContain(copyText(copy.title));
+    expect(markupText(source)).toContain(copyText(copy.body));
     if (!['top', 'vision', 'experience'].includes(id)) {
       expect(source).toContain(`href="${copy.href}"`);
-      expect(normalize(source)).toContain(normalize(copy.cta));
+      expect(markupText(source)).toContain(copyText(copy.cta));
     }
   });
 });
