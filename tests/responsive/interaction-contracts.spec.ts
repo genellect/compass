@@ -204,9 +204,11 @@ for (const route of officialDesktopRoutes) {
     }
     if (route.path === "/") {
       await nav.getByRole("button", { name: "Technology", exact: true }).click();
-      await expect(nav.locator("#technology-menu a")).toHaveCount(1);
-      await expect(nav.locator("#technology-menu a")).toHaveText("COMPASS Interactive疑問が届く、参加型講義システム");
-      await expect(nav.locator("#technology-menu a")).toHaveAttribute("href", "INTRO_Interactive/");
+      await expect(nav.locator("#technology-menu a")).toHaveCount(2);
+      await expect(nav.locator("#technology-menu a").nth(0)).toHaveText("COMPASS Interactive疑問が届く、参加型講義システム");
+      await expect(nav.locator("#technology-menu a").nth(0)).toHaveAttribute("href", "INTRO_Interactive/");
+      await expect(nav.locator("#technology-menu a").nth(1)).toHaveText("COMPASS Platformテクノロジーを感じる3D体験");
+      await expect(nav.locator("#technology-menu a").nth(1)).toHaveAttribute("href", "/3d/");
       await page.keyboard.press("Escape");
       await expect(nav.getByText("Technology Core", { exact: true })).toHaveCount(0);
       await expect(page.locator(".site-header .logo-copy")).toHaveText("COMPASS");

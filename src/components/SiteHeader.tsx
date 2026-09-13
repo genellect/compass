@@ -41,6 +41,12 @@ type MobileNavGroup = {
 
 const libraryUrl = "/future-strategy-library/";
 
+const platformNavItem: NavItem = {
+  href: "/3d/",
+  label: "COMPASS Platform",
+  description: "テクノロジーを感じる3D体験"
+};
+
 const navGroups: NavGroup[] = [
   {
     id: "technology",
@@ -165,6 +171,7 @@ export function SiteHeader({
   const closeTimerRef = useRef<number | null>(null);
   const [activeMenu, setActiveMenu] = useState<string | null>(null);
   const [activeSection, setActiveSection] = useState("top");
+  const [habitatEnabled, setHabitatEnabled] = useState(false);
   const [mobileMounted, setMobileMounted] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [pendingMobileTarget, setPendingMobileTarget] = useState<string | null>(null);
@@ -189,6 +196,18 @@ export function SiteHeader({
   const libraryRegistrationIsExternal = isExternalCompassHref(
     FUTURE_STRATEGY_LIBRARY_REGISTRATION_HREF
   );
+
+  useEffect(() => {
+    if (routeContext !== "root") return;
+    const syncHabitatState = () => {
+      setHabitatEnabled(
+        document.querySelector<HTMLElement>("[data-habitat]")?.dataset.enabled === "true"
+      );
+    };
+    syncHabitatState();
+    window.addEventListener("compass:habitat-change", syncHabitatState);
+    return () => window.removeEventListener("compass:habitat-change", syncHabitatState);
+  }, [routeContext]);
 
   const closeMobileMenu = (restoreFocus = true) => {
     setMobileOpen(false);
@@ -323,6 +342,9 @@ export function SiteHeader({
             {navGroups.map((group) => {
               const menuId = `${group.id}-menu`;
               const current = visibleSection === group.id;
+              const items = group.id === "technology" && habitatEnabled
+                ? [...group.items, platformNavItem]
+                : group.items;
               return (
                 <div key={group.id} className={`nav-group${activeMenu === group.id ? " is-open" : ""}${current ? " is-current" : ""}`}>
                   <button
@@ -342,7 +364,7 @@ export function SiteHeader({
                     {group.label}
                   </button>
                   <div id={menuId} className="nav-panel">
-                    {group.items.map((item) => (
+                    {items.map((item) => (
                       <a
                         key={`${item.href}-${item.label}`}
                         className="panel-link"
@@ -395,11 +417,17 @@ export function SiteHeader({
               </a>
             ) : showParentActions ? (
               <>
-                <a className="header-cta header-cta--interactive" href={resolveHref("INTRO_Interactive/")}>
-                  講義を体験する
+                <a
+                  className="header-cta header-cta--interactive"
+                  href={habitatEnabled ? "/3d/" : resolveHref("INTRO_Interactive/")}
+                >
+                  {habitatEnabled ? "3Dを体験する" : "講義を体験する"}
                 </a>
-                <a className="header-cta header-cta--optional" href={libraryUrl}>
-                  ライブラリを見る
+                <a
+                  className="header-cta header-cta--optional"
+                  href={habitatEnabled ? resolveHref("INTRO_Interactive/") : libraryUrl}
+                >
+                  {habitatEnabled ? "講義を体験する" : "ライブラリを見る"}
                 </a>
               </>
             ) : null}
