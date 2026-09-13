@@ -1,6 +1,6 @@
 # COMPASS 3D — 操作と公開成果物の統合
 
-2026-09-13。基準は独立ページ版 `d54b9df`。Status: Implemented, verification pending（Preview配信・継続移動の確認中）。Productionは変更しない。
+2026-09-13。基準は独立ページ版 `d54b9df`。Status: Implemented, scoped verification passed, visual review pending。Productionは変更していない。
 
 ## 更新内容
 
@@ -13,14 +13,43 @@
 
 ## 最終配信成果物の確認
 
-- TypeScript、Next.js static export build、`npm run verify`、公開ソース655ファイル、維持文書122リンクが合格。
+- TypeScript、Next.js static export build、`npm run verify`、公開ソース656ファイル、維持文書122リンクが合格。
 - 専用Vitest 22件合格。実GLBの壁・ガラス・全室経路、移動速度、扉の進入方向、マスク再利用、視線索引と通常raycastの一致、公開コピーと章の全文を検証した。
+- CodeQLが文言照合テストのHTML置換へ3件の警告を出したため、Reactが生成したマークアップをTypeScriptのJSX構文木で読む方式へ変更した。修正に関係する14件とTypeScriptを再確認し、`076edc1` のCodeQLチェックも合格。公開ページのHTML処理や配信アプリコードは変更していない。
 - 最終buildでEdgeの専用10ケースが合格（2.4分）。全9室、歩行・停止・方向変更・扉の往復、資料/章/質問/Community状態、履歴・再読み込み、音響同意・消音、context喪失、通常サイト復帰を確認した。
 - 901×768、1024×768、1275×553、1440×900、1920×1080、3840×2160の読書面/CTAと900px境界を確認。Mobile、iPad、iPad Desktop UA、reduced motionでは新rendererの要求がない。
 - 動画のブラウザテストは、公式YouTube iframeが明示クリック時だけ要求される契約を確認し、外部レスポンスをfixtureへ置換した。YouTube本体の再生品質や外部サービス稼働の保証ではない。
-- 開発中にInteractive室の視線判定で約15fpsまで落ちる状態を確認。空間索引へ置換後、同じPCの実ブラウザで約59.9fps、標準画質の短時間描画を確認した。継続測定結果は追記する。
+- 開発中にInteractive室の視線判定で約15fpsまで落ちる状態を確認。空間索引へ置換後、同じPCの実ブラウザで以下の継続測定を行った。
 
 検証PC: dynabook P1-M8XN-EL / Intel Iris Xe Graphics / メモリ約32GB / Windows。機種・GPUはOSから確認した。Edge自動テストとCodex内ブラウザの視覚確認を区別する。GPU容量はテクスチャ・geometry・描画bufferからの推定で、ドライバーの実使用量ではない。
+
+## 15分の実ブラウザ稼働
+
+2026-09-13 12:01:09 JSTから908秒。配信と同じ `8a0bd58` のstatic buildをlocalhostで開き、Codex内ブラウザ、1280×720、full画質で確認した。別の3Dテストブラウザは停止し、時計やGPUタイマーは上書きしていない。全9室を2巡し、合間にLibraryの資料、Interactiveの質問からTVへの表示、Communityの全文開閉、FounderのStoryを操作した。移動・読書・停止を含む稼働で、15分間歩き続けた測定ではない。
+
+- 24採取時点で、直近区間のfpsは59.9、フレーム間隔p95は16.8ms、画質状態はfull。全フレームの最小fpsや15分全体のp95を測った値ではない。
+- 推定GPU資源435.5〜512.0MiB。1回の経路横断時は画素数を2,073,600から1,518,864へ調整し、その後2,073,600へ復帰した。draw callは29〜110、三角形145,818〜303,864（採取時点）。
+- 同じ部屋に戻った際の推定GPU資源は下表の通り。採取時点で増加が続く傾向なし。最終Canvasは1個、取得されたconsole errorは0件。context喪失・staticへの復帰は発生しなかった。
+- `explorer-soak.spec.ts` は今後の自動再現用として追加したが、今回はこの実ブラウザ確認を実施したため、その15分自動テスト自体を実行済みとはしない。
+
+| 部屋 | 初回 / 再訪（開始から秒） | 推定GPU MiB（初回 / 再訪） |
+| --- | --- | --- |
+| Vision | 29 / 609 | 491.9 / 491.9 |
+| Experience | 78 / 820 | 481.2 / 481.2 |
+| Interactive | 165 / 710 | 462.7 / 462.7 |
+| Library | 228 / 572 | 481.7 / 481.7 |
+| Manifesto | 403 / 860 | 446.7 / 446.7 |
+| Community | 417 / 644 | 477.0 / 477.0 |
+| Founder | 455 / 762 | 478.9 / 478.9 |
+| Contact | 518 / 885 | 475.8 / 475.8 |
+| COMPASS | 541 / 908 | 435.5 / 435.5 |
+
+## Cloudflare Preview
+
+- https://623374b2.compass-official.pages.dev/3d/ — 配信アプリコード `8a0bd58`。後続 `076edc1` はテストだけの修正であり、配信アプリと同一。
+- PR: https://github.com/genellect/compass/pull/125 。通常サイトの入口を含む既存専用ブランチへ更新した。本番ブランチへのmerge・production deployは行っていない。
+- Codex内ブラウザでHTTPSのPreviewを開き、Hero、入口からInteractiveへの実移動、入室、質問選択とTV上の同文表示を確認した。公式YouTube iframeの実動画は1秒から14秒へ進み、映像がTV面に表示され、「再生を終了」で元の質問へ戻った。fixtureを使ったローカルテストと区別する。取得console errorは0件。
+- Cloudflare Pages、CodeQL、Repository Maintenanceの `076edc1` チェックは合格。広域Responsive Quality Gateはこの記録時点で進行中。下記の前版未合格を消さず、広域gate全体が合格済みとは扱わない。
 
 今回の局所更新では、無関係なフォーム・独立サイトを含む `npm run check` と全画像baselineを反復していない。下記の前版の広域gate未合格記録を保持し、全体合格とは報告しない。Firefox/Safari、実機iPad/iPhone/Android、実ブラウザ200%ズーム、全9室の実写級の品質承認は未確認。
 

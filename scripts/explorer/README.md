@@ -1,6 +1,6 @@
 # COMPASS 3D 独立ページ
 
-Status: Implemented, verification pending
+Status: Implemented, scoped verification passed, visual review pending
 対象: `/3d/` と、親サイトの既存操作群に加える入口のみ。
 
 ## 通常サイトとの境界
