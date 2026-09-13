@@ -1,6 +1,8 @@
 # 新規登録者向けGoogle Groupsアクセス基盤
 
-更新: 2026-09-13。対象は未来戦略ライブラリのみ。**実装とローカル合成データ検証の記録であり、本番切替済みを意味しない。**
+更新: 2026-09-13。対象は未来戦略ライブラリのみ。**実装と合成データ検証の記録であり、本番切替済みを意味しない。**
+
+PR・切替前の残作業は[Groups切替前の受入票](group-release-readiness.md)を参照。
 
 ## 1. 前提の再確認
 
@@ -128,5 +130,5 @@ CLIは準備時のGroup実人数を予約数へ含める。既存台帳のID・�
 - API回帰416件: PASS。実PostgreSQLを使う2件は通常runではskipし、別runで2件ともPASS。
 - Terraform `fmt -check` / `validate`: PASS。backend接続なし、applyなし。
 - public-source検査: 668ファイル、検出0件。機密値・本番PIIは使用していない。
-- GitHub ActionsへのPostgreSQL試験追加は実装済みだが、PR/push・リモートCI実行は未実施。
+- Draft PR #127を作成。初回headのPostgreSQLを含むbackend CIはPASS。最新headの全CIはPR Checksを正本とする。
 - Google APIはfake transportで検証。Google側の実加入・閲覧伝播は未検証であり、G0/G2は未完了。

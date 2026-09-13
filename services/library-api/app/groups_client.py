@@ -54,7 +54,13 @@ class GoogleGroupsClient:
     def _request(self, method, path, *, params=None, body=None, missing_ok=False):
         try:
             if not self.credentials.valid:
-                self.credentials.refresh(Request(session=self.session))
+                transport = Request(session=self.session)
+                def bounded_refresh(**kwargs):
+                    # google-auth otherwise uses a much longer default timeout.
+                    kwargs["timeout"] = self.timeout
+                    kwargs["allow_redirects"] = False
+                    return transport(**kwargs)
+                self.credentials.refresh(bounded_refresh)
             response = self.session.request(
                 method, BASE_URL + path,
                 headers={"Authorization": f"Bearer {self.credentials.token}"},

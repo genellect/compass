@@ -111,3 +111,21 @@ def test_invalid_group_labels_returns_safe_error(monkeypatch):
     })
     with pytest.raises(DriveClientError, match="identity_mismatch"):
         c.verify_group("groups/testA", "group@example.test")
+
+
+def test_token_refresh_uses_same_bounded_transport(monkeypatch):
+    from unittest.mock import Mock
+    c = client()
+    calls = []
+    transport = Mock(side_effect=lambda **kwargs: calls.append(kwargs))
+    monkeypatch.setattr("app.groups_client.Request", lambda **kwargs: transport)
+    c.credentials = Mock(valid=False, token="synthetic-token")
+    c.credentials.refresh.side_effect = lambda request: request(
+        url="https://oauth2.googleapis.com/token", method="POST", timeout=120,
+    )
+    response = Mock(status_code=200)
+    response.json.return_value = {}
+    monkeypatch.setattr(c.session, "request", lambda *a, **k: response)
+    assert c._request("GET", "groups/testA") == {}
+    assert calls[0]["timeout"] == c.timeout
+    assert calls[0]["allow_redirects"] is False
