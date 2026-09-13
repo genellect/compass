@@ -15,6 +15,9 @@ from tests.factories import student_account, student_registration
 
 
 EXPECTED_TABLES = {
+    "library_access_groups",
+    "library_group_memberships",
+    "library_resource_group_grants",
     "alembic_version",
     "library_access_grants",
     "library_admin_audit",
@@ -111,7 +114,7 @@ def test_initial_migration_upgrade_and_downgrade(
     with Session(engine) as session:
         assert session.execute(
             text("SELECT version_num FROM alembic_version")
-        ).scalar_one() == "0b1c2d3e4f5a"
+        ).scalar_one() == "12a34b56c78d"
     command.check(config)
 
     engine.dispose()
@@ -262,7 +265,7 @@ def test_phase9_hardening_upgrades_an_existing_empty_e0_database(
     }.issubset(after_row_columns)
     with engine.connect() as connection:
         assert connection.scalar(text("SELECT version_num FROM alembic_version")) == (
-                "0b1c2d3e4f5a"
+                "12a34b56c78d"
         )
     engine.dispose()
     get_settings.cache_clear()

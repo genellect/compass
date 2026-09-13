@@ -13,6 +13,7 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from app.auth import VerifiedGoogleIdentity
+from app.group_policy import GRANT_TYPES, REVOKE_TYPES, GROUP_TYPES, GROUP
 from app.db.models import (
     LibraryAccessGrant,
     LibraryApplication,
@@ -99,12 +100,15 @@ def build_drive_operation_attestation_facts(
     ):
         raise DriveOperationAttestationError("operation_state_invalid")
 
-    if operation.operation_type == "drive_revoke":
+    if ((operation.operation_type in GROUP_TYPES) != (member.access_strategy == GROUP)):
+        raise DriveOperationAttestationError("operation_state_invalid")
+
+    if operation.operation_type in REVOKE_TYPES:
         if operation.application_id is not None:
             raise DriveOperationAttestationError("operation_state_invalid")
         return DriveOperationAttestationFacts(email, grant.role)
 
-    if operation.operation_type != "drive_grant" or application is None:
+    if operation.operation_type not in GRANT_TYPES or application is None:
         raise DriveOperationAttestationError("operation_state_invalid")
     if (
         member.member_status != "active"
@@ -364,7 +368,7 @@ def issue_drive_operation_attestation(
     normalized_email = facts.member_email.strip().lower()
     if not normalized_email or normalized_email != facts.member_email:
         raise ValueError("Drive operation email must already be normalized.")
-    if operation.operation_type not in {"drive_grant", "drive_revoke"}:
+    if operation.operation_type not in (GRANT_TYPES | REVOKE_TYPES):
         raise ValueError("Unsupported Drive operation type.")
     if facts.grant_role != "reader":
         raise ValueError("Drive operations may only attest the reader role.")
@@ -419,7 +423,7 @@ def verify_drive_operation_attestation(
         operation.attestation_version
         != DRIVE_OPERATION_ATTESTATION_VERSION
         or operation.target_alias != DRIVE_TARGET_ALIAS
-        or operation.operation_type not in {"drive_grant", "drive_revoke"}
+        or operation.operation_type not in (GRANT_TYPES | REVOKE_TYPES)
         or facts.grant_role != "reader"
         or facts.member_email.strip().lower() != facts.member_email
         or _HEX_64.fullmatch(operation.attestation_nonce or "") is None

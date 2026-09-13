@@ -77,6 +77,7 @@ locals {
     local.admin_secret_bindings,
     local.attestation_secret_bindings,
     local.worker_drive_secret_bindings,
+    local.group_secret_bindings,
   )
 }
 
@@ -125,7 +126,7 @@ resource "google_cloud_run_v2_service" "public" {
       }
 
       dynamic "env" {
-        for_each = {
+        for_each = merge(local.group_producer_env, {
           APP_ENV                                             = "production"
           SERVICE_SURFACE                                     = "public"
           PUBLIC_DATABASE_ACCESS_MODE                         = "rpc_v1"
@@ -181,7 +182,7 @@ resource "google_cloud_run_v2_service" "public" {
             : ""
           )
           CLOUD_TASKS_REQUEST_TIMEOUT_SECONDS = "3"
-        }
+        })
         content {
           name  = env.key
           value = env.value
@@ -432,7 +433,7 @@ resource "google_cloud_run_v2_service" "worker" {
       }
 
       dynamic "env" {
-        for_each = {
+        for_each = merge(local.group_worker_env, {
           APP_ENV                                     = "production"
           SERVICE_SURFACE                             = "worker"
           PHASE5_LOCAL_API_ENABLED                    = "false"
@@ -463,7 +464,7 @@ resource "google_cloud_run_v2_service" "worker" {
           NOTIFICATION_REQUEST_TIMEOUT_SECONDS = "15"
           DB_POOL_SIZE                         = "1"
           DB_MAX_OVERFLOW                      = "0"
-        }
+        })
         content {
           name  = env.key
           value = env.value
@@ -506,7 +507,7 @@ resource "google_cloud_run_v2_service" "worker" {
             secret  = var.secret_ids.drive_resource_id
             version = var.secret_versions.drive_resource_id
           }
-        } : {})
+        } : {}, var.group_access.worker_enabled ? var.group_access.oauth_secrets : {})
         content {
           name = env.key
           value_source {
@@ -783,6 +784,12 @@ resource "google_cloud_run_v2_job" "migration" {
         var.worker_drive_activation.enabled
       )
       error_message = "Registration event dispatch requires the active runtime and Drive worker."
+    }
+    precondition {
+      condition = !var.group_access.worker_enabled || (
+        var.runtime_services_activation.enabled && var.worker_drive_activation.enabled
+      )
+      error_message = "Group membership processing requires the existing active runtime and Drive worker."
     }
     precondition {
       condition = !var.admin_api_activation.enabled || (

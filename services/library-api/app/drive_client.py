@@ -25,6 +25,7 @@ RETRYABLE_HTTP_STATUSES = {408, 409, 425, 429, 500, 502, 503, 504}
 class DrivePermission:
     permission_id: str
     role: str
+    principal_type: str = "user"
 
 
 class DriveClientError(RuntimeError):
@@ -262,7 +263,7 @@ class GoogleDrivePermissionClient:
                     and permission_id
                     and role
                 ):
-                    return DrivePermission(permission_id, role)
+                    return DrivePermission(permission_id, role, str(permission.get("type") or "user"))
 
             next_page = str(payload.get("nextPageToken") or "")
             if not next_page:

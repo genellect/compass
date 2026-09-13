@@ -13,6 +13,8 @@ from sqlalchemy.orm.exc import StaleDataError
 
 from app.auth import VerifiedGoogleIdentity
 from app.config import Settings
+from app.group_policy import GROUP, GRANT_TYPES, REVOKE_TYPES, grant_operation_type
+from app.group_operations import managed_membership_component
 from app.db.models import (
     LibraryAccessGrant,
     LibraryAdmin,
@@ -432,7 +434,8 @@ def decide_application(
                 notification_status="pending",
             )
             session.add(grant)
-        operation_key = f"drive_grant:{member.id}:{DRIVE_TARGET_ALIAS}"
+        operation_type = grant_operation_type(member.access_strategy)
+        operation_key = f"{operation_type}:{member.id}:{DRIVE_TARGET_ALIAS}"
         operation = session.scalar(
             select(LibraryOperation).where(
                 LibraryOperation.operation_key == operation_key
@@ -444,7 +447,7 @@ def decide_application(
                 member_id=member.id,
                 application_id=application.id,
                 operation_key=operation_key,
-                operation_type="drive_grant",
+                operation_type=operation_type,
                 resource_id=None,
                 target_alias=DRIVE_TARGET_ALIAS,
                 status="pending",
@@ -547,7 +550,7 @@ def retry_operation(
     if member is None or member.normalized_email is None or grant is None:
         raise AdminConflictError("operation_state_invalid")
     application = None
-    if operation.operation_type == "drive_grant":
+    if operation.operation_type in GRANT_TYPES:
         application = (
             session.get(LibraryApplication, operation.application_id)
             if operation.application_id is not None
@@ -563,7 +566,7 @@ def retry_operation(
             )
         ):
             raise AdminConflictError("operation_state_invalid")
-    elif operation.operation_type != "drive_revoke" or operation.application_id is not None:
+    elif operation.operation_type not in REVOKE_TYPES or operation.application_id is not None:
         raise AdminConflictError("operation_state_invalid")
     operation.status = "pending"
     operation.attempt_count = 0
@@ -627,7 +630,7 @@ def _cancel_unfinished_grants(
         session.scalars(
             select(LibraryOperation).where(
                 LibraryOperation.member_id == member_id,
-                LibraryOperation.operation_type == "drive_grant",
+                LibraryOperation.operation_type.in_(GRANT_TYPES),
                 LibraryOperation.status.in_(("pending", "failed")),
             )
         )
@@ -714,10 +717,19 @@ def revoke_member(
     )
     if grant is None:
         raise AdminConflictError("drive_grant_not_found")
-    if not grant.managed_by_system:
+    grouped = member.access_strategy == GROUP
+    if not grouped and not grant.managed_by_system:
         raise AdminConflictError("permission_not_managed")
-    permission_component = grant.permission_id or "unresolved"
-    operation_key = f"drive_revoke:{grant.id}:{permission_component}"
+    if grouped:
+        from app.drive_client import DriveClientError
+        try:
+            permission_component = managed_membership_component(session, member)
+        except DriveClientError as error:
+            raise AdminConflictError(error.code) from error
+    else:
+        permission_component = grant.permission_id or "unresolved"
+    operation_type = "group_membership_remove" if grouped else "drive_revoke"
+    operation_key = f"{operation_type}:{grant.id}:{permission_component}"
     operation = session.scalar(
         select(LibraryOperation).where(
             LibraryOperation.operation_key == operation_key
@@ -728,7 +740,7 @@ def revoke_member(
             id=uuid4(),
             member_id=member.id,
             operation_key=operation_key,
-            operation_type="drive_revoke",
+            operation_type=operation_type,
             resource_id=None,
             target_alias=DRIVE_TARGET_ALIAS,
             status="pending",
