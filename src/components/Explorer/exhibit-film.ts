@@ -1,12 +1,13 @@
 import * as THREE from 'three';
 import type { Room } from './contracts';
+import { televisionLocal } from './exhibit-layout';
 
 /** Reuse the published product-film poster on the physical television.
  * No YouTube, audio or media request is made until this room is occupied. */
 export function createExhibitFilm(scene: THREE.Scene, room: Room, _poster: THREE.Texture) {
   const material = new THREE.MeshBasicMaterial({ color: '#0d2029', toneMapped: false });
   const screen = new THREE.Mesh(new THREE.PlaneGeometry(5.7,3.20625), material);
-  screen.position.set(room.origin[0]-7.947*Math.sin(room.yaw),2.6,room.origin[2]-7.947*Math.cos(room.yaw));
+  screen.position.set(televisionLocal[0],televisionLocal[1],televisionLocal[2]+.053).applyAxisAngle(THREE.Object3D.DEFAULT_UP,room.yaw).add(new THREE.Vector3().fromArray(room.origin));
   screen.rotation.y=room.yaw;screen.visible=false;scene.add(screen);
   const abort = new AbortController();
   let started=false,disposed=false,texture:THREE.Texture|null=null,bitmap:ImageBitmap|null=null;

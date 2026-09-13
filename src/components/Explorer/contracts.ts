@@ -3,7 +3,7 @@ import type { SectionId } from '../Habitat/scene-config';
 export type Point = readonly [number, number];
 export type Vector = readonly [number, number, number];
 export type Preference = 'on' | 'off';
-export type ExplorerPhase = 'preparing' | 'walking' | 'entering' | 'idle' | 'reading' | 'paused';
+export type ExplorerPhase = 'preparing' | 'walking' | 'approaching' | 'opening' | 'loading-room' | 'entering' | 'idle' | 'reading' | 'paused';
 export interface Room {
   id: SectionId;
   label: string;
@@ -40,6 +40,10 @@ export interface FrameSample { fps: number; p95: number; frames: number; gpuMs: 
 export interface ExplorerController {
   start(room: SectionId, snapshot?: ExplorerSnapshot): Promise<boolean>;
   goTo(room: SectionId): Promise<void>;
+  travelTo(room: SectionId): void;
+  inspect(item: string | null): void;
+  setSensitivity(value: number): void;
+  lookAround(): Promise<boolean>;
   stop(): void;
   setPaused(paused: boolean): void;
   setSound(enabled: boolean): Promise<boolean>;
@@ -53,4 +57,6 @@ export interface ExplorerHooks {
   ready(): void;
   failure(reason: 'performance' | 'asset' | 'context' | 'render'): void;
   metrics(sample: FrameSample): void;
+  inspect(item: string | null): void;
+  notice(message: string): void;
 }

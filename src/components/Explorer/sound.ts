@@ -5,7 +5,8 @@ export interface SpatialSound {
   setEnabled(enabled:boolean):Promise<boolean>;
   setVolume(value:number):void;
   room(id:string,position:Vector):void;
-  cue(name:'select'|'door',position?:Vector):void;
+  cue(name:'select'|'door'|'paper',position?:Vector):void;
+  travel(distance:number,position:Vector):void;
   movement(amount:number):void;
   listener(position:SpatialVector,direction:SpatialVector):void;
   suspend():Promise<void>;
@@ -34,19 +35,26 @@ export async function createSpatialSound(context:AudioContext,signal:AbortSignal
   const tone=context.createBiquadFilter();tone.type='lowpass';tone.frequency.value=5500;
   air.disconnect();air.connect(tone);tone.connect(master);
   const active=new Set<AudioBufferSourceNode>();
-  function cue(name:'select'|'door',position?:Vector) {
+  // Short filtered contact sounds are generated locally, not additional media downloads.
+  const contact=context.createBuffer(1,Math.ceil(context.sampleRate*.13),context.sampleRate);
+  let seed=1827;const samples=contact.getChannelData(0);
+  for(let i=0;i<samples.length;i++){seed=(seed*1664525+1013904223)>>>0;samples[i]=((seed/4294967296)*2-1)*Math.exp(-i/samples.length*8);}
+  buffers.set('paper',contact);buffers.set('step',contact);let travelled=0,foot=0;
+  function cue(name:'select'|'door'|'paper'|'step',position?:Vector) {
     if(!enabled||disposed)return;
     const source=context.createBufferSource();source.buffer=buffers.get(name)!;
-    const gain=context.createGain();gain.gain.value=name==='door'?.16:.06;
-    source.connect(gain);
+    const gain=context.createGain();gain.gain.value=name==='door'?.16:name==='step'?.075:name==='paper'?.045:.06;
+    const filter=context.createBiquadFilter();filter.type='lowpass';filter.frequency.value=name==='step'?600:name==='paper'?2600:16000;
+    source.playbackRate.value=name==='step'?.75:1;source.connect(filter);filter.connect(gain);
     let panner:PannerNode|null=null;
     if(position){panner=context.createPanner();panner.panningModel='HRTF';panner.distanceModel='inverse';panner.refDistance=3;panner.maxDistance=25;panner.rolloffFactor=.8;
       panner.positionX.value=position[0];panner.positionY.value=position[1];panner.positionZ.value=position[2];gain.connect(panner);panner.connect(master);}
     else gain.connect(master);
-    active.add(source);source.onended=()=>{active.delete(source);source.disconnect();gain.disconnect();panner?.disconnect();};source.start();
+    active.add(source);source.onended=()=>{active.delete(source);source.disconnect();filter.disconnect();gain.disconnect();panner?.disconnect();};source.start();
   }
   async function setEnabled(value:boolean){if(disposed)return false;enabled=value;if(value)await context.resume();master.gain.setTargetAtTime(value?volume:0,context.currentTime,.25);return value;}
   return {setEnabled,cue,
+    travel(distance,position){if(!enabled||disposed)return;travelled+=distance;if(travelled>.85){travelled%=.85;foot=1-foot;cue('step',[position[0]+(foot?.12:-.12),.08,position[2]]);}},
     setVolume(value){volume=Math.min(1,Math.max(0,value));if(!disposed)master.gain.setTargetAtTime(enabled?volume:0,context.currentTime,.15);},
     room(id,position){if(disposed)return;const time=context.currentTime;
       equipmentGain.gain.setTargetAtTime(id==='technology'?.045:0,time,1.5);

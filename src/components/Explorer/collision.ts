@@ -1,4 +1,5 @@
 import { Box3, Matrix4, Mesh, Object3D, Triangle, Vector3 } from 'three';
+import type { NavMesh, Point } from './contracts';
 import { Octree } from 'three/addons/math/Octree.js';
 import { Capsule } from 'three/addons/math/Capsule.js';
 
@@ -45,6 +46,7 @@ export class CollisionWorld {
   private trees = new Map<Object3D, BodyIndex>();
   private boxes = new Map<Object3D, Box3>();
   private matrices = new Map<Object3D, Matrix4>();
+  private masks = new Map<Object3D, { mesh: NavMesh; cells: Set<string> }>();
 
   add(group: Object3D, doors = false) {
     group.updateWorldMatrix(true, true);
@@ -53,10 +55,12 @@ export class CollisionWorld {
       if (!(object instanceof Mesh)) return;
       let ancestor: Object3D | null = object;
       while (ancestor && ancestor !== group) {
+        if (ancestor.userData.explorer_ignore_collision) return;
         if (!doors && ancestor.userData.explorer_door) return;
         ancestor = ancestor.parent;
       }
       if (!doors && object.userData.explorer_door) return;
+      if (object.userData.explorer_ignore_collision) return;
       const geometry = object.geometry, position = geometry.getAttribute('position'), indices = geometry.index;
       if (!position) return;
       for (let i = 0; i < (indices?.count ?? position.count); i += 3) {
@@ -71,14 +75,35 @@ export class CollisionWorld {
     this.trees.get(group)?.clear(); this.trees.set(group, tree);
     this.boxes.set(group, new Box3().setFromObject(group));
     this.matrices.set(group, group.matrixWorld.clone());
+    this.masks.delete(group);
   }
 
   updateDoor(group: Object3D) {
     group.updateWorldMatrix(true, true);
     if (!this.matrices.get(group)?.equals(group.matrixWorld)) this.add(group, true);
   }
-  remove(group: Object3D) { this.trees.get(group)?.clear(); this.trees.delete(group); this.boxes.delete(group); this.matrices.delete(group); }
-  clear() { for (const tree of this.trees.values()) tree.clear(); this.trees.clear(); this.boxes.clear(); this.matrices.clear(); }
+  remove(group: Object3D) { this.trees.get(group)?.clear(); this.trees.delete(group); this.boxes.delete(group); this.matrices.delete(group); this.masks.delete(group); }
+  clear() { for (const tree of this.trees.values()) tree.clear(); this.trees.clear(); this.boxes.clear(); this.matrices.clear(); this.masks.clear(); }
+
+  /** Static architecture is sampled once. Loading a chair never re-samples all nine shells. */
+  navigationCells(mesh: NavMesh): Point[] {
+    const blocked = new Set<string>();
+    for (const [group, tree] of this.trees) {
+      let mask = this.masks.get(group);
+      if (!mask || mask.mesh !== mesh) {
+        const cells = new Set<string>(), box = this.boxes.get(group)!;
+        for (const [x, z] of mesh.cells) {
+          const wx = x * mesh.cellSize, wz = z * mesh.cellSize;
+          if (wx < box.min.x - BODY_RADIUS || wx > box.max.x + BODY_RADIUS || wz < box.min.z - BODY_RADIUS || wz > box.max.z + BODY_RADIUS) continue;
+          const hit = tree.capsuleIntersect(capsuleAt(new Vector3(wx, 1.65, wz)));
+          if (hit && hit.depth > .003) cells.add(x + ',' + z);
+        }
+        mask = { mesh, cells }; this.masks.set(group, mask);
+      }
+      for (const cell of mask.cells) blocked.add(cell);
+    }
+    return mesh.cells.filter(([x, z]) => !blocked.has(x + ',' + z));
+  }
 
   blocked(point: Vector3) {
     const body = capsuleAt(point);

@@ -13,10 +13,10 @@ Status: Implemented, verification pending
 
 ## 操作
 
-- WASD / 矢印キーで歩き、キーを離すと停止。ドラッグの視線を自動補正しない。
+- WASD / 矢印キーで4.8m/s、Shift併用で7m/s。キーを離すと停止。ドラッグの視線を自動補正しない。設定から見回す感度と任意のPointer Lockを選べる。
 - 床クリックは補助移動。先に見える壁やガラスがあれば奥の床を選択しない。
-- 近くの扉をクリック、またはEで開閉。開いても自動入室しない。閉じた扉と未取得の室内へ進めない。
-- 館内案内からの直接移動だけ、短いフェードを用いる。普段の歩行には演出経路を使わない。
+- 扉・室名をクリック、または近くでEを押すと、接近・開扉・通過を連続して行い、入口の内側で自由操作へ戻る。室内からは退出する。連打で処理を重複させず、別の行き先、移動キー、Escで中断できる。閉じた扉と未取得の室内へ進めない。
+- 床・扉への補助移動は最大6m/s。扉通過は2.8m/sまで減速。館内案内の主操作は実移動、「移動を省略」だけ短いフェードで到着する。
 - Esc、blur、非表示、メニュー表示で移動を停止。入力要素とリンクのキー操作を奪わない。
 
 ## 衝突・移動データ
@@ -31,9 +31,15 @@ Status: Implemented, verification pending
 
 Heroは床、家具、行き先と立体文字を同時に見せる。旧家具モデルに混在した別建築の床・天井は、新ページ専用の `top.glb` から除く。v3は上書きしない。
 
-各室では現行本文の抜粋と元のCTAを室内端末に配置する。長文、Community開閉、フォームは通常サイトに保持する。コピーは `exhibit-content.ts` に収め、通常サイトのソースとの照合テストを行う。汎用の「紹介を読む」パネルは撤去する。InteractiveのTVには既存の製品紹介映像のポスターを使い、当該部屋に入るまで取得しない。
+8室で共用していた巨大な端末を非表示にし、資料・冊子・小型端末を閲覧卓に配置する。選んだ物を持ち上げて開き、対応するHTML本文を画面の半分以下の安定した読書面へ表示する。本文を開く前は室名・主題・選択操作だけを置く。Founderの卓とInteractiveの物理TVは、既存植栽・設備で隠れない位置へ移す。元のGLB・NASA遠景・家具・人物写真は上書きしない。
 
-描画は直接のMSAAレンダリングとし、全画面の後処理bufferや本文を開く度のcubemap生成を使わない。現在の部屋と近い開口を優先し、離れた室内のGPU資源を解放する。旧モデルの圧縮済み先読みは隣接2室まで。60fps上限、継続的に遅い場合は解像度と影を落とし、維持できなければ3Dを破棄する。音響は明示操作後だけ取得・再生する。
+`experience-content.ts` は公開Library表紙と紹介文、Interactiveの既存質問例だけを参照する。独立サイトのアプリやCSSを読み込まない。`exhibit-documents.ts` はビルド時に実際のManifestoから3章の全文を取り出す。Communityは元の全文とnative detailsの形式・開閉状態を保持する。Founderでは公開Storyの実際の経緯を切り替えて読み、独立したWeb Portfolioへ進む。
+
+Interactiveの質問デモは選んだ既存質問が卓上端末からTVへ移るローカル演出で、実講義への送信・AI応答・架空の参加人数はない。紹介動画は明示的な再生操作後だけ既存のYouTube公式プレーヤーをTV面に読み込む。閲覧中の室内音量を抑え、動画終了操作で戻す。動画サービスが利用できない場合も元のYouTubeリンクを用意する。
+
+`occlusion.ts` は室内視線の三角形を3m単位の空間索引へ登録し、視線上のセルだけを調べる。広い遠景を室内索引へ含めず、ガラスの両面と動的な扉による遮蔽を残す。`collision.ts` の経路マスクは部屋単位でキャッシュし、家具の読み込みごとに全施設を再計算しない。
+
+描画は直接のMSAAレンダリングとし、全画面の後処理bufferや本文を開く度のcubemap生成を使わない。現在の部屋と近い開口を優先し、離れた室内のGPU資源を解放する。旧モデルの圧縮済み先読みは隣接2室まで。60fps上限、継続的に遅い場合は解像度と影を落とし、維持できなければ3Dを破棄する。音響は明示操作後だけ取得・再生する。既存の室内・扉音源に、歩行距離と資料選択に対応する短いフィルタ済み接触音をWeb Audioで加える。追加の有料音源、BGM、音声APIはない。
 
 ## 再生成
 
@@ -52,9 +58,10 @@ Heroは床、家具、行き先と立体文字を同時に見せる。旧家具�
 
 ## 検証と公開
 
-- `npx vitest run tests/explorer-navigation.test.ts tests/explorer-collision.test.ts tests/explorer-content.test.tsx`
+- `npx vitest run tests/explorer-navigation.test.ts tests/explorer-collision.test.ts tests/explorer-content.test.tsx tests/explorer-experience.test.ts`
 - `npx playwright test tests/responsive/explorer.spec.ts`
-- 通常の `npm run check` と変更境界のresponsive確認
+- `EXPLORER_SOAK=1 npx playwright test tests/responsive/explorer-soak.spec.ts --workers=1` は15分の継続移動。Windowsでは環境変数をPowerShellで設定する。
+- 配信用build、型検査、static export、公開ソース境界、通常サイトの取得抑止を検証する。今回の局所更新では未変更のフォーム・独立サイトを含む総合gateを反復しない。過去の `npm run check` 失敗記録は保持する。
 
 機能テスト、ソフトウェアGPU、エミュレーションの結果を実機認定としない。実行結果と未確認事項は [VERIFICATION.md](VERIFICATION.md) に記録する。
 

@@ -1,4 +1,32 @@
-# COMPASS 3D 独立ページの検証記録
+# COMPASS 3D — 操作と公開成果物の統合
+
+2026-09-13。基準は独立ページ版 `d54b9df`。Status: Implemented, verification pending（Preview配信・継続移動の確認中）。Productionは変更しない。
+
+## 更新内容
+
+- WASDを4.8m/s、Shiftを7m/s、クリック経路を最大6m/sへ変更。扉の接近・開扉・通過・自由操作への復帰を共通化した。Esc・行き先変更・直接移動で中断できる。
+- 静的な衝突マスクを部屋単位でキャッシュし、視線の遮蔽判定を空間索引化した。ガラスの両面と動く扉は引き続き判定する。
+- 巨大な共通端末を撤去し、資料・章・端末を選ぶと対応する実本文を開く。Libraryの公開3表紙、Manifestoの実3章全文、Interactiveの公開質問例と公式動画、Communityの元のdetailsと全文、Founder写真と公開Storyを使う。
+- 物理TVは設備の背後から見える場所へ、Founderの卓は植栽に隠れない位置へ移動した。配信用GLB、NASA写真、元の家具や人物写真のファイルは上書きしていない。
+- 音響は明示操作後のみ。既存音源に、距離に応じた足音と資料選択の短い接触音をWeb Audioで追加した。動画表示中は室内音を減衰する。
+- 本更新のソース差分は `/3d/`、専用テスト、専用文書に限定。通常親サイト、Mobile/縦横iPad、v3/ISS、関連ページ、Interactive・個人サイト、フォーム・認証・配信設定・baselineは変更していない。
+
+## 最終配信成果物の確認
+
+- TypeScript、Next.js static export build、`npm run verify`、公開ソース655ファイル、維持文書122リンクが合格。
+- 専用Vitest 22件合格。実GLBの壁・ガラス・全室経路、移動速度、扉の進入方向、マスク再利用、視線索引と通常raycastの一致、公開コピーと章の全文を検証した。
+- 最終buildでEdgeの専用10ケースが合格（2.4分）。全9室、歩行・停止・方向変更・扉の往復、資料/章/質問/Community状態、履歴・再読み込み、音響同意・消音、context喪失、通常サイト復帰を確認した。
+- 901×768、1024×768、1275×553、1440×900、1920×1080、3840×2160の読書面/CTAと900px境界を確認。Mobile、iPad、iPad Desktop UA、reduced motionでは新rendererの要求がない。
+- 動画のブラウザテストは、公式YouTube iframeが明示クリック時だけ要求される契約を確認し、外部レスポンスをfixtureへ置換した。YouTube本体の再生品質や外部サービス稼働の保証ではない。
+- 開発中にInteractive室の視線判定で約15fpsまで落ちる状態を確認。空間索引へ置換後、同じPCの実ブラウザで約59.9fps、標準画質の短時間描画を確認した。継続測定結果は追記する。
+
+検証PC: dynabook P1-M8XN-EL / Intel Iris Xe Graphics / メモリ約32GB / Windows。機種・GPUはOSから確認した。Edge自動テストとCodex内ブラウザの視覚確認を区別する。GPU容量はテクスチャ・geometry・描画bufferからの推定で、ドライバーの実使用量ではない。
+
+今回の局所更新では、無関係なフォーム・独立サイトを含む `npm run check` と全画像baselineを反復していない。下記の前版の広域gate未合格記録を保持し、全体合格とは報告しない。Firefox/Safari、実機iPad/iPhone/Android、実ブラウザ200%ズーム、全9室の実写級の品質承認は未確認。
+
+---
+
+# 前版の独立ページ検証（Historical / d54b9df）
 
 基準: main `3f68ac71e8c019cf1dd7a485dd54283c90d69036`、2026-09-13。
 Status: Implemented, verification pending。Productionは変更しない。
