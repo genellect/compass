@@ -732,4 +732,3 @@ END;
 $fsl_submit_registration_v1$;
 
 REVOKE ALL ON FUNCTION fsl_public_api.submit_registration_v1(jsonb, text) FROM PUBLIC;
-
