@@ -19,9 +19,9 @@ const SLIDES = [
     motion: "from-right"
   },
   {
-    src: "/images/founder-portfolio/yuto-matsui-lab-hero.webp",
-    alt: "分析機器が並ぶ研究室で微笑むYuto Matsui / 松井優知",
-    location: "LAB / LIFE SCIENCE",
+    src: "/images/founder-portfolio/yuto-matsui-nagano-mountain-hero-20260901.webp",
+    alt: "長野の高原と山並みを背景に立つYuto Matsui / 松井優知",
+    location: "NAGANO / HIGHLANDS",
     motion: "soft-rise"
   }
 ] as const;

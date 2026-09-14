@@ -175,7 +175,7 @@ export const fragmentPhotos: readonly FragmentPhoto[] = [
   { key: "yuto-706", src: `${fragmentRoot}/yuto-706-1044.webp`, width: 1044, height: 1566, alt: "Yuto Matsui standing against a night-time cityscape", tone: "warm" },
   { key: "microfluidic", src: `${fragmentRoot}/microfluidic-1920.webp`, width: 1920, height: 1280, alt: "Precision microfluidic devices used in research and development" },
   { key: "code-terminal", src: `${fragmentRoot}/code-terminal-1920.webp`, width: 1920, height: 1280, alt: "Code editor and terminal on a development screen", tone: "tech" },
-  { key: "yuto-701", src: `${fragmentRoot}/yuto-701-1108.webp`, width: 1108, height: 1477, alt: "Yuto Matsui reviewing microscopy data in the laboratory", position: "50% 58%" },
+  { key: "yuto-701", src: `${fragmentRoot}/microscope-pawel-1108.webp`, width: 1108, height: 1477, alt: "A stereo microscope against a white background (stock photograph)", position: "50% 58%" },
   { key: "pipette", src: `${fragmentRoot}/pipette-1920.webp`, width: 1920, height: 2658, alt: "A researcher pipetting a laboratory sample" },
   { key: "yuto-2360", src: `${fragmentRoot}/yuto-2360-anchor-1566.webp`, width: 1566, height: 1044, alt: "Yuto Matsui leaning against a tree among summer flowers", tone: "lift", position: "52% 54%" },
   { key: "code-data", src: `${fragmentRoot}/code-data-1920.webp`, width: 1920, height: 1278, alt: "Laptop displaying code and performance analysis charts", tone: "tech" },

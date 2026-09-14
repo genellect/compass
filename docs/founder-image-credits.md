@@ -21,3 +21,5 @@ The EXPERIENCE section uses one user-supplied photo and two locally stored stock
 | Education experience | Fabio Sasso | [Empty lecture hall with tiered seating and projector screen](https://unsplash.com/photos/empty-lecture-hall-with-tiered-seating-and-projector-screen-L5GTAFIeKNA) | Unsplash License, checked 2026-08-28 |
 
 Attribution is also available from the public page footer.
+
+JP/EN FRAGMENTSの顕微鏡写真はPawel Czerwinskiの[White and black microscope on white surface](https://unsplash.com/photos/white-and-black-microscope-on-white-surface-JdtUKqGdqw8)を使用する。Unsplash Licenseを2026-09-14に確認。既存の写真枠に合わせて1108 × 1477 pxと幅640 pxのWebPへトリミング・縮小し、ローカル配信する。
