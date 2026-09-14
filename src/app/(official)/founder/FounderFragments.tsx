@@ -81,11 +81,11 @@ const fragmentSpreads: readonly (readonly FragmentPhoto[])[] = [
   [
     {
       key: "yuto-701",
-      src: `${assetRoot}/yuto-701-1108.webp`,
-      srcSet: `${assetRoot}/yuto-701-640.webp 640w, ${assetRoot}/yuto-701-1108.webp 1108w`,
+      src: `${assetRoot}/microscope-pawel-1108.webp`,
+      srcSet: `${assetRoot}/microscope-pawel-640.webp 640w, ${assetRoot}/microscope-pawel-1108.webp 1108w`,
       width: 1108,
       height: 1477,
-      alt: "顕微鏡画像をモニターで確認するYuto Matsui",
+      alt: "白い背景に置かれた実体顕微鏡（公開素材）",
       role: "research",
       crop: "lab",
       sizes: "(max-width: 900px) 46vw, 17vw"

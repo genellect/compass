@@ -370,6 +370,18 @@
   will-change: transform;
 }
 
+/* Highlands: bring the face and surrounding landscape into the existing frame. */
+@media (min-width: 641px) {
+  .photoSlide[data-motion="soft-rise"] img {
+    width: 125% !important;
+    height: 125% !important;
+    left: -12.5% !important;
+    top: -16.25% !important;
+    object-fit: cover;
+    object-position: 50% 53%;
+  }
+}
+
 .photoSlide[data-active="true"][data-motion="from-left"] img {
   animation: photoDriftLeft 5.2s cubic-bezier(0.2, 0.56, 0.2, 1) both;
 }
@@ -2831,7 +2843,7 @@
     --image-top: max(calc(var(--image-height) * -0.22), calc((100cqh - var(--image-height)) * 0.84));
   }
   .photoSlide[data-motion="soft-rise"] {
-    --image-width: min(100cqw, 440px, 125cqh);
+    --image-width: 100cqw;
     --image-height: calc(var(--image-width) * 1.5);
     --image-left: calc((100cqw - var(--image-width)) * 0.5);
     --image-top: calc((100cqh - var(--image-height)) * 0.45);
