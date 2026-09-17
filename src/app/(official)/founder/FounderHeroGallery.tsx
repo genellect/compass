@@ -10,19 +10,22 @@ const SLIDES = [
     src: "/images/founder-portfolio/yuto-matsui-profile-hero.webp",
     alt: "横顔のYuto Matsui / 松井優知",
     location: "PORTRAIT / SIDE",
-    motion: "from-left"
+    motion: "from-left",
+    focus: "natural"
   },
   {
-    src: "/images/founder-portfolio/yuto-matsui-nagano-lake-hero-20260831.webp",
+    src: "/images/founder-portfolio/yuto-matsui-nagano-lake-hero-centered-20260917.webp",
     alt: "長野の湖と山々を背景に立つYuto Matsui / 松井優知",
     location: "NAGANO / NATURE",
-    motion: "from-right"
+    motion: "from-right",
+    focus: "face-centered"
   },
   {
-    src: "/images/founder-portfolio/yuto-matsui-city-night-hero-centered-20260917.webp",
+    src: "/images/founder-portfolio/yuto-matsui-city-night-hero-centered-20260917-v2.webp",
     alt: "冬のイルミネーションを背景に立つYuto Matsui / 松井優知",
     location: "CITY / NIGHT",
-    motion: "night-focus"
+    motion: "night-focus",
+    focus: "face-centered"
   }
 ] as const;
 
@@ -89,6 +92,7 @@ export function FounderHeroGallery() {
             className={styles.photoSlide}
             data-active={index === activeIndex}
             data-motion={slide.motion}
+            data-focus={slide.focus}
             aria-hidden={index !== activeIndex}
           >
             <Image

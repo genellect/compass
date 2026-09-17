@@ -386,13 +386,9 @@
     object-position: 50% 53%;
   }
 
-  .photoSlide[data-motion="night-focus"] img {
-    width: 112% !important;
-    height: 112% !important;
-    left: -6% !important;
-    top: -8% !important;
+  .photoSlide[data-focus="face-centered"] img {
     object-fit: cover;
-    object-position: 50% 58%;
+    object-position: center;
   }
 }
 
@@ -410,6 +406,10 @@
 
 .photoSlide[data-active="true"][data-motion="night-focus"] img {
   animation: photoDriftRise 5.2s cubic-bezier(0.2, 0.56, 0.2, 1) both;
+}
+
+.photoSlide[data-active="true"][data-focus="face-centered"] img {
+  animation: photoDriftCentered 5.2s cubic-bezier(0.2, 0.56, 0.2, 1) both;
 }
 
 .photoScan {
@@ -2583,6 +2583,10 @@
 @keyframes photoDriftRise {
   from { transform: scale(1.012) translate3d(0, 0.8%, 0); }
   to { transform: scale(1.06) translate3d(0.45%, -0.9%, 0); }
+}
+@keyframes photoDriftCentered {
+  from { transform: scale(1.002) translate3d(0, 0.2%, 0); }
+  to { transform: scale(1.018) translate3d(0, -0.25%, 0); }
 }
 @keyframes interfaceDraw { to { stroke-dashoffset: 0; } }
 @keyframes nodeAppear { from { opacity: 0; transform: scale(0.3); transform-origin: center; } to { opacity: 1; transform: scale(1); transform-origin: center; } }
