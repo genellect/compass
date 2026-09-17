@@ -19,10 +19,10 @@ const SLIDES = [
     motion: "from-right"
   },
   {
-    src: "/images/founder-portfolio/yuto-matsui-nagano-mountain-hero-20260901.webp",
-    alt: "長野の高原と山並みを背景に立つYuto Matsui / 松井優知",
-    location: "NAGANO / HIGHLANDS",
-    motion: "soft-rise"
+    src: "/images/founder-portfolio/yuto-matsui-city-night-hero-centered-20260917.webp",
+    alt: "冬のイルミネーションを背景に立つYuto Matsui / 松井優知",
+    location: "CITY / NIGHT",
+    motion: "night-focus"
   }
 ] as const;
 
