@@ -44,6 +44,10 @@ class LibraryMember(TimestampMixin, Base):
     __tablename__ = "library_members"
     __table_args__ = (
         CheckConstraint(
+            "access_strategy IN ('legacy_individual', 'group_membership')",
+            name="ck_library_members_access_strategy",
+        ),
+        CheckConstraint(
             "member_status IN ('active', 'pending_review', 'inactive')",
             name="ck_library_members_status",
         ),
@@ -90,6 +94,10 @@ class LibraryMember(TimestampMixin, Base):
     deactivated_at: Mapped[datetime | None] = mapped_column(
         DateTime(timezone=True)
     )
+    access_strategy: Mapped[str] = mapped_column(
+        String(32), default="legacy_individual", server_default="legacy_individual",
+        nullable=False,
+    )
 
     identities: Mapped[list[LibraryIdentity]] = relationship(
         back_populates="member",
@@ -108,6 +116,13 @@ class LibraryMember(TimestampMixin, Base):
     )
 
     __mapper_args__ = {"version_id_col": record_version}
+
+
+@event.listens_for(LibraryMember, "before_update")
+def freeze_member_access_strategy(_mapper, _connection, target):
+    history = sqlalchemy_inspect(target).attrs.access_strategy.history
+    if history.has_changes():
+        raise ValueError("member_access_strategy_is_immutable")
 
 
 class LibraryIdentity(Base):
@@ -162,6 +177,54 @@ class LibraryIdentity(Base):
     )
 
     member: Mapped[LibraryMember] = relationship(back_populates="identities")
+
+
+class LibraryAccessGroup(TimestampMixin, Base):
+    __tablename__ = "library_access_groups"
+    __table_args__ = (
+        UniqueConstraint("cohort_key", "shard", name="uq_library_group_cohort_shard"),
+        CheckConstraint("capacity BETWEEN 1 AND 800", name="ck_library_group_capacity"),
+        CheckConstraint("reserved_count >= 0 AND reserved_count <= capacity", name="ck_library_group_count"),
+        CheckConstraint("state IN ('ready', 'paused')", name="ck_library_group_state"),
+    )
+    id: Mapped[UUID] = mapped_column(Uuid, primary_key=True, default=uuid4)
+    google_group_name: Mapped[str] = mapped_column(String(255), unique=True, nullable=False)
+    group_email: Mapped[str] = mapped_column(String(320), unique=True, nullable=False)
+    cohort_key: Mapped[str] = mapped_column(String(64), nullable=False)
+    shard: Mapped[int] = mapped_column(Integer, nullable=False)
+    capacity: Mapped[int] = mapped_column(Integer, default=800, nullable=False)
+    # Reservations include pending/failed work: retries must never overfill a group.
+    reserved_count: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
+    state: Mapped[str] = mapped_column(String(16), default="paused", nullable=False)
+
+
+class LibraryGroupMembership(TimestampMixin, Base):
+    __tablename__ = "library_group_memberships"
+    __table_args__ = (
+        CheckConstraint("state IN ('pending', 'active', 'removed')", name="ck_library_membership_state"),
+    )
+    id: Mapped[UUID] = mapped_column(Uuid, primary_key=True, default=uuid4)
+    member_id: Mapped[UUID] = mapped_column(ForeignKey("library_members.id"), unique=True, nullable=False)
+    group_id: Mapped[UUID] = mapped_column(ForeignKey("library_access_groups.id"), nullable=False, index=True)
+    google_membership_name: Mapped[str | None] = mapped_column(String(512), unique=True)
+    state: Mapped[str] = mapped_column(String(16), default="pending", nullable=False)
+    managed_by_system: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
+    verified_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    removed_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+
+
+class LibraryResourceGroupGrant(TimestampMixin, Base):
+    __tablename__ = "library_resource_group_grants"
+    __table_args__ = (
+        UniqueConstraint("group_id", "target_alias", name="uq_library_resource_group_target"),
+        CheckConstraint("role = 'reader'", name="ck_library_resource_group_reader"),
+    )
+    id: Mapped[UUID] = mapped_column(Uuid, primary_key=True, default=uuid4)
+    group_id: Mapped[UUID] = mapped_column(ForeignKey("library_access_groups.id"), nullable=False)
+    target_alias: Mapped[str] = mapped_column(String(128), nullable=False)
+    permission_id: Mapped[str] = mapped_column(String(255), nullable=False)
+    role: Mapped[str] = mapped_column(String(16), default="reader", nullable=False)
+    verified_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
 
 
 class LibraryApplication(Base):
