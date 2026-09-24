@@ -1,0 +1,22 @@
+/* Add photography inside the existing PC 3D / Mobile ISS card treatments. */
+.card {
+  container-type: inline-size;
+}
+
+/* Use the same size on all four titles, fitted to the longest title. */
+:global(.compass-v4-page) .card:global(.v4-experience-card) > h3 {
+  font-size: min(1.5rem, 7.2cqi);
+  letter-spacing: -0.035em;
+  white-space: nowrap;
+  text-wrap: nowrap;
+}
+
+.photo {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  margin: 4px 0 22px;
+  border-radius: 4px;
+}

@@ -6,6 +6,7 @@ import {
   VisionFieldGraphic
 } from "../components/BrandSignalGraphics";
 import styles from "./official-core-copy.module.css";
+import experienceStyles from "./experience-activities.module.css";
 
 const interactiveIntroUrl = "/INTRO_Interactive/";
 const libraryUrl = "/future-strategy-library/";
@@ -61,36 +62,36 @@ export function VisionExperienceSection() {
 export function CompassExperienceSection() {
   const experiences = [
     {
-      number: "01",
-      name: "Technology",
-      value: "学びを動かす",
-      title: <><span>学びの壁を、</span><span>仕組みで越える。</span></>,
+      id: "campus-technology",
+      style: "technology",
+      name: "CAMPUS TECHNOLOGY",
+      title: "学びの壁を、仕組みで越える。",
       description: "WebシステムとAIを活用し、学生の疑問や反応が届き、次の学びにつながる体験をつくります。",
-      href: interactiveIntroUrl,
-      cta: "COMPASS Interactiveを見る"
+      alt: "解剖学の図と学習ノートを表示したタブレット（活動イメージ）"
     },
     {
-      number: "02",
-      name: "Resources",
-      value: "未来を知る",
-      title: <><span>知らなかった</span><span>未来に、出会う。</span></>,
-      description: "英語、AI、研究室選び、大学院進学、キャリア形成まで、未来を考えるための知識と戦略を届けます。",
-      href: libraryUrl,
-      cta: "ライブラリを見る"
+      id: "venture-studio",
+      style: "resources",
+      name: "VENTURE STUDIO",
+      title: "ビジコン挑戦・事業化",
+      description: "学生同士でチームを組み、サービスや事業のアイデアを形にして、全国のビジネスコンテストへ挑戦します。通過した企画は、実際のサービス化や事業化まで進めます。",
+      alt: "発表に向けてマイクと演台が用意されたステージ（活動イメージ）"
     },
     {
-      number: "03",
-      name: "Workshops",
-      value: "実際に試す",
-      title: <><span>やってみたいを、</span><span>最初の一歩へ。</span></>,
-      description: "英語、AIリテラシー、生命科学を中心に、講義、講演、ワークショップを企画・実施します。"
+      id: "agent-development",
+      style: "workshops",
+      name: "AGENT DEVELOPMENT",
+      title: "AIエージェント開発",
+      description: "勉強、研究、旅行、就活などに使える自分専用のAIをつくり、実際の学生生活で使います。必要に応じて英語学習、資格試験やプログラミングもサポートします。",
+      alt: "コードエディターを開いたノートPCの開発環境（活動イメージ）"
     },
     {
-      number: "04",
-      name: "Community",
-      value: "一緒につくる",
-      title: <><span>ひとりでは見えない、</span><span>新しい場所へ。</span></>,
-      description: "白金キャンパスを主な拠点に、学生同士が気軽につながり、新しい学びや挑戦を一緒に形にするコミュニティです。"
+      id: "cross-community",
+      style: "community",
+      name: "CROSS COMMUNITY",
+      title: "大学横断コミュニティ",
+      description: "大学や学部を越えて、普段なら出会わない学生とつながります。少人数の交流会や他大学との合同企画を通じて、新しい友人や仲間、大学の外まで広がるコミュニティをつくります。",
+      alt: "少人数でテーブルを囲んで話せる交流スペース（活動イメージ）"
     }
   ];
 
@@ -102,23 +103,24 @@ export function CompassExperienceSection() {
           label="COMPASS Experience"
           id="experience-title"
           title={<span>次の1歩は、<br className="v4-mobile-break" />ここから始まる。</span>}
-          description={<p>COMPASSは、WebシステムとAIを基盤に、資料、ワークショップ、共創の機会を一つにつなぎます。学生の「知りたい」「やってみたい」を、次の行動へ届けます。</p>}
+          description={<p>学びの仕組みづくりから、ビジコンへの挑戦、AIエージェント開発、大学を越えた交流まで。学生の「やってみたい」を、仲間と形にします。</p>}
         />
 
         <div className="v4-experience__grid">
           {experiences.map((item) => (
-            <article key={item.name} className={`v4-experience-card v4-experience-card--${item.name.toLowerCase()}`}>
-              <div className="v4-card-meta"><span>{item.number}</span><strong>{item.name}</strong><em>{item.value}</em></div>
+            <article key={item.id} data-experience={item.id} className={`v4-experience-card v4-experience-card--${item.style} ${experienceStyles.card}`}>
+              <div className="v4-card-meta"><strong>{item.name}</strong></div>
               <h3>{item.title}</h3>
+              <img
+                className={experienceStyles.photo}
+                src={`/images/experience/${item.id}.webp`}
+                width={1400}
+                height={934}
+                alt={item.alt}
+                loading="lazy"
+                decoding="async"
+              />
               <p>{item.description}</p>
-              {item.href && item.cta ? (
-                <a
-                  className={`v4-button ${item.name === "Technology" ? "v4-button--light" : "v4-button--primary"}`}
-                  href={item.href}
-                >
-                  {item.cta}
-                </a>
-              ) : null}
             </article>
           ))}
         </div>

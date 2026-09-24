@@ -6,6 +6,7 @@ Last verified: 2026-09-10
 
 | 対象 | 作者・取得元 | 条件・証跡 | 加工・配信の区分 |
 |---|---|---|---|
+| 親サイトExperience `public/images/experience/` | GoodNotes 5、Wesley Tingey、Christopher Gower、Ivenory / Unsplash | [写真別の原URL・条件・確認日](../experience-image-credits.md) | 幅1400px・WebP化、同一origin配信。活動イメージとして利用 |
 | `public/habitat/v3/`内のPoly Haven由来モデル・テクスチャ | Rob Tuytel、colormass、Rico Cilliers、Vibrant Nordic | [ASSET_CREDITS](../../scripts/habitat/ASSET_CREDITS.md)、[CC0条件](https://polyhaven.com/license) | 原素材から軽量化・材質調整。GLB内に必要なテクスチャを格納 |
 | Habitat Earth map | NASA Earth Observatory、Reto Stöckli | 同上のBlue Marble出典 | 地球画像を縮小し、独自の建築シーン内で使用 |
 | `public/habitat/mobile-v1/` | NASAのISS写真・タイムラプス | [出典説明](../mobile-space-media.md)、[ファイル単位manifest](../../public/habitat/mobile-v1/manifest.json)、[NASA方針](https://www.nasa.gov/nasa-brand-center/images-and-media/) | クロップ・縮小・WebP/H.264変換。生成画像ではない |
