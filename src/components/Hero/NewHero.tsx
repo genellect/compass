@@ -66,19 +66,16 @@ export function NewHero() {
           </h1>
 
           <p className="li-hero-lead">
-            北里大学薬学部から、<br className="li-hero-mobile-break" />
-            学び・研究・未来をつなぐ。
+            学生のうちから、<br className="li-hero-mobile-break" />
+            世の中に残る仕事をしよう。
           </p>
 
           <p className="li-hero-support">
             <span>
-              独自システム、実践資料、教育活動、
-              <br className="li-hero-support-break" />
-              学生コミュニティをひとつに。
+              次の週末は、まだ知らない街へ。
             </span>
             <span>
-              学生の「知る」を、
-              「選ぶ」「動く」へ変える。
+              旅するように働いて、学生の今をもっと面白くする。
             </span>
           </p>
 

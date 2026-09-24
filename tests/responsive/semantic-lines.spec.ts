@@ -25,7 +25,7 @@ const scenarios: SemanticScenario[] = [
     viewport: mobile,
     expectations: [
       { selector: "h1#hero-title", lines: ["Don’t Just Learn.", "Build What’s", "Next."] },
-      { selector: ".li-hero-lead", lines: ["北里大学薬学部から、", "学び・研究・未来をつなぐ。"] },
+      { selector: ".li-hero-lead", lines: ["学生のうちから、", "世の中に残る仕事をしよう。"] },
       { selector: "#resources-title", lines: ["知らなかった未来に、", "出会う。"] },
       {
         selector: ".v4-resources__lead",
@@ -46,7 +46,7 @@ const scenarios: SemanticScenario[] = [
     viewport: desktop,
     expectations: [
       { selector: "h1#hero-title", lines: ["Don’t Just Learn.", "Build What’s Next."] },
-      { selector: ".li-hero-lead", lines: ["北里大学薬学部から、学び・研究・未来をつなぐ。"] },
+      { selector: ".li-hero-lead", lines: ["学生のうちから、世の中に残る仕事をしよう。"] },
       { selector: "#resources-title", lines: ["知らなかった未来に、出会う。"] },
       {
         selector: ".v4-resources__lead",

@@ -312,10 +312,10 @@ for (const expected of [
   '<html lang="ja"',
   "Don’t Just Learn.",
   "Build What’s",
-  "独自システム、実践資料、教育活動、",
-  "学生コミュニティをひとつに。",
-  "学生の「知る」を、",
-  "「選ぶ」「動く」へ変える。",
+  "学生のうちから、",
+  "世の中に残る仕事をしよう。",
+  "次の週末は、まだ知らない街へ。",
+  "旅するように働いて、学生の今をもっと面白くする。",
   'id="vision"',
   'id="experience"',
   'id="technology"',
@@ -339,8 +339,10 @@ for (const expected of [
   "MOVE.",
   "あなたが飲み込んだその疑問を、誰かも同じように抱えているかもしれない。",
   "未来の講義を、いま体験。",
-  "ひとりでは見えない、",
-  "新しい場所へ。",
+  "CAMPUS TECHNOLOGY",
+  "VENTURE STUDIO",
+  "AGENT DEVELOPMENT",
+  "CROSS COMMUNITY",
   "次の試験に役立つ情報を",
   "探しに来たはずが、",
   "気づけば、その先の未来まで",
@@ -499,20 +501,18 @@ expectOrdered(
   "Resources reading and action flow"
 );
 
-const resourcesCard = official.match(/<article class="v4-experience-card v4-experience-card--resources"[\s\S]*?<\/article>/)?.[0];
-if (!resourcesCard) throw new Error("Official page is missing the Resources experience card.");
-expectIncludes(resourcesCard, "ライブラリを見る", "Resources experience card");
-expectIncludes(resourcesCard, 'href="/future-strategy-library/"', "Resources experience card");
-
-for (const experienceName of ["technology", "resources", "workshops", "community"]) {
-  const experienceCard = official.match(new RegExp(`<article class="v4-experience-card v4-experience-card--${experienceName}"[\\s\\S]*?<\\/article>`))?.[0];
+for (const experienceName of ["campus-technology", "venture-studio", "agent-development", "cross-community"]) {
+  const experienceCard = official.match(new RegExp(`<article data-experience="${experienceName}"[\\s\\S]*?<\\/article>`))?.[0];
   if (!experienceCard) throw new Error(`Official page is missing the ${experienceName} experience card.`);
   expectExcludes(experienceCard, "data-reveal", `${experienceName} experience card initial motion`);
+  expectOrdered(experienceCard, ["<strong>", "<h3>", "<img", 'decoding="async"', "<p"], `${experienceName} photo-led reading order`);
+  expectIncludes(experienceCard, `src="/images/experience/${experienceName}.webp"`, `${experienceName} photo`);
+  expectIncludes(experienceCard, 'loading="lazy"', `${experienceName} lazy photo`);
 }
 
 const officialLibraryLinks = official.match(/<a\b[^>]*href="\/future-strategy-library\/"[^>]*>/g) ?? [];
-if (officialLibraryLinks.length !== 6) {
-  throw new Error(`Official page must contain six same-domain library links; found ${officialLibraryLinks.length}.`);
+if (officialLibraryLinks.length !== 5) {
+  throw new Error(`Official page must contain five same-domain library links; found ${officialLibraryLinks.length}.`);
 }
 for (const link of officialLibraryLinks) {
   expectExcludes(link, 'target="_blank"', "Same-domain library link");
