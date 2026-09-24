@@ -5,7 +5,7 @@
 
 /* Use the same size on all four titles, fitted to the longest title. */
 :global(.compass-v4-page) .card:global(.v4-experience-card) > h3 {
-  font-size: min(1.5rem, 7.5cqi);
+  font-size: min(1.5rem, 7.2cqi);
   letter-spacing: -0.035em;
   white-space: nowrap;
   text-wrap: nowrap;

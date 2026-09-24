@@ -65,7 +65,7 @@ export function CompassExperienceSection() {
       id: "campus-technology",
       style: "technology",
       name: "CAMPUS TECHNOLOGY",
-      title: "学びの壁を、仕組みで越える",
+      title: "学びの壁を、仕組みで越える。",
       description: "WebシステムとAIを活用し、学生の疑問や反応が届き、次の学びにつながる体験をつくります。",
       alt: "解剖学の図と学習ノートを表示したタブレット（活動イメージ）"
     },
