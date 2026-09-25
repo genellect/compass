@@ -3088,8 +3088,8 @@
   .fslPage .footerLinks a:focus-visible { outline:2px solid #b6c9c8; outline-offset:4px; }
 }
 @media (min-width: 901px) {
-.fslPage .footer { color:#49636a; background:#eeefe8; border-top:1px solid #bfceca; }
-.fslPage .footerBrand strong { color:#173740; }
-.fslPage .footerBrand span,.fslPage .footerLinks a,.fslPage .footerDisclaimer p,.fslPage .copyright { color:#49636a; }
-.fslPage .footerDisclaimer { border-color:#c7d3cf; }
+.fslPage .footer { color:#aebed3; background:#080e18; border-top:1px solid #718eaf33; }
+.fslPage .footerBrand strong { color:#eef3fa; }
+.fslPage .footerBrand span,.fslPage .footerLinks a,.fslPage .footerDisclaimer p,.fslPage .copyright { color:#aebed3; }
+.fslPage .footerDisclaimer { border-color:#718eaf33; }
 }

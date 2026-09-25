@@ -1,13 +1,14 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-import { ASSET_BASE, DESKTOP_QUERY, locateTour, sectionIds, chapters, chapterIndex, type SceneState } from './scene-config';
+import { DESKTOP_QUERY, locateTour, sectionIds, chapters, chapterIndex, type SceneState } from './scene-config';
 import type { SceneController } from './scene-engine';
 import type { Soundscape } from './soundscape';
 import styles from './habitat.module.css';
 import { ExplorerEntry } from '../Explorer/ExplorerEntry';
 
 const storageKey = 'compass-habitat-paused';
+const ASSET_BASE = '/habitat/night-v1/';
 export function Habitat() {
   const mount = useRef<HTMLDivElement>(null);
   const poster = useRef<HTMLDivElement>(null);
@@ -53,7 +54,7 @@ export function Habitat() {
     if (!host || !root) return;
     const desktop = matchMedia(DESKTOP_QUERY);
     const motion = matchMedia('(prefers-reduced-motion: reduce)');
-    let disposed = false, generation = 0, starts: number[] = [], ends: number[] = [], frame = 0;
+    let disposed = false, generation = 0, starts: number[] = [], ends: number[] = [], frame = 0, launchTimer = 0;
     let currentPoster = '', active = false, lastScroll = window.scrollY;
     let userInteracted = false;
     const initialHash = location.hash.slice(1);
@@ -102,7 +103,7 @@ export function Habitat() {
     };
     const schedule = () => { if (!frame) frame = requestAnimationFrame(update); };
     const remeasure = () => { measure(); schedule(); };
-    const stop = () => { generation++; controller.current?.dispose(); controller.current = null; host.replaceChildren(); };
+    const stop = () => { generation++; clearTimeout(launchTimer); controller.current?.dispose(); controller.current = null; host.replaceChildren(); };
     const sync = () => {
       stop();
       active = desktop.matches;
@@ -119,7 +120,8 @@ export function Habitat() {
       if (motion.matches || pausedRef.current) { setSceneState('static'); return; }
       setSceneState('loading');
       const token = generation;
-      void import('./scene-engine').then(async ({ createScene }) => {
+      // First paint uses the CSS poster. Delay optional WebGL work past Hero paint.
+      launchTimer = window.setTimeout(() => { void import('./night-scene').then(async ({ createScene }) => {
         if (disposed || token !== generation) return;
         const instance = createScene(host, (value) => {
           if (token !== generation) return;
@@ -132,7 +134,7 @@ export function Habitat() {
         controller.current = instance;
         update();
         await instance.start();
-      }).catch(() => { if (!disposed && token === generation) { controller.current?.dispose(); controller.current = null; setSceneState('failed'); } });
+      }).catch(() => { if (!disposed && token === generation) { controller.current?.dispose(); controller.current = null; setSceneState('failed'); } }); }, 1200);
     };
     const toggle = () => {
       if (motion.matches) return;

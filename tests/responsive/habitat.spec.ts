@@ -79,18 +79,18 @@ test('Desktop Hero fits the first screen and the new header remains keyboard ope
 test.beforeEach(async ({ page }) => {
   await page.route(/google-analytics|googletagmanager|cloudflareinsights|challenges\.cloudflare/, route => route.abort());
 });
-test('Desktop reading copy does not inherit the old white-on-dark text colors', async ({page})=>{
+test('Desktop reading copy has accessible contrast on the night surface', async ({page})=>{
   await page.setViewportSize({width:1280,height:720});await page.emulateMedia({reducedMotion:'reduce'});
   await page.goto('/');await expect(page.locator('[data-habitat]')).toHaveAttribute('data-enabled','true');
-  const colors=await page.locator('.li-system-index__item:nth-child(n+2) strong, .v4-community__overview p, .v4-community__details-copy p, .v4-founder__statement p, .v4-manifesto__declaration p, .v4-technology__interactive-copy p').evaluateAll(nodes=>nodes.map(node=>({text:node.textContent?.trim(),color:getComputedStyle(node).color})));
+  const colors=await page.locator('.li-system-index__item:nth-child(n+3) strong, .v4-experience-card p, .v4-community__overview p, .v4-community__details-copy p, .v4-founder__statement p, .v4-manifesto__declaration p, .v4-technology__interactive-copy p').evaluateAll(nodes=>nodes.map(node=>({text:node.textContent?.trim(),color:getComputedStyle(node).color})));
   const luminance=(rgb:number[])=>rgb.map(v=>v/255).map(v=>v<=.04045?v/12.92:((v+.055)/1.055)**2.4).reduce((s,v,i)=>s+v*[.2126,.7152,.0722][i],0);
-  const surface=luminance([243,240,233]);
+  const surface=luminance([13,23,37]);
   expect(colors.length).toBeGreaterThan(10);
   for(const {text,color} of colors){
     const ink=luminance(color.match(/[\d.]+/g)!.slice(0,3).map(Number));
-    // Regression for the authored paper surface; moving-background contrast also
+    // Regression for the authored dark card surface; moving-background contrast also
     // receives visual review, since computed styles cannot sample a WebGL frame.
-    expect((surface+.05)/(ink+.05),text).toBeGreaterThanOrEqual(4.5);
+    expect((ink+.05)/(surface+.05),text).toBeGreaterThanOrEqual(4.5);
   }
 });
 test('Desktop visits all nine areas and retains working disclosure and pause controls', async ({ page }) => {
@@ -115,6 +115,10 @@ test('Desktop visits all nine areas and retains working disclosure and pause con
     await expect(root).toHaveAttribute('data-scene-section', id);
     await expect(root).toHaveAttribute('data-scene-state', 'paused', { timeout: 20000 });
     await expect(page.locator('[data-habitat-backdrop] canvas')).toHaveCount(1);
+    if (id === 'experience') {
+      await expect.poll(() => page.locator('#experience img').evaluateAll(images => images.every(image => (image as HTMLImageElement).complete && (image as HTMLImageElement).naturalWidth > 0))).toBe(true);
+      await page.locator('#experience img').evaluateAll(images => Promise.all(images.map(image => (image as HTMLImageElement).decode())));
+    }
     await page.screenshot({ path: `test-results/habitat-${id}.png` });
     const metrics = await page.locator('[data-quality]').evaluate(element => ({ ...((element as HTMLElement).dataset) }));
     expect(Number(metrics.triangles)).toBeLessThanOrEqual(300000);
@@ -131,8 +135,8 @@ test('Mobile preserves copy without fetching realtime habitat assets or engine',
   const context = await browser.newContext({ ...devices['iPhone 13'], reducedMotion: 'reduce' });
   const page = await context.newPage(); const assets: string[] = []; const engines: Promise<boolean>[] = [];
   await page.route(/google-analytics|googletagmanager|cloudflareinsights|challenges\.cloudflare/, route => route.abort());
-  page.on('request', request => { if (request.url().includes('/habitat/v3/')) assets.push(request.url()); });
-  page.on('response', response => { if (response.url().endsWith('.js')) engines.push(response.text().then(text => text.includes('Habitat asset unavailable')).catch(() => false)); });
+  page.on('request', request => { if (/\/habitat\/(v3|night-v1)\//.test(request.url())) assets.push(request.url()); });
+  page.on('response', response => { if (response.url().endsWith('.js')) engines.push(response.text().then(text => text.includes('Background unavailable')).catch(() => false)); });
   await page.goto('/'); await expect(page.locator('[data-habitat]')).toHaveAttribute('data-enabled','false');
   await expect(page.locator('.site-header .header-actions a').nth(0)).toHaveText('講義を体験する');
   await expect(page.locator('.site-header .header-actions a').nth(1)).toHaveText('ライブラリを見る');
@@ -151,8 +155,8 @@ test('iPad landscape enters the immersive scene while portrait stays static', as
   const landscape = await browser.newContext({ ...devices['iPad (gen 11) landscape'], reducedMotion: 'no-preference' });
   const landscapePage = await landscape.newPage();
   await landscapePage.route(/google-analytics|googletagmanager|cloudflareinsights|challenges\.cloudflare/, route => route.abort());
-  const firstModel = landscapePage.waitForRequest(
-    request => request.url().includes('/habitat/v3/') && request.url().endsWith('.glb'),
+  const firstMap = landscapePage.waitForRequest(
+    request => request.url().includes('/habitat/night-v1/') && request.url().endsWith('.map.webp'),
     { timeout: 30_000 },
   );
   await landscapePage.goto('/');
@@ -171,7 +175,7 @@ test('iPad landscape enters the immersive scene while portrait stays static', as
   await expect(landscapePage.locator('#technology-menu')).toContainText('COMPASS Platformテクノロジーを感じる3D体験');
   await expect(landscapePage.locator('[data-habitat-backdrop]')).toHaveCSS('display', 'block');
   await expect(landscapePage.locator('[data-habitat-backdrop] canvas')).toHaveCount(1);
-  await firstModel;
+  await firstMap;
   // Freeze the first standard-quality frame before software rendering used by CI
   // can intentionally trigger the sustained-frame-budget static fallback.
   await landscapePage.waitForFunction(() => {
@@ -191,7 +195,7 @@ test('iPad landscape enters the immersive scene while portrait stays static', as
   const portraitPage = await portrait.newPage();
   const habitatRequests: string[] = [];
   portraitPage.on('request', request => {
-    if (request.url().includes('/habitat/v3/')) habitatRequests.push(request.url());
+    if (/\/habitat\/(v3|night-v1)\//.test(request.url())) habitatRequests.push(request.url());
   });
   await portraitPage.route(/google-analytics|googletagmanager|cloudflareinsights|challenges\.cloudflare/, route => route.abort());
   await portraitPage.goto('/');
@@ -201,7 +205,7 @@ test('iPad landscape enters the immersive scene while portrait stays static', as
   await portrait.close();
 });
 
-test('Sustained low frame rate chooses the static render without degrading the 3D quality', async ({ page }) => {
+test('Sustained low frame rate preserves architecture and keeps filmed water moving', async ({ page }) => {
   test.setTimeout(90000);
   await page.setViewportSize({width:1280,height:720});
   await page.addInitScript(()=>{
@@ -209,11 +213,20 @@ test('Sustained low frame rate chooses the static render without degrading the 3
     window.requestAnimationFrame=callback=>request(()=>{const start=performance.now();while(performance.now()-start<45){} callback(performance.now());});
   });
   await page.goto('/');
-  await expect(page.locator('[data-habitat]')).toHaveAttribute('data-scene-state',/ready|static/,{timeout:40000});
-  await expect(page.locator('[data-habitat]')).toHaveAttribute('data-scene-state','static',{timeout:40000});
+  await expect(page.locator('[data-habitat]')).toHaveAttribute('data-scene-state','ready',{timeout:40000});
+  await expect(page.locator('[data-quality]')).toHaveAttribute('data-render-mode','film-composite',{timeout:40000});
   await expect(page.locator('[data-fallback-reason]')).toHaveAttribute('data-fallback-reason','sustained-frame-budget');
   await expect(page.locator('[data-habitat-backdrop] canvas')).toHaveCount(0);
-  await expect(page.getByRole('button',{name:'3Dを再試行'})).toBeVisible();
+  const host=page.locator('[data-quality]');
+  await expect(host.locator('video')).toBeVisible();
+  const frames=Number(await host.getAttribute('data-film-frames'));
+  await expect.poll(async()=>Number(await host.getAttribute('data-film-frames'))).toBeGreaterThan(frames+3);
+  await page.getByRole('button',{name:'動きを止める'}).click();
+  await expect(host).toHaveAttribute('data-film-state','paused');
+  await expect.poll(()=>host.evaluate(e=>e.getAnimations({subtree:true}).every(a=>a.playState==='paused'))).toBe(true);
+  await page.getByRole('button',{name:'動きを再開する'}).click();
+  await expect(host).toHaveAttribute('data-film-state','playing');
+  await expect(host).toHaveAttribute('data-render-mode','film-composite');
   await expect(page.locator('.li-system-index a').first()).toBeVisible();
 });
 
@@ -276,15 +289,15 @@ test('Chapter navigation seeks to the correct room and sound is opt-in and dispo
   await expect(page.getByRole('navigation',{name:'このページの案内'})).toHaveCount(0);
 });
 
-test('Model failure leaves a readable poster, then a user can retry', async ({ page }) => {
+test('Depth-map failure leaves a readable poster, then a user can retry', async ({ page }) => {
   await page.setViewportSize({ width: 1280, height: 720 });
-  await page.route('**/habitat/**/*.glb', route => route.fulfill({ status: 503, body: '' }));
+  await page.route('**/habitat/night-v1/*.map.webp', route => route.fulfill({ status: 503, body: '' }));
   await page.goto('/');
   await expect(page.locator('[data-habitat]')).toHaveAttribute('data-scene-state','failed');
   await expect(page.locator('h1')).toBeVisible();
   await expect(page.locator('.li-system-index a').first()).toBeVisible();
   await expect(page.locator('[data-habitat-backdrop] canvas')).toHaveCount(0);
-  await page.unroute('**/habitat/**/*.glb');
+  await page.unroute('**/habitat/night-v1/*.map.webp');
   await page.getByRole('button', { name: '3Dを再試行' }).click();
   await expect(page.locator('[data-habitat]')).toHaveAttribute('data-scene-state','ready', { timeout: 30000 });
 });
@@ -303,9 +316,9 @@ test('Viewport changes and repeated route visits dispose the renderer', async ({
   await expect(page.locator('[data-habitat-backdrop] canvas')).toHaveCount(1);
 });
 
-test('A missing room lightmap uses that room poster and can be retried', async ({page})=>{
+test('A missing depth map uses the selected section poster and can be retried', async ({page})=>{
   await page.setViewportSize({width:1280,height:720});
-  await page.route('**/habitat/**/architecture-vision.webp',route=>route.fulfill({status:503,body:''}));
+  await page.route('**/habitat/night-v1/*.map.webp',route=>route.fulfill({status:503,body:''}));
   await page.goto('/#vision');
   const root=page.locator('[data-habitat]');
   await expect(root).toHaveAttribute('data-scene-section','vision');
@@ -313,20 +326,47 @@ test('A missing room lightmap uses that room poster and can be retried', async (
   await expect(page.locator('[data-habitat-backdrop]>div').first()).toHaveCSS('background-image',/vision\.webp/);
   await expect(page.locator('#vision h2')).toBeVisible();
   await expect(page.locator('[data-habitat-backdrop] canvas')).toHaveCount(0);
-  await page.unroute('**/habitat/**/architecture-vision.webp');
+  await page.unroute('**/habitat/night-v1/*.map.webp');
   await page.getByRole('button',{name:'3Dを再試行'}).click();
   await expect(root).toHaveAttribute('data-scene-state','ready',{timeout:30000});
   await expect(root).toHaveAttribute('data-scene-section','vision');
 });
 
-test('A failed planet texture uses the static scene and keeps navigation available', async ({ page }) => {
+test('The night background loads compact plates without runtime models or HDRs', async ({ page }) => {
+  const resources: string[] = [];
+  page.on('request', request => { if (request.url().includes('/habitat/')) resources.push(request.url()); });
   await page.setViewportSize({width:1280,height:720});
-  await page.route('**/habitat/**/planet.webp',route=>route.fulfill({status:503,body:''}));
   await page.goto('/');
-  await expect(page.locator('[data-habitat]')).toHaveAttribute('data-scene-state','failed');
-  await expect(page.locator('[data-habitat-backdrop] canvas')).toHaveCount(0);
+  await expect(page.locator('[data-habitat]')).toHaveAttribute('data-scene-state','ready',{timeout:30000});
+  expect(resources.filter(url => /\.glb$|\.hdr$/.test(url))).toHaveLength(0);
+  expect(resources.filter(url => url.endsWith('.map.webp'))).toHaveLength(2);
+  expect(resources.some(url => url.includes('/v3/') || url.endsWith('/planet.webp'))).toBe(false);
   await expect(page.locator('h1')).toBeVisible();
   await expect(page.locator('.li-system-index a').first()).toBeVisible();
+});
+
+test('Filmed water and spatial motion advance, pause, and resume together', async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 720 });
+  await page.goto('/');
+  const host = page.locator('[data-quality]');
+  await expect(host).toHaveAttribute('data-film-state', 'playing', { timeout: 30_000 });
+  await expect.poll(async () => Number(await host.getAttribute('data-film-frames'))).toBeGreaterThan(5);
+  const before = Number(await host.getAttribute('data-scene-time'));
+  await expect.poll(async () => Number(await host.getAttribute('data-scene-time'))).toBeGreaterThan(before + .25);
+  await page.getByRole('button', { name: '動きを止める' }).click();
+  await expect(host).toHaveAttribute('data-film-state', 'paused');
+  const frozen = await host.getAttribute('data-scene-time');
+  // Observe several animation opportunities; a paused clock must stay frozen.
+  await page.evaluate(() => new Promise<void>(resolve => requestAnimationFrame(() => requestAnimationFrame(() => requestAnimationFrame(() => resolve())))));
+  expect(await host.getAttribute('data-scene-time')).toBe(frozen);
+  await page.screenshot({ path: 'test-results/habitat-motion-hero.png' });
+  await page.getByRole('button', { name: '動きを再開する' }).click();
+  await expect(host).toHaveAttribute('data-film-state', 'playing');
+  await expect.poll(async () => Number(await host.getAttribute('data-scene-time'))).toBeGreaterThan(Number(frozen) + .2);
+  // Remain animated through three complete frame-budget sampling windows.
+  const fpsAt = Number(await host.getAttribute('data-fps-at') ?? 0);
+  await expect.poll(async () => Number(await host.getAttribute('data-fps-at')), { timeout: 15_000 }).toBeGreaterThan(fpsAt + 7_600);
+  await expect(page.locator('[data-habitat]')).toHaveAttribute('data-scene-state', 'ready');
 });
 
 test('Lost WebGL context fails over without losing page content', async ({ page }) => {
@@ -349,7 +389,7 @@ test('A destination selected during the first download becomes ready without ano
   let release!: () => void, requested!: () => void;
   const gate = new Promise<void>(resolve => { release = resolve; });
   const initialRequest = new Promise<void>(resolve => { requested = resolve; });
-  await page.route('**/habitat/**/top.glb', async route => { requested(); await gate; await route.continue(); });
+  await page.route('**/habitat/night-v1/top.map.webp', async route => { requested(); await gate; await route.continue(); });
   await page.setViewportSize({width:1280,height:720});
   await page.goto('/'); await initialRequest;
   await page.evaluate(() => document.getElementById('resources')!.scrollIntoView({behavior:'instant',block:'start'}));

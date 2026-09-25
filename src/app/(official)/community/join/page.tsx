@@ -1,3 +1,4 @@
+import { NightBackdrop } from "@/components/NightBackdrop";
 import type { Metadata } from "next";
 import { SiteFooter } from "@/components/SiteFooter";
 import { SiteHeader } from "@/components/SiteHeader";
@@ -21,6 +22,7 @@ export default function CommunityJoinPage() {
     <>
       <SiteHeader routeContext="community" />
       <div className={styles.page}>
+        <NightBackdrop scene="community" />
         <main id="main" className={styles.main}>
           <a className={styles.backLink} href="/">公式サイトへ戻る <span aria-hidden="true">↗</span></a>
           <CommunityJoinForm />
