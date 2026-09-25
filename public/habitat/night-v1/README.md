@@ -1,0 +1,27 @@
+# 夜の観測庭園 — 親サイトDesktop背景
+
+既存コンテンツの背後に、近景の建築・水面・遠い星空がつながる一つの空間を置く。足場と建築の細部を尺度とし、スクロールに沿って開口部の手前から先へ視点が移る。写真素材をオリジナルのBlender造形の材質・照明・遠景に使用する。実写水面の短い映像を反射の変形に組み込み、通常表示では水と視点が継続して動く。
+
+## 配信素材
+
+- `*.map.webp`: Blenderから書き出した距離・水面・発光部分のデータ。960×540、lossless WebP。
+- `reflections.mp4`: 実写水面を640×360・15fps・12秒・音声なしに加工。WebGLの最初の描画後に取得する。
+- `manifest.json`: 既存9セクションの構図。全景は一つのBlender空間を異なる位置から描画する。
+- `*.webp`: 同じBlenderシーンの1920×1080描画。Heroの初期表示とreduced motion、読み込み失敗時の代替に使う。
+
+光・反射・影はBlenderで事前計算し、WebGLは距離に応じた視差、実写映像による水面の変形、発光の緩やかな変化を1描画で合成する。これは奥行き情報を使う背景表現で、自由移動できる3D探索ではない。GLBやHDRはブラウザーへ配信しない。
+
+WebGLはhydration後1.2秒遅らせ、Heroの本文・リンク・背景静止画を先に表示する。表示解像度は最大120万画素。必要なセクションの画像だけを準備し、離れたセクションのGPUリソースを破棄する。タブ非表示・停止操作で映像と描画を止め、unmountでGPU・映像リソースを破棄する。既存の低FPS時の代替表示も維持する。
+
+## 再生成
+
+Blender 4.5、Node.js、repositoryのsharpを使用する。取得元と加工内容は[credits.md](credits.md)を参照する。
+
+```sh
+blender --background --python scripts/habitat/create_night.py -- --source work/night-source --output work/night-renders --master work/compass-night-observatory.blend
+node scripts/habitat/prepare-night.mjs work/night-renders
+```
+
+`--draft --section top`はHeroの構図確認用。公開用は両指定を外す。入力は`night.hdr`、`stone-{Diffuse,Rough,nor_gl}.jpg`、`rock-{Diffuse,Rough,nor_gl}.jpg`、`water-frame.png`。水面の動画変換例はcreditsに記載する。
+
+Blenderは編集用のGLB、HDR、パック済み`.blend`も書き出すが、これらはブラウザーの読み込み経路に含めない。既存HTML、CTA、ISSの条件・素材、独立した`/3d/`の素材は変更しない。

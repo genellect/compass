@@ -49,6 +49,7 @@ delivery must follow the production approval boundary.
 See the [asset register](docs/legal/asset-register.md). Existing notices are preserved:
 
 - [Habitat source credits](scripts/habitat/ASSET_CREDITS.md) and [delivered credits](public/habitat/v3/credits.md)
+- [Parent Desktop night background](public/habitat/night-v1/credits.md): Poly Haven CC0 photographic materials and night panorama; Everett Bumstead's Pexels water footage, edited as a reflection input.
 - [NASA mobile media provenance](docs/mobile-space-media.md) and [manifest](public/habitat/mobile-v1/manifest.json)
 - [Independent portfolio image credits](docs/founder-image-credits.md)
 - [Original Contact rendering](docs/contact-door-entry.md)
