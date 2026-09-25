@@ -1154,23 +1154,25 @@
   }
 }
 
-/* The editorial structure stays intact inside the shared COMPASS palette. */
-@media (min-width: 901px) {
-.messagePage { --message-paper:#f3f3eb; --message-paper-deep:#e3ebe3; --message-ink:#173740; --message-copy:#36545b; --message-cyan:#398694; background:#eef1e9; }
-.messagePage .reader,.messagePage .readingStage { background:linear-gradient(120deg,#f5f4eb,#e6eee7); }
-.messagePage .cover { color:#173740; background:radial-gradient(ellipse at 85% 20%,#d7e9e2,transparent 58%),linear-gradient(120deg,#faf8f0,#edf2ec); }
-.messagePage .cover h1 { color:#173740; text-shadow:none; }
-.messagePage .cover h1 > span { color:#173740; background:none; -webkit-text-fill-color:currentColor; filter:none; }
-.messagePage .coverSubtitle,.messagePage .coverCount,.messagePage .coverAuthor,.messagePage .coverAuthor span,.messagePage .coverIndexButton,.messagePage .secondaryAction { color:#49636a; }
-.messagePage .coverKicker { color:#2f7984; }
-.messagePage .primaryAction { color:#f8faf5; background:#173f49; border-radius:8px; border-color:#6facb5!important; box-shadow:0 8px 24px #17374020; }
-.messagePage .pageSheet { background:#fffef8; border-color:#cbd7d1; border-radius:12px; box-shadow:0 18px 55px #17374014; }
-.messagePage .pullQuote,.messagePage .epilogue .pageSheet { background:linear-gradient(130deg,#173f49,#234d53); }
-.messagePage .epilogue .prose strong { color:#bde2d9; }
-.messagePage .chapterIndex { background:linear-gradient(120deg,#f8f7ef,#eaf0e9); color:#173740; border-color:#bdcfca; }
-.messagePage .chapterIndex header h2,.messagePage .chapterIndex header button,.messagePage .chapterIndex li button,.messagePage .indexCoverLink { color:#173740; }
-.messagePage .chapterIndex li button span,.messagePage .chapterIndex header p { color:#2f7984; }
-.messagePage .chapterIndex li[data-read="true"] button span { color:#346f60; }
-.messagePage .chapterIndex li[data-current="true"] button { color:#173740; background:#d9e7de; }
-.messagePage .mobileReaderBar { color:#173740; background:#f3f5eded; border-color:#bccfca; }
-}
+/* Preserve the reader geometry and manuscript within the parent night palette. */
+.messagePage { --message-navy:#060a12; --message-paper:#0d1725; --message-paper-deep:#101e30; --message-ink:#eef3fa; --message-copy:#ced9e7; --message-cyan:#9fc9eb; --message-mint:#b8d0e7; --message-gold:#c3bda9; background:transparent; position:relative; isolation:isolate; }
+.messagePage .reader,.messagePage .cover,.messagePage .readingStage { background:transparent; }
+.messagePage .cover::before,.messagePage .cover::after,.messagePage .coverConstellation,.messagePage .readingStage::before { display:none; }
+.messagePage .cover h1 > span { color:#eef3fa; background:none; -webkit-text-fill-color:currentColor; filter:none; }
+.messagePage .coverSubtitle,.messagePage .coverCount,.messagePage .coverAuthor,.messagePage .coverAuthor span,.messagePage .coverIndexButton,.messagePage .secondaryAction { color:#ced9e7; }
+.messagePage .primaryAction { color:#122332; background:linear-gradient(120deg,#dce9f4,#b8d0e7); border-color:#dce9f4!important; box-shadow:0 8px 24px #0003; }
+.messagePage .pageSheet,.messagePage .epilogue .pageSheet { color:#ced9e7; background:#0d1725; border-color:#718eaf55; box-shadow:0 18px 55px #0004; }
+.messagePage .pageSheet::after,.messagePage .chapterHeader > div,.messagePage .signature,.messagePage .pageNavigation { border-color:#718eaf55; }
+.messagePage .chapterHeader p,.messagePage .chapterHeader > div span,.messagePage .openingParagraph::first-letter,.messagePage .prose strong { color:#9fc9eb; }
+.messagePage .readingRail,.messagePage .pageNavigation small,.messagePage .signature::before { color:#adbed4; }
+.messagePage .readingRail > button { background:#0d1725; border-color:#718eaf55; box-shadow:none; }
+.messagePage .readingRail button strong { color:#eef3fa; }
+.messagePage .railProgress { background:#718eaf55; }
+.messagePage .pullQuote { background:#15273b; color:#eef3fa; }
+.messagePage .chapterIndex { background:#0b1422; border-color:#718eaf55; }
+.messagePage .chapterIndex li button,.messagePage .chapterIndex li button span,.messagePage .indexCoverLink { color:#ced9e7; }
+.messagePage .chapterIndex li[data-current="true"] button { color:#fff; background:#233c54; }
+.messagePage .mobileReaderBar { color:#eef3fa; background:#0b1422f5; border-color:#718eaf55; }
+.messagePage .mobileReaderBar span { color:#adbed4; }
+.messagePage :is(button,a):focus-visible { outline:2px solid #b8d0e7; outline-offset:4px; }
+@media (min-width:901px) { .messagePage .primaryAction { border-radius:8px; } .messagePage .pageSheet { border-radius:12px; } }

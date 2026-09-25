@@ -58,3 +58,29 @@
   .header:global(.site-header) :global(.site-product-context__long) { display: none; }
   .header:global(.site-header) :global(.site-product-context__short) { display: inline; }
 }
+
+/* Requested companion routes share the approved parent night chrome. */
+@media (min-width:901px) {
+  .header:global(.site-header):is([data-route-context="library"],[data-route-context="messages"],[data-route-context="community"]) { color: #e1e9f3; border-color: #789abe40; background: linear-gradient(115deg,#0d1723ed,#0a111df5 45%,#121d2beb); }
+  .header:global(.site-header):is([data-route-context="library"],[data-route-context="messages"],[data-route-context="community"]) :global( .logo-copy strong),
+  .header:global(.site-header):is([data-route-context="library"],[data-route-context="messages"],[data-route-context="community"]) :global( .nav-link),
+  .header:global(.site-header):is([data-route-context="library"],[data-route-context="messages"],[data-route-context="community"]) :global( .nav-trigger),
+  .header:global(.site-header):is([data-route-context="library"],[data-route-context="messages"],[data-route-context="community"]) :global( .nav-group.is-current > .nav-trigger),
+  .header:global(.site-header):is([data-route-context="library"],[data-route-context="messages"],[data-route-context="community"]) :global( .nav-link.is-current),
+  .header:global(.site-header):is([data-route-context="library"],[data-route-context="messages"],[data-route-context="community"]) :global( .nav-trigger[aria-expanded="true"]),
+  .header:global(.site-header):is([data-route-context="library"],[data-route-context="messages"],[data-route-context="community"]) :global( .panel-link) { color: #e1e9f3; }
+  .header:global(.site-header):is([data-route-context="library"],[data-route-context="messages"],[data-route-context="community"]) :global( .logo-copy small),
+  .header:global(.site-header):is([data-route-context="library"],[data-route-context="messages"],[data-route-context="community"]) :global( .panel-link small) { color: #adbed4; }
+  .header:global(.site-header):is([data-route-context="library"],[data-route-context="messages"],[data-route-context="community"]) :global( .logo-mark),
+  .header:global(.site-header):is([data-route-context="library"],[data-route-context="messages"],[data-route-context="community"]) :global( .logo-mark)::before { border-color: #a7c9e9a6; }
+  .header:global(.site-header):is([data-route-context="library"],[data-route-context="messages"],[data-route-context="community"]) :global( .logo-mark span) { background: #a7c9e9a6; }
+  .header:global(.site-header):is([data-route-context="library"],[data-route-context="messages"],[data-route-context="community"]) :global( .header-actions) { border-color: #789abe40; }
+  .header:global(.site-header):is([data-route-context="library"],[data-route-context="messages"],[data-route-context="community"]) :global( .nav-panel) { background: linear-gradient(135deg,#101c2bfa,#0b1422fc); border-color: #789abe40; box-shadow: inset 0 1px 0 #c8e4ff20,0 24px 70px #0006; }
+  .header:global(.site-header):is([data-route-context="library"],[data-route-context="messages"],[data-route-context="community"]) :global( .header-cta--interactive) { color: #122332; background: linear-gradient(120deg,#dce9f4,#b8d0e7); border-color: #dce9f4; }
+  .header:global(.site-header):is([data-route-context="library"],[data-route-context="messages"],[data-route-context="community"]) :global( .header-cta--interactive:hover) { background: #edf6ff; }
+  .header:global(.site-header):is([data-route-context="library"],[data-route-context="messages"],[data-route-context="community"]) :global( .header-cta--optional) { color: #d4e0ef; background: #18283e70; border-color: #789abe50; }
+  .header:global(.site-header):is([data-route-context="library"],[data-route-context="messages"],[data-route-context="community"]) :global( .nav-link.is-current)::before,
+  .header:global(.site-header):is([data-route-context="library"],[data-route-context="messages"],[data-route-context="community"]) :global( .nav-group.is-current > .nav-trigger)::before { background: #9fc9eb; }
+.header:global(.site-header):is([data-route-context="library"],[data-route-context="messages"],[data-route-context="community"]) :global(.site-product-context) { color:#adbed4; border-color:#789abe40; }
+.header:global(.site-header):is([data-route-context="library"],[data-route-context="messages"],[data-route-context="community"]) :global(:is(a,button):focus-visible) { outline-color:#b8d0e7; }
+}

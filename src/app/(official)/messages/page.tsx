@@ -1,3 +1,4 @@
+import { NightBackdrop } from "@/components/NightBackdrop";
 import { readFile } from "node:fs/promises";
 import path from "node:path";
 import type { Metadata } from "next";
@@ -58,6 +59,7 @@ export default async function MessagesPage() {
     <>
       <SiteHeader routeContext="messages" />
       <main id="main" className={styles.messagePage}>
+        <NightBackdrop scene="manifesto" />
         <MessageReader message={message} />
       </main>
       <SiteFooter routeContext="messages" />

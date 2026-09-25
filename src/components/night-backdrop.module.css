@@ -1,0 +1,12 @@
+.backdrop { position:fixed; inset:0; z-index:-1; overflow:hidden; pointer-events:none; background:#060a12; }
+.scene { position:absolute; inset:-2%; animation:drift 24s ease-in-out infinite alternate; animation-play-state:paused; }
+.backdrop[data-moving="true"] .scene { animation-play-state:running; }
+.plate,.water,.shade { position:absolute; inset:0; }
+.plate { background:var(--night-plate) center / cover no-repeat; }
+.water { mask:var(--night-water) center / cover no-repeat; mix-blend-mode:screen; opacity:.14; }
+.water video { width:100%; height:100%; object-fit:cover; }
+.shade { background:linear-gradient(90deg,#060a12b8,#060a1238 75%),linear-gradient(0deg,#060a1266,transparent 55%); }
+.control { position:fixed; right:20px; bottom:20px; z-index:73; padding:10px 14px; border:1px solid #789abe70; border-radius:8px; background:#0a1422f5; color:#ced9e7; font:inherit; font-size:11px; cursor:pointer; }
+.control:focus-visible { outline:2px solid #b8d0e7; outline-offset:4px; }
+@keyframes drift { from { transform:translate3d(-.35%,0,0) scale(1); } to { transform:translate3d(.35%,-.4%,0) scale(1.025); } }
+@media (max-width:900px),(prefers-reduced-motion:reduce) { .control { display:none; } .scene { animation:none; } }

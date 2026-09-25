@@ -12,3 +12,11 @@
 .footer:global(.site-footer)[data-route-context] :global(.footer-note) { border-color:#c7d3cf; }
 .footer:global(.site-footer)[data-route-context] :global(a:focus-visible) { outline:2px solid #257788; outline-offset:4px; }
 }
+
+@media (min-width:901px) {
+.footer:global(.site-footer):is([data-route-context="messages"],[data-route-context="community"]) { background:#080e18; color:#aebed3; border-color:#718eaf33; }
+.footer:global(.site-footer):is([data-route-context="messages"],[data-route-context="community"]) :global(:is(p,a,span)) { color:#aebed3; }
+.footer:global(.site-footer):is([data-route-context="messages"],[data-route-context="community"]) :global(.footer-logo) { color:#eef3fa; }
+.footer:global(.site-footer):is([data-route-context="messages"],[data-route-context="community"]) :global(:is(.footer-cta,.footer-note,.footer-cta a)) { border-color:#718eaf55; }
+.footer:global(.site-footer):is([data-route-context="messages"],[data-route-context="community"]) :global(a:focus-visible) { outline-color:#b8d0e7; }
+}
