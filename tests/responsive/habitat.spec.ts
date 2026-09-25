@@ -340,7 +340,7 @@ test('The night background loads compact plates without runtime models or HDRs',
   await expect(page.locator('[data-habitat]')).toHaveAttribute('data-scene-state','ready',{timeout:30000});
   expect(resources.filter(url => /\.glb$|\.hdr$/.test(url))).toHaveLength(0);
   expect(resources.filter(url => url.endsWith('.map.webp'))).toHaveLength(2);
-  expect(resources.some(url => /\/v3\/|planet\.webp$/.test(url))).toBe(false);
+  expect(resources.some(url => url.includes('/v3/') || url.endsWith('/planet.webp'))).toBe(false);
   await expect(page.locator('h1')).toBeVisible();
   await expect(page.locator('.li-system-index a').first()).toBeVisible();
 });
