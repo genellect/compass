@@ -13,4 +13,7 @@ for (const id of ['top', 'vision', 'experience', 'technology', 'resources', 'man
   if (dimensions.width !== 1920 || dimensions.height !== 1080) throw new Error(`Final 1920x1080 render required: ${id}`);
   await sharp(path.join(source, `${id}.png`)).webp({ quality: 82, effort: 5 }).toFile(path.join(target, `${id}.webp`));
   await sharp(path.join(maps, `${id}-map-0001.png`)).resize(960,540).webp({ lossless: true, effort: 5 }).toFile(path.join(target, `${id}.map.webp`));
+  const { data, info } = await sharp(path.join(maps, `${id}-map-0001.png`)).resize(960,540).ensureAlpha().raw().toBuffer({ resolveWithObject: true });
+  for (let p=0;p<data.length;p+=4) { data[p+3]=data[p+1]; data[p]=data[p+1]=data[p+2]=255; }
+  await sharp(data,{raw:{width:info.width,height:info.height,channels:4}}).webp({lossless:true}).toFile(path.join(target,`${id}.water.webp`));
 }

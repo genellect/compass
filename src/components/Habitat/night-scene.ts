@@ -6,20 +6,33 @@ import type { Quality, SceneState, TourPosition } from './scene-config';
 const base = '/habitat/night-v1/';
 type Plate = { color: THREE.Texture; data: THREE.Texture; images: ImageBitmap[] };
 
-/** Blender computes the expensive lighting. One WebGL pass animates depth, light and filmed water. */
+/** Full-resolution Blender plates retain detail; one small WebGL layer animates their water and light. */
 export function createScene(host: HTMLElement, onState: (state: SceneState) => void): SceneController {
   for (const key of ['fallbackReason', 'fps', 'fpsAt', 'filmTime', 'filmFrames', 'sceneTime']) delete host.dataset[key];
+  host.dataset.renderMode = 'webgl';
   let disposed = false, paused = false, ready = false, frame = 0, elapsed = 0, last = 0;
   let sampleAt = 0, frames = 0, slowWindows = 0, generation = 0;
+  let native = false, metricsAt = 0, filmMask = '';
+  let nativeMotion: Animation | null = null;
   let quality: Quality = 'standard';
   let position: TourPosition = { index: 0, next: 1, blend: 0, local: 0 };
   let shown = position;
   const abort = new AbortController();
   const cache = new Map<number, Promise<Plate>>();
   const resources = new Set<Plate>();
-  const renderer = new THREE.WebGLRenderer({ antialias: false, powerPreference: 'default' });
+  const world = document.createElement('div');
+  world.style.cssText = 'position:absolute;inset:0;will-change:transform;transform:scale(1.012)';
+  const pictures = [document.createElement('div'), document.createElement('div')];
+  for (const picture of pictures) {
+    picture.style.cssText = 'position:absolute;inset:0;background-size:cover;background-position:center;will-change:opacity';
+    world.append(picture);
+  }
+  host.append(world);
+  const renderer = new THREE.WebGLRenderer({ antialias: false, alpha: true, premultipliedAlpha: false, powerPreference: 'default' });
   renderer.outputColorSpace = THREE.SRGBColorSpace;
-  renderer.domElement.setAttribute('aria-hidden', 'true'); host.append(renderer.domElement);
+  renderer.setClearColor(0, 0);
+  renderer.domElement.style.cssText = 'position:absolute;inset:0';
+  renderer.domElement.setAttribute('aria-hidden', 'true'); world.append(renderer.domElement);
   const scene = new THREE.Scene();
   const camera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 2); camera.position.z = 1;
   const pointer = new THREE.Vector2(), drift = new THREE.Vector2();
@@ -34,7 +47,7 @@ export function createScene(host: HTMLElement, onState: (state: SceneState) => v
     pointer: { value: drift }, time: { value: 0 }, blend: { value: 0 },
   };
   const material = new THREE.ShaderMaterial({
-    depthTest: false, depthWrite: false, uniforms,
+    depthTest: false, depthWrite: false, transparent: true, uniforms,
     vertexShader: 'varying vec2 uvPlate; void main(){uvPlate=uv;gl_Position=vec4(position.xy,0.,1.);}',
     fragmentShader: `
       precision highp float;
@@ -42,12 +55,14 @@ export function createScene(host: HTMLElement, onState: (state: SceneState) => v
       uniform sampler2D colorA,colorB,mapA,mapB,water;
       uniform vec2 cover,pointer;
       uniform float time,blend;
-      vec3 plate(sampler2D photograph,sampler2D data,vec2 uv){
+      vec4 plate(sampler2D photograph,sampler2D data,vec2 uv){
         vec3 info=texture2D(data,uv).rgb;
-        // Actual Blender distance controls parallax; distant stars move least.
+        float mask=smoothstep(.5,.9,info.g);
+        float light=smoothstep(.35,.85,info.b);
+        // Leave sharp architecture and stars in the browser's full-resolution image layer.
+        if(max(mask,light)<.005)return vec4(0.);
         vec2 movement=pointer+vec2(sin(time*.12)*.065,cos(time*.09)*.025);
-        vec2 p=clamp(uv+movement*(.008+(info.r-.35)*.003),vec2(.001),vec2(.999));
-        float mask=smoothstep(.45,.85,texture2D(data,p).g);
+        vec2 p=clamp(uv+movement*(info.r-.35)*.001,vec2(.001),vec2(.999));
         vec2 filmUV=p*vec2(2.3,1.7)+vec2(time*.003,0.);
         float h=texture2D(water,filmUV).r;
         vec2 slope=vec2(texture2D(water,filmUV+vec2(.006,0.)).r-h,
@@ -57,18 +72,40 @@ export function createScene(host: HTMLElement, onState: (state: SceneState) => v
         // The filmed surface breaks the authored reflection into changing highlights.
         color*=1.+mask*(h-.5)*.16;
         color+=mask*pow(h,4.)*vec3(.002,.004,.004);
-        color*=1.+info.b*sin(time*.24)*.045;
-        return color;
+        color*=1.+light*sin(time*.24)*.045;
+        return vec4(color,max(mask*.88,light*.35));
       }
       void main(){
         vec2 uv=(uvPlate-.5)*cover+.5;
-        vec3 color=plate(colorA,mapA,uv);
+        vec4 color=plate(colorA,mapA,uv);
         if(blend>.001)color=mix(color,plate(colorB,mapB,uv),smoothstep(0.,1.,blend));
-        gl_FragColor=vec4(color,1.);
+        gl_FragColor=color;
         #include <colorspace_fragment>
       }`,
   });
   const geometry = new THREE.PlaneGeometry(2, 2); scene.add(new THREE.Mesh(geometry, material));
+
+  const syncFilmMask = () => {
+    if (!native) return;
+    const id = authored.sections[shown.blend > .5 ? shown.next : shown.index].id;
+    if (filmMask === id) return;
+    filmMask = id;
+    film.style.maskImage = `url("${base}${id}.water.webp")`;
+  };
+  const useNativeMotion = () => {
+    native = true;
+    host.dataset.renderMode = 'film-composite';
+    host.dataset.fallbackReason = 'sustained-frame-budget';
+    renderer.domElement.removeEventListener('webglcontextlost', lost);
+    renderer.dispose(); renderer.forceContextLoss(); renderer.domElement.remove();
+    film.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.16;mix-blend-mode:screen;mask-size:cover;mask-position:center;pointer-events:none';
+    film.setAttribute('aria-hidden', 'true'); world.append(film); syncFilmMask();
+    nativeMotion = world.animate([
+      { transform: 'translate3d(-2px,0,0) scale(1.012)' },
+      { transform: 'translate3d(2px,-1px,0) scale(1.015)' },
+    ], { duration: 24000, iterations: Infinity, direction: 'alternate', easing: 'ease-in-out' });
+    if (paused || document.hidden) nativeMotion.pause();
+  };
 
   const loadTexture = async (url: string, color: boolean) => {
     const response = await fetch(url, { signal: abort.signal });
@@ -104,7 +141,10 @@ export function createScene(host: HTMLElement, onState: (state: SceneState) => v
     shown = position;
     uniforms.colorA.value = a.color; uniforms.mapA.value = a.data;
     uniforms.colorB.value = b.color; uniforms.mapB.value = b.data;
+    pictures[0].style.backgroundImage = `url("${base}${authored.sections[pending.index].poster}")`;
+    pictures[1].style.backgroundImage = `url("${base}${authored.sections[pending.next].poster}")`;
     uniforms.blend.value = position.blend;
+    syncFilmMask();
     if (ready && paused) draw(0);
     // Keep only the current neighbourhood; CPU/GPU bitmaps are disposed together.
     for (const [index, promise] of cache) if (Math.abs(index - pending.index) > 2) {
@@ -117,9 +157,17 @@ export function createScene(host: HTMLElement, onState: (state: SceneState) => v
   const draw = (delta: number) => {
     drift.lerp(pointer, delta ? 1 - Math.exp(-delta * 3) : 1);
     uniforms.time.value = elapsed;
-    renderer.render(scene, camera);
-    host.dataset.drawCalls = String(renderer.info.render.calls);
-    host.dataset.triangles = host.dataset.submittedTriangles = String(renderer.info.render.triangles);
+    const blend = THREE.MathUtils.smoothstep(uniforms.blend.value, 0, 1);
+    const opacity = String(blend);
+    if (pictures[1].style.opacity !== opacity) pictures[1].style.opacity = opacity;
+    if (!native) {
+      world.style.transform = `perspective(1400px) translate3d(${drift.x * 5 + Math.sin(elapsed * .12) * 1.5}px,${drift.y * 3 + Math.cos(elapsed * .09) * .6}px,0) rotateY(${drift.x * .35}deg) rotateX(${-drift.y * .2}deg) scale(1.012)`;
+      renderer.render(scene, camera);
+    }
+    if (delta && performance.now() - metricsAt < 500) return;
+    metricsAt = performance.now();
+    host.dataset.drawCalls = String(native ? 0 : renderer.info.render.calls);
+    host.dataset.triangles = host.dataset.submittedTriangles = String(native ? 0 : renderer.info.render.triangles);
     const a = authored.sections[shown.index], b = authored.sections[shown.next];
     host.dataset.cameraPosition = a.camera.map((v,i) => THREE.MathUtils.lerp(v,b.camera[i],shown.blend).toFixed(3)).join(',');
     host.dataset.cameraLookAt = a.target.map((v,i) => THREE.MathUtils.lerp(v,b.target[i],shown.blend).toFixed(3)).join(',');
@@ -136,7 +184,7 @@ export function createScene(host: HTMLElement, onState: (state: SceneState) => v
       const fps = frames * 1000 / (now - sampleAt);
       host.dataset.fps = fps.toFixed(1); host.dataset.fpsAt = String(now);
       slowWindows = fps < 28 ? slowWindows + 1 : 0; sampleAt = now; frames = 0;
-      if (slowWindows >= 3) { host.dataset.fallbackReason = 'sustained-frame-budget'; onState('static'); return; }
+      if (!native && slowWindows >= 3) useNativeMotion();
     }
     frame = requestAnimationFrame(tick);
   };
@@ -144,15 +192,20 @@ export function createScene(host: HTMLElement, onState: (state: SceneState) => v
     cancelAnimationFrame(frame); frame = 0; last = sampleAt = performance.now(); frames = 0; slowWindows = 0;
     if (ready && !paused && !document.hidden && !disposed) {
       frame = requestAnimationFrame(tick);
+      nativeMotion?.play();
       if (film.src) void film.play().catch(() => { if (!disposed) host.dataset.filmState = 'unavailable'; });
-    } else { film.pause(); if (!disposed) host.dataset.filmState = 'paused'; }
+    } else { film.pause(); nativeMotion?.pause(); if (!disposed) host.dataset.filmState = 'paused'; }
   };
   film.addEventListener('playing', () => { if (!disposed) { uniforms.water.value = filmTexture; host.dataset.filmState = 'playing'; } });
   film.addEventListener('error', () => { if (!disposed) host.dataset.filmState = 'unavailable'; });
   const resize = () => {
     const w = Math.max(1, host.clientWidth), h = Math.max(1, host.clientHeight), aspect = w / h;
-    renderer.setPixelRatio(Math.min(devicePixelRatio, quality === 'low' ? 1 : 1.25, Math.sqrt(1_200_000 / (w*h))));
-    renderer.setSize(w,h,false); uniforms.cover.value.set(Math.min(1,aspect/(16/9)), Math.min(1,(16/9)/aspect));
+    // Only soft reflections use this small buffer; the architecture stays full resolution.
+    if (!native) {
+      renderer.setPixelRatio(Math.min(devicePixelRatio, quality === 'low' ? 1 : 1.25, Math.sqrt(360_000 / (w*h))));
+      renderer.setSize(w,h,false);
+    }
+    uniforms.cover.value.set(Math.min(1,aspect/(16/9)), Math.min(1,(16/9)/aspect));
     if (ready && paused) draw(0);
   };
   const move = (event: PointerEvent) => { if (event.pointerType === 'mouse') pointer.set(event.clientX / innerWidth - .5, .5 - event.clientY / innerHeight); };
@@ -176,18 +229,18 @@ export function createScene(host: HTMLElement, onState: (state: SceneState) => v
       const changed = value.index !== position.index || value.next !== position.next;
       position = value; host.dataset.travel = String(value.blend);
       if (changed && ready) void select().catch(() => { if (!disposed) onState('failed'); });
-      if (shown.index === value.index && shown.next === value.next) { shown = value; uniforms.blend.value = value.blend; if (ready && paused) draw(0); }
+      if (shown.index === value.index && shown.next === value.next) { shown = value; uniforms.blend.value = value.blend; syncFilmMask(); if (ready && paused) draw(0); }
     },
     setPaused(value) { paused = value; if (ready) { if (paused) draw(0); onState(paused ? 'paused' : 'ready'); } resume(); },
     setQuality(value) { quality = value; host.dataset.quality = value; resize(); },
     dispose() {
       if (disposed) return; disposed = true; generation++; abort.abort(); cancelAnimationFrame(frame); observer.disconnect();
-      film.pause(); film.removeAttribute('src'); film.load(); host.dataset.filmState = 'disposed'; filmTexture.dispose(); empty.dispose();
+      nativeMotion?.cancel(); film.pause(); film.removeAttribute('src'); film.load(); host.dataset.filmState = 'disposed'; filmTexture.dispose(); empty.dispose();
       for (const plate of resources) { plate.color.dispose(); plate.data.dispose(); plate.images.forEach(image => image.close()); }
       resources.clear(); cache.clear();
       window.removeEventListener('pointermove',move); document.removeEventListener('visibilitychange',resume);
       renderer.domElement.removeEventListener('webglcontextlost',lost);
-      geometry.dispose(); material.dispose(); renderer.dispose(); renderer.forceContextLoss(); renderer.domElement.remove();
+      geometry.dispose(); material.dispose(); if (!native) { renderer.dispose(); renderer.forceContextLoss(); } world.remove();
     },
   };
 }

@@ -205,7 +205,7 @@ test('iPad landscape enters the immersive scene while portrait stays static', as
   await portrait.close();
 });
 
-test('Sustained low frame rate chooses the static render without degrading the 3D quality', async ({ page }) => {
+test('Sustained low frame rate preserves architecture and keeps filmed water moving', async ({ page }) => {
   test.setTimeout(90000);
   await page.setViewportSize({width:1280,height:720});
   await page.addInitScript(()=>{
@@ -213,11 +213,20 @@ test('Sustained low frame rate chooses the static render without degrading the 3
     window.requestAnimationFrame=callback=>request(()=>{const start=performance.now();while(performance.now()-start<45){} callback(performance.now());});
   });
   await page.goto('/');
-  await expect(page.locator('[data-habitat]')).toHaveAttribute('data-scene-state',/ready|static/,{timeout:40000});
-  await expect(page.locator('[data-habitat]')).toHaveAttribute('data-scene-state','static',{timeout:40000});
+  await expect(page.locator('[data-habitat]')).toHaveAttribute('data-scene-state','ready',{timeout:40000});
+  await expect(page.locator('[data-quality]')).toHaveAttribute('data-render-mode','film-composite',{timeout:40000});
   await expect(page.locator('[data-fallback-reason]')).toHaveAttribute('data-fallback-reason','sustained-frame-budget');
   await expect(page.locator('[data-habitat-backdrop] canvas')).toHaveCount(0);
-  await expect(page.getByRole('button',{name:'3Dを再試行'})).toBeVisible();
+  const host=page.locator('[data-quality]');
+  await expect(host.locator('video')).toBeVisible();
+  const frames=Number(await host.getAttribute('data-film-frames'));
+  await expect.poll(async()=>Number(await host.getAttribute('data-film-frames'))).toBeGreaterThan(frames+3);
+  await page.getByRole('button',{name:'動きを止める'}).click();
+  await expect(host).toHaveAttribute('data-film-state','paused');
+  await expect.poll(()=>host.evaluate(e=>e.getAnimations({subtree:true}).every(a=>a.playState==='paused'))).toBe(true);
+  await page.getByRole('button',{name:'動きを再開する'}).click();
+  await expect(host).toHaveAttribute('data-film-state','playing');
+  await expect(host).toHaveAttribute('data-render-mode','film-composite');
   await expect(page.locator('.li-system-index a').first()).toBeVisible();
 });
 
