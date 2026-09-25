@@ -1161,14 +1161,30 @@
 .messagePage .cover h1 > span { color:#eef3fa; background:none; -webkit-text-fill-color:currentColor; filter:none; }
 .messagePage .coverSubtitle,.messagePage .coverCount,.messagePage .coverAuthor,.messagePage .coverAuthor span,.messagePage .coverIndexButton,.messagePage .secondaryAction { color:#ced9e7; }
 .messagePage .primaryAction { color:#122332; background:linear-gradient(120deg,#dce9f4,#b8d0e7); border-color:#dce9f4!important; box-shadow:0 8px 24px #0003; }
-.messagePage .pageSheet,.messagePage .epilogue .pageSheet { color:#ced9e7; background:#0d1725; border-color:#718eaf55; box-shadow:0 18px 55px #0004; }
-.messagePage .pageSheet::after,.messagePage .chapterHeader > div,.messagePage .signature,.messagePage .pageNavigation { border-color:#718eaf55; }
-.messagePage .chapterHeader p,.messagePage .chapterHeader > div span,.messagePage .openingParagraph::first-letter,.messagePage .prose strong { color:#9fc9eb; }
-.messagePage .readingRail,.messagePage .pageNavigation small,.messagePage .signature::before { color:#adbed4; }
+.messagePage .pageSheet,.messagePage .epilogue .pageSheet {
+  --message-ink:#142b40; --message-copy:#294257; --message-cyan:#2f5876;
+  color:#294257; background-color:#edf3f8;
+  background-image:radial-gradient(ellipse at 100% 0,#cce4f27a,transparent 42%),linear-gradient(#476b8909 1px,transparent 1px),linear-gradient(90deg,#476b8909 1px,transparent 1px),linear-gradient(155deg,#f7fafc,#e8eff6 70%,#f3f3ed);
+  background-size:auto,48px 48px,48px 48px,auto;
+  border-color:#b7c7d7; box-shadow:inset 0 1px 0 #ffffffc9,0 18px 55px #0004; color-scheme:light;
+}
+.messagePage .epilogue .pageSheet { background-image:radial-gradient(ellipse at 100% 0,#c5ddea8c,transparent 48%),linear-gradient(145deg,#e6eef6,#f3f5f1 72%); background-size:auto; }
+.messagePage .pageSheet::after,.messagePage .chapterHeader > div,.messagePage .signature,.messagePage .pageNavigation { border-color:#9cafc0; }
+.messagePage .chapterHeader p,.messagePage .chapterHeader > div span,.messagePage .openingParagraph::first-letter,.messagePage .prose strong { color:#2f5876; }
+.messagePage .readingRail { color:#adbed4; }
+.messagePage .pageNavigation small,.messagePage .signature::before { color:#526b80; }
+.messagePage .pageSheet .chapterHeader h2,.messagePage .pageSheet .signature { color:#142b40; }
+.messagePage .epilogue .prose > p { color:#294257; }
+.messagePage .epilogue .prose strong { color:#2f5876; }
 .messagePage .readingRail > button { background:#0d1725; border-color:#718eaf55; box-shadow:none; }
 .messagePage .readingRail button strong { color:#eef3fa; }
 .messagePage .railProgress { background:#718eaf55; }
-.messagePage .pullQuote { background:#15273b; color:#eef3fa; }
+.messagePage .pullQuote { background:radial-gradient(ellipse at 100% 0,#c0dced80,transparent 60%),linear-gradient(130deg,#e5eff6,#d1e1ed); color:#183b55; }
+.messagePage .pullQuote strong { color:inherit; }
+.messagePage .pullQuoteMark { color:#557d9b; }
+.messagePage .pageSheet::before { background:linear-gradient(90deg,transparent,#6089a8,transparent) 0 0 / 100% 2px no-repeat; }
+.messagePage .pageNavigation button { color:#142b40; }
+.messagePage .pageNavigation button:focus-visible { outline-color:#315e80; }
 .messagePage .chapterIndex { background:#0b1422; border-color:#718eaf55; }
 .messagePage .chapterIndex li button,.messagePage .chapterIndex li button span,.messagePage .indexCoverLink { color:#ced9e7; }
 .messagePage .chapterIndex li[data-current="true"] button { color:#fff; background:#233c54; }
@@ -1176,3 +1192,8 @@
 .messagePage .mobileReaderBar span { color:#adbed4; }
 .messagePage :is(button,a):focus-visible { outline:2px solid #b8d0e7; outline-offset:4px; }
 @media (min-width:901px) { .messagePage .primaryAction { border-radius:8px; } .messagePage .pageSheet { border-radius:12px; } }
+@media (max-width:900px) {
+  .messagePage .pageNavigation button { color:#f1f5f8; background:#193f5c; border-color:#193f5c; }
+  .messagePage .pageNavigation button small { color:#d2e4f1; }
+  .messagePage .pageNavigation button > span:last-child { color:#193f5c; background:#d2e4f1; }
+}
