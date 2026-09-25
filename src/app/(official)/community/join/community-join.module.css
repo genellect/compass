@@ -424,26 +424,28 @@
   .page *::after { scroll-behavior: auto !important; transition-duration: 0.01ms !important; }
 }
 
-/* Opaque fields keep the approved night backdrop out of the reading surface. */
+/* Light writing surfaces and distinct choice states separate controls from the night backdrop. */
 .page { --ink:#eef3fa; --copy:#ced9e7; --paper:#0d1725; --cyan:#9fc9eb; --cyan-deep:#b8d0e7; --line:#718eaf55; background:transparent; position:relative; isolation:isolate; color-scheme:dark; }
 .page .backLink,.page .backLink:hover { color:#ced9e7; }
-.page .formCard { background:#0d1725; border-color:#718eaf55; box-shadow:0 22px 64px #0004; }
+.page .formCard { background:radial-gradient(ellipse at 100% 0,#24415b55,transparent 34%),linear-gradient(155deg,#142438,#0d1725 48%,#142536); border-color:#718eaf55; box-shadow:inset 0 1px 0 #c9e1f322,0 22px 64px #0004; }
 .page .formCard::before { background:linear-gradient(90deg,#9fc9eb,#c3bda9,transparent); }
 .page .helper,.page .textareaMeta > span,.page .successCard > small { color:#adbed4; }
-.page .fieldGroup :is(input,textarea),.page .choice span { background:#09111e; color:#eef3fa; border-color:#60758f; }
-.page .fieldGroup :is(input,textarea)::placeholder { color:#9aacc2; }
-.page .fieldGroup :is(input,textarea):focus { background:#101e30; border-color:#b8d0e7; box-shadow:0 0 0 3px #b8d0e730; }
+.page .fieldGroup :is(input,textarea) { color-scheme:light; background:#edf2f7 linear-gradient(120deg,#f7fafc,#e5edf5); color:#142b40; border-color:#98aec4; caret-color:#142b40; }
+.page .choice span { background:#24364b linear-gradient(130deg,#2a4159,#213248); color:#f2f6fb; border-color:#8298b0; }
+.page .fieldGroup :is(input,textarea)::placeholder { color:#52677c; opacity:1; }
+.page .fieldGroup :is(input,textarea):hover { border-color:#c2d9ed; }
+.page .fieldGroup :is(input,textarea):focus { background:#fff; border-color:#284f72; outline:3px solid #c2d9ed; outline-offset:3px; box-shadow:none; }
 .page .required { background:#23423f; color:#c6ece2; }
 .page .optional { background:#253347; color:#ced9e7; }
-.page .choice span::before { background:#09111e; border-color:#9aacc2; }
-.page .choice:hover span { background:#16263a; border-color:#9fc9eb; }
-.page .choice input:checked + span { background:#233c54; color:#eef3fa; border-color:#b8d0e7; }
-.page .choice input:checked + span::before { border-color:#b8d0e7; }
-.page .interestGrid .choice input:checked + span::before { background:#b8d0e7; box-shadow:inset 0 0 0 3px #233c54; }
-.page .choice input:focus-visible + span { outline-color:#b8d0e7; }
+.page .choice span::before { background:#142338; border-color:#c3d3e4; }
+.page .choice:hover span { background:#344d67; border-color:#c3d3e4; }
+.page .choice input:checked + span { background:#c9e1f3 linear-gradient(120deg,#e0f0fc,#bdd8ed); color:#142b40; border-color:#c9e1f3; }
+.page .choice input:checked + span::before { background:#c9e1f3; border-color:#234d70; }
+.page .interestGrid .choice input:checked + span::before { background:#234d70; box-shadow:inset 0 0 0 3px #c9e1f3; }
+.page .choice input:focus-visible + span { outline:3px solid #efd5ac; outline-offset:3px; }
 .page .securityBox { background:#09111e; border-color:#60758f; }
 .page .fieldError,.page .configurationError { color:#ffb6c1; }
-.page .fieldGroup :is(input,textarea)[aria-invalid="true"] { border-color:#ffb6c1; }
+.page .fieldGroup :is(input,textarea)[aria-invalid="true"] { border-color:#ab2340; background:#fff0f3; box-shadow:inset 0 0 0 1px #ab2340; }
 .page .statusError { background:#351b2a; color:#ffd1d9; border-color:#ffb6c1; }
 .page .fieldValid span,.page .successIcon { color:#c6ece2; background:#23423f; border-color:#8cc7b6; }
 .page .successCard > p span { color:#b8d0e7; }
