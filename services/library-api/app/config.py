@@ -5,7 +5,7 @@ import re
 import unicodedata
 from urllib.parse import parse_qs, urlparse
 
-from pydantic import Field
+from pydantic import AwareDatetime, Field, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -196,6 +196,22 @@ class Settings(BaseSettings):
     google_drive_oauth_refresh_token: str = ""
     google_drive_oauth_token_url: str = "https://oauth2.googleapis.com/token"
     google_drive_api_base_url: str = "https://www.googleapis.com/drive/v3"
+    # Producers pin a strategy only on first member creation. Disabled by
+    # default; existing rows/imports and all legacy grants remain untouched.
+    group_access_enabled: bool = False
+    group_access_cutover_at: AwareDatetime | None = None
+    group_worker_enabled: bool = False
+    google_groups_allowed_ids: str = ""
+    google_groups_oauth_client_id: str = ""
+    google_groups_oauth_client_secret: str = ""
+    google_groups_oauth_refresh_token: str = ""
+    groups_request_timeout_seconds: int = Field(default=8, ge=1, le=15)
+
+    @model_validator(mode="after")
+    def validate_group_cutover(self):
+        if self.group_access_enabled and self.group_access_cutover_at is None:
+            raise ValueError("GROUP_ACCESS_CUTOVER_AT is required before new-member cutover")
+        return self
 
     @property
     def migration_database_url(self) -> str:
