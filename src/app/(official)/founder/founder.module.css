@@ -2924,13 +2924,13 @@
     clip-path: none; filter: none; transform: none;
     transition: opacity 900ms cubic-bezier(0.22, 0.61, 0.36, 1);
   }
-  /* Each camera preserves the source's 2:3 ratio; the viewport crops the scene,
-     never the face with a shared white overlay. cqh also protects short screens. */
+  /* The profile is already a close-up: cap its scale by the available photo
+     height, not the screen width alone. Keep the shoulder and rightward gaze. */
   .photoSlide[data-motion="from-left"] {
-    --image-width: min(88cqw, 400px, 106cqh);
+    --image-width: min(82cqw, 360px, 76cqh);
     --image-height: calc(var(--image-width) * 1.5);
-    --image-left: calc((100cqw - var(--image-width)) * 0.26);
-    --image-top: calc((100cqh - var(--image-height)) * 0.42);
+    --image-left: calc((100cqw - var(--image-width)) * 0.38);
+    --image-top: min(0px, calc(100cqh - var(--image-height)));
   }
   .photoSlide[data-motion="from-right"] {
     --image-width: 100cqw;
@@ -2946,15 +2946,18 @@
   }
   .photoSlide[data-motion="night-focus"] {
     --image-width: 100cqw;
-    --image-height: calc(var(--image-width) * 1.5);
-    --image-left: calc((100cqw - var(--image-width)) * 0.5);
-    --image-top: calc((100cqh - var(--image-height)) * 0.7);
+    --image-height: 100cqh;
+    --image-left: 0px;
+    --image-top: 0px;
   }
   .photoSlide img {
     width: var(--image-width) !important; height: var(--image-height) !important;
     top: var(--image-top) !important; left: var(--image-left) !important; right: auto !important; bottom: auto !important;
     max-width: none; object-fit: cover; object-position: center; filter: none; will-change: auto;
   }
+  /* The square night master has its measured nose axis at x=50%. Cover adapts
+     to short and tall phones without the former forced 2:3 magnification. */
+  .photoSlide[data-motion="night-focus"] img { object-position: 50% 100%; }
   .photoSlide[data-active="true"][data-motion] img { animation: none; transform: none; }
   .photoControls {
     position: absolute; z-index: 6; bottom: var(--hero-bottom); right: var(--hero-gutter);
