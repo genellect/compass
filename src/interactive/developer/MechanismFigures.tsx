@@ -36,6 +36,6 @@ export function ArchitectureMap() {
       <p><strong>ブラウザ</strong><span>教員・学生・Display / React・Vite</span></p>
       <dl><div><dt>状態の取得・更新</dt><dd>Data API（テーブル操作・RPC）→ PostgreSQL</dd></div><div><dt>管理・AI操作</dt><dd>Edge Functions → PostgreSQL・外部API</dd></div><div><dt>PDFの転送・閲覧</dt><dd>Asset Worker → Private R2</dd></div><div><dt>PDF公開の調整</dt><dd>Asset Worker ↔ Edge Functions ↔ DB</dd></div></dl>
     </div>
-    <div className={styles.mapFoot}><p><strong>Displayへの通知</strong><span>Supabase Realtimeを併用。通知欠落時はスナップショットを再取得。</span></p><p><strong>PowerPoint連携</strong><span>Windows / Presenter Bridge → Gateway・Edge Functions → 講義状態</span></p><p><strong>字幕音声</strong><span>実行許可後、教員ブラウザからAI APIへ直接送信。</span></p></div>
+    <div className={styles.mapFoot}><p><strong>状態の同期</strong><span>コメント・ライブ投票は全接続端末へのRealtime配信と、通常5秒間隔の状態取得を併用する構成。通知の欠落や切断時はDBの現在状態を再取得。</span></p><p><strong>PowerPoint連携</strong><span>Windows / Presenter Bridge → Gateway・Edge Functions → 講義状態</span></p><p><strong>字幕音声</strong><span>実行許可後、教員ブラウザからAI APIへ直接送信。</span></p></div>
   </figure>;
 }

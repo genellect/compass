@@ -14,7 +14,7 @@ export function LectureStateModel() {
       <Arrow>状態を返却</Arrow>
       <div className={styles.node}><strong>各端末の画面</strong><p>教員・学生・Displayが必要な状態を取得</p><p>取得したデータを各画面へ反映</p></div>
     </div>
-    <div className={styles.relationship}><strong>Displayへの更新通知</strong><span>Supabase Realtimeで再取得を促す。通知が届かない場合も、定期取得でDBの状態を確認する。</span></div>
+    <div className={styles.relationship}><strong>Realtimeと定期取得</strong><span>コメント・ライブ投票は教員・学生・DisplayへRealtime配信。通常5秒間隔の状態取得を併用し、通知の欠落や切断から復帰する構成。</span></div>
   </figure>;
 }
 
