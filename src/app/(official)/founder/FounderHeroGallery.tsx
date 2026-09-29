@@ -21,7 +21,7 @@ const SLIDES = [
     focus: "face-centered"
   },
   {
-    src: "/images/founder-portfolio/yuto-matsui-city-night-hero-centered-20260917-v2.webp",
+    src: "/images/founder-portfolio/yuto-matsui-city-night-hero-composition-20260928.webp",
     alt: "冬のイルミネーションを背景に立つYuto Matsui / 松井優知",
     location: "CITY / NIGHT",
     motion: "night-focus",
