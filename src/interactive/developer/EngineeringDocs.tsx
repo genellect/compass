@@ -16,7 +16,7 @@ export const topics = {
   ai: { title: "AI機能と実行制御", description: "資料分析の再要求、字幕の開始と停止、学術回答の出典検査。", sections: [["features", "AI処理の構成"], ["dispatch", "実行許可と利用量管理"], ["admission", "字幕セッションの制御"], ["evidence", "学術回答の生成と公開"]] },
   security: { title: "認証とデータ管理", description: "QR参加と教員の認証、データへのアクセス権と保存先。", sections: [["identity", "認証と講義への参加"], ["authorization", "サーバー側の認可"], ["data", "データの保存と外部送信"], ["future", "今後の開発範囲"]] },
   developer: { title: "開発者", description: "Yuto Matsui｜開発者・プロダクト設計者", sections: [["profile", "開発者紹介"]] },
-  archive: { title: "アーカイブ", description: "", sections: [["judges", "審査員の方へ"], ["production", "現行本番ページ"]] }
+  archive: { title: "アーカイブ", description: "", sections: [["judges", "審査員の方へ"]] }
 } as const;
 export type Topic = keyof typeof topics;
 const detailDescriptions: Partial<Record<Topic, string>> = {
@@ -30,7 +30,7 @@ const overviewSections = [["architecture", "システム構成"], ["runtime", "�
 
 export function engineeringMetadata(topic?: Topic): Metadata {
   const title = topic ? topics[topic].title : "システム構成";
-  const description = topic === "archive" ? "審査員向けの8月時点の保存版と、現行本番ページへの案内。" : topic ? detailDescriptions[topic] ?? topics[topic].description : "COMPASS Interactiveのシステム構成。講義状態の同期、DBとR2をまたぐ資料公開、AI実行制御、認証とデータ管理を現行ソースに基づいて解説。";
+  const description = topic === "archive" ? "審査員向けに保存した8月時点の開発者ページ。" : topic ? detailDescriptions[topic] ?? topics[topic].description : "COMPASS Interactiveのシステム構成。講義状態の同期、DBとR2をまたぐ資料公開、AI実行制御、認証とデータ管理を現行ソースに基づいて解説。";
   const url = topic ? `${DOC_ROOT}${topic}/` : DOC_ROOT;
   return { title: `${title} | COMPASS Interactive 開発者向け技術情報`, description, alternates: { canonical: url }, openGraph: { title: `${title} | COMPASS Interactive`, description, url, type: "website", locale: "ja_JP", siteName: "COMPASS Interactive" }, twitter: { card: "summary_large_image", title: `${title} | COMPASS Interactive`, description } };
 }
@@ -66,7 +66,7 @@ export function EngineeringDocs({ topic }: { topic?: Topic }) {
     <div className={styles.layout}><aside className={styles.sidebar}><Contents topic={topic} /></aside><div className={styles.mainColumn}>
       <details className={styles.mobileContents}><summary>目次・ページ一覧</summary><Contents topic={topic} /></details>
       <main id="developer-main" tabIndex={-1} className={styles.article}>
-        <header id="developer-top" className={styles.pageIntro}><p className={styles.breadcrumb}>{topic ? <Link href={DOC_ROOT}>開発者向け技術情報 / システム構成</Link> : "COMPASS Interactive / 開発者向け技術情報"}</p><h1>{title}</h1>{topic === "developer" && <p className={styles.lead}>{topics[topic].description}</p>}</header>
+        <header id="developer-top" className={styles.pageIntro}><p className={styles.breadcrumb}>{topic ? <Link href={DOC_ROOT}>開発者向け技術情報 / システム構成</Link> : "COMPASS Interactive / 開発者向け技術情報"}</p><div className={styles.introTitleRow}><h1>{title}</h1>{!topic && <Link className={styles.archiveCallout} href={`${DOC_ROOT}archive/2026-08/`}><strong>審査員の方へ</strong><span>8月時点のアーカイブはこちら</span></Link>}</div>{topic === "developer" && <p className={styles.lead}>{topics[topic].description}</p>}</header>
         {!topic && <Overview />}{topic === "architecture" && <ArchitectureArticle />}{topic === "ai" && <AiArticle />}{topic === "delivery" && <DeliveryArticle />}{topic === "security" && <SecurityArticle />}{topic === "developer" && <DeveloperArticle />}{topic === "archive" && <ArchiveArticle />}
         <nav className={styles.pageNavigation} aria-label="前後のページ">{topic && <Link href={index > 0 ? `${DOC_ROOT}${topicKeys[index - 1]}/` : DOC_ROOT}>← {index > 0 ? topics[topicKeys[index - 1]].title : "システム構成"}</Link>}{next && <Link href={`${DOC_ROOT}${next}/`}>{topics[next].title} →</Link>}</nav>
       </main>
