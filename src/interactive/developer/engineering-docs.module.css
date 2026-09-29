@@ -34,6 +34,11 @@
 .mainColumn { min-width: 0; }
 .article { padding-top: 40px; }
 .pageIntro { padding-bottom: 0; margin-bottom: 30px; }
+.introTitleRow { display: flex; justify-content: space-between; align-items: flex-start; gap: 24px; }
+.introTitleRow h1 { margin-bottom: 24px; }
+.archiveCallout { display: flex; flex-direction: column; flex: 0 0 auto; gap: 1px; padding: 4px 0 4px 16px; border-left: 2px solid #a9bfdc; font-size: 13px; line-height: 1.6; text-decoration: none; }
+.archiveCallout strong { color: var(--ink); font-size: 12px; }
+.archiveCallout span { color: var(--blue); }
 .page .breadcrumb { color: var(--muted); font-size: 12px; margin-bottom: 16px; }
 .breadcrumb a { text-decoration: none; color: inherit; }
 .page .lead { max-width: 790px; margin-bottom: 8px; font-size: 17px; line-height: 1.85; }
@@ -186,6 +191,9 @@
   .headerLinks { gap: 14px; font-size: 12px; }
   .headerLinks a:last-child { display: none; }
   .page h1 { font-size: 28px; margin-bottom: 18px; }
+  .introTitleRow { flex-direction: column; gap: 2px; }
+  .introTitleRow h1 { margin-bottom: 12px; }
+  .archiveCallout { margin-bottom: 18px; }
   .page h2 { font-size: 21px; }
   .page .lead { font-size: 16px; }
   .section { margin-bottom: 32px; }
