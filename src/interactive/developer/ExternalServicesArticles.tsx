@@ -1,181 +1,173 @@
 import { Flow, Section, SourceLinks, Table } from "./DocPrimitives";
+import { AiExecutionModel, MaterialDeliveryModel } from "./SystemModels";
 import styles from "./engineering-docs.module.css";
 
 export function DeliveryArticle() {
   return <>
     <Section id="path" title="資料の配信経路">
-      <p>教員がPowerPointやブラウザでページを進めると、学生端末と教室のDisplayも対応するPDFページへ移動する。同期するのは資料IDとページ位置であり、画面の映像ではない。</p>
-      <Flow title="ページ移動時の処理" steps={[
-        ["教員がページを変更", "講義状態の資料ID・ページ位置を更新"],
-        ["各端末が状態を取得", "対応するPDFページへ移動"],
-        ["必要な資料を取得", "Asset Workerを経由し、Private R2からPDFをRange取得"]
-      ]} />
-      <p>講義状態はPostgreSQL、PDF本体はPrivate R2に保存する。Workerは閲覧権限と公開状態を確認してから、要求された範囲のデータを返す。</p>
-      <SourceLinks items={[["閲覧権限・資料の公開状態・Range配信", "cloudflare/asset-worker/src/worker.ts#L1682"]]} />
+      <p>講義中の表示位置はPostgreSQL、PDF本体はPrivate R2で管理する。学生端末とDisplayは講義状態から表示する資料とページを決め、Asset Workerを通してPDFを取得する。画面の映像を転送する方式ではなく、各ブラウザがPDFを描画する構成である。</p>
+      <MaterialDeliveryModel />
+      <p>Asset Workerは閲覧権限と公開状態を確認してからPDFを返す。HTTP Rangeに対応し、ブラウザは必要なバイト範囲を指定して取得できる。ページの変更通知にPDF本体を含める必要はない。</p>
     </Section>
 
-    <Section id="publication" title="PDFの公開と障害復旧">
-      <p>PDFは、アップロードの完了だけでは学生に公開されない。Workerがハッシュと容量を検証し、マニフェストへ非公開の資料として登録する。マニフェストは、配信対象ファイルと公開状態の一覧である。</p>
-      <p>公開時には、閲覧を許可する公開状態の世代番号（閲覧世代）を更新する。Workerが先に公開状態を切り替え、その応答を確認したDBが資料一覧・閲覧世代・講義の表示状態をまとめて更新する。</p>
+    <Section id="publication" title="資料の公開手順">
+      <p>資料の追加は、アップロード、公開準備、配信側の有効化、DBへの確定という段階で進める。アップロード済みのファイルが、そのまま学生の閲覧対象になることはない。</p>
       <figure className={styles.flow}>
-        <figcaption>PDFの公開手順<span>DBとR2は別々に更新される</span></figcaption>
+        <figcaption>DBと配信側の公開処理</figcaption>
         <div className={styles.sequence}>
           <div className={styles.lanes}>
-            <strong>Edge Functions / DB<small>公開要求と講義状態</small></strong>
-            <strong>Asset Worker / R2<small>PDF本体と配信用マニフェスト</small></strong>
+            <strong>Edge Functions / DB<small>公開台帳・講義の資料一覧</small></strong>
+            <strong>Asset Worker / R2<small>PDF本体・配信用マニフェスト</small></strong>
           </div>
           <div className={styles.message}>
-            <span>受信結果を記録</span><b aria-label="WorkerからDBへ受信結果を返す">←</b><span>ファイルを検証して保存</span>
+            <span>ファイルの受信結果を台帳に記録</span><b aria-label="WorkerからDBへ受信結果を返す">←</b><span>ハッシュ・容量を検証して保存</span>
           </div>
           <div className={styles.message}>
-            <span>公開準備を指示</span><b aria-label="DB側からWorkerへ準備を要求">→</b><span>新しい資料を非公開で登録</span>
+            <span>公開準備を指示</span><b aria-label="DB側からWorkerへ公開準備を要求">→</b><span>資料を非公開の状態で登録</span>
           </div>
           <div className={styles.message}>
-            <span>準備完了を確認し、目標の閲覧世代を記録</span><b aria-label="DB側からWorkerへ公開を要求">→</b><span>公開状態と閲覧世代を切替</span>
+            <span>公開先の世代番号を記録し、有効化を指示</span><b aria-label="DB側からWorkerへ有効化を要求">→</b><span>公開状態と世代番号を更新</span>
           </div>
           <div className={styles.message}>
-            <span>応答を検証し、資料一覧・閲覧世代・表示状態を一括更新</span><b aria-label="WorkerからDBへ公開結果を返す">←</b><span>切替後の世代とETagを返す</span>
+            <span>結果を照合し、資料一覧・世代番号・表示状態を一括確定</span><b aria-label="WorkerからDBへ有効化の結果を返す">←</b><span>更新後の世代番号とETagを返す</span>
           </div>
         </div>
-        <p className={styles.figureNote}>更新時は、読み取ったマニフェストの版を識別するETagを照合する。取り消し処理でも、読み取り後に別の公開処理が更新していた場合は書き換えを拒否し、新しい公開状態を上書きしない。</p>
       </figure>
+      <p>R2側のマニフェストは、配信対象のファイルと公開状態を記録する一覧である。DB側の公開台帳は処理の進行を記録する。Edge Functionsが両者の応答を照合し、配信側の有効化を確認した後に、DBの資料一覧と講義の表示状態を更新する。</p>
+    </Section>
 
-      <h3>Workerの更新後に応答が失われた場合</h3>
-      <p>R2側の切替だけが完了し、DBには未完了の記録が残ることがある。Workerは閲覧チケットとマニフェストの閲覧世代（<code>access_version</code>）を照合し、一致しない要求を拒否する。この番号は公開状態を示すもので、PDFの内容を識別するハッシュとは異なる。</p>
-      <figure className={styles.flow}>
-        <figcaption>公開途中の不一致と再試行<span>世代番号は説明用</span></figcaption>
-        <div className={styles.trace}>
-          <div><span>公開前</span><span>DB：世代7<br />R2：世代7</span><strong>世代7のチケットで閲覧できる</strong></div>
-          <div><span>応答が消失</span><span>DB：世代7<br />R2：世代8</span><strong>世代7のチケットは拒否される</strong></div>
-          <div><span>同じ要求で再試行</span><span>R2の完了済み状態を照合し、DBを世代8へ更新</span><strong>世代8のチケットで閲覧を再開</strong></div>
-        </div>
-      </figure>
-      <p>再試行では同じ公開IDと操作IDを使い、台帳・PDF実体・マニフェストから完了済みの段階を確認する。その間に講義が終了した場合は公開を取り消し、対象資料と世代を照合してマニフェストを戻す。終了済みの台帳と削除済みの記録を残し、遅れて到着した要求による再公開も遮断する。</p>
-      <SourceLinks items={[
-        ["同じ操作IDによる公開処理と応答の検証", "supabase/functions/manage-pdf-publications/index.ts#L649"],
-        ["非公開登録・有効化・完了済み状態の回収", "cloudflare/asset-worker/src/pdfPublication.ts#L1361"],
-        ["DBでの資料・閲覧世代・講義状態の更新", "supabase/migrations/20260721075029_phase7_26_browser_pdf_publication.sql#L1651"],
-        ["終了後の取り消しと清掃記録", "cloudflare/asset-worker/src/pdfPublication.ts#L972"]
+    <Section id="consistency" title="DBとR2の整合性">
+      <p>DBとR2は独立した保存先であり、両方の更新を一つのトランザクションで確定することはできない。そのため、公開処理の識別、競合する更新の検出、閲覧時の世代照合を組み合わせて整合性を保つ。</p>
+      <Table columns={["識別情報", "役割"]} rows={[
+        ["公開ID・操作ID", "再試行が同じ公開処理であることを識別する。台帳と配信側の記録から完了済みの段階を確認する。"],
+        ["マニフェストのETag", "読み取り後に別の処理がマニフェストを更新していないかを照合する。公開の取り消し時にも確認する。"],
+        ["閲覧世代（access_version）", "閲覧チケットと配信側の公開状態を照合する。一致しない世代のチケットでは配信しない。"]
       ]} />
+      <p>配信側の更新だけが完了し、応答が失われると、DBとR2の世代番号が一時的に一致しないことがある。この間は閲覧を拒否し、未確定の組み合わせで資料を返さない。同じIDで再試行すると、配信側の完了状態を確認してDBの確定へ進める。</p>
+      <p>講義終了後に届いた公開要求は取り消す。取り消しの際も対象資料・世代・ETagを確認し、後続の公開結果を上書きしない。終了・削除の記録は残し、遅れた要求で資料が再び公開されることを防ぐ。</p>
     </Section>
 
     <Section id="presenter" title="PowerPoint連携">
-      <p>Windows上のPresenter BridgeがPowerPointの現在位置を観測し、Gateway・Edge Functionsを通じて講義状態を更新する。ページ4の送信中に教員が5、6へ進めた場合、次の送信対象は6へ更新する。通信が遅れた間の操作をすべて再生せず、現在位置への追従を優先する。</p>
-      <h3>送信済みと確認済みの扱い</h3>
-      <p>ページ5への更新後に応答だけが失われ、その間に教員が4へ戻った場合、サーバーには5が残っている可能性がある。この場合は、以前の確認済み位置と同じ4であっても送信する。</p>
-      <figure className={styles.flow}>
-        <figcaption>更新に成功しても、応答だけが失われる場合</figcaption>
-        <div className={styles.trace}>
-          <div><span>ページ4を表示中</span><span>Bridgeの確認済み位置：4</span><strong>DBのページ：4</strong></div>
-          <div><span>ページ5を送信</span><span>DBは更新したが、応答が届かない</span><strong>DBのページ：5</strong></div>
-          <div><span>教員が4へ戻る</span><span>未確認の送信があるため、4を送信</span><strong>DBのページ：4へ更新</strong></div>
-        </div>
-      </figure>
-      <p>受信するDBも要求の連番を確認する。同一要求の再送には書き換えずに応答し、古い連番は拒否する。接続時に確認したPDFやPowerPointの内容が変わった場合は接続を失効させる。ページ番号が同じでも、別の資料を誤って動かさないためである。</p>
-      <p>連携対象はスライドとPDFのページ位置である。PowerPointのアニメーションや動画は配信しない。</p>
-      <SourceLinks items={[
-        ["最新位置・確認済み位置・再試行", "presenter-bridge/src/Compass.Presenter.Core/LatestOnlyPageDispatcher.cs#L42"],
-        ["資料の照合、同一要求の再送、古い連番の拒否", "supabase/migrations/20260905074220_presenter_bound_authority_and_terminal_lease.sql#L561"],
-        ["PowerPointの状態観測", "presenter-bridge/src/Compass.Presenter.PowerPoint.External/PowerPointComObservationSource.cs"]
+      <p>Windows上のPresenter Bridgeは、COMを通じてPowerPointの現在のスライドを観測する。対応するPDFのページ位置をGateway・Edge Functions経由でDBへ送り、ブラウザ操作と同じ講義状態の配信経路へ接続する。</p>
+      <Flow title="PowerPointから講義状態への反映" steps={[
+        ["PowerPoint", "現在のスライドをCOMで取得"],
+        ["Presenter Bridge", "送信待ちの位置を最新値に更新"],
+        ["Gateway / DB", "資料の対応と要求の連番を確認"],
+        ["各端末", "講義状態を取得し、該当ページを表示"]
       ]} />
+      <p>Bridgeは、送信中の位置、次に送る位置、サーバーで確認済みの位置を別々に保持する。送信中にスライドが進んだ場合は、待機中の位置を最新値へ置き換える。通信遅延で操作が蓄積しても、過去の位置を順番に送らず、現在位置へ追従する。</p>
+      <p>応答を確認できない要求は、未反映とは断定できない。そのため未確認の送信がある間は、現在位置が以前の確認済み位置と同じでも送信を省略しない。DB側では同一要求の再送を識別し、古い連番の更新は拒否する。</p>
+      <p>接続時に確認したPDFやPowerPointの内容が変わった場合は接続を失効させる。連携対象は対応付けた資料のページ位置であり、PowerPointのアニメーションや動画は配信しない。</p>
     </Section>
+    <SourceLinks items={[
+  [
+    "閲覧権限・資料の公開状態・Range配信",
+    "cloudflare/asset-worker/src/worker.ts#L1682"
+  ],
+  [
+    "同じ操作IDによる公開処理と応答の検証",
+    "supabase/functions/manage-pdf-publications/index.ts#L649"
+  ],
+  [
+    "非公開登録・有効化・完了済み状態の回収",
+    "cloudflare/asset-worker/src/pdfPublication.ts#L1361"
+  ],
+  [
+    "DBでの資料・閲覧世代・講義状態の更新",
+    "supabase/migrations/20260721075029_phase7_26_browser_pdf_publication.sql#L1651"
+  ],
+  [
+    "終了後の取り消しと清掃記録",
+    "cloudflare/asset-worker/src/pdfPublication.ts#L972"
+  ],
+  [
+    "最新位置・確認済み位置・再試行",
+    "presenter-bridge/src/Compass.Presenter.Core/LatestOnlyPageDispatcher.cs#L42"
+  ],
+  [
+    "資料の照合、同一要求の再送、古い連番の拒否",
+    "supabase/migrations/20260905074220_presenter_bound_authority_and_terminal_lease.sql#L561"
+  ],
+  [
+    "PowerPointの状態観測",
+    "presenter-bridge/src/Compass.Presenter.PowerPoint.External/PowerPointComObservationSource.cs"
+  ]
+]} />
   </>;
 }
 
 export function AiArticle() {
   return <>
-    <Section id="features" title="AI機能と入出力">
-      <Table columns={["機能", "入力", "出力"]} rows={[
-        ["字幕", "教員が許可したマイク音声", "逐次字幕・確定した文字起こし"],
-        ["講義要約", "対象時間帯の文字起こし・コメント", "定期的な要点。入力不足時は生成・公開を見送る。"],
-        ["資料分析・投票案", "PDFから抽出したテキスト", "教材の分析・投票の下書き"],
-        ["学術回答", "質問・検索した文献", "出典付きの参考回答。教員による訂正・非表示。"]
-      ]} />
-      <p>有料処理は、DBに記録した利用許可と利用枠に基づいて開始する。字幕に使うマイクは教員の開始操作で有効になる。</p>
-    </Section>
-
-    <Section id="dispatch" title="外部APIの重複送信">
-      <p>資料分析では、開始時に利用枠を予約し、外部APIを呼ぶ直前にDBへ送信記録を残す。同じ分析の再試行は開始要求IDで識別し、処理内容と送信先も照合する。</p>
-      <figure className={styles.flow}>
-        <figcaption>資料分析の応答が失われた場合</figcaption>
-        <div className={styles.sequence}>
-          <div className={styles.lanes}>
-            <strong>Edge Functions<small>外部APIを呼び出す</small></strong>
-            <strong>PostgreSQL<small>送信記録と利用枠を管理する</small></strong>
-          </div>
-          <div className={styles.message}>
-            <span>開始要求Aの送信許可を取得</span><b aria-label="Edge FunctionからDBへ送信許可を要求">→</b><span>利用条件を確認し、送信記録を確定</span>
-          </div>
-          <div className={styles.message}>
-            <span>外部APIを呼び出す</span><b aria-label="DBから初回の送信許可を返す">←</b><span>初回のみ送信を許可</span>
-          </div>
-        </div>
-        <div className={styles.sequence}>
-          <div className={styles.lanes}>
-            <strong>Edge Functions</strong><strong>外部AI</strong>
-          </div>
-          <div className={styles.message}>
-            <span>資料分析を送信</span><b aria-label="Edge Functionから外部AIへ送信">→</b><span>要求を受信して実行</span>
-          </div>
-          <div className={styles.message}>
-            <span>結果を受信できない</span><b aria-label="外部AIからの応答が失われる">×</b><span>実行後の応答が消失</span>
-          </div>
-        </div>
-        <div className={styles.sequence}>
-          <div className={styles.lanes}>
-            <strong>Edge Functions</strong><strong>PostgreSQL</strong>
-          </div>
-          <div className={styles.message}>
-            <span>同じ開始要求Aを再試行</span><b aria-label="同じ開始要求をDBに照会">→</b><span>既存の送信記録を確認</span>
-          </div>
-          <div className={styles.message}>
-            <span>同じ要求を外部へ再送しない</span><b aria-label="DBが再送不可を返す">←</b><span>新しい送信許可を出さず、既存記録を返す</span>
-          </div>
-        </div>
-        <p className={styles.figureNote}>応答がないことは、外部で実行されなかったことを意味しない。外部API側の実行まで一つのDBトランザクションに含めることはできない。</p>
-      </figure>
-      <p>資料分析の結果を確認できないまま送信記録の期限を過ぎた場合は、実行済みの可能性を残して予約額を利用記録に計上する。これは外部の請求額を取得した値ではなく、結果不明の処理に対する管理上の精算である。</p>
-      <p>再要求では現在の機能の有効・無効を調べる前に、既存の送信記録を確認する。後から権限が無効になっても、送信済みの要求を未送信として扱わない。同じ開始要求の操作やプロバイダーを差し替えることも拒否する。</p>
-      <SourceLinks items={[
-        ["開始要求と送信記録の照合・再送拒否", "supabase/migrations/20260811203000_phase7_30c2_google_ai_provider_dispatch.sql#L328"],
-        ["現行の期限切れ精算処理", "supabase/migrations/20260812023000_phase7_30c2_google_realtime_provider.sql#L2217"]
+    <Section id="features" title="AI処理の構成">
+      <p>AIは、講義中の字幕・要約、教材の分析、質問への参考回答に利用する。実行条件と利用枠をPostgreSQLに記録し、Edge Functionsが外部APIとの連携を担当する。字幕の音声は、サーバーの実行許可を得た教員ブラウザからAIプロバイダーへ直接送信する。</p>
+      <AiExecutionModel />
+      <Table columns={["機能", "入力", "講義での利用"]} rows={[
+        ["字幕", "教員が許可したマイク音声", "逐次字幕を表示し、確定した文字起こしを保存する。"],
+        ["講義要約", "対象時間帯の文字起こし・コメント", "定期的に要点を生成する。入力不足時は生成・公開を見送る。"],
+        ["資料分析・投票案", "PDFから抽出したテキスト", "教材の分析と投票の下書きを作成する。"],
+        ["学術回答", "質問・検索した文献", "出典付きの参考回答を生成する。教員が訂正・非表示にできる。"]
       ]} />
     </Section>
 
-    <Section id="admission" title="字幕の開始と停止">
-      <p>字幕では、教員ブラウザが外部AIとの音声接続を維持する。その開始時に、講義の開催状態、教員の権限、AIの利用許可、停止要求をDBで再確認する。講義・字幕制御・利用記録を停止処理と同じ順序でロックし、開始と停止が同時に届いた場合の順序を確定する。</p>
-      <figure className={styles.flow}>
-        <figcaption>字幕の送信許可と停止要求が競合した場合</figcaption>
-        <div className={styles.trace}>
-          <div><span>停止が先に確定</span><span>送信許可の確認時点で停止済み</span><strong>新しい送信を拒否する</strong></div>
-          <div><span>送信許可が先に確定</span><span>AIとの音声接続が作られる可能性がある</span><strong>送信記録を保持し、接続の終了・精算を扱う</strong></div>
-        </div>
-      </figure>
-      <p>音声接続の作成後に応答が失われた場合も、接続が存在する可能性を残す。接続先を通話IDで確認できるものには終了要求を保存し、終了処理へ進める。ブラウザの表示を停止状態へ戻すだけでは、外部で継続している接続の終了にはならない。</p>
-      <details className={styles.sources}>
-        <summary>送信記録の期限と字幕の利用時間</summary>
-        <p>送信記録の期限は、開始処理の結果が確認できない要求を精算するために使う。字幕の利用時間ではない。起動済みの音声接続は、この期限を過ぎただけでは終了させない。期限後に同じ開始要求が再要求された場合は、開始応答を利用できなかったものとして、終了要求と精算を処理する。</p>
-      </details>
-      <SourceLinks items={[
-        ["字幕の送信前検証とロック順序", "supabase/migrations/20260811203000_phase7_30c2_google_ai_provider_dispatch.sql#L442"],
-        ["応答消失時の通話終了と精算", "supabase/migrations/20260812023000_phase7_30c2_google_realtime_provider.sql#L2333"],
-        ["起動済み通話を期限切れ回収から除外", "supabase/migrations/20260812023000_phase7_30c2_google_realtime_provider.sql#L2490"]
+    <Section id="dispatch" title="実行許可と利用量管理">
+      <p>有料の生成処理は、利用許可の確認、利用枠の予約、送信記録の確定を経て開始する。DBは講義ごとの利用枠と実行記録を管理し、Edge Functionsは許可された要求をAIプロバイダーへ送る。</p>
+      <Flow title="生成処理の実行手順" steps={[
+        ["利用枠の予約", "権限・利用条件・残り枠を確認"],
+        ["送信記録の確定", "開始要求ID・操作・送信先を記録"],
+        ["外部APIの呼び出し", "初回の送信許可に従って実行"],
+        ["結果と利用量の記録", "応答を処理し、予約した利用枠を精算"]
       ]} />
+      <p>外部AIの処理はDBトランザクションの外で実行される。応答が失われても処理済みの可能性があるため、同じ開始要求IDが届いたときは既存の送信記録を返し、新しい送信許可を出さない。操作や送信先を差し替えた同一IDの要求も拒否する。</p>
+      <p>既存の送信記録は、現在の機能の有効・無効を調べる前に照合する。権限が後から変わっても、送信済みの処理を未送信に戻さないためである。</p>
+      <details className={styles.supplement}><summary>資料分析の結果が不明な場合の精算</summary><p>送信後の結果を確認できないまま記録の期限を過ぎた場合、予約額を利用記録に計上する。外部で実行済みの可能性を考慮した管理上の精算であり、AIプロバイダーから取得した請求額ではない。</p></details>
     </Section>
 
-    <Section id="evidence" title="学術回答の生成と検査">
-      <p>学術回答は、質問に対応する文献をPubMed・Crossref・OpenAlexから検索し、取得した書誌情報を使って生成する。出力には文献IDとの対応を持たせ、参照先や数値の整合を検査する。</p>
-      <Flow title="学術回答の処理経路" steps={[
-        ["文献検索", "質問に対応する候補を取得"],
-        ["書誌照合", "識別子・研究種別などを確認"],
+    <Section id="admission" title="字幕セッションの制御">
+      <p>字幕は、一度の応答で完了する生成処理と異なり、ブラウザとAIプロバイダーの音声接続が続く。開始時には講義の開催状態、教員の権限、利用許可、停止要求をDBで確認する。</p>
+      <p>開始処理と停止処理は、講義、字幕制御、利用記録を同じ順序でロックする。停止が先に確定していれば新しい送信を拒否し、送信許可が先に確定していれば、その記録を残したまま接続の終了と精算を処理する。</p>
+      <p>外部の接続が作られた後に応答が失われることもある。通話IDで接続を特定できる場合は終了要求を保存し、外部接続の終了処理へ進める。ブラウザ上の停止表示だけで終了したとは扱わない。</p>
+      <details className={styles.supplement}><summary>開始要求の期限と字幕の利用時間</summary><p>送信記録の期限は、開始結果が不明な要求を精算するためのものである。起動済みの音声接続を、この期限だけで終了させることはない。ただし、期限後に同じ開始要求が再要求された場合は、開始応答を利用できなかったものとして終了要求と精算を処理する。</p></details>
+    </Section>
+
+    <Section id="evidence" title="学術回答の生成と公開">
+      <p>学術回答では、PubMed・Crossref・OpenAlexから文献を検索し、取得した書誌情報を根拠として回答を生成する。生成結果には文献IDとの対応を持たせ、出典と数値の整合を検査してから公開する。</p>
+      <Flow title="検索から公開まで" steps={[
+        ["文献検索・照合", "識別子や研究種別を確認"],
         ["回答生成", "取得した文献IDを指定"],
-        ["出力検査", "主張・出典・数値の対応を検査"]
+        ["出力検査", "主張・出典・数値の対応を確認"],
+        ["公開・教員確認", "未確認の表示と、訂正・非表示の操作"]
       ]} />
-      <p>この検査で確認するのは、取得した文献と出力の対応である。論文の解釈まで自動で正しいと判定するものではない。自動公開される回答には教員未確認の表示があり、教員が訂正・非表示にできる。</p>
-      <SourceLinks items={[
-        ["文献検索・書誌照合・回答検査", "supabase/functions/_shared/academicAnswers.ts"],
-        ["要約・学術回答の公開", "supabase/functions/generate-lecture-summary/index.ts"]
-      ]} />
+      <p>出典との対応を検査しても、論文の解釈まで正しいとは限らない。自動公開した回答には教員未確認の表示を付け、教員が内容を確認して訂正・非表示にできる。</p>
     </Section>
+    <SourceLinks items={[
+  [
+    "開始要求と送信記録の照合・再送拒否",
+    "supabase/migrations/20260811203000_phase7_30c2_google_ai_provider_dispatch.sql#L328"
+  ],
+  [
+    "現行の期限切れ精算処理",
+    "supabase/migrations/20260812023000_phase7_30c2_google_realtime_provider.sql#L2217"
+  ],
+  [
+    "字幕の送信前検証とロック順序",
+    "supabase/migrations/20260811203000_phase7_30c2_google_ai_provider_dispatch.sql#L442"
+  ],
+  [
+    "応答消失時の通話終了と精算",
+    "supabase/migrations/20260812023000_phase7_30c2_google_realtime_provider.sql#L2333"
+  ],
+  [
+    "起動済み通話を期限切れ回収から除外",
+    "supabase/migrations/20260812023000_phase7_30c2_google_realtime_provider.sql#L2490"
+  ],
+  [
+    "文献検索・書誌照合・回答検査",
+    "supabase/functions/_shared/academicAnswers.ts"
+  ],
+  [
+    "要約・学術回答の公開",
+    "supabase/functions/generate-lecture-summary/index.ts"
+  ]
+]} />
   </>;
 }

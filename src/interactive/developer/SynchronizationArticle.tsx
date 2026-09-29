@@ -1,119 +1,139 @@
-import { Flow, Note, Section, SourceLinks, Table } from "./DocPrimitives";
+import { Flow, Section, SourceLinks, Table } from "./DocPrimitives";
+import { LectureStateModel } from "./SystemModels";
 import styles from "./engineering-docs.module.css";
-
-function VoteTransaction() {
-  return <figure className={styles.flow}>
-    <figcaption>選択肢Aへの回答を1件受け付ける場合 <span>票数・バージョンは説明用</span></figcaption>
-    <div className={styles.transaction}>
-      <strong className={styles.boundaryLabel}>PostgreSQL：3つの更新を同じトランザクションで確定</strong>
-      <ol className={styles.flowSteps}>
-        <li><strong>回答を保存</strong><span>参加者の回答：A</span></li>
-        <li><strong>集計値を加算</strong><span>Aの票数：17 → 18票</span></li>
-        <li><strong>更新番号を進める</strong><span>投票バージョン：11 → 12</span></li>
-      </ol>
-    </div>
-    <div className={styles.transfer}>確定後の状態を各端末が取得</div>
-    <div className={styles.fanout}>
-      <div><span>端末A：取得済み</span><strong>A：18票</strong><small>バージョン12</small></div>
-      <div><span>端末B：取得待ち</span><strong>A：17票</strong><small>次の取得で18票へ</small></div>
-      <div><span>端末C：切断中</span><strong>更新を保留</strong><small>再接続後に現在値を取得</small></div>
-    </div>
-  </figure>;
-}
-
-function JoinCloseOrder() {
-  return <figure className={styles.flow}>
-    <figcaption>参加処理と終了処理が同時に届いた場合</figcaption>
-    <div className={styles.trace}>
-      <div><span>参加確認が先</span><span>参加登録が完了するまで<br />終了処理が待機</span><strong>登録後に講義を終了</strong></div>
-      <div><span>終了処理が先</span><span>講義終了を確定してから<br />参加要求を確認</span><strong>終了済みのため参加を拒否</strong></div>
-    </div>
-    <p className={styles.figureNote}>参加要求同士は共有ロックを取得できる。講義終了は同じ行の排他ロックを必要とする。</p>
-  </figure>;
-}
-
-function DelayedResponse() {
-  return <figure className={styles.flow}>
-    <figcaption>同じ講義の応答が送信順と逆に到着した場合</figcaption>
-    <div className={styles.trace}>
-      <div><span>先に到着</span><span>投票バージョン12<br />A：18票</span><strong>18票を表示</strong></div>
-      <div><span>遅れて到着</span><span>投票バージョン11<br />A：17票</span><strong>古い投票データは適用しない</strong></div>
-    </div>
-  </figure>;
-}
 
 export function ArchitectureArticle() {
   return <>
-    <Section id="state" title="投票結果の確定と配信">
-      <p>学生が回答すると、PostgreSQLは回答の保存、票数の加算、投票バージョンの更新を一括で確定する。集計やバージョンの更新が失敗すれば回答の保存も取り消され、回答と集計値の食い違いを残さない。</p>
-      <VoteTransaction />
-      <p>学生端末は通常5秒間隔で状態を取得する。DBの確定を全端末の受信待ちにはせず、通信の遅い端末は次の取得で追いつく。同じ参加者から回答が再送されても、投票と参加者の組み合わせに対する一意制約が重複登録を防ぐ。</p>
-      <SourceLinks items={[
-        ["回答の保存と重複時の扱い", "src/repositories/supabasePollRepository.ts#L11-L35"],
-        ["参加者ごとに1回答とする一意制約", "supabase/migrations/20260710104958_remote_baseline.sql#L89-L104"],
-        ["回答の保存に連動する集計・バージョン更新", "supabase/migrations/20260711020445_live_state_integration.sql#L231-L259"],
-        ["講義状態の項目別バージョン", "supabase/migrations/20260714021129_phase1_sync_protocol_v2.sql#L23-L94"],
-      ]} />
+    <Section id="state" title="講義状態の管理">
+      <p>一つの講義には、教員の管理画面、学生端末、教室のDisplayが接続する。これらが共有する資料の表示位置、投票、コメント、字幕、開催状態を、講義IDに紐付けてPostgreSQLに保存する。各端末はDBで確定した状態を取得し、用途に応じて表示する。</p>
+      <LectureStateModel />
+      <p>更新の確定に、全端末からの受信確認は必要としない。DB内の整合性はトランザクションで保ち、各端末への反映は非同期に進める構成である。通信の遅い端末が講義全体の進行を止めることはないが、端末間には一時的な表示の差が生じる。</p>
     </Section>
 
-    <Section id="lifecycle" title="参加と講義終了の競合">
-      <p>QRコードを提示した直後には、多数の参加要求が同じ講義へ集中する。参加処理は講義行を共有ロックで確認し、この確認のために学生を一人ずつ待たせない。一方、教員の終了操作は同じ行の排他ロックを取得するため、参加登録と講義終了の順序がDBで決まる。</p>
-      <JoinCloseOrder />
-      <p>講義終了時には投票の受付とAI制御も停止し、終了記録を保存する。最大90分の期限はDB時刻で判定し、手動終了と期限切れを同じ終了処理に通す。教員がブラウザを閉じても、講義の受付期限は延長されない。</p>
-      <SourceLinks items={[
-        ["共有ロックによる参加確認と参加者登録", "supabase/migrations/20260826085622_single_lecture_300_capacity_hardening.sql#L55-L118"],
-        ["講義・AI制御・利用記録のロックと終了処理", "supabase/migrations/20260715145555_phase4_1_ai_concurrency_lanes.sql#L182-L303"],
-        ["DB時刻による開催判定と期限切れ処理", "supabase/migrations/20260714080706_phase2_lecture_lifecycle.sql#L395-L445"],
-        ["期限切れ時の終了処理呼び出し", "supabase/migrations/20260714080706_phase2_lecture_lifecycle.sql#L609-L643"],
+    <Section id="lifecycle" title="トランザクションと講義終了">
+      <p>投票の回答、集計値、更新番号は、同じDBトランザクションで確定する。学生端末が回答を保存すると、DBのトリガーが集計値と更新番号を更新する。途中で失敗すれば一連の更新を取り消すため、回答だけが保存されて票数に反映されない状態を残さない。</p>
+      <Table columns={["制御対象", "DBでの処理"]} rows={[
+        ["回答の重複", "投票IDと参加者IDの組み合わせを一意にする。通信の再送で同じ回答が重複登録されることを防ぐ。"],
+        ["講義への参加", "講義行の共有ロックを取得して開催状態を確認する。複数の参加要求は並行して処理できる。"],
+        ["講義の終了", "同じ講義行の排他ロックを取得する。参加処理との前後関係を確定してから、講義を終了する。"]
       ]} />
+      <p>終了時は、投票の受付とAI制御も停止し、終了記録を保存する。手動終了と期限切れは同じ終了処理を使う。最大90分の開催期限はDB時刻で判定し、期限を過ぎた参加要求は受け付けない。</p>
     </Section>
 
-    <Section id="display" title="Displayの描画完了確認">
-      <p>教員画面は、Displayが実際に描画したページの報告を使って同期状態を判定する。PDFの描画完了時に資料ID・資料の版・ページを照合し、現在の表示指示に一致する場合だけ完了を報告する。</p>
-      <Flow title="教員が6ページ目へ進めた場合" steps={[
-        ["教員", "6ページ目への変更をDBに保存"],
-        ["Display", "通知または定期取得で変更を知り、6ページ目を描画"],
-        ["DB", "描画報告の更新時刻・ページ・接続世代を照合"],
-        ["教員画面", "現在の表示指示と報告が一致すれば同期済みと表示"],
+    <Section id="recovery" title="状態の配信と再同期">
+      <p>端末は、講義状態をまとめて取得するスナップショットAPIを呼び出す。資料、投票、字幕などには個別の更新番号があり、端末が把握している番号を送ると、DBは更新された項目のデータを返す。</p>
+      <Flow title="スナップショットによる状態取得" steps={[
+        ["端末から要求", "講義IDと、項目ごとの既知の更新番号を送る"],
+        ["DBから応答", "変更された項目のデータと、新しい更新番号を返す"],
+        ["画面へ反映", "端末内の番号と比較し、新しい項目を適用する"]
       ]} />
-      <p>5ページ目の描画完了が遅れて届いても、6ページ目の同期確認には使わない。再読み込み前の古い接続から届いた報告も、接続世代の番号で除外する。描画報告の送信に失敗した場合は再送し、その間に新しいページを描画した場合は最新の報告を優先する。</p>
-      <SourceLinks items={[
-        ["資料・版・ページを照合した描画完了通知", "src/pages/DisplayPage.tsx#L213-L285"],
-        ["接続世代とDBの現在状態に対する描画報告の検証", "supabase/migrations/20260825173000_final_display_delivery_ack.sql#L1223-L1277"],
-        ["教員画面に返す同期状態の判定", "supabase/migrations/20260825173000_final_display_delivery_ack.sql#L1421-L1439"],
-        ["描画報告の再送と最新報告の優先", "src/display/displayRealtime.ts#L650-L724"],
-      ]} />
+      <p>学生端末は通常5秒間隔で取得する。DisplayはSupabase Realtimeの通知を受けて再取得し、通知を受け取れない場合も通常5秒間隔の取得で復帰する。切断中の操作を順番に再生するのではなく、DBにある現在の状態へ追いつく方式である。</p>
+      <p>応答が遅れて届いても、項目ごとの更新番号を比較して古い値を適用しない。講義を切り替えた後は、切替前に開始した通信の応答も除外する。確定字幕は再取得の対象になるが、失われた途中字幕をすべて復元するものではない。</p>
     </Section>
 
-    <Section id="recovery" title="遅延・切断からの復帰">
-      <p>端末は投票・資料ページ・字幕などの項目ごとに、適用済みバージョンを保持する。応答の到着順ではなく各項目のバージョンを比較し、古い値による上書きを防ぐ。</p>
-      <DelayedResponse />
-      <p>講義を切り替えると、端末内で通信要求を識別する番号を更新する。前の番号で開始した通信の応答は適用しない。講義Aの通信が残ったまま講義Bへ移っても、後から届いたAの結果がBの画面を上書きすることはない。</p>
-      <p>DisplayはRealtime通知をきっかけに状態を取得する。通知が欠落した場合も、通常5秒間隔の取得で現在の状態へ追いつく。確定字幕も再取得できるが、通信中に失われた途中字幕をすべて再生する方式ではない。</p>
-      <SourceLinks items={[
-        ["項目別のバージョン比較", "src/lib/liveSnapshot.ts#L56-L100"],
-        ["要求世代の照合と応答の適用", "src/context/CompassStateContext.tsx#L486-L677"],
-        ["通知を受けた状態取得とフォールバック", "src/pages/DisplayPage.tsx#L288-L366"],
-        ["学生・Displayの取得間隔", "src/lib/liveSync.ts#L1-L28"],
+    <Section id="display" title="Displayの描画確認">
+      <p>教員が指定したページがDBに保存されても、DisplayでPDFの描画が完了したとは限らない。このためDisplayは描画完了をDBへ報告し、教員画面はその報告から同期状態を表示する。</p>
+      <Flow title="表示指示から描画確認まで" steps={[
+        ["表示指示", "DBに資料とページ位置を保存"],
+        ["PDF描画", "Displayが該当ページを描画"],
+        ["報告の検証", "DBが現在の表示指示と接続を照合"],
+        ["同期状態の表示", "教員画面へ確認結果を返す"]
       ]} />
+      <p>報告では資料ID、資料の版、ページ、表示指示の更新時刻、接続世代を照合する。前のページの描画や、再接続前のDisplayからの報告を、現在の指示に対する完了として扱わない。報告の送信に失敗した場合は再送し、複数の報告が待機している場合は最新の描画結果を優先する。</p>
     </Section>
 
-    <Section id="capacity" title="300人規模を想定した取得処理">
-      <p>学生300端末が5秒ごとに取得すると、単純計算では毎秒60回の要求になる。この取得のたびに全回答の再集計や参加記録の書き込みを行わないよう、保存時と取得時の処理を設計している。</p>
-      <Table columns={["処理", "実装"]} rows={[
-        ["投票結果", "回答の保存時に集計値を加算し、各端末には集計済みの票数を返す。"],
-        ["資料・投票などの更新", "端末の既知バージョンと比較する。投票だけが変わった場合、未変更の資料情報は返さない。"],
-        ["コメント", "ライブ取得は1回最大25件。過去のコメントは履歴用の取得経路で読む。"],
-        ["参加状況", "最終アクセスの書き込みは45秒以上の間隔を置く。直近90秒の活動人数を15秒単位で集計し、講義内で再利用する。"],
+    <Section id="capacity" title="読み取り負荷の制御">
+      <p>一つの講義状態を多数の端末が繰り返し取得するため、端末ごとの要求で同じ集計をやり直さないことが重要になる。集計を更新時に行う処理と、取得結果を講義内で再利用する処理を設けている。</p>
+      <Table columns={["対象", "取得時の処理"]} rows={[
+        ["投票結果", "回答の保存時に更新した集計値を返す。取得のたびに全回答を数え直さない。"],
+        ["資料・投票・字幕", "既知の更新番号と比較し、未変更の項目のデータを省く。"],
+        ["コメント", "ライブ取得は最大25件。過去の投稿は履歴用の経路で取得する。"],
+        ["参加状況", "最終アクセスの書き込みは45秒以上の間隔を置く。直近90秒の活動人数は15秒単位で集計し、講義内で再利用する。"]
       ]} />
-      <p>活動人数は、書き込みがなくても時間の経過で減る。このため人数の情報は毎回返し、DBのバージョン更新だけに依存しない。学生端末の初回・復帰時の取得タイミングは分散し、通信失敗時は再試行間隔を延ばす。</p>
-      <Note>300人は単一講義の設計上の想定であり、実測の処理能力を示す値ではない。要求数は端末数に応じて増え、集計や講義状態の共有行には更新時の競合が残る。</Note>
-      <SourceLinks items={[
-        ["取得件数・参加記録の更新間隔・人数の返却", "supabase/migrations/20260826085622_single_lecture_300_capacity_hardening.sql#L131-L287"],
-        ["15秒単位の人数集計と再利用", "supabase/migrations/20260716140920_phase6_6_ux_archive_metrics_digest.sql#L143-L219"],
-        ["初回・復帰時の分散と再試行間隔", "src/lib/liveSync.ts#L1-L79"],
-        ["履歴・本人の状態・共通状態の取得", "src/repositories/supabaseLiveStateRepository.ts"],
-      ]} />
+      <p>活動人数は、書き込みがなくても時間とともに変化する。この情報は更新番号にかかわらず毎回返す。また、初回・復帰時の取得タイミングを端末間で分散し、通信失敗時は再試行間隔を延ばす。</p>
+      <details className={styles.supplement}><summary>想定する端末数と評価範囲</summary><p>単一講義で300人の参加を想定している。300端末が5秒ごとに取得する場合、定常時の要求数は単純計算で毎秒60回になる。これは設計条件であり、実測の処理能力を示す値ではない。端末数に応じて要求数は増え、集計値や講義状態を更新する共有行では競合も発生する。</p></details>
     </Section>
+    <SourceLinks items={[
+  [
+    "回答の保存と重複時の扱い",
+    "src/repositories/supabasePollRepository.ts#L11-L35"
+  ],
+  [
+    "参加者ごとに1回答とする一意制約",
+    "supabase/migrations/20260710104958_remote_baseline.sql#L89-L104"
+  ],
+  [
+    "回答の保存に連動する集計・バージョン更新",
+    "supabase/migrations/20260711020445_live_state_integration.sql#L231-L259"
+  ],
+  [
+    "講義状態の項目別バージョン",
+    "supabase/migrations/20260714021129_phase1_sync_protocol_v2.sql#L23-L94"
+  ],
+  [
+    "共有ロックによる参加確認と参加者登録",
+    "supabase/migrations/20260826085622_single_lecture_300_capacity_hardening.sql#L55-L118"
+  ],
+  [
+    "講義・AI制御・利用記録のロックと終了処理",
+    "supabase/migrations/20260715145555_phase4_1_ai_concurrency_lanes.sql#L182-L303"
+  ],
+  [
+    "DB時刻による開催判定と期限切れ処理",
+    "supabase/migrations/20260714080706_phase2_lecture_lifecycle.sql#L395-L445"
+  ],
+  [
+    "期限切れ時の終了処理呼び出し",
+    "supabase/migrations/20260714080706_phase2_lecture_lifecycle.sql#L609-L643"
+  ],
+  [
+    "資料・版・ページを照合した描画完了通知",
+    "src/pages/DisplayPage.tsx#L213-L285"
+  ],
+  [
+    "接続世代とDBの現在状態に対する描画報告の検証",
+    "supabase/migrations/20260825173000_final_display_delivery_ack.sql#L1223-L1277"
+  ],
+  [
+    "教員画面に返す同期状態の判定",
+    "supabase/migrations/20260825173000_final_display_delivery_ack.sql#L1421-L1439"
+  ],
+  [
+    "描画報告の再送と最新報告の優先",
+    "src/display/displayRealtime.ts#L650-L724"
+  ],
+  [
+    "項目別のバージョン比較",
+    "src/lib/liveSnapshot.ts#L56-L100"
+  ],
+  [
+    "要求世代の照合と応答の適用",
+    "src/context/CompassStateContext.tsx#L486-L677"
+  ],
+  [
+    "通知を受けた状態取得とフォールバック",
+    "src/pages/DisplayPage.tsx#L288-L366"
+  ],
+  [
+    "学生・Displayの取得間隔",
+    "src/lib/liveSync.ts#L1-L28"
+  ],
+  [
+    "取得件数・参加記録の更新間隔・人数の返却",
+    "supabase/migrations/20260826085622_single_lecture_300_capacity_hardening.sql#L131-L287"
+  ],
+  [
+    "15秒単位の人数集計と再利用",
+    "supabase/migrations/20260716140920_phase6_6_ux_archive_metrics_digest.sql#L143-L219"
+  ],
+  [
+    "初回・復帰時の分散と再試行間隔",
+    "src/lib/liveSync.ts#L1-L79"
+  ],
+  [
+    "履歴・本人の状態・共通状態の取得",
+    "src/repositories/supabaseLiveStateRepository.ts"
+  ]
+]} />
   </>;
 }

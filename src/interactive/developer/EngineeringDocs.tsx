@@ -11,20 +11,26 @@ import styles from "./engineering-docs.module.css";
 
 export const DOC_ROOT = "/INTRO_Interactive/developers/";
 export const topics = {
-  architecture: { title: "講義状態と同期", description: "投票・資料ページの共有、参加と終了の競合、Displayの描画確認。", sections: [["state", "投票結果の確定と配信"], ["lifecycle", "参加と講義終了の競合"], ["display", "Displayの描画完了確認"], ["recovery", "遅延・切断からの復帰"], ["capacity", "300人規模の取得処理"]] },
-  delivery: { title: "資料配信とPowerPoint連携", description: "PDFの公開と通信失敗からの復旧、PowerPointの現在位置への追従。", sections: [["path", "資料の配信経路"], ["publication", "PDFの公開と障害復旧"], ["presenter", "PowerPoint連携"]] },
-  ai: { title: "AI機能と実行制御", description: "資料分析の再要求、字幕の開始と停止、学術回答の出典検査。", sections: [["features", "AI機能と入出力"], ["dispatch", "外部APIの重複送信"], ["admission", "字幕の開始と停止"], ["evidence", "学術回答の検査"]] },
-  security: { title: "認証とデータ管理", description: "QR参加と教員の認証、データへのアクセス権と保存先。", sections: [["identity", "利用者と権限"], ["data", "保存と外部送信"], ["future", "今後の開発範囲"]] },
+  architecture: { title: "講義状態と同期", description: "投票・資料ページの共有、参加と終了の競合、Displayの描画確認。", sections: [["state", "講義状態の管理"], ["lifecycle", "トランザクションと講義終了"], ["recovery", "状態の配信と再同期"], ["display", "Displayの描画確認"], ["capacity", "読み取り負荷の制御"]] },
+  delivery: { title: "資料配信とPowerPoint連携", description: "PDFの公開と通信失敗からの復旧、PowerPointの現在位置への追従。", sections: [["path", "資料の配信経路"], ["publication", "資料の公開手順"], ["consistency", "DBとR2の整合性"], ["presenter", "PowerPoint連携"]] },
+  ai: { title: "AI機能と実行制御", description: "資料分析の再要求、字幕の開始と停止、学術回答の出典検査。", sections: [["features", "AI処理の構成"], ["dispatch", "実行許可と利用量管理"], ["admission", "字幕セッションの制御"], ["evidence", "学術回答の生成と公開"]] },
+  security: { title: "認証とデータ管理", description: "QR参加と教員の認証、データへのアクセス権と保存先。", sections: [["identity", "認証と講義への参加"], ["authorization", "サーバー側の認可"], ["data", "データの保存と外部送信"], ["future", "今後の開発範囲"]] },
   developer: { title: "開発者", description: "Yuto Matsui｜開発者・プロダクト設計者", sections: [["profile", "開発者紹介"]] },
   archive: { title: "アーカイブ", description: "", sections: [["judges", "審査員の方へ"], ["production", "現行本番ページ"]] }
 } as const;
 export type Topic = keyof typeof topics;
+const detailDescriptions: Partial<Record<Topic, string>> = {
+  architecture: "教員・学生・Displayが共有する講義状態の管理。DBトランザクション、スナップショット配信、再同期、描画確認の仕組み。",
+  delivery: "PostgreSQLとPrivate R2による資料配信。PDFの公開手順、DBとR2の整合性、PowerPointからのページ同期。",
+  ai: "字幕・要約・資料分析・学術回答の構成。外部APIの実行許可、利用量管理、字幕セッションの制御。",
+  security: "学生の匿名参加と教員認証。講義へのアクセス判定、データの保存先、外部APIへ送信する情報。"
+};
 const topicKeys = Object.keys(topics) as Topic[];
 const overviewSections = [["architecture", "システム構成"], ["runtime", "実行環境"], ["documents", "設計と実装"]] as const;
 
 export function engineeringMetadata(topic?: Topic): Metadata {
   const title = topic ? topics[topic].title : "システム構成";
-  const description = topic === "archive" ? "審査員向けの8月時点の保存版と、現行本番ページへの案内。" : topic ? topics[topic].description : "COMPASS Interactiveのシステム構成。講義状態の同期、DBとR2をまたぐ資料公開、AI実行制御、認証とデータ管理を現行ソースに基づいて解説。";
+  const description = topic === "archive" ? "審査員向けの8月時点の保存版と、現行本番ページへの案内。" : topic ? detailDescriptions[topic] ?? topics[topic].description : "COMPASS Interactiveのシステム構成。講義状態の同期、DBとR2をまたぐ資料公開、AI実行制御、認証とデータ管理を現行ソースに基づいて解説。";
   const url = topic ? `${DOC_ROOT}${topic}/` : DOC_ROOT;
   return { title: `${title} | COMPASS Interactive 開発者向け技術情報`, description, alternates: { canonical: url }, openGraph: { title: `${title} | COMPASS Interactive`, description, url, type: "website", locale: "ja_JP", siteName: "COMPASS Interactive" }, twitter: { card: "summary_large_image", title: `${title} | COMPASS Interactive`, description } };
 }
@@ -60,7 +66,7 @@ export function EngineeringDocs({ topic }: { topic?: Topic }) {
     <div className={styles.layout}><aside className={styles.sidebar}><Contents topic={topic} /></aside><div className={styles.mainColumn}>
       <details className={styles.mobileContents}><summary>目次・ページ一覧</summary><Contents topic={topic} /></details>
       <main id="developer-main" tabIndex={-1} className={styles.article}>
-        <header id="developer-top" className={styles.pageIntro}><p className={styles.breadcrumb}>{topic ? <Link href={DOC_ROOT}>開発者向け技術情報 / システム構成</Link> : "COMPASS Interactive / 開発者向け技術情報"}</p><h1>{title}</h1>{topic && topics[topic].description && <p className={styles.lead}>{topics[topic].description}</p>}</header>
+        <header id="developer-top" className={styles.pageIntro}><p className={styles.breadcrumb}>{topic ? <Link href={DOC_ROOT}>開発者向け技術情報 / システム構成</Link> : "COMPASS Interactive / 開発者向け技術情報"}</p><h1>{title}</h1>{topic === "developer" && <p className={styles.lead}>{topics[topic].description}</p>}</header>
         {!topic && <Overview />}{topic === "architecture" && <ArchitectureArticle />}{topic === "ai" && <AiArticle />}{topic === "delivery" && <DeliveryArticle />}{topic === "security" && <SecurityArticle />}{topic === "developer" && <DeveloperArticle />}{topic === "archive" && <ArchiveArticle />}
         <nav className={styles.pageNavigation} aria-label="前後のページ">{topic && <Link href={index > 0 ? `${DOC_ROOT}${topicKeys[index - 1]}/` : DOC_ROOT}>← {index > 0 ? topics[topicKeys[index - 1]].title : "システム構成"}</Link>}{next && <Link href={`${DOC_ROOT}${next}/`}>{topics[next].title} →</Link>}</nav>
       </main>
