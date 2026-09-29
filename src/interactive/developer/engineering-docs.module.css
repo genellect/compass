@@ -227,10 +227,12 @@
   .syncContract > p { padding: 14px 20px; }
   .syncContract > p + p { border-left: 0; border-top: 1px solid #e2e8ef; }
   .page .sceneCaption { padding: 12px 20px; }
-  .fanout { gap: 6px; }
-  .fanout > div { padding: 10px 4px; }
-  .fanout strong { font-size: 14px; }
-  .fanout span, .fanout small { font-size: 12px; }
+  .fanout { grid-template-columns: 1fr; gap: 12px; padding: 0 0 0 20px; }
+  .fanout::before { top: 20px; bottom: 20px; left: 0; right: auto; border-top: 0; border-left: 1px solid #98afcc; }
+  .fanout > div { padding: 12px; }
+  .fanout > div::before { content: "→"; top: calc(50% - 12px); left: -22px; }
+  .fanout strong { font-size: 18px; }
+  .fanout span, .fanout small { font-size: 14px; }
   .lanes { gap: 26px; }
   .lanes > strong { font-size: 13px; padding: 9px 6px; }
   .message { grid-template-columns: minmax(0, 1fr) 26px minmax(0, 1fr); font-size: 14px; }
