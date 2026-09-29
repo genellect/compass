@@ -1,2 +1,1 @@
-export { alt, contentType, default, size } from "./opengraph-image";
-export const dynamic = "force-static";
+export { default, alt, size, contentType, dynamic } from "./opengraph-image";
