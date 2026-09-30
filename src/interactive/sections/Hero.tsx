@@ -2,10 +2,9 @@ import { Manrope } from "next/font/google";
 import { hero, links } from "../content/interactiveContent";
 import { CTAButton } from "../components/ui/CTAButton";
 import { FeatureChip } from "../components/ui/FeatureChip";
-import { HeroIntelligenceField } from "../components/hero/HeroIntelligenceField";
-import { LectureSignalMatrix } from "../components/hero/LectureSignalMatrix";
+import { FutureLectureHall } from "../components/hero/FutureLectureHall";
 import { MobileLearningSignal } from "../components/hero/MobileLearningSignal";
-import { ProductExperienceMock } from "../components/ui/ProductExperienceMock";
+import "../styles/future-hall.css";
 
 const mobileDisplay = Manrope({
   subsets: ["latin"],
@@ -15,10 +14,10 @@ const mobileDisplay = Manrope({
 
 export function Hero() {
   return (
-    <section id="top" className={`hero-section hero-section--signal ${mobileDisplay.variable}`} aria-labelledby="hero-title">
+    <section id="top" className={`hero-section hero-section--signal hero-section--future ${mobileDisplay.variable}`} aria-labelledby="hero-title">
       <div className="hero-visual" aria-hidden="true" />
       <div className="hero-shade" aria-hidden="true" />
-      <HeroIntelligenceField />
+      <FutureLectureHall />
       <MobileLearningSignal />
       <div className="hero-grid section__inner">
         <div className="hero-copy">
@@ -47,8 +46,7 @@ export function Hero() {
               <FeatureChip key={chip}>{chip}</FeatureChip>
             ))}
           </div>
-          <div className="hero-ai-badge hero-trust-line">
-            <span aria-hidden="true" />
+          <div className="hero-ai-badge hero-trust-line hero-ai-credit">
             <strong>OpenAI Frontier Intelligence 搭載</strong>
             <small>OpenAI API × Realtime API</small>
           </div>
@@ -61,12 +59,6 @@ export function Hero() {
           <p className="hero-cta-note">登録不要・デモデータ・約3分</p>
         </div>
 
-        <div className="hero-mock">
-          <div className="hero-mock-stage hero-signal-stage">
-            <LectureSignalMatrix />
-            <ProductExperienceMock className="hero-product-experience" />
-          </div>
-        </div>
       </div>
     </section>
   );

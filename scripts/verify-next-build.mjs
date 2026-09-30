@@ -254,7 +254,7 @@ for (const expected of [
 const githubProfileUrl = "https://github.com/genellect";
 for (const [html, label, expectedCount] of [
   [official, "Official founder profile", 0],
-  [interactive, "Interactive developer profile", 1],
+  [interactive, "Interactive developer profile", 0],
   [interactiveDevelopers, "Interactive developer introduction profile", 1]
 ]) {
   const links = html.match(new RegExp(`<a\\b[^>]*href="${githubProfileUrl}"[^>]*>`, "g")) ?? [];
@@ -559,27 +559,24 @@ for (const expected of [
   "利用内容に応じて個別にご相談を承ります。",
   'href="/contact/"',
   'href="https://yuto-matsui.com/"',
-  "Web Portfolio",
+  "Meet the Developer",
   "設計判断をたどる",
   "この体験を、見えない設計から支える。",
   'rel="canonical" href="https://compass-official.pages.dev/INTRO_Interactive/"',
   parentGaMeasurementId
 ]) expectIncludes(interactive, expected, "Interactive page");
 
-const interactiveDesktopNav = interactive.match(/<nav class="desktop-nav"[\s\S]*?<\/nav>/)?.[0];
-if (!interactiveDesktopNav) throw new Error("Interactive page is missing its Desktop navigation.");
+const interactiveDesktopNav = interactive.match(/<div[^>]*id="desktop-page-navigation"[\s\S]*?<\/nav>/)?.[0];
+if (!interactiveDesktopNav) throw new Error("Interactive page is missing its Desktop page navigation.");
 for (const [href, label] of [
-  ["#students", "学生の体験"],
-  ["#ai-support", "AI学習支援"],
-  ["#educator-operations", "教員の使い方"],
-  ["#adoption", "導入・ご相談"],
-  ["#developers", "設計・技術"]
+  ["#students", "講義の体験"], ["#features", "講義の流れ"], ["#ai-support", "AI学習支援"],
+  ["#teachers", "学生の反応を活かす"], ["#educator-operations", "教員の使い方"],
+  ["#adoption", "導入・ご相談"], ["#developers", "設計・技術"]
 ]) {
   expectIncludes(interactiveDesktopNav, `href="${href}"`, "Interactive Desktop navigation");
   expectIncludes(interactiveDesktopNav, label, "Interactive Desktop navigation");
 }
-expectExcludes(interactiveDesktopNav, "こんな場面で", "Interactive Desktop navigation");
-expectExcludes(interactiveDesktopNav, 'href="#teachers"', "Interactive Desktop navigation");
+expectExcludes(interactive, 'id="developer-profile"', "Removed introduction profile");
 
 const interactiveSectionOrder = [
   'id="security"',
