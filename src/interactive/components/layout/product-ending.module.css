@@ -19,7 +19,10 @@
 .footerPageLinks { display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: repeat(4, auto); grid-auto-flow: column; gap: 0 28px; }
 .footerPageLinks a, .footerDestinations a { display: flex; align-items: center; min-height: 38px; color: #b9c8d8; font-size: 12px; white-space: nowrap; }
 .footerDestinations a { justify-content: space-between; gap: 16px; }
-.footerDestinations a span { color: #7893ae; }
+.footerDestinations a > span:last-child { color: #7893ae; }
+.footerDestinations a { min-height: 58px; }
+.destinationCopy { display: flex; flex-direction: column; gap: 4px; }
+.destinationCopy small { color: #8fa5b8; font-size: 10px; font-weight: 400; letter-spacing: .025em; }
 .footer a:hover { color: #fff; }
 .footerBottom { display: flex; justify-content: space-between; align-items: center; gap: 24px; margin-top: 44px; padding-top: 22px; border-top: 1px solid #789abe1c; font-size: 10px; color: #8096ac; }
 .footerBottom p { margin: 0; }

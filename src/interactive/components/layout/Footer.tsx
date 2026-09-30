@@ -94,7 +94,7 @@ export function Footer({ variant = "main" }: FooterProps) {
             {pageNavigation.map(item => <a key={item.href} href={item.href}>{item.label}</a>)}
           </nav>
           <nav className={styles.footerDestinations} aria-label="公式サイト・技術情報・開発者">
-            {siteDestinations.map(item => <a key={item.href} href={item.href}>{item.label}<span aria-hidden="true">↗</span></a>)}
+            {siteDestinations.map(item => <a key={item.href} href={item.href} aria-label={item.label}><span className={styles.destinationCopy}>{item.label}{item.detail && <small>{item.detail}</small>}</span><span aria-hidden="true">↗</span></a>)}
           </nav>
         </div>
         <div className={styles.footerBottom}>

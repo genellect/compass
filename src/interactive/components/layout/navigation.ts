@@ -28,7 +28,7 @@ export const mainMobileGroups = [
 export const pageNavigation = mainMobileGroups.flatMap(group => group.items).filter(item => item.href.startsWith("#"));
 
 export const siteDestinations = [
-  { href: "/", label: "COMPASS公式サイト" },
-  { href: "/INTRO_Interactive/developers/", label: "開発者向け技術情報" },
-  { href: "https://yuto-matsui.com/", label: "Meet the Developer" },
+  { href: "/", label: "COMPASS公式サイト", detail: "" },
+  { href: "https://yuto-matsui.com/", label: "Meet the Developer", detail: "yuto-matsui.com" },
+  { href: "/INTRO_Interactive/developers/", label: "開発者向け技術情報", detail: "" },
 ];

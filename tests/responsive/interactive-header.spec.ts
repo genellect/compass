@@ -2,7 +2,7 @@ import { expect, test } from "./responsive-fixture";
 import { collectRuntimeErrors, settleRenderedPage } from "./layout-audit";
 import path from "node:path";
 const anchors = [["講義の体験","students"],["講義の流れ","features"],["AI学習支援","ai-support"],["学生の反応を活かす","teachers"],["教員の使い方","educator-operations"],["導入・ご相談","adoption"],["設計・技術","developers"]];
-const targets = [["COMPASS公式サイト","/"],["開発者向け技術情報","/INTRO_Interactive/developers/"],["Meet the Developer","https://yuto-matsui.com/"]];
+const targets = [["COMPASS公式サイト","/"],["Meet the Developer","https://yuto-matsui.com/"],["開発者向け技術情報","/INTRO_Interactive/developers/"]];
 async function shot(page: import("@playwright/test").Page, name:string) {
   if (process.env.HERO_EVIDENCE_DIR) await page.screenshot({path:path.join(process.env.HERO_EVIDENCE_DIR,name+".png")});
 }
@@ -12,6 +12,7 @@ test("Desktop header exposes destinations and supports page navigation and keybo
   await page.emulateMedia({reducedMotion:"reduce"});
   await page.goto("/INTRO_Interactive/"); await settleRenderedPage(page);
   const header=page.locator("[data-interactive-desktop-header]");
+  await expect(header.getByRole('link',{name:'COMPASS Interactive トップへ',exact:true})).toHaveAttribute('href','#top');
   const sites=header.getByRole("navigation",{name:"公式サイト・技術情報・開発者"});
   for(const [name,href] of targets) {
     await expect(sites.getByRole("link",{name,exact:true})).toBeVisible();

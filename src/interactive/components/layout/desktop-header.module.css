@@ -15,11 +15,13 @@
   .mark span { position: absolute; height: 1px; inset: 12px 5px auto; background: #a7c9e9a6; }
   .destinations { display: flex; align-items: center; justify-content: center; gap: 28px; }
   .destinations a { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; color: #dfebf2; font-size: 13px; font-weight: 500; white-space: nowrap; }
-  .destinations a span { color: #7f9eb3; font-size: 14px; }
+  .destinationCopy { position: relative; display: block; }
+  .destinationCopy small { position: absolute; top: calc(100% + 3px); left: 0; color: #8fa8ba; font-size: 10px; font-weight: 400; letter-spacing: .025em; line-height: 1.2; }
+  .destinationArrow { color: #91b2c6; font-size: 14px; }
   .destinations a:hover { color: #a9f0dc; }
   .actions { display: flex; align-items: center; gap: 22px; flex: none; }
-  .demo { display: inline-flex; align-items: center; justify-content: center; gap: 14px; min-height: 40px; padding: 0 16px; border: 1px solid #b1c8d751; border-radius: 4px; background: #cee5ed08; color: #e2edf3; font-size: 12px; font-weight: 550; white-space: nowrap; }
-  .demo:hover { background: #e3fff2; color: #0b2530; }
+  .demo { display: inline-flex; align-items: center; justify-content: center; gap: 18px; min-height: 46px; padding: 0 22px; border: 1px solid #c9f6e8; border-radius: 6px; background: linear-gradient(110deg,#a9f0f3,#edf8dc); color: #102631; font-size: 14px; font-weight: 650; white-space: nowrap; }
+  .demo:hover { background: #f0fff5; color: #071c25; }
   .toggle { display: inline-flex; align-items: center; gap: 12px; min-height: 44px; padding: 0; border: 0; background: none; color: #d3e2eb; font: inherit; font-size: 12px; cursor: pointer; }
   .menuIcon { position: relative; width: 22px; height: 18px; }
   .menuIcon i { position: absolute; left: 0; width: 22px; height: 1px; background: currentColor; transition: transform .18s, top .18s; }
@@ -43,12 +45,17 @@
 @media (min-width: 681px) and (max-width: 1199px) {
   .desktop { width: calc(100% - 40px); height: 74px; gap: 18px; }
   .destinations { gap: 22px; }
-  .destinations .official, .demo, .menuLabel { display: none; }
+  .demo, .menuLabel { display: none; }
   .toggle { width: 36px; justify-content: center; }
   .parentBrand strong, .productBrand { font-size: 13px; }
   .parentBrand { gap: 8px; }
   .brand { gap: 4px; }
   .destinations a { font-size: 12px; }
   .panel { width: min(580px,100%); }
+}
+@media (min-width: 681px) and (max-width: 959px) {
+  .desktop { gap: 14px; }
+  .destinations { gap: 14px; }
+  .destinationArrow { display: none; }
 }
 @media (prefers-reduced-motion: reduce) { .menuIcon i { transition: none; } }

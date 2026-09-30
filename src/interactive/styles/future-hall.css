@@ -1,5 +1,28 @@
 .future-hall { display: none; }
 
+/* A quiet technology credit, distinct from the interactive CTA controls. */
+.intro-redesign .hero-section--future .hero-ai-credit {
+  gap: 14px;
+  min-height: 24px;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: none;
+  box-shadow: none;
+  backdrop-filter: none;
+}
+.intro-redesign .hero-section--future .hero-ai-credit small { display: inline; padding-left: 14px; border-left: 1px solid #a6bac750; font-size: 11px; font-weight: 400; letter-spacing: .015em; line-height: 1.5; }
+.intro-redesign .hero-section--future .hero-ai-credit strong { font-size: 13px; font-weight: 500; letter-spacing: .015em; }
+@media (min-width: 681px) {
+  .intro-redesign .hero-section--future .hero-ai-credit small { color: #a7bac7; }
+  .intro-redesign .hero-section--future .hero-ai-credit strong { color: #e2ebef; }
+}
+@media (max-width: 680px) {
+  .intro-redesign .hero-section--future .hero-ai-credit { gap: 0; }
+  .intro-redesign .hero-section--future .hero-ai-credit strong { font-size: 10px; }
+  .intro-redesign .hero-section--future .hero-ai-credit small { display: none; }
+}
+
 @media (min-width: 681px) {
   .intro-redesign .hero-section--future .future-hall {
     position: absolute;

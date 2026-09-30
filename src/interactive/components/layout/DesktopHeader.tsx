@@ -29,15 +29,15 @@ export function DesktopHeader() {
   return (
     <div className={styles.desktop} ref={root} data-interactive-desktop-header
       onBlur={event => {if (!event.currentTarget.contains(event.relatedTarget)) setOpen(false);}}>
-      <div className={styles.brand}>
-        <a className={styles.parentBrand} href={links.compassHome} aria-label="COMPASS公式サイト" title="COMPASS公式サイト">
+      <a className={styles.brand} href="#top" aria-label="COMPASS Interactive トップへ" onClick={()=>setOpen(false)}>
+        <span className={styles.parentBrand}>
           <span className={styles.mark} aria-hidden="true"><span /></span><strong>COMPASS</strong>
-        </a>
-        <a className={styles.productBrand} href="#top" aria-label="COMPASS Interactive トップへ" onClick={()=>setOpen(false)}>Interactive</a>
-      </div>
+        </span>
+        <span className={styles.productBrand}>Interactive</span>
+      </a>
       <nav className={styles.destinations} aria-label="公式サイト・技術情報・開発者">
-        {siteDestinations.map((item,index)=><a className={index === 0 ? styles.official : undefined} key={item.href} href={item.href}>
-          {item.label}<span aria-hidden="true">↗</span>
+        {siteDestinations.map((item,index)=><a className={index === 0 ? styles.official : undefined} key={item.href} href={item.href} aria-label={item.label}>
+          <span className={styles.destinationCopy}><span>{item.label}</span>{item.detail && <small>{item.detail}</small>}</span><span className={styles.destinationArrow} aria-hidden="true">↗</span>
         </a>)}
       </nav>
       <div className={styles.actions}>

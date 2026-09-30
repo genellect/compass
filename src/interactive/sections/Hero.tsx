@@ -46,8 +46,7 @@ export function Hero() {
               <FeatureChip key={chip}>{chip}</FeatureChip>
             ))}
           </div>
-          <div className="hero-ai-badge hero-trust-line">
-            <span aria-hidden="true" />
+          <div className="hero-ai-badge hero-trust-line hero-ai-credit">
             <strong>OpenAI Frontier Intelligence 搭載</strong>
             <small>OpenAI API × Realtime API</small>
           </div>
