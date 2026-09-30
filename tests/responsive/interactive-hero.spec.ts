@@ -1,317 +1,204 @@
-import type { Locator, Page } from "@playwright/test";
-
 import { expect, test } from "./responsive-fixture";
 import { collectRuntimeErrors, settleRenderedPage } from "./layout-audit";
-import type { ResponsiveViewport } from "./route-contracts";
+import path from "node:path";
 
-const heroViewports: ResponsiveViewport[] = [
-  { name: "small-phone", width: 320, height: 568 },
-  { name: "phone", width: 390, height: 844 },
-  { name: "tablet-portrait", width: 768, height: 1024 },
-  { name: "compact-landscape", width: 900, height: 800 },
-  { name: "laptop", width: 1024, height: 768 },
-  { name: "windows-short", width: 1275, height: 553 },
-  { name: "requested-desktop", width: 1363, height: 936 },
-  { name: "desktop", width: 1440, height: 900 },
-  { name: "windows-125-percent", width: 1536, height: 672 },
-  { name: "raw-4k", width: 3840, height: 2160 },
+// The full Chromium browser uses the Windows GPU. The default headless shell
+// uses SwiftShader here and does not represent the shipped Desktop renderer.
+test.use({ channel: "chromium" });
+
+const route = "/INTRO_Interactive/";
+const viewports = [
+  { width: 320, height: 568 }, { width: 390, height: 844 },
+  { width: 680, height: 844 }, { width: 681, height: 844 },
+  { width: 768, height: 1024 }, { width: 820, height: 1180 },
+  { width: 1024, height: 1366 }, { width: 1024, height: 768 },
+  { width: 1275, height: 553 }, { width: 1440, height: 900 },
+  { width: 3840, height: 2160 },
 ];
-
-async function renderedLineCount(locator: Locator) {
-  return locator.evaluate((element) => {
-    const rows: number[] = [];
-    const walker = document.createTreeWalker(element, NodeFilter.SHOW_TEXT);
-    let textNode = walker.nextNode();
-    while (textNode) {
-      const value = textNode.textContent ?? "";
-      for (let index = 0; index < value.length; index += 1) {
-        if (/\s/u.test(value[index])) continue;
-        const range = document.createRange();
-        range.setStart(textNode, index);
-        range.setEnd(textNode, index + 1);
-        const rect = [...range.getClientRects()].at(-1);
-        if (rect && rect.width > 0 && !rows.some((top) => Math.abs(top - rect.top) <= 2)) {
-          rows.push(rect.top);
-        }
-      }
-      textNode = walker.nextNode();
-    }
-    return rows.length;
-  });
-}
-
-async function expectInsideInitialViewport(page: Page, locator: Locator) {
-  await expect(locator).toBeVisible();
-  const box = await locator.boundingBox();
-  expect(box).toBeTruthy();
-  if (!box) return;
-  const viewport = page.viewportSize()!;
-  expect(box.x).toBeGreaterThanOrEqual(-1);
-  expect(box.y).toBeGreaterThanOrEqual(-1);
-  expect(box.x + box.width).toBeLessThanOrEqual(viewport.width + 1);
-  expect(box.y + box.height).toBeLessThanOrEqual(viewport.height + 1);
-}
-
-async function expectInitialHitTarget(page: Page, locator: Locator) {
-  await expectInsideInitialViewport(page, locator);
-  const box = await locator.boundingBox();
-  if (!box) return;
-
-  const token = await locator.evaluate((element) => {
-    const value = `signal-hit-${Math.random().toString(36).slice(2)}`;
-    element.setAttribute("data-interactive-hero-hit", value);
-    return value;
-  });
-  const hit = await page.evaluate(
-    ({ x, y, value }) => {
-      const target = document.querySelector(`[data-interactive-hero-hit="${value}"]`);
-      const point = document.elementFromPoint(x, y);
-      return Boolean(target && point && (target === point || target.contains(point)));
-    },
-    { x: box.x + box.width / 2, y: box.y + box.height / 2, value: token },
-  );
-  expect(hit, "primary CTA center is covered by another Hero layer").toBe(true);
-}
-
-async function expectProductProofReadable(page: Page, mobile: boolean) {
-  const proof = page.locator(mobile ? ".hero-mobile-product-proof" : ".hero-product-experience");
-  await expectInsideInitialViewport(page, proof);
-  const selectors = mobile
-    ? [
-        ".hero-mobile-product-proof__status strong",
-        ".hero-mobile-product-proof__caption strong",
-        ".hero-mobile-product-proof__recap strong",
-      ]
-    : [
-        ".product-experience-mock__live",
-        ".product-caption p",
-        ".product-ai-recap p strong",
-      ];
-  for (const selector of selectors) {
-    const locator = proof.locator(selector);
-    await expect(locator).toBeVisible();
-    const fontSize = await locator.evaluate((element) => Number.parseFloat(getComputedStyle(element).fontSize));
-    expect(fontSize, `${selector} is too small to function as product proof`).toBeGreaterThanOrEqual(9);
-  }
-}
-
-for (const viewport of heroViewports) {
-  test(`Interactive product-led Hero: ${viewport.name} ${viewport.width}x${viewport.height}`, async ({ page }) => {
-    const runtimeErrors = collectRuntimeErrors(page);
+for (const viewport of viewports) {
+  test(`Interactive future hall layout ${viewport.width}x${viewport.height}`, async ({ page }) => {
+    const errors = collectRuntimeErrors(page);
+    const models: string[] = [];
+    page.on("request", request => { if (/lecture-hall\.glb|futureHallScene/.test(request.url())) models.push(request.url()); });
     await page.setViewportSize(viewport);
     await page.emulateMedia({ reducedMotion: "reduce" });
-    const response = await page.goto("/INTRO_Interactive/", { waitUntil: "domcontentloaded" });
-    expect(response?.status()).toBe(200);
+    expect((await page.goto(route))?.status()).toBe(200);
     await settleRenderedPage(page);
-
-    const hero = page.locator("section#top.hero-section--signal");
-    const title = page.locator("h1#hero-title");
-    const lead = page.locator(".hero-lead");
-    const primary = page.locator("#hero-primary-cta");
-    const secondary = page.locator('.hero-secondary-cta[href="https://compass-interactive.pages.dev/join"]');
-    const stage = page.locator(".hero-signal-stage");
-    const canvas = stage.locator("canvas.hero-signal-matrix");
-    const ambientCanvas = page.locator("canvas.hero-ai-field");
-    const mobileLearningField = page.locator("canvas.hero-mobile-learning-field");
-    const origin = title.locator(".hero-title__core[data-signal-origin]");
-
-    await expect(hero).toHaveCount(1);
-    await expect(title).toHaveAccessibleName("LET EVERYTHING MOVE.");
-    await expect(primary).toHaveAttribute("href", "https://compass-interactive.pages.dev/demo");
-    await expect(secondary).toHaveCount(1);
-    await expectInsideInitialViewport(page, title);
-    await expectInsideInitialViewport(page, lead);
-    await expectInitialHitTarget(page, primary);
-    expect(await renderedLineCount(title)).toBe(viewport.width <= 680 ? 2 : 1);
-
-    const documentGeometry = await page.evaluate(() => ({
-      clientWidth: document.documentElement.clientWidth,
-      scrollWidth: document.documentElement.scrollWidth,
-    }));
-    expect(documentGeometry.scrollWidth).toBeLessThanOrEqual(documentGeometry.clientWidth + 1);
-
-    const heroBox = await hero.boundingBox();
-    expect(heroBox).toBeTruthy();
-    if (heroBox) {
-      expect(heroBox.y + heroBox.height, "Hero extends below the initial viewport").toBeLessThanOrEqual(viewport.height + 1);
+    await expect(page.locator("h1")).toHaveCount(1);
+    await expect(page.locator("#hero-title")).toHaveAccessibleName("LET EVERYTHING MOVE.");
+    await expect(page.locator("#hero-primary-cta")).toHaveAttribute("href", "https://compass-interactive.pages.dev/demo");
+    await expect(page.locator(".hero-secondary-cta")).toHaveAttribute("href", "https://compass-interactive.pages.dev/join");
+    await expect(page.locator(".hero-product-experience")).toHaveCount(0);
+    for (const selector of ["#hero-title", ".hero-lead", "#hero-primary-cta"]) {
+      const element = page.locator(selector);
+      await expect(element).toBeVisible();
+      const box = (await element.boundingBox())!;
+      expect(box.x).toBeGreaterThanOrEqual(0);
+      expect(box.x + box.width).toBeLessThanOrEqual(viewport.width + 1);
+      expect(box.y + box.height).toBeLessThanOrEqual(viewport.height + 1);
     }
-
+    expect(await page.locator("#hero-primary-cta").evaluate(element => {
+      const box = element.getBoundingClientRect();
+      return element.contains(document.elementFromPoint(box.x + box.width / 2, box.y + box.height / 2));
+    })).toBe(true);
+    expect(await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth)).toBeLessThanOrEqual(1);
     if (viewport.width <= 680) {
-      const primaryBox = await primary.boundingBox();
-      expect(primaryBox).toBeTruthy();
-      if (primaryBox) {
-        const layoutWidth = await page.evaluate(() => document.documentElement.clientWidth);
-        const centerDelta = Math.abs(primaryBox.x + primaryBox.width / 2 - layoutWidth / 2);
-        expect(centerDelta, "Mobile primary CTA is not centered").toBeLessThanOrEqual(2);
-      }
-    }
-
-    await expect(origin).toHaveCount(1);
-    await expect(origin).toHaveText(".");
-    await expect(origin).toBeVisible();
-    await expect(ambientCanvas).toHaveCount(1);
-    await expect(mobileLearningField).toHaveCount(1);
-
-    if (viewport.width <= 680) {
-      await expect(ambientCanvas).toBeHidden();
-      await expect(ambientCanvas).toHaveAttribute("data-render-state", "ready");
-      await expect(ambientCanvas).toHaveAttribute("data-renderer", "inactive");
-      await expect(mobileLearningField).toBeVisible();
-      await expect(mobileLearningField).toHaveAttribute("data-render-state", "ready");
-      await expect(mobileLearningField).toHaveAttribute("data-renderer", "canvas2d");
-      await expect(mobileLearningField).toHaveAttribute("data-motion-state", "reduced");
-      const mobileBudget = await mobileLearningField.evaluate((element) => {
-        const canvasElement = element as HTMLCanvasElement;
-        return {
-          pixels: canvasElement.width * canvasElement.height,
-          pixelRatio: Number.parseFloat(canvasElement.dataset.pixelRatio ?? "0"),
-        };
-      });
-      expect(mobileBudget.pixels).toBeLessThanOrEqual(710_000);
-      expect(mobileBudget.pixelRatio).toBeGreaterThanOrEqual(0.59);
-      expect(mobileBudget.pixelRatio).toBeLessThanOrEqual(1.4);
+      await expect(page.locator(".future-hall")).toBeHidden();
+      const mobile = page.locator(".hero-mobile-learning-field");
+      await expect(mobile).toBeVisible();
+      await expect(mobile).toHaveAttribute("data-renderer", "canvas2d");
+      await expect(mobile).toHaveAttribute("data-motion-state", "reduced");
+      expect(await mobile.evaluate(node => (node as HTMLCanvasElement).width * (node as HTMLCanvasElement).height)).toBeLessThanOrEqual(710_000);
     } else {
-      await expect(ambientCanvas).toBeVisible();
-      await expect(ambientCanvas).toHaveAttribute("data-render-state", "ready");
-      await expect(ambientCanvas).toHaveAttribute("data-renderer", "canvas2d");
-      await expect(ambientCanvas).toHaveAttribute("data-motion-state", "reduced");
-      await expect(mobileLearningField).toBeHidden();
-      const ambientBudget = await ambientCanvas.evaluate((element) => {
-        const canvasElement = element as HTMLCanvasElement;
-        return {
-          pixels: canvasElement.width * canvasElement.height,
-          pixelRatio: Number.parseFloat(canvasElement.dataset.pixelRatio ?? "0"),
-        };
-      });
-      expect(ambientBudget.pixels).toBeLessThanOrEqual(1_510_000);
-      expect(ambientBudget.pixelRatio).toBeGreaterThanOrEqual(0.33);
-      expect(ambientBudget.pixelRatio).toBeLessThanOrEqual(1.25);
+      await expect(page.locator(".future-hall__poster")).toBeVisible();
+      expect(await page.locator(".future-hall__poster").evaluate(node => (node as HTMLImageElement).naturalWidth)).toBeGreaterThan(1000);
+      await expect(page.locator(".future-hall__canvas")).toHaveCount(0);
     }
-
-    const productProofIsIntentionallyHidden = viewport.width <= 680;
-    if (productProofIsIntentionallyHidden) {
-      await expect(stage).toBeHidden();
-    } else {
-      await expectInsideInitialViewport(page, stage);
-      await expectProductProofReadable(page, viewport.width <= 680);
-      await expect(canvas).toBeVisible();
-      await expect(canvas).toHaveAttribute("aria-hidden", "true");
-      await expect(canvas).toHaveAttribute("data-render-state", "ready");
-      await expect(canvas).toHaveAttribute("data-renderer", "canvas2d");
-      await expect(canvas).toHaveAttribute("data-motion-state", "reduced");
-      const canvasBudget = await canvas.evaluate((element) => {
-        const canvasElement = element as HTMLCanvasElement;
-        return {
-          pixels: canvasElement.width * canvasElement.height,
-          pixelRatio: Number.parseFloat(canvasElement.dataset.pixelRatio ?? "0"),
-        };
-      });
-      expect(canvasBudget.pixels).toBeLessThanOrEqual(2_310_000);
-      expect(canvasBudget.pixelRatio).toBeGreaterThanOrEqual(0.49);
-      expect(canvasBudget.pixelRatio).toBeLessThanOrEqual(1.5);
+    expect(models).toEqual([]);
+    expect(errors).toEqual([]);
+    if (viewport.width >= 681 && viewport.width <= 1199 && viewport.height > viewport.width) {
+      const title = (await page.locator('#hero-title').boundingBox())!;
+      const scene = (await page.locator('.future-hall__scene').boundingBox())!;
+      expect(title.y).toBeLessThan(viewport.height * .25);
+      expect(title.height).toBeGreaterThan(100);
+      expect(scene.y).toBeGreaterThan(viewport.height * .3);
+      expect(scene.y).toBeLessThan(viewport.height * .4);
     }
-
-    expect(runtimeErrors).toEqual([]);
+    if (process.env.HERO_EVIDENCE_DIR && [390, 768, 1440].includes(viewport.width)) {
+      await page.screenshot({ path: path.join(process.env.HERO_EVIDENCE_DIR, `future-hall-${viewport.width}.png`) });
+    }
   });
 }
+test("Desktop scene animates, pauses, and suspends offscreen", async ({ page }) => {
+  const errors = collectRuntimeErrors(page);
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.emulateMedia({ reducedMotion: "no-preference" });
+  await page.goto(route);
+  const scene = page.locator(".future-hall__scene");
+  await expect(scene).toHaveAttribute("data-render-state", "ready", { timeout: 30_000 });
+  await expect(scene).toHaveAttribute("data-motion-state", "running");
+  const frame = async () => Number(await scene.getAttribute("data-frame-count"));
+  const first = await frame();
+  await expect.poll(frame).toBeGreaterThan(first);
+  expect(Number(await scene.getAttribute("data-render-pixels"))).toBeLessThanOrEqual(2_305_000);
+  await expect.poll(() => page.locator(".future-hall__canvas").evaluate(node => getComputedStyle(node).opacity)).toBe("1");
+  if (process.env.HERO_EVIDENCE_DIR) {
+    await page.screenshot({ path: path.join(process.env.HERO_EVIDENCE_DIR, "future-hall-desktop.png") });
+  }
+  for (const [width, height] of [[768, 1024], [1024, 1366]]) {
+    await page.setViewportSize({ width, height });
+    await expect.poll(() => scene.evaluate(node => Math.round(node.getBoundingClientRect().top))).toBe(Math.round(height * .34));
+    const beforeResize = await frame();
+    await expect.poll(frame).toBeGreaterThan(beforeResize);
+    if (process.env.HERO_EVIDENCE_DIR) await page.screenshot({ path: path.join(process.env.HERO_EVIDENCE_DIR, `future-hall-ipad-${width}.png`) });
+  }
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await expect.poll(() => scene.evaluate(node => node.getBoundingClientRect().top)).toBe(0);
+  await page.getByRole("button", { name: "背景を停止" }).click();
+  await expect(scene).toHaveAttribute("data-motion-state", "paused");
+  const stopped = await frame();
+  await page.waitForTimeout(250);
+  expect(await frame()).toBe(stopped);
+  await page.getByRole("button", { name: "背景を再生" }).click();
+  await expect.poll(frame).toBeGreaterThan(stopped);
+  await page.locator("footer.site-footer").scrollIntoViewIfNeeded();
+  await expect(scene).toHaveAttribute("data-motion-state", "paused");
+  await page.evaluate(() => window.scrollTo(0, 0));
+  await expect(scene).toHaveAttribute("data-motion-state", "running");
+  await page.evaluate(() => {
+    Object.defineProperty(document, "visibilityState", { configurable: true, value: "hidden" });
+    document.dispatchEvent(new Event("visibilitychange"));
+  });
+  await expect(scene).toHaveAttribute("data-motion-state", "paused");
+  const hiddenFrame = await frame();
+  await page.waitForTimeout(250);
+  expect(await frame()).toBe(hiddenFrame);
+  await page.evaluate(() => {
+    delete (document as unknown as { visibilityState?: string }).visibilityState;
+    document.dispatchEvent(new Event("visibilitychange"));
+  });
+  await expect(scene).toHaveAttribute("data-motion-state", "running");
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await expect(page.locator(".future-hall__canvas")).toHaveCount(0);
+  await expect(scene).toHaveAttribute("data-render-state", "poster");
+  expect(errors).toEqual([]);
+});
+test("Mobile avoids 3D downloads and 680/681 resize creates then releases the scene", async ({ page }) => {
+  const assets: string[] = [];
+  page.on("request", request => { if (/future-hall\/|futureHallScene/.test(request.url())) assets.push(request.url()); });
+  await page.setViewportSize({ width: 680, height: 844 });
+  await page.emulateMedia({ reducedMotion: "no-preference" });
+  await page.goto(route);
+  const mobile = page.locator(".hero-mobile-learning-field");
+  await expect(mobile).toHaveAttribute("data-motion-state", "running");
+  const initial = Number(await mobile.getAttribute("data-frame-count"));
+  await expect.poll(async () => Number(await mobile.getAttribute("data-frame-count"))).toBeGreaterThan(initial);
+  expect(assets).toEqual([]);
+  await page.setViewportSize({ width: 681, height: 844 });
+  await expect(page.locator(".future-hall__scene")).toHaveAttribute("data-render-state", "ready", { timeout: 30_000 });
+  await page.setViewportSize({ width: 680, height: 844 });
+  await expect(page.locator(".future-hall__canvas")).toHaveCount(0);
+  await expect(mobile).toHaveAttribute("data-motion-state", "running");
+});
+for (const asset of ["lecture-hall.glb", "room-light.hdr", "sky.hdr"]) {
+test(`Asset failure (${asset}) preserves poster and CTA`, async ({ page }) => {
+  await page.route(`**/${asset}`, request => request.fulfill({ status: 503, body: "" }));
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.emulateMedia({ reducedMotion: "no-preference" });
+  await page.goto(route);
+  await expect(page.locator(".future-hall__scene")).toHaveAttribute("data-render-state", "fallback");
+  await expect(page.locator(".future-hall__poster")).toBeVisible();
+  await expect(page.locator(".future-hall__canvas")).toHaveCount(0);
+  await expect(page.locator("#hero-primary-cta")).toBeVisible();
+});
+}
 
-test("Interactive signal field provides a complete reduced-motion frame", async ({ page }) => {
+test("WebGL context loss returns to the poster", async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.emulateMedia({ reducedMotion: "no-preference" });
+  await page.goto(route);
+  await expect(page.locator(".future-hall__scene")).toHaveAttribute("data-render-state", "ready", { timeout: 30_000 });
+  await page.locator(".future-hall__canvas").evaluate(node => {
+    const context = (node as HTMLCanvasElement).getContext("webgl2");
+    context?.getExtension("WEBGL_lose_context")?.loseContext();
+  });
+  await expect(page.locator(".future-hall__scene")).toHaveAttribute("data-render-state", "fallback");
+  await expect(page.locator(".future-hall__canvas")).toHaveCount(0);
+  await expect(page.locator(".future-hall__poster")).toBeVisible();
+  await expect(page.locator("#hero-primary-cta")).toBeVisible();
+});
+test("WebGL unavailable preserves poster and title", async ({ page }) => {
+  await page.addInitScript(() => {
+    const getContext = HTMLCanvasElement.prototype.getContext;
+    HTMLCanvasElement.prototype.getContext = function (this: HTMLCanvasElement, ...args: Parameters<typeof getContext>) {
+      if (String(args[0]).includes("webgl")) return null;
+      return getContext.apply(this, args);
+    } as typeof getContext;
+  });
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.emulateMedia({ reducedMotion: "no-preference" });
+  await page.goto(route);
+  await expect(page.locator(".future-hall__scene")).toHaveAttribute("data-render-state", "fallback");
+  await expect(page.locator("#hero-title")).toBeVisible();
+  await expect(page.locator(".future-hall__poster")).toBeVisible();
+});
+test("Mobile retains CSS fallback without Canvas2D", async ({ page }) => {
+  await page.addInitScript(() => { HTMLCanvasElement.prototype.getContext = () => null; });
   await page.setViewportSize({ width: 390, height: 844 });
   await page.emulateMedia({ reducedMotion: "reduce" });
-  await page.goto("/INTRO_Interactive/", { waitUntil: "domcontentloaded" });
-  await settleRenderedPage(page);
-
-  const canvas = page.locator("canvas.hero-signal-matrix");
-  const ambientCanvas = page.locator("canvas.hero-ai-field");
-  const mobileLearningField = page.locator("canvas.hero-mobile-learning-field");
-  await expect(canvas).toHaveAttribute("data-render-state", "ready");
-  await expect(canvas).toHaveAttribute("data-motion-state", "reduced");
-  await expect(ambientCanvas).toHaveAttribute("data-render-state", "ready");
-  await expect(ambientCanvas).toHaveAttribute("data-renderer", "inactive");
-  await expect(ambientCanvas).toHaveAttribute("data-motion-state", "paused");
-  await expect(mobileLearningField).toBeVisible();
-  await expect(mobileLearningField).toHaveAttribute("data-render-state", "ready");
-  await expect(mobileLearningField).toHaveAttribute("data-renderer", "canvas2d");
-  await expect(mobileLearningField).toHaveAttribute("data-motion-state", "reduced");
-  await expect(page.locator(".hero-signal-stage")).toBeHidden();
-  await expect(page.locator(".hero-mobile-product-proof")).toBeHidden();
-  await expect(page.locator("h1#hero-title")).toBeVisible();
+  await page.goto(route);
+  await expect(page.locator(".hero-mobile-learning-field")).toHaveAttribute("data-renderer", "css");
   await expect(page.locator("#hero-primary-cta")).toBeVisible();
 });
 
-test("Interactive Mobile learning signal advances when motion is allowed", async ({ page }) => {
+test("Interactive Mobile learning signal advances at 390px", async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.emulateMedia({ reducedMotion: "no-preference" });
-  await page.goto("/INTRO_Interactive/", { waitUntil: "domcontentloaded" });
-
+  await page.goto(route);
   const field = page.locator("canvas.hero-mobile-learning-field");
   await expect(field).toBeVisible();
   await expect(field).toHaveAttribute("data-render-state", "ready");
   await expect(field).toHaveAttribute("data-motion-state", "running");
-  const initialFrame = await field.evaluate((element) =>
-    Number.parseInt((element as HTMLCanvasElement).dataset.frameCount ?? "0", 10),
-  );
-  await page.waitForTimeout(360);
-  const laterFrame = await field.evaluate((element) =>
-    Number.parseInt((element as HTMLCanvasElement).dataset.frameCount ?? "0", 10),
-  );
-  expect(laterFrame).toBeGreaterThan(initialFrame);
-});
-
-test("Interactive Mobile learning signal has a CSS fallback", async ({ page }) => {
-  await page.addInitScript(() => {
-    HTMLCanvasElement.prototype.getContext = () => null;
-  });
-  await page.setViewportSize({ width: 390, height: 844 });
-  await page.emulateMedia({ reducedMotion: "reduce" });
-  await page.goto("/INTRO_Interactive/", { waitUntil: "domcontentloaded" });
-
-  const field = page.locator("canvas.hero-mobile-learning-field");
-  await expect(field).toBeVisible();
-  await expect(field).toHaveAttribute("data-render-state", "ready");
-  await expect(field).toHaveAttribute("data-renderer", "css");
-  await expect(field).toHaveAttribute("data-motion-state", "paused");
-});
-
-test("Interactive ambient AI field advances when motion is allowed", async ({ page }) => {
-  await page.setViewportSize({ width: 1363, height: 936 });
-  await page.emulateMedia({ reducedMotion: "no-preference" });
-  await page.goto("/INTRO_Interactive/", { waitUntil: "domcontentloaded" });
-
-  const ambientCanvas = page.locator("canvas.hero-ai-field");
-  await expect(ambientCanvas).toHaveAttribute("data-render-state", "ready");
-  await expect(ambientCanvas).toHaveAttribute("data-motion-state", "running");
-  const initialFrame = await ambientCanvas.evaluate((element) =>
-    Number.parseInt((element as HTMLCanvasElement).dataset.frameCount ?? "0", 10),
-  );
-  await page.waitForTimeout(360);
-  const laterFrame = await ambientCanvas.evaluate((element) =>
-    Number.parseInt((element as HTMLCanvasElement).dataset.frameCount ?? "0", 10),
-  );
-  expect(laterFrame).toBeGreaterThan(initialFrame);
-});
-
-test("Interactive signal field has a CSS fallback when Canvas is unavailable", async ({ page }) => {
-  await page.addInitScript(() => {
-    HTMLCanvasElement.prototype.getContext = () => null;
-  });
-  await page.setViewportSize({ width: 768, height: 1024 });
-  await page.emulateMedia({ reducedMotion: "reduce" });
-  const runtimeErrors = collectRuntimeErrors(page);
-  await page.goto("/INTRO_Interactive/", { waitUntil: "domcontentloaded" });
-  await settleRenderedPage(page);
-
-  const stage = page.locator(".hero-signal-stage");
-  const canvas = stage.locator("canvas.hero-signal-matrix");
-  const ambientCanvas = page.locator("canvas.hero-ai-field");
-  await expect(canvas).toHaveAttribute("data-render-state", "ready");
-  await expect(canvas).toHaveAttribute("data-renderer", "css");
-  await expect(canvas).toHaveAttribute("data-motion-state", "paused");
-  await expect(ambientCanvas).toHaveAttribute("data-render-state", "ready");
-  await expect(ambientCanvas).toHaveAttribute("data-renderer", "css");
-  await expect(ambientCanvas).toHaveAttribute("data-motion-state", "paused");
-  await expectProductProofReadable(page, false);
-  await expect(page.locator("h1#hero-title")).toBeVisible();
-  await expect(page.locator("#hero-primary-cta")).toBeVisible();
-  expect(runtimeErrors).toEqual([]);
+  const initial = Number(await field.getAttribute("data-frame-count"));
+  await expect.poll(async () => Number(await field.getAttribute("data-frame-count"))).toBeGreaterThan(initial);
 });

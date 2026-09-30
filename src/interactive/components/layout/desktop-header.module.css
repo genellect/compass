@@ -1,0 +1,54 @@
+.desktop { display: none; }
+@media (min-width: 681px) {
+  .header:global(.site-header) { inset: 0 0 auto; width: 100%; border: 0; border-bottom: 1px solid #c3dae51c; border-radius: 0; background: linear-gradient(180deg,#07121eeb,#07121ea8); box-shadow: none; backdrop-filter: blur(14px); color: #edf4f8; }
+  .header:global(.site-header):global(.is-scrolled) { background: #081421f5; }
+  .header:global(.site-header) > :global(.header-inner) { display: none; }
+  :global(.intro-redesign):has(.header) :global(#students) { scroll-margin-top: 108px; }
+  .desktop { position: relative; display: flex; justify-content: space-between; align-items: center; gap: 28px; width: min(100% - 80px, 1440px); height: 80px; margin: auto; }
+  .brand { display: flex; align-items: center; gap: 6px; flex: none; }
+  .parentBrand { display: inline-flex; align-items: center; gap: 10px; min-height: 44px; }
+  .parentBrand strong { color: #f0f5f8; font-size: 15px; font-weight: 650; letter-spacing: .01em; }
+  .productBrand { display: inline-flex; align-items: center; min-height: 44px; color: #c6d8e2; font-size: 15px; font-weight: 450; }
+  .mark { position: relative; width: 26px; height: 26px; border: 1px solid #a7c9e9a6; border-radius: 50%; }
+  .mark::before { content: ""; position: absolute; inset: 5px; border: 1px solid #a7c9e9a6; border-radius: 50%; }
+  .mark::after { content: ""; position: absolute; width: 1px; height: 24px; left: 12px; top: 0; background: #a7c9e9a6; transform: rotate(42deg); }
+  .mark span { position: absolute; height: 1px; inset: 12px 5px auto; background: #a7c9e9a6; }
+  .destinations { display: flex; align-items: center; justify-content: center; gap: 28px; }
+  .destinations a { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; color: #dfebf2; font-size: 13px; font-weight: 500; white-space: nowrap; }
+  .destinations a span { color: #7f9eb3; font-size: 14px; }
+  .destinations a:hover { color: #a9f0dc; }
+  .actions { display: flex; align-items: center; gap: 22px; flex: none; }
+  .demo { display: inline-flex; align-items: center; justify-content: center; gap: 14px; min-height: 40px; padding: 0 16px; border: 1px solid #b1c8d751; border-radius: 4px; background: #cee5ed08; color: #e2edf3; font-size: 12px; font-weight: 550; white-space: nowrap; }
+  .demo:hover { background: #e3fff2; color: #0b2530; }
+  .toggle { display: inline-flex; align-items: center; gap: 12px; min-height: 44px; padding: 0; border: 0; background: none; color: #d3e2eb; font: inherit; font-size: 12px; cursor: pointer; }
+  .menuIcon { position: relative; width: 22px; height: 18px; }
+  .menuIcon i { position: absolute; left: 0; width: 22px; height: 1px; background: currentColor; transition: transform .18s, top .18s; }
+  .menuIcon i:first-child { top: 5px; }
+  .menuIcon i:last-child { top: 12px; }
+  .toggle[aria-expanded="true"] .menuIcon i { top: 9px; }
+  .toggle[aria-expanded="true"] .menuIcon i:first-child { transform: rotate(45deg); }
+  .toggle[aria-expanded="true"] .menuIcon i:last-child { transform: rotate(-45deg); }
+  .panel { position: absolute; top: 100%; right: 0; width: min(580px,100%); max-height: calc(100dvh - 96px); overflow: auto; border: 1px solid #89a9c12b; border-top: 0; border-radius: 0 0 8px 8px; background: #0a1724fc; box-shadow: 0 24px 48px #0005; }
+  .panel[hidden] { display: none; }
+  .pageLinks { display: grid; grid-template-columns: 1fr 1fr; gap: 14px 40px; padding: 26px 30px 20px; }
+  .pageGroup:last-child { grid-column: 1 / -1; border-top: 1px solid #8eafc51c; padding-top: 10px; }
+  .pageLinks a { display: flex; align-items: center; justify-content: space-between; gap: 20px; min-height: 46px; color: #e1ebf1; font-size: 14px; white-space: nowrap; }
+  .pageLinks a span { opacity: 0; color: #93b6c9; }
+  .pageLinks a:hover span, .pageLinks a:focus-visible span { opacity: 1; }
+  .pageLinks a:hover { color: #a9f0dc; }
+  .participate { padding: 16px 30px; border-top: 1px solid #8eafc526; background: #91b5d507; }
+  .participate a { display: flex; align-items: center; justify-content: space-between; min-height: 36px; color: #bfd3df; font-size: 12px; }
+  .desktop :is(a,button):focus-visible { outline: 2px solid #b3eddf; outline-offset: 4px; border-radius: 3px; }
+}
+@media (min-width: 681px) and (max-width: 1199px) {
+  .desktop { width: calc(100% - 40px); height: 74px; gap: 18px; }
+  .destinations { gap: 22px; }
+  .destinations .official, .demo, .menuLabel { display: none; }
+  .toggle { width: 36px; justify-content: center; }
+  .parentBrand strong, .productBrand { font-size: 13px; }
+  .parentBrand { gap: 8px; }
+  .brand { gap: 4px; }
+  .destinations a { font-size: 12px; }
+  .panel { width: min(580px,100%); }
+}
+@media (prefers-reduced-motion: reduce) { .menuIcon i { transition: none; } }

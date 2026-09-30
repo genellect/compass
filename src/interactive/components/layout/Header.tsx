@@ -3,6 +3,9 @@
 import { useEffect, useRef, useState } from "react";
 import { links } from "../../content/interactiveContent";
 import { CTAButton } from "../ui/CTAButton";
+import { DesktopHeader } from "./DesktopHeader";
+import desktopStyles from "./desktop-header.module.css";
+import { mainMobileGroups } from "./navigation";
 
 type HeaderVariant = "main" | "developer";
 
@@ -24,32 +27,6 @@ const developerNavItems = [
   { href: "#security", label: "Security" },
   { href: "#decisions", label: "Decisions" },
   { href: "#verification", label: "Verification" }
-];
-
-const mainMobileGroups = [
-  {
-    label: "EXPERIENCE",
-    items: [
-      { href: "#students", label: "講義の体験", note: "Experience" },
-      { href: "#features", label: "講義の流れ", note: "Learning Journey" },
-      { href: "#ai-support", label: "AI学習支援", note: "AI for Learning" }
-    ]
-  },
-  {
-    label: "FOR EDUCATORS",
-    items: [
-      { href: "#teachers", label: "学生の反応を活かす", note: "Teaching Flow" },
-      { href: "#educator-operations", label: "教員の使い方", note: "Operations" },
-      { href: "#adoption", label: "導入・ご相談", note: "Adoption" }
-    ]
-  },
-  {
-    label: "PRODUCT",
-    items: [
-      { href: "#developers", label: "設計・技術", note: "Architecture" },
-      { href: "https://yuto-matsui.com/", label: "開発者・プロダクト設計者", note: "Profile" }
-    ]
-  }
 ];
 
 const developerMobileGroups = [
@@ -95,6 +72,14 @@ export function Header({ variant = "main" }: HeaderProps) {
   }, []);
 
   useEffect(() => {
+    if (isDeveloper) return;
+    const desktop = window.matchMedia("(min-width: 681px)");
+    const closeOnDesktop = () => { if (desktop.matches) setOpen(false); };
+    desktop.addEventListener("change", closeOnDesktop);
+    return () => desktop.removeEventListener("change", closeOnDesktop);
+  }, [isDeveloper]);
+
+  useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       if (!open) return;
 
@@ -131,7 +116,8 @@ export function Header({ variant = "main" }: HeaderProps) {
   }, [open]);
 
   return (
-    <header className={`site-header ${isDeveloper ? "site-header--developer" : ""} ${scrolled ? "is-scrolled" : ""}`}>
+    <header className={`site-header ${isDeveloper ? "site-header--developer" : desktopStyles.header} ${scrolled ? "is-scrolled" : ""}`}>
+      {!isDeveloper && <DesktopHeader />}
       <div className="header-inner">
         <a className="site-logo" href={topHref} aria-label={isDeveloper ? "開発者ページトップへ" : "COMPASS Interactive トップへ"}>
           <span className="logo-mark" aria-hidden="true"><span /></span>

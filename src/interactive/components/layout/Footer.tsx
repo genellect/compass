@@ -1,4 +1,6 @@
 import { links } from "../../content/interactiveContent";
+import { pageNavigation, siteDestinations } from "./navigation";
+import styles from "./product-ending.module.css";
 
 type FooterProps = {
   variant?: "main" | "developer";
@@ -12,7 +14,7 @@ function GitHubIcon() {
   );
 }
 
-export function Footer({ variant = "main" }: FooterProps) {
+function LegacyFooter({ variant = "developer" }: FooterProps) {
   const mainPrefix = variant === "developer" ? "/INTRO_Interactive/" : "";
 
   return (
@@ -75,6 +77,32 @@ export function Footer({ variant = "main" }: FooterProps) {
             </nav>
           )}
           <p className="footer-copy">© 2026 COMPASS. All rights reserved.</p>
+        </div>
+      </div>
+    </footer>
+  );
+}
+
+export function Footer({ variant = "main" }: FooterProps) {
+  if (variant === "developer") return <LegacyFooter variant="developer" />;
+  return (
+    <footer className={`site-footer ${styles.footer}`}>
+      <div className={styles.footerInner}>
+        <div className={styles.footerTop}>
+          <a className={styles.footerBrand} href="#top"><strong>COMPASS <span>Interactive</span></strong><span>リアルタイム×AIで、講義を次の次元へ。</span></a>
+          <nav className={styles.footerPageLinks} aria-label="フッターナビゲーション">
+            {pageNavigation.map(item => <a key={item.href} href={item.href}>{item.label}</a>)}
+          </nav>
+          <nav className={styles.footerDestinations} aria-label="公式サイト・技術情報・開発者">
+            {siteDestinations.map(item => <a key={item.href} href={item.href}>{item.label}<span aria-hidden="true">↗</span></a>)}
+          </nav>
+        </div>
+        <div className={styles.footerBottom}>
+          <p>© 2026 COMPASS. All rights reserved.</p>
+          <nav aria-label="プロジェクト情報">
+            <a href="https://github.com/genellect/compass-interactive" target="_blank" rel="noopener noreferrer" aria-label="COMPASS Interactive source code on GitHub">GitHub <span aria-hidden="true">↗</span></a>
+            <a href="https://protopedia.net/prototype/private/59f061db-936a-4fa3-abc2-438a98711e9e" target="_blank" rel="noopener noreferrer">ProtoPedia <span aria-hidden="true">↗</span></a>
+          </nav>
         </div>
       </div>
     </footer>

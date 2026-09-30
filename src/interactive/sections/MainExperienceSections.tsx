@@ -5,7 +5,6 @@ import { Section } from "../components/ui/Section";
 import { SectionHeader } from "../components/ui/SectionHeader";
 import { TeacherDashboardMock } from "../components/ui/TeacherDashboardMock";
 import { EducatorControlPreview } from "../components/ui/EducatorControlPreview";
-import { DeveloperProfile } from "./DeveloperProfile";
 import {
   aiLearningOutcomes,
   developerGatewayPoints,
@@ -327,9 +326,6 @@ export function DeveloperGateway() {
           </ul>
         </Reveal>
       </div>
-      <Reveal>
-        <DeveloperProfile showWebPortfolio />
-      </Reveal>
     </Section>
   );
 }

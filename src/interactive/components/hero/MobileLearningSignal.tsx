@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 
 type SignalNode = {
   path: 0 | 1;
@@ -39,11 +39,20 @@ function pointOnPath(path: SignalNode["path"], progress: number, width: number, 
 
 export function MobileLearningSignal() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const [active, setActive] = useState(false);
+
+  useEffect(() => {
+    const mobile = window.matchMedia(MOBILE_QUERY);
+    const update = () => setActive(mobile.matches);
+    update();
+    mobile.addEventListener("change", update);
+    return () => mobile.removeEventListener("change", update);
+  }, []);
 
   useEffect(() => {
     const canvas = canvasRef.current;
     const hero = canvas?.closest<HTMLElement>(".hero-section--signal");
-    if (!canvas || !hero || !window.matchMedia(MOBILE_QUERY).matches) return;
+    if (!canvas || !hero || !active) return;
 
     const context = canvas.getContext("2d", { alpha: true });
     const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
@@ -193,7 +202,7 @@ export function MobileLearningSignal() {
       reducedMotion.removeEventListener("change", handleReducedMotion);
       document.removeEventListener("visibilitychange", start);
     };
-  }, []);
+  }, [active]);
 
   return (
     <canvas

@@ -124,7 +124,7 @@ const scenarios: SemanticScenario[] = [
     path: "/INTRO_Interactive/",
     viewport: desktop,
     expectations: [
-      { selector: "h1#hero-title", lines: ["LET EVERYTHING MOVE."] },
+      { selector: "h1#hero-title", lines: ["LET EVERYTHING", "MOVE."] },
       { selector: ".hero-lead", lines: ["リアルタイム×AIが、講義を次の次元へ。"] },
       { selector: "#adoption h2", lines: ["講義や研修への", "導入をご検討の方へ"] },
       {

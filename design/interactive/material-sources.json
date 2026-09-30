@@ -1,0 +1,14 @@
+{
+  "qwantani_sunset": {
+    "url": "https://dl.polyhaven.org/file/ph-assets/HDRIs/extra/Tonemapped%20JPG/qwantani_sunset.jpg",
+    "sha256": "6a84e7a3e4a93dc4afaca022f3d8b4aeffb478a6611191e92d679370424878f2",
+    "license": "CC0",
+    "source": "https://polyhaven.com/a/qwantani_sunset"
+  },
+  "kloppenheim_06_puresky": {
+    "url": "https://dl.polyhaven.org/file/ph-assets/HDRIs/hdr/2k/kloppenheim_06_puresky_2k.hdr",
+    "md5": "590a829b3cf71216451655e601d542c6",
+    "license": "CC0",
+    "source": "https://polyhaven.com/a/kloppenheim_06_puresky"
+  }
+}
