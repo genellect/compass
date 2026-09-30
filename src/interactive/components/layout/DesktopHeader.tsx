@@ -37,7 +37,7 @@ export function DesktopHeader() {
       </a>
       <nav className={styles.destinations} aria-label="公式サイト・技術情報・開発者">
         {siteDestinations.map((item,index)=><a className={index === 0 ? styles.official : undefined} key={item.href} href={item.href} aria-label={item.label}>
-          <span className={styles.destinationCopy}><span>{item.label}</span>{item.detail && <small>{item.detail}</small>}</span><span className={styles.destinationArrow} aria-hidden="true">↗</span>
+          <span className={styles.destinationCopy}><span>{item.label}</span></span><span className={styles.destinationArrow} aria-hidden="true">↗</span>
         </a>)}
       </nav>
       <div className={styles.actions}>
