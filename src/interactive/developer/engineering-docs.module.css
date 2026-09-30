@@ -290,3 +290,16 @@
   .productionProfile :global(.developer-credit--portfolio) { padding: 26px 20px; }
   .productionProfile :global(.developer-credit__grid) { grid-template-columns: 1fr; }
 }
+
+.securityLayout .pageIntro { margin-bottom: 12px; }
+.securityLayout .introTitleRow h1 { margin-bottom: 12px; }
+.authorizationDetail { max-width: 790px; scroll-margin-top: 94px; }
+@media (min-width: 851px) and (max-width: 1100px) {
+  .securityLayout { display: block; }
+  .securityLayout > .sidebar { display: none; }
+  .securityLayout .mobileContents { display: block; padding: 16px 0; border-bottom: 1px solid var(--line); }
+  .securityLayout .mobileContents > summary { cursor: pointer; color: var(--blue); font-size: 14px; padding: 6px 0; }
+  .securityLayout .mobileContents .documentNav { padding-top: 18px; }
+  .securityLayout .mobileContents .toc { margin-top: 18px; padding-top: 18px; }
+  .securityLayout .article { padding-top: 28px; }
+}

@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { REVISION, Section, Table } from "./DocPrimitives";
+import { Section, Table } from "./DocPrimitives";
 import { SecurityArticle } from "./TopicArticles";
 import { ArchitectureArticle } from "./SynchronizationArticle";
 import { AiArticle, DeliveryArticle } from "./ExternalServicesArticles";
@@ -14,7 +14,7 @@ export const topics = {
   architecture: { title: "講義状態と同期", description: "投票・資料ページの共有、参加と終了の競合、Displayの描画確認。", sections: [["state", "講義状態の管理"], ["lifecycle", "トランザクションと講義終了"], ["recovery", "状態の配信と再同期"], ["display", "Displayの描画確認"], ["capacity", "読み取り負荷の制御"]] },
   delivery: { title: "資料配信とPowerPoint連携", description: "PDFの公開と通信失敗からの復旧、PowerPointの現在位置への追従。", sections: [["path", "資料の配信経路"], ["publication", "資料の公開手順"], ["consistency", "DBとR2の整合性"], ["presenter", "PowerPoint連携"]] },
   ai: { title: "AI機能と実行制御", description: "資料分析の再要求、字幕の開始と停止、学術回答の出典検査。", sections: [["features", "AI処理の構成"], ["dispatch", "実行許可と利用量管理"], ["admission", "字幕セッションの制御"], ["evidence", "学術回答の生成と公開"]] },
-  security: { title: "認証とデータ管理", description: "QR参加と教員の認証、データへのアクセス権と保存先。", sections: [["identity", "認証と講義への参加"], ["authorization", "サーバー側の認可"], ["data", "データの保存と外部送信"], ["future", "今後の開発範囲"]] },
+  security: { title: "認証とデータ管理", description: "学生・教員・管理者の認証経路、操作権限とデータの管理。", sections: [["identity", "認証とアクセス制御"], ["permissions", "管理者権限"], ["data", "データの保存と外部送信"], ["future", "今後の開発計画"]] },
   developer: { title: "開発者", description: "Yuto Matsui｜開発者・プロダクト設計者", sections: [["profile", "開発者紹介"]] },
   archive: { title: "アーカイブ", description: "", sections: [["judges", "審査員の方へ"]] }
 } as const;
@@ -23,7 +23,7 @@ const detailDescriptions: Partial<Record<Topic, string>> = {
   architecture: "教員・学生・Displayが共有する講義状態の管理。DBトランザクション、スナップショット配信、再同期、描画確認の仕組み。",
   delivery: "PostgreSQLとPrivate R2による資料配信。PDFの公開手順、DBとR2の整合性、PowerPointからのページ同期。",
   ai: "字幕・要約・資料分析・学術回答の構成。外部APIの実行許可、利用量管理、字幕セッションの制御。",
-  security: "学生の匿名参加と教員認証。講義へのアクセス判定、データの保存先、外部APIへ送信する情報。"
+  security: "学生の匿名認証と教員・管理者の共通認証。操作ごとの認可、データの保存・送信先、テナント分離の開発計画。"
 };
 const topicKeys = Object.keys(topics) as Topic[];
 const overviewSections = [["architecture", "システム構成"], ["runtime", "実行環境"], ["documents", "設計と実装"]] as const;
@@ -63,14 +63,14 @@ export function EngineeringDocs({ topic }: { topic?: Topic }) {
   return <div className={styles.page}>
     <a className={styles.skipLink} href="#developer-main">本文へスキップ</a>
     <header className={styles.header}><div className={styles.headerInner}><Link href={DOC_ROOT} className={styles.brand}>COMPASS Interactive<span>開発者向け技術情報</span></Link><nav aria-label="関連ページ" className={styles.headerLinks}><Link href={`${DOC_ROOT}developer/`}>開発者</Link><Link href="/INTRO_Interactive/">製品紹介</Link><a href="https://github.com/genellect/compass-interactive">GitHub ↗</a></nav></div></header>
-    <div className={styles.layout}><aside className={styles.sidebar}><Contents topic={topic} /></aside><div className={styles.mainColumn}>
+    <div className={`${styles.layout} ${topic === "security" ? styles.securityLayout : ""}`}><aside className={styles.sidebar}><Contents topic={topic} /></aside><div className={styles.mainColumn}>
       <details className={styles.mobileContents}><summary>目次・ページ一覧</summary><Contents topic={topic} /></details>
       <main id="developer-main" tabIndex={-1} className={styles.article}>
         <header id="developer-top" className={styles.pageIntro}><p className={styles.breadcrumb}>{topic ? <Link href={DOC_ROOT}>開発者向け技術情報 / システム構成</Link> : "COMPASS Interactive / 開発者向け技術情報"}</p><div className={styles.introTitleRow}><h1>{title}</h1>{!topic && <Link className={styles.archiveCallout} href={`${DOC_ROOT}archive/2026-08/`}><strong>審査員の方へ</strong><span>8月時点のアーカイブはこちら</span></Link>}</div>{topic === "developer" && <p className={styles.lead}>{topics[topic].description}</p>}</header>
         {!topic && <Overview />}{topic === "architecture" && <ArchitectureArticle />}{topic === "ai" && <AiArticle />}{topic === "delivery" && <DeliveryArticle />}{topic === "security" && <SecurityArticle />}{topic === "developer" && <DeveloperArticle />}{topic === "archive" && <ArchiveArticle />}
         <nav className={styles.pageNavigation} aria-label="前後のページ">{topic && <Link href={index > 0 ? `${DOC_ROOT}${topicKeys[index - 1]}/` : DOC_ROOT}>← {index > 0 ? topics[topicKeys[index - 1]].title : "システム構成"}</Link>}{next && <Link href={`${DOC_ROOT}${next}/`}>{topics[next].title} →</Link>}</nav>
       </main>
-      <footer className={styles.footer}><p>実装参照：<a href={`https://github.com/genellect/compass-interactive/tree/${REVISION}`}>compass-interactive@{REVISION.slice(0,7)}</a> · 2026年9月29日</p><div><Link href={`${DOC_ROOT}developer/`}>開発者</Link><Link href={`${DOC_ROOT}archive/`}>アーカイブ</Link><Link href="/INTRO_Interactive/">製品紹介</Link><a href="#developer-top">ページ上部へ ↑</a></div></footer>
+      <footer className={styles.footer}><div><Link href={`${DOC_ROOT}developer/`}>開発者</Link><Link href={`${DOC_ROOT}archive/`}>アーカイブ</Link><Link href="/INTRO_Interactive/">製品紹介</Link><a href="#developer-top">ページ上部へ ↑</a></div></footer>
     </div></div>
   </div>;
 }
