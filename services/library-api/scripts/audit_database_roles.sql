@@ -169,6 +169,9 @@ WITH expected(table_name) AS (
     VALUES
         ('alembic_version'),
         ('library_access_grants'),
+        ('library_access_groups'),
+        ('library_group_memberships'),
+        ('library_resource_group_grants'),
         ('library_admin_audit'),
         ('library_admins'),
         ('library_applications'),
@@ -553,6 +556,26 @@ SELECT NOT has_table_privilege('fsl_api_runtime', 'public.library_admins', 'SELE
 \if :forbidden_grants_absent
 \else
   \echo 'FAIL: API, admin, worker, or backup role has a forbidden privilege'
+  SELECT 1 / 0 AS database_role_audit_failed;
+\endif
+
+-- New-member group catalogue is readable but not editable by runtime roles.
+SELECT has_column_privilege('fsl_worker_runtime', 'public.library_access_groups', 'reserved_count', 'UPDATE')
+   AND has_column_privilege('fsl_worker_runtime', 'public.library_access_groups', 'updated_at', 'UPDATE')
+   AND NOT has_column_privilege('fsl_worker_runtime', 'public.library_access_groups', 'capacity', 'UPDATE')
+   AND NOT has_column_privilege('fsl_worker_runtime', 'public.library_access_groups', 'google_group_name', 'UPDATE')
+   AND has_table_privilege('fsl_worker_runtime', 'public.library_group_memberships', 'INSERT')
+   AND has_table_privilege('fsl_worker_runtime', 'public.library_group_memberships', 'UPDATE')
+   AND NOT has_table_privilege('fsl_worker_runtime', 'public.library_group_memberships', 'DELETE')
+   AND NOT has_table_privilege('fsl_worker_runtime', 'public.library_resource_group_grants', 'UPDATE')
+   AND NOT has_table_privilege('fsl_worker_runtime', 'public.library_resource_group_grants', 'INSERT')
+   AND NOT has_table_privilege('fsl_admin_runtime', 'public.library_group_memberships', 'UPDATE')
+   AND NOT has_table_privilege('fsl_admin_runtime', 'public.library_access_groups', 'UPDATE')
+   AS group_runtime_boundary_valid
+\gset
+\if :group_runtime_boundary_valid
+\else
+  \echo 'FAIL: group runtime privilege boundary is invalid'
   SELECT 1 / 0 AS database_role_audit_failed;
 \endif
 

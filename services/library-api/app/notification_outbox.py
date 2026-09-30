@@ -11,6 +11,8 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
 from app.config import Settings
+from app.group_policy import GRANT_TYPES
+from app.group_operations import group_entitlement_verified
 from app.db.models import (
     LibraryAccessGrant,
     LibraryApplication,
@@ -81,7 +83,7 @@ def enqueue_drive_success_notifications(
 ) -> list[LibraryNotificationOutbox]:
     """Create one opaque outbox row only after an eligible Drive success."""
     if (
-        operation.operation_type != "drive_grant"
+        operation.operation_type not in GRANT_TYPES
         or operation.status != "succeeded"
         or operation.application_id is None
         or operation.completed_at is None
@@ -105,6 +107,7 @@ def enqueue_drive_success_notifications(
         or application.member_id != operation.member_id
         or member is None
         or member.member_status != "active"
+        or not group_entitlement_verified(session, member)
         or grant is None
         or grant.status not in {"granted", "already_granted"}
     ):
@@ -325,6 +328,7 @@ def _build_payload(
     valid = (
         member is not None
         and member.member_status == "active"
+        and group_entitlement_verified(session, member)
         and application is not None
         and application.member_id == notification.member_id
         and eligible
@@ -335,7 +339,7 @@ def _build_payload(
         and operation.id == notification.drive_operation_id
         and operation.member_id == notification.member_id
         and operation.application_id == notification.application_id
-        and operation.operation_type == "drive_grant"
+        and operation.operation_type in GRANT_TYPES
         and operation.status == "succeeded"
         and operation.completed_at is not None
         and notification.notification_type == DRIVE_NOTIFICATION_TYPE

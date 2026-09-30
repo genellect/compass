@@ -790,12 +790,17 @@ test("public repository CI runs the locked frontend and backend security gates w
     "utf8"
   );
   assert.match(workflow, /^permissions:\r?\n\s+contents: read$/m);
-  assert.equal((workflow.match(/persist-credentials: false/g) ?? []).length, 2);
+  // Frontend, backend and infrastructure jobs must all discard Git credentials.
+  assert.equal((workflow.match(/uses: actions\/checkout@/g) ?? []).length, 3);
+  assert.equal((workflow.match(/persist-credentials: false/g) ?? []).length, 3);
   assert.match(workflow, /run: npm run verify:public-source/);
   assert.match(workflow, /run: npm audit --audit-level=high/);
   assert.match(workflow, /run: npm run rehearse:library-production/);
   assert.match(workflow, /run: uv sync --locked --dev/);
   assert.match(workflow, /run: uv run --locked pytest/);
+  assert.match(workflow, /run: terraform init -backend=false -input=false -lockfile=readonly/);
+  assert.match(workflow, /run: terraform test -no-color/);
+  assert.doesNotMatch(workflow, /run: terraform apply/);
   assert.match(
     workflow,
     /uses: actions\/dependency-review-action@[0-9a-f]{40}\s+# v5(?:\.\d+){0,2}/

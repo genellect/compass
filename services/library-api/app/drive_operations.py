@@ -10,6 +10,8 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
 from app.config import Settings
+from app.group_policy import GRANT_TYPES, REVOKE_TYPES, GROUP_TYPES, GROUP
+from app.group_operations import process_group_operation, managed_membership_component
 from app.db.models import (
     LibraryAccessGrant,
     LibraryApplication,
@@ -29,11 +31,20 @@ from app.notification_outbox import enqueue_drive_success_notifications
 from app.observability import emit_event
 
 
-DRIVE_OPERATION_TYPES = {"drive_grant", "drive_revoke"}
+DRIVE_OPERATION_TYPES = GRANT_TYPES | REVOKE_TYPES
 WORKER_LOCK_MEMBER_V1_SQL = text(
     "SELECT fsl_worker_api.lock_member_v1(:member_id)"
 )
 SAFE_ERROR_SUMMARIES = {
+    "groups_not_configured": "Separate Groups OAuth configuration is required.",
+    "groups_authentication_failed": "Groups OAuth requires operator action.",
+    "groups_transport_error": "Groups API transport is temporarily unavailable.",
+    "groups_request_failed": "Groups API rejected the membership request.",
+    "group_capacity_unavailable": "Provision another approved cohort group.",
+    "group_not_allowlisted": "The reserved group is not enabled.",
+    "group_drive_binding_unverified": "The group reader binding could not be verified.",
+    "group_membership_pending": "Group membership confirmation is pending.",
+    "group_membership_mismatch": "Group membership does not match the approved recipient.",
     "drive_api_unavailable": "Drive API is temporarily unavailable.",
     "drive_api_retryable_error": "Drive API requested a retry.",
     "drive_auth_transport_error": "Drive OAuth transport is unavailable.",
@@ -144,8 +155,11 @@ def enqueue_drive_revoke(
     )
     if grant is None:
         raise DriveOperationConflictError("drive_grant_not_found")
-    permission_component = grant.permission_id or "unresolved"
-    operation_key = f"drive_revoke:{grant.id}:{permission_component}"
+    member = session.get(LibraryMember, member_id)
+    grouped = member is not None and member.access_strategy == GROUP
+    operation_type = "group_membership_remove" if grouped else "drive_revoke"
+    permission_component = managed_membership_component(session, member) if grouped else (grant.permission_id or "unresolved")
+    operation_key = f"{operation_type}:{grant.id}:{permission_component}"
     existing = session.scalar(
         select(LibraryOperation).where(
             LibraryOperation.operation_key == operation_key
@@ -157,7 +171,7 @@ def enqueue_drive_revoke(
         id=uuid4(),
         member_id=member_id,
         operation_key=operation_key,
-        operation_type="drive_revoke",
+        operation_type=operation_type,
         resource_id=None,
         target_alias=DRIVE_TARGET_ALIAS,
         status="pending",
@@ -216,7 +230,7 @@ def requeue_drive_operation(
     if member is None or member.normalized_email is None or grant is None:
         raise DriveOperationConflictError("operation_state_invalid")
     application = None
-    if operation.operation_type == "drive_grant":
+    if operation.operation_type in GRANT_TYPES:
         application = (
             session.get(LibraryApplication, operation.application_id)
             if operation.application_id is not None
@@ -287,7 +301,9 @@ def _claim_next_operation(
     operation_id = session.scalar(
         select(LibraryOperation.id)
         .where(
-            LibraryOperation.operation_type.in_(DRIVE_OPERATION_TYPES),
+            LibraryOperation.operation_type.in_(
+                DRIVE_OPERATION_TYPES if settings.group_worker_enabled else DRIVE_OPERATION_TYPES - GROUP_TYPES
+            ),
             due,
         )
         .order_by(LibraryOperation.created_at, LibraryOperation.id)
@@ -392,7 +408,7 @@ def _finish_success(
     operation.lease_owner = None
     operation.locked_until = None
     operation.completed_at = _now()
-    if operation.operation_type == "drive_grant":
+    if operation.operation_type in GRANT_TYPES:
         enqueue_drive_success_notifications(session, operation)
     session.commit()
     return DriveOperationResult(operation.id, operation.status)
@@ -458,7 +474,7 @@ def _finish_error(
         operation.next_attempt_at = _now() + timedelta(seconds=delay)
     else:
         operation.next_attempt_at = None
-        if grant is not None and operation.operation_type == "drive_grant":
+        if grant is not None and operation.operation_type in GRANT_TYPES:
             grant.status = "failed"
             grant.notification_status = "failed"
     operation_id = operation.id
@@ -704,6 +720,7 @@ def _process_operation(
     client: DrivePermissionClient,
     settings: Settings,
     worker_id: str,
+    groups_client=None,
 ) -> DriveOperationResult:
     operation = session.get(LibraryOperation, operation_id)
     if operation is None:
@@ -743,7 +760,7 @@ def _process_operation(
             grant,
         )
     application = None
-    if operation.operation_type == "drive_grant":
+    if operation.operation_type in GRANT_TYPES:
         if member.member_status != "active":
             return _finish_error(
                 session,
@@ -757,7 +774,7 @@ def _process_operation(
             if operation.application_id is not None
             else None
         )
-    elif operation.operation_type == "drive_revoke":
+    elif operation.operation_type in REVOKE_TYPES:
         if operation.application_id is not None:
             return _finish_error(
                 session,
@@ -812,7 +829,9 @@ def _process_operation(
         operation.attestation_consumed_at = _now()
         operation.attempt_count += 1
         session.commit()
-        if operation.operation_type == "drive_grant":
+        if operation.operation_type in GROUP_TYPES:
+            return process_group_operation(session, operation, member, grant, client, settings, groups_client)
+        if operation.operation_type in GRANT_TYPES:
             return _process_grant(
                 session,
                 operation,
@@ -822,7 +841,7 @@ def _process_operation(
                 settings,
                 settings.drive_resource_id,
             )
-        if operation.operation_type == "drive_revoke":
+        if operation.operation_type in REVOKE_TYPES:
             return _process_revoke(
                 session,
                 operation,
@@ -839,6 +858,8 @@ def _process_operation(
             settings,
             grant,
         )
+    except DriveOperationAttestationError as error:
+        return _finish_error(session, operation, DriveClientError(error.code, retryable=False), settings, grant)
     except DriveClientError as error:
         return _finish_error(
             session,
@@ -862,6 +883,7 @@ def process_due_drive_operations(
     *,
     limit: int,
     worker_id: str | None = None,
+    groups_client=None,
 ) -> list[DriveOperationResult]:
     active_worker_id = worker_id or uuid4().hex
     results: list[DriveOperationResult] = []
@@ -883,6 +905,7 @@ def process_due_drive_operations(
                 client,
                 settings,
                 active_worker_id,
+                groups_client,
             )
         )
     return results

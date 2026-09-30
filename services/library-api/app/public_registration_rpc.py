@@ -11,6 +11,7 @@ from sqlalchemy.orm import Session
 
 from app.auth import VerifiedGoogleIdentity
 from app.config import Settings
+from app.group_policy import new_member_strategy, grant_operation_type, GROUP
 from app.db.models import LibraryOperation
 from app.drive_attestation import (
     DRIVE_TARGET_ALIAS,
@@ -182,14 +183,16 @@ def persist_public_registration_v1(
 ) -> PublicRegistrationRpcResult:
     occurred_at = datetime.now(UTC).replace(microsecond=0)
     occurred_at_epoch = int(occurred_at.timestamp())
+    strategy = new_member_strategy(settings, occurred_at)
+    operation_type = grant_operation_type(strategy)
     member_id = uuid4()
     application_id = uuid4()
     operation = LibraryOperation(
         id=uuid4(),
         member_id=member_id,
         application_id=application_id,
-        operation_key=f"drive_grant:{member_id}:{DRIVE_TARGET_ALIAS}",
-        operation_type="drive_grant",
+        operation_key=f"{operation_type}:{member_id}:{DRIVE_TARGET_ALIAS}",
+        operation_type=operation_type,
         resource_id=None,
         target_alias=DRIVE_TARGET_ALIAS,
         status="pending",
@@ -261,6 +264,9 @@ def persist_public_registration_v1(
         "attestation_nonce": operation.attestation_nonce,
         "attestation_signature": operation.attestation_signature,
     }
+
+    if strategy == GROUP:
+        payload["access_strategy"] = strategy
 
     try:
         row = _execute_submit(

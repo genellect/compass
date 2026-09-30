@@ -1,5 +1,10 @@
 # 未来戦略ライブラリ 登録基盤プロジェクトガイド
 
+> 2026-09-13 追加: 新規会員だけを対象とするGroupsアクセス基盤は
+> [新規登録者向けGoogle Groupsアクセス基盤](docs/library-registration/new-member-group-access.md)
+> を参照。最新mainを再確認した独立ローカル実装であり、本番切替は未実施。
+> 以下の2026-08-03リリース状態は当時の記録で、現在の本番状態の証明ではない。
+
 更新日: 2026-08-03
 状態: リリース候補 v4（最新main統合済み・matching-HEAD canonical証跡必須・未公開・PRODUCTION BLOCKED）
 基準コミット: `origin/main` `7d65cfa230e5d20acbe4b72f971b07b8325827f1`

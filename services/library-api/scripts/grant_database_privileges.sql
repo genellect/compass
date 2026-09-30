@@ -120,6 +120,14 @@ TO fsl_worker_runtime;
 GRANT SELECT, INSERT, UPDATE ON TABLE public.library_resource_leases TO fsl_worker_runtime;
 GRANT SELECT ON TABLE public.alembic_version TO fsl_worker_runtime;
 
+-- Group catalogue/Drive bindings are provisioned by the migration principal.
+-- Runtime workers can reserve capacity and manage memberships, never edit
+-- group identity, Drive binding, capacity, or the member's pinned strategy.
+GRANT SELECT ON public.library_access_groups, public.library_group_memberships,
+    public.library_resource_group_grants TO fsl_worker_runtime, fsl_admin_runtime;
+GRANT UPDATE (reserved_count, updated_at) ON public.library_access_groups TO fsl_worker_runtime;
+GRANT INSERT, UPDATE ON public.library_group_memberships TO fsl_worker_runtime;
+
 GRANT SELECT ON ALL TABLES IN SCHEMA public TO fsl_backup_restore;
 GRANT USAGE, SELECT ON ALL SEQUENCES IN SCHEMA public TO fsl_backup_restore;
 

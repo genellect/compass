@@ -46,6 +46,21 @@ jobs:
   backend:
     runs-on: ubuntu-latest
     timeout-minutes: 20
+    # Entirely ephemeral synthetic database. No Neon credentials or real data.
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_USER: fsl_test_owner
+          POSTGRES_DB: fsl_groups_synthetic
+          POSTGRES_HOST_AUTH_METHOD: trust
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U fsl_test_owner -d fsl_groups_synthetic"
+          --health-interval 5s --health-timeout 5s --health-retries 10
+    env:
+      FSL_GROUP_TEST_DATABASE_URL: postgresql+psycopg://fsl_test_owner@127.0.0.1:5432/fsl_groups_synthetic
     defaults:
       run:
         working-directory: services/library-api
@@ -68,6 +83,31 @@ jobs:
         run: uv sync --locked --dev
       - name: Run the complete API test suite
         run: uv run --locked pytest
+
+  infrastructure-contract:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    defaults:
+      run:
+        working-directory: infra/library-registration/terraform
+    steps:
+      - name: Checkout
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          persist-credentials: false
+      - name: Set up Terraform
+        uses: hashicorp/setup-terraform@b9cd54a3c349d3f38e8881555d616ced269862dd # v3
+        with:
+          terraform_version: "1.15.8"
+          terraform_wrapper: false
+      - name: Check formatting
+        run: terraform fmt -check -recursive
+      - name: Install pinned provider without remote state
+        run: terraform init -backend=false -input=false -lockfile=readonly
+      - name: Validate configuration
+        run: terraform validate -no-color
+      - name: Verify activation contracts with mock provider only
+        run: terraform test -no-color
 
   dependency-review:
     if: github.event_name == 'pull_request'

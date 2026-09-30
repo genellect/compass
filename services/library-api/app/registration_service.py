@@ -12,6 +12,7 @@ from sqlalchemy.orm import Session
 
 from app.auth import VerifiedGoogleIdentity
 from app.config import Settings, get_settings
+from app.group_policy import new_member_strategy, grant_operation_type
 from app.db.models import (
     LibraryAccessGrant,
     LibraryApplication,
@@ -419,6 +420,7 @@ def persist_registration(
             faculty_code=str(registration.faculty),
             grade=registration.grade or None,
             registered_at=now,
+            access_strategy=new_member_strategy(active_settings, now),
             member_status=(
                 "active"
                 if eligibility.status == EligibilityStatus.APPROVED
@@ -530,7 +532,8 @@ def persist_registration(
             session.add(grant)
         drive_access_status = grant.status
         drive_notification_status = grant.notification_status
-        operation_key = f"drive_grant:{member.id}:{DRIVE_TARGET_ALIAS}"
+        operation_type = grant_operation_type(member.access_strategy)
+        operation_key = f"{operation_type}:{member.id}:{DRIVE_TARGET_ALIAS}"
         existing_operation = session.scalar(
             select(LibraryOperation.id).where(
                 LibraryOperation.operation_key == operation_key
@@ -542,7 +545,7 @@ def persist_registration(
                 member_id=member.id,
                 application_id=application.id,
                 operation_key=operation_key,
-                operation_type="drive_grant",
+                operation_type=operation_type,
                 # Deprecated compatibility field: never contains the actual
                 # Drive ID for newly produced operations.
                 resource_id=None,
