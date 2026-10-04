@@ -18,30 +18,35 @@ for (const language of ["ja", "en"] as const) {
     }
     for (const [width, height] of [[1440, 900], [1024, 768], [1180, 820], [390, 844], [430, 932], [768, 1024], [1024, 1366], [900, 700], [901, 700], [901, 901], [320, 568]]) {
       await page.setViewportSize({ width, height });
-      const wide = width >= 901 && width > height;
       const visible = products.locator("article:visible");
       await expect(visible).toHaveCount(3);
-      expect(await visible.evaluateAll(nodes => nodes.map(n => n.getAttribute("data-product")))).toEqual(wide ? ["interactive", "platform", "library"] : ["interactive", "library", "manifesto"]);
+      expect(await visible.evaluateAll(nodes => nodes.map(n => n.getAttribute("data-product")))).toEqual(["interactive", "cytellect", "platform"]);
       await expect(products.locator('article').filter({ visible: false }).locator('canvas')).toHaveCount(0);
-      const replacement = products.locator(wide ? '[data-product="platform"]' : '[data-product="manifesto"]');
+      const replacement = products.locator('[data-product="platform"]');
       await replacement.scrollIntoViewIfNeeded();
       await expect(replacement.locator('[data-ready="true"] canvas')).toBeVisible({ timeout: 20_000 });
-      await expect(replacement.getByRole("link")).toHaveAttribute("href", wide ? "https://compass-official.pages.dev/" : "https://compass-official.pages.dev/messages/");
-      if (wide) {
+      await expect(replacement.getByRole("link")).toHaveAttribute("href", "https://compass-official.pages.dev/");
+      const cell = products.locator('[data-product="cytellect"]');
+      await expect(cell.getByRole("link")).toHaveAttribute("href", "https://cytellect.vercel.app/");
+      await expect(cell.getByRole("link")).toHaveAccessibleName(`cytellect: ${language === "en" ? "Explore cytellect" : "未来の研究を体験する"}`);
+      await expect(cell.locator("canvas")).toHaveCount(0);
+      await expect(cell.locator("img")).toBeVisible();
+      expect(await cell.locator("h3").evaluate(el => el.scrollWidth <= el.clientWidth)).toBe(true);
+      if (width > 900) {
         const platform = await replacement.boundingBox();
-        const library = await products.locator('[data-layout="wide"][data-product="library"]').boundingBox();
-        expect(platform!.height).toBe(320);
-        expect(library!.height).toBe(296);
-        expect(library!.y).toBeGreaterThan(platform!.y);
+        const cellBounds = await cell.boundingBox();
+        expect(platform!.height).toBe(296);
+        expect(cellBounds!.height).toBe(320);
+        expect(platform!.y).toBeGreaterThan(cellBounds!.y);
         const title = replacement.locator("h3");
         const text = await title.boundingBox();
         expect(text!.x + text!.width).toBeLessThan(platform!.x + platform!.width);
         expect(await title.evaluate(el => el.scrollWidth <= el.clientWidth)).toBe(true);
         const cta = replacement.getByRole("link");
-        await expect(cta).toHaveAccessibleName(`COMPASS Platform: ${language === "en" ? "Explore COMPASS" : "COMPASSを体験する"}`);
-        await cta.focus();
+        await expect(cta).toHaveAccessibleName(`COMPASS: ${language === "en" ? "Explore COMPASS" : "COMPASSを体験する"}`);
+        await cell.getByRole("link").focus();
         await page.keyboard.press("Tab");
-        await expect(products.locator('[data-layout="wide"][data-product="library"] a')).toBeFocused();
+        await expect(cta).toBeFocused();
       }
       const primary = products.locator('[data-product="interactive"]');
       await primary.scrollIntoViewIfNeeded();
@@ -65,10 +70,11 @@ for (const language of ["ja", "en"] as const) {
     await pause.click();
     await expect(pause).toHaveAttribute("aria-pressed", "true");
     await platform.scrollIntoViewIfNeeded();
-    await page.waitForTimeout(100);
-    const still = await platform.screenshot();
+    // Compare the rendered scene, not the card's hover/focus CTA transition.
+    await page.waitForTimeout(650);
+    const still = await platform.locator("canvas").screenshot();
     await page.waitForTimeout(200);
-    expect(Buffer.compare(still, await platform.screenshot())).toBe(0);
+    expect(Buffer.compare(still, await platform.locator("canvas").screenshot())).toBe(0);
     await pause.click();
     await expect(pause).toHaveAttribute("aria-pressed", "false");
     expect(errors).toEqual([]);
@@ -88,5 +94,50 @@ test("Platform remains a working link without WebGL", async ({ page }) => {
   const platform = page.locator('[data-product="platform"]');
   await platform.scrollIntoViewIfNeeded();
   await expect(platform.locator("svg[class*='platformFallback']")).toBeVisible();
-  await expect(platform.getByRole("link", { name: "COMPASS Platform: Explore COMPASS" })).toHaveAttribute("href", "https://compass-official.pages.dev/");
+  await expect(platform.getByRole("link", { name: "COMPASS: Explore COMPASS" })).toHaveAttribute("href", "https://compass-official.pages.dev/");
+  const cell = page.locator('[data-product="cytellect"]');
+  await cell.scrollIntoViewIfNeeded();
+  await expect(cell.locator("img")).toBeVisible();
+  await expect(cell.locator("img")).toHaveCSS("opacity", "1");
+  await expect(cell.getByRole("link")).toHaveAttribute("href", "https://cytellect.vercel.app/");
 });
+
+for (const mobile of [false, true]) {
+  test(`Cell motion and lifecycle: ${mobile ? "touch mobile" : "desktop"}`, async ({ browser }, testInfo) => {
+    test.setTimeout(90_000);
+    const context = await browser.newContext({ viewport: mobile ? { width: 390, height: 844 } : { width: 1440, height: 900 }, isMobile: mobile, hasTouch: mobile, reducedMotion: "no-preference" });
+    const origin = new URL(String(testInfo.project.use.baseURL)).origin;
+    await context.route("**/*", route => {
+      const request = route.request();
+      if (new URL(request.url()).origin !== origin || !["GET", "HEAD"].includes(request.method())) return route.fulfill({ status: 204, body: "" });
+      return route.continue();
+    });
+    const page = await context.newPage();
+    try {
+      await page.goto(`${testInfo.project.use.baseURL}/founder/`, { waitUntil: "domcontentloaded" });
+      const products = page.locator("[data-products-cinematic]");
+      const cell = products.locator('[data-scene="cytellect"]');
+      await cell.scrollIntoViewIfNeeded();
+      await expect(cell).toHaveAttribute("data-ready", "true", { timeout: 30_000 });
+      const frames = () => cell.getAttribute("data-render-count").then(Number);
+      const before = await frames();
+      await expect.poll(frames).toBeGreaterThan(before);
+      await cell.locator("..").screenshot({ path: testInfo.outputPath(`cell-${mobile ? "mobile" : "desktop"}-motion.png`) });
+      const pause = products.locator("button[aria-pressed]");
+      await pause.click();
+      await cell.scrollIntoViewIfNeeded();
+      await page.waitForTimeout(150);
+      const stopped = await frames();
+      await page.waitForTimeout(250);
+      expect(await frames()).toBe(stopped);
+      await pause.click();
+      await cell.scrollIntoViewIfNeeded();
+      await expect.poll(frames).toBeGreaterThan(stopped);
+      await page.setViewportSize({ width: mobile ? 844 : 1024, height: mobile ? 390 : 1366 });
+      await expect(cell.locator("canvas")).toHaveCount(1);
+      await page.emulateMedia({ reducedMotion: "reduce" });
+      await expect(cell.locator("canvas")).toHaveCount(0);
+      await expect(cell.locator("img")).toHaveCSS("opacity", "1");
+    } finally { await context.close(); }
+  });
+}

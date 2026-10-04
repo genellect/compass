@@ -70,18 +70,16 @@ export const products = [
     ]
   },
   {
-    key: "library",
-    label: "Future Strategy Library",
-    title: "A student-built resource library for Kitasato University pharmacy students.",
-    links: [{ label: "Explore the library", href: `${compassOrigin}/future-strategy-library/` }]
+    key: "cytellect",
+    label: "cytellect",
+    title: "Get your microscopy publication ready",
+    links: [{ label: "Explore cytellect", href: "https://cytellect.vercel.app/" }]
   },
   {
-    key: "manifesto",
-    label: "COMPASS Manifesto",
-    title: "How should students live and build in the age of AI?",
-    image: "/images/Image4.jpg",
-    alt: "A luminous future city representing possibility in the age of AI",
-    links: [{ label: "Read the manifesto", href: `${compassOrigin}/messages/` }]
+    key: "platform",
+    label: "COMPASS",
+    title: "Don’t Just Learn. Build What’s Next.",
+    links: [{ label: "Explore COMPASS", href: `${compassOrigin}/` }]
   }
 ] as const;
 

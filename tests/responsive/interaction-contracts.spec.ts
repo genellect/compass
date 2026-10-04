@@ -373,8 +373,8 @@ test("Founder FRAGMENTS preserves its editorial order and ambient motion beside 
   const fragments = page.locator("#fragments");
   await expect(fragments.locator("[data-slot]")).toHaveCount(19);
   await expect(fragments.locator("[data-fragment-ambient]")).toHaveCount(1);
-  await expect(page.locator('[data-product="library"] [data-scene="library"]')).toHaveCount(1);
-  await expect(page.locator('[data-product="library"] img')).toHaveCount(0);
+  await expect(page.locator('[data-product="cytellect"] [data-scene="cytellect"]')).toHaveCount(1);
+  await expect(page.locator('[data-product="cytellect"] img')).toHaveCount(1);
 
   const report = await page.evaluate(() => ({
     order: [...document.querySelectorAll("#fragments [data-slot]")]
