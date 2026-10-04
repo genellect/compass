@@ -1,4 +1,5 @@
 .future-hall { display: none; }
+.mobile-hall-film { display: none; }
 
 /* A quiet technology credit, distinct from the interactive CTA controls. */
 .intro-redesign .hero-section--future .hero-ai-credit {
@@ -68,16 +69,20 @@
     pointer-events: auto;
   }
   .intro-redesign .hero-section--future .hero-title {
-    font-size: clamp(42px, 5.3vw, 102px);
-    line-height: 1.02;
+    font-family: var(--font-interactive-mobile-display), sans-serif;
+    font-weight: 750;
+    font-synthesis: none;
+    font-size: clamp(42px, 4.9vw, 88px);
+    line-height: 1.06;
     letter-spacing: -.055em;
+    word-spacing: .04em;
     margin-top: 24px;
     margin-inline: 0;
     white-space: normal;
     background: none;
   }
   .intro-redesign .hero-section--future .hero-title__phrase { display: block; white-space: nowrap; }
-  .intro-redesign .hero-section--future .hero-title__active { font-size: 1.47em; line-height: .98; }
+  .intro-redesign .hero-section--future .hero-title__active { font-size: 1.32em; font-weight: 800; line-height: 1; }
   .intro-redesign .hero-section--future .hero-title__active {
     color: #e7eff0;
     background: none;
@@ -165,4 +170,128 @@
 
 @media (prefers-reduced-motion: reduce) {
   .future-hall__canvas { transition: none; }
+}
+
+/* Same authored space, composed vertically and encoded once for phone playback. */
+@media (max-width: 680px) {
+  /* Keep the existing header geometry; only its foreground above the dark Hero changes. */
+  .intro-redesign:has(.mobile-hall-film) .site-header:not(.is-scrolled) {
+    color: #eef5f7;
+    border-color: #b2d6e018;
+    background: #06111cbb;
+  }
+  .intro-redesign:has(.mobile-hall-film) .site-header:not(.is-scrolled) .logo-copy strong { color: #eef5f7; }
+  .intro-redesign:has(.mobile-hall-film) .site-header:not(.is-scrolled) .logo-mark { border-color: #a6d4db50; background: #a6d4db10; box-shadow: none; }
+  .intro-redesign:has(.mobile-hall-film) .site-header:not(.is-scrolled) .logo-mark::before { border-color: #a6d4db88; }
+  .intro-redesign:has(.mobile-hall-film) .site-header:not(.is-scrolled) .logo-mark span { background: #a6d4db88; }
+  .intro-redesign:has(.mobile-hall-film) .site-header:not(.is-scrolled) .menu-toggle { color: #eef5f7; border-color: #a6d4db40; background: #06111c80; box-shadow: none; }
+  .intro-redesign .hero-section--future.hero-section--signal {
+    height: auto;
+    min-height: 100svh;
+    max-height: none;
+    padding: calc(var(--header-height) + 52px) 20px 76px;
+    color: #f4f8f9;
+    background: #07121b;
+  }
+  .intro-redesign .hero-section--future .mobile-hall-film {
+    display: block;
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+  }
+  .mobile-hall-film__poster, .mobile-hall-film__video, .mobile-hall-film__veil {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+  }
+  .mobile-hall-film__poster, .mobile-hall-film__video { object-fit: cover; object-position: 50% 50%; }
+  .mobile-hall-film__video { opacity: 0; transition: opacity 600ms ease; }
+  .mobile-hall-film[data-render-state="ready"] .mobile-hall-film__video { opacity: 1; }
+  .mobile-hall-film__veil {
+    background: linear-gradient(180deg, #030c16a6 0%, #030c16b8 28%, #030c169c 55%, #030c1640 78%, #030c1699 100%);
+  }
+  .mobile-hall-film__motion {
+    position: absolute;
+    right: 18px;
+    bottom: 16px;
+    z-index: 5;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-height: 44px;
+    padding: 10px 14px;
+    border: 1px solid #c0d8dd55;
+    border-radius: 999px;
+    background: #06121ccc;
+    color: #e5eff2;
+    font: inherit;
+    font-size: 11px;
+    pointer-events: auto;
+    cursor: pointer;
+  }
+  .mobile-hall-film__motion:focus-visible { outline: 2px solid #a1ecf6; outline-offset: 3px; }
+  .intro-redesign .hero-section--future.hero-section--signal .hero-grid {
+    width: 100%;
+    max-width: 480px;
+    height: auto;
+    min-height: 0;
+    display: block;
+    margin: 0 auto;
+  }
+  .intro-redesign .hero-section--future.hero-section--signal .hero-copy {
+    width: 100%;
+    max-width: none;
+    padding-top: clamp(20px, 5svh, 64px);
+    color: #f4f8f9;
+  }
+  .intro-redesign .hero-section--future.hero-section--signal .hero-copy > .eyebrow { color: #c1d9de; }
+  .intro-redesign .hero-section--future.hero-section--signal .hero-title {
+    width: 100%;
+    margin-top: 20px;
+    color: #f4f8f9;
+    text-shadow: 0 2px 24px #02081066;
+  }
+  .intro-redesign .hero-section--future.hero-section--signal .hero-title__quiet {
+    color: #f4f8f9;
+    font-size: clamp(28px, 9vw, 46px);
+    line-height: 1.08;
+  }
+  .intro-redesign .hero-section--future.hero-section--signal .hero-title__active {
+    color: #f4f8f9;
+    font-size: clamp(62px, 19vw, 90px);
+    line-height: 1;
+  }
+  .intro-redesign .hero-section--future.hero-section--signal .hero-title__core { color: #a2eddc; -webkit-text-fill-color: #a2eddc; }
+  .intro-redesign .hero-section--future.hero-section--signal .hero-lead {
+    color: #f2f6f8;
+    margin-top: 22px;
+    text-shadow: 0 2px 16px #020810;
+  }
+  .intro-redesign .hero-section--future.hero-section--signal .hero-actions { margin-top: 28px; }
+  .intro-redesign .hero-section--future.hero-section--signal .hero-actions .hero-cta {
+    color: #092833;
+    border-color: #cbf8ee;
+    background: linear-gradient(110deg, #a2f2f4, #f1fad8);
+    box-shadow: 0 8px 32px #02081044;
+  }
+  .intro-redesign .hero-section--future.hero-section--signal .hero-actions .hero-cta span { color: #24535b; }
+  .intro-redesign .hero-section--future.hero-section--signal .hero-secondary-cta { color: #edf6f7; text-shadow: 0 2px 12px #020810; }
+  .intro-redesign .hero-section--future.hero-section--signal .hero-ai-credit { margin-top: 24px; }
+  .intro-redesign .hero-section--future.hero-section--signal .hero-ai-credit strong,
+  .intro-redesign .hero-section--future.hero-section--signal .hero-cta-note { color: #d2e0e5; text-shadow: 0 2px 12px #020810; }
+}
+
+@media (max-width: 680px) and (max-height: 700px) {
+  .intro-redesign .hero-section--future.hero-section--signal { padding-top: calc(var(--header-height) + 24px); padding-bottom: 68px; }
+  .intro-redesign .hero-section--future.hero-section--signal .hero-copy { padding-top: 0; }
+  .intro-redesign .hero-section--future.hero-section--signal .hero-title { margin-top: 14px; }
+  .intro-redesign .hero-section--future.hero-section--signal .hero-lead { margin-top: 12px; }
+  .intro-redesign .hero-section--future.hero-section--signal .hero-actions { margin-top: 18px; }
+  .intro-redesign .hero-section--future.hero-section--signal .hero-ai-credit { margin-top: 14px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mobile-hall-film__video { transition: none; }
 }

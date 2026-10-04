@@ -13,3 +13,5 @@
 ライセンスの正本は [Poly HavenのCC0説明](https://polyhaven.com/license) です。元のダウンロードURLとチェックサムは material-sources.json に記録しています。これらの撮影素材をCOMPASS独自の撮影として扱いません。親サイトの材質一覧は scripts/habitat/ASSET_CREDITS.md です。
 
 ポスターは上記の材質を使ったBlender空間からCyclesでレンダリングします。AI生成画像、却下された地球・金属造形、人物の画像、ストック動画は配信用アセットに含めません。ブラウザーは当サイトの静的アセットだけを取得します。
+
+Mobile用の `mobile-hall.mp4` と `mobile-poster.webp` は、この同じBlenderモデル・材質・ベイク照明をThree.jsで縦向きに描画した派生物です。制作手順は `render_mobile_film.cjs` に保存しています。追加の第三者素材は使用していません。
