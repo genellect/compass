@@ -96,18 +96,16 @@ const products = [
     ]
   },
   {
-    key: "library",
-    label: "未来戦略ライブラリ",
-    title: "北里大学薬学部生のための、学生目線の資料ライブラリ。",
-    links: [{ label: "ライブラリを見る", href: `${COMPASS_ORIGIN}/future-strategy-library/` }]
+    key: "cytellect",
+    label: "cytellect",
+    title: "Get your microscopy publication ready",
+    links: [{ label: "未来の研究を体験する", href: "https://cytellect.vercel.app/" }]
   },
   {
-    key: "manifesto",
-    label: "COMPASS Manifesto",
-    title: "AI時代をどう生きるか。",
-    image: "/images/Image4.jpg",
-    alt: "AI時代の可能性を象徴する光に包まれた未来都市",
-    links: [{ label: "Manifestoを読む", href: `${COMPASS_ORIGIN}/messages/` }]
+    key: "platform",
+    label: "COMPASS",
+    title: "Don’t Just Learn. Build What’s Next.",
+    links: [{ label: "COMPASSを体験する", href: `${COMPASS_ORIGIN}/` }]
   }
 ] as const;
 
