@@ -89,16 +89,16 @@ const products = [
     links: [
       { label: "紹介サイト", href: `${COMPASS_ORIGIN}/INTRO_Interactive/` },
       {
-        label: "ProtoPedia",
-        href: "https://protopedia.net/prototype/private/59f061db-936a-4fa3-abc2-438a98711e9e"
+        label: "GitHub",
+        href: "https://github.com/genellect/compass-interactive"
       },
-      { label: "開発者向けポートフォリオ", href: `${COMPASS_ORIGIN}/INTRO_Interactive/developers/` }
+      { label: "開発者向け技術情報", href: `${COMPASS_ORIGIN}/INTRO_Interactive/developers/` }
     ]
   },
   {
     key: "cytellect",
     label: "cytellect",
-    title: "Get your microscopy publication ready",
+    title: "Get your microscopy publication-ready.",
     links: [{ label: "未来の研究を体験する", href: "https://cytellect.vercel.app/" }]
   },
   {

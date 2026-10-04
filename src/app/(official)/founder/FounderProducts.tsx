@@ -32,7 +32,7 @@ export function FounderProducts({ products, language = "ja" }: { products: reado
                 <div className={styles.identity}><span className={styles.mark} aria-hidden="true" />{product.label}</div>
                 <h3 className={styles.title}>
                   {product.key === "interactive" ? <><span>LET EVERYTHING</span><strong>MOVE.</strong></>
-                    : product.key === "cytellect" ? <><span>Get your microscopy</span><strong>publication ready</strong></>
+                    : product.key === "cytellect" ? <><span>Get your microscopy</span><strong>publication-ready.</strong></>
                       : product.key === "platform" ? <><span>Don’t Just Learn.</span><strong>Build What’s Next.</strong></>
                       : english ? <><span>LIFE IN THE</span><strong>AGE OF AI.</strong></>
                         : <><span>AI時代を</span><strong>どう生きるか。</strong></>}

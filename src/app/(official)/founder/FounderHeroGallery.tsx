@@ -4,6 +4,7 @@ import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 import { MobileHeroRibbons } from "./MobileHeroRibbons";
 import styles from "./founder.module.css";
+import { lakePortraitComposition } from "./hero-composition";
 
 const SLIDES = [
   {
@@ -35,6 +36,22 @@ export function FounderHeroGallery() {
   const [activeIndex, setActiveIndex] = useState(0);
   const [paused, setPaused] = useState(false);
   const gallery = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const frame = gallery.current?.querySelector<HTMLElement>(`.${styles.photoFrame}`);
+    const crop = gallery.current?.querySelector<HTMLElement>("[data-composition='lake-portrait']");
+    if (!frame || !crop) return;
+    const sync = () => {
+      const { width, height } = frame.getBoundingClientRect();
+      if (!width || !height) return;
+      const composition = lakePortraitComposition(width, height);
+      for (const [name, value] of Object.entries(composition)) crop.style.setProperty(`--portrait-${name}`, `${value}px`);
+    };
+    const observer = new ResizeObserver(sync);
+    observer.observe(frame);
+    sync();
+    return () => observer.disconnect();
+  }, []);
 
   useEffect(() => {
     const mobile = window.matchMedia("(max-width: 640px)");
@@ -93,15 +110,18 @@ export function FounderHeroGallery() {
             data-active={index === activeIndex}
             data-motion={slide.motion}
             data-focus={slide.focus}
+            data-composition={index === 1 ? "lake-portrait" : undefined}
             aria-hidden={index !== activeIndex}
           >
-            <Image
+            {index === 1 ? <div className={styles.lakePortraitLayer}>
+              <Image src={slide.src} alt={index === activeIndex ? slide.alt : ""} width={1600} height={2400} priority sizes="(min-width: 901px) 88vw, 180vw" />
+            </div> : <Image
               src={slide.src}
               alt={index === activeIndex ? slide.alt : ""}
               fill
               priority
               sizes="(min-width: 901px) 46vw, (max-width: 640px) 100vw, 88vw"
-            />
+            />}
           </figure>
         ))}
         <div className={styles.photoScan} aria-hidden="true" />
