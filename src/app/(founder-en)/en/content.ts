@@ -63,16 +63,16 @@ export const products = [
     links: [
       { label: "Explore Interactive", href: `${compassOrigin}/INTRO_Interactive/` },
       {
-        label: "ProtoPedia",
-        href: "https://protopedia.net/prototype/private/59f061db-936a-4fa3-abc2-438a98711e9e"
+        label: "GitHub",
+        href: "https://github.com/genellect/compass-interactive"
       },
-      { label: "Technical overview", href: `${compassOrigin}/INTRO_Interactive/developers/` }
+      { label: "Technical Overview", href: `${compassOrigin}/INTRO_Interactive/developers/` }
     ]
   },
   {
     key: "cytellect",
     label: "cytellect",
-    title: "Get your microscopy publication ready",
+    title: "Get your microscopy publication-ready.",
     links: [{ label: "Explore cytellect", href: "https://cytellect.vercel.app/" }]
   },
   {

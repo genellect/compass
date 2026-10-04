@@ -1,0 +1,23 @@
+.stage { display:none; }
+@media (max-width:700px) {
+  .stage { display:block; position:relative; isolation:isolate; width:100vw; margin-left:calc(50% - 50vw); height:var(--mobile-film-height, max(372px, calc(80svh - 108px))); }
+  .viewport { position:absolute; inset:0 0 48px; touch-action:pan-y pinch-zoom; outline-offset:-5px; }
+  .viewport canvas { display:block; width:100%; height:100%; opacity:0; }
+  .stage[data-ready="true"] canvas { opacity:1; }
+  .atmosphere { position:absolute; inset:0; overflow:hidden; pointer-events:none; z-index:-1; }
+  .light { position:absolute; inset:-20%; background:radial-gradient(ellipse at var(--mobile-film-light-x,50%) 58%, #fff9 0%, transparent 56%), radial-gradient(ellipse at 85% 25%,#ad9aca44,transparent 45%),radial-gradient(ellipse at 10% 62%,#62bba944,transparent 47%); transform:rotate(var(--mobile-film-angle,-8deg)); }
+  .shadow { position:absolute; left:-10%; bottom:18%; width:120%; height:18%; background:radial-gradient(ellipse,#344f6626,transparent 68%); transform:rotate(var(--mobile-film-angle,-8deg)); }
+  .atmosphere svg { position:absolute; inset:0; width:100%; height:100%; fill:none; stroke:#597688; stroke-width:.65; opacity:.3; transform:rotate(var(--mobile-film-angle,-8deg)); }
+  .trace { stroke:#4b879e; stroke-width:1.4; stroke-dasharray:70 1250; stroke-dashoffset:var(--mobile-film-flow,0); }
+  .poster { position:absolute; inset:24% 6% 22%; pointer-events:none; }
+  .poster img { width:100%; height:100%; object-fit:contain; }
+  .controls { position:absolute; bottom:0; left:50%; transform:translateX(-50%); display:flex; gap:8px; }
+  .controls button { min-width:44px; height:44px; padding:0 14px; border:1px solid #42687d40; background:#f5faf8e6; color:#253d4a; border-radius:24px; font:inherit; font-size:11px; cursor:pointer; }
+  .viewport:focus-visible, .controls button:focus-visible { outline:2px solid #34788b; }
+  .stage[data-language="en"] .light { background:radial-gradient(ellipse at var(--mobile-film-light-x,50%) 58%,#8ee6d42b,transparent 55%),radial-gradient(ellipse at 85% 25%,#8a60d43b,transparent 48%); }
+  .stage[data-language="en"] .shadow { background:radial-gradient(ellipse,#0009,transparent 68%); }
+  .stage[data-language="en"] svg { stroke:#89bcbf; }
+  .stage[data-language="en"] .trace { stroke:#a2b3eb; }
+  .stage[data-language="en"] .controls button { background:#0a1b22e6; color:#ecf7f2; border-color:#acd2cc44; }
+}
+.photoDescriptions { position:absolute; width:1px; height:1px; margin:-1px; padding:0; overflow:hidden; clip-path:inset(50%); }

@@ -790,3 +790,26 @@
   .expertiseCopy p { min-height: 0; }
   .expertiseImage { height: min(68vw, 320px); margin: 24px 24px 0; }
 }
+
+.mobileFilmView { display:none; }
+@media (max-width:700px) {
+  .fragments { min-height:max(460px,80svh); padding:22px 0 18px; overflow:clip; --mobile-film-height:max(314px,calc(80svh - 166px)); }
+  .fragments[data-fragment-view="3d"] { color:#eff8f3; background:linear-gradient(145deg,#04100f,#0b2023 55%,#15152c); }
+  .fragmentsHeading { grid-template-columns:1fr auto; align-items:center; gap:10px 12px; margin-bottom:4px; padding-top:12px; }
+  .fragmentsHeading h2 { margin-top:10px; font-size:clamp(25px,8vw,40px); }
+  .fragmentsHeading > p { grid-column:1 / -1; grid-row:2; max-width:38ch; font-family:var(--font-en-sans),Arial,sans-serif; font-size:12px; line-height:1.5; }
+  .fragments .fragmentViewSwitch { display:flex; grid-column:2; grid-row:1; padding:0; border:1px solid #42607150; border-radius:24px; }
+  .fragments .fragmentViewSwitch button { min-width:44px; min-height:44px; padding:0 10px; border:0; border-radius:22px; background:transparent; color:#354f5c; font:inherit; font-size:10px; cursor:pointer; }
+  .fragments .fragmentViewSwitch button[aria-pressed="true"] { background:#172f35; color:#f6faf8; }
+  .fragments .fragmentViewSwitch button:focus-visible { outline:2px solid #75cfe0; outline-offset:3px; }
+  .fragments[data-fragment-view="3d"] .sectionIndex { color:#b6efb6; }
+  .fragments[data-fragment-view="3d"] .fragmentsHeading { border-color:#bbddd444; }
+  .fragments[data-fragment-view="3d"] .fragmentsHeading h2 { color:#eff8f3; }
+  .fragments[data-fragment-view="3d"] .fragmentsHeading > p { color:#c3d9d2; }
+  .fragments[data-fragment-view="3d"] .fragmentViewSwitch { border-color:#bad9d650; }
+  .fragments[data-fragment-view="3d"] .fragmentViewSwitch button { color:#d9e8e3; }
+  .fragments[data-fragment-view="3d"] .fragmentViewSwitch button[aria-pressed="true"] { background:#b6ef7a; color:#071310; }
+  .fragments[data-fragment-view="3d"] .mobileFilmView { display:block; }
+  .fragments[data-fragment-view="3d"] .fragmentsRail { display:none; }
+  .fragments[data-fragment-view="original"] .fragmentsRail { min-height:max(314px,calc(80svh - 166px)); align-items:center; }
+}

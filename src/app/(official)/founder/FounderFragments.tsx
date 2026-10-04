@@ -1,9 +1,10 @@
 "use client";
 
 import Image from "next/image";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import styles from "./founder.module.css";
 import { FragmentFilm, FragmentFilmAtmosphere } from "./FragmentFilm";
+import { MobileFragmentFilm } from "./MobileFragmentFilm";
 
 type FragmentPhoto = {
   key: string;
@@ -303,9 +304,22 @@ function FragmentSignalField() {
   );
 }
 
-function FragmentMobileReel() {
+function FragmentMobileReel({ currentPhoto }: { currentPhoto: string }) {
+  const reel = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (!matchMedia("(max-width: 700px)").matches) return;
+    const photo = reel.current?.querySelector<HTMLElement>(`[data-reel-slot="${currentPhoto}"]`);
+    const track = photo?.closest<HTMLElement>(`.${styles.fragmentReelTrack}`);
+    if (!photo || !track) return;
+    const loopWidth = track.scrollWidth / 2;
+    const distance = photo.offsetLeft - Math.max(0, (reel.current!.clientWidth - photo.offsetWidth) / 2);
+    const fraction = Math.max(0, distance / loopWidth);
+    const reverse = track.dataset.reelRow === "2";
+    track.style.animationDelay = `${-(reverse ? 1 - fraction : fraction) * (reverse ? 94 : 82)}s`;
+    if (matchMedia("(prefers-reduced-motion: reduce)").matches) photo.parentElement?.parentElement?.parentElement?.scrollTo({left:photo.offsetLeft});
+  }, [currentPhoto]);
   return (
-    <div className={styles.fragmentMobileReel} aria-label="FRAGMENTS photo reel">
+    <div ref={reel} className={styles.fragmentMobileReel} aria-label="FRAGMENTS photo reel">
       {mobileFragmentRows.map((row, rowIndex) => (
         <div key={rowIndex} className={styles.fragmentReelViewport}>
           <div className={styles.fragmentReelTrack} data-reel-row={rowIndex + 1}>
@@ -356,6 +370,18 @@ export function FounderFragments() {
   const [activeSpread, setActiveSpread] = useState(0);
   const [view, setView] = useState<"3d" | "original">("3d");
   const [wide, setWide] = useState(false);
+  const [mobile, setMobile] = useState(false);
+  const currentPhoto = useRef(fragmentPhotos[0].key);
+  const section = useRef<HTMLElement>(null);
+  const changeView = (next: "3d" | "original") => {
+    if (mobile && view === "original" && next === "3d") {
+      const pictures = section.current?.querySelectorAll<HTMLElement>("[data-reel-slot]");
+      const center = window.innerWidth / 2;
+      const nearest = Array.from(pictures ?? []).filter(p => { const r=p.getBoundingClientRect(); return r.right>0 && r.left<window.innerWidth; }).sort((a,b)=>Math.abs(a.getBoundingClientRect().left+a.offsetWidth/2-center)-Math.abs(b.getBoundingClientRect().left+b.offsetWidth/2-center))[0];
+      if (nearest) currentPhoto.current = nearest.dataset.reelSlot!;
+    }
+    setView(next);
+  };
   useEffect(() => {
     const media = matchMedia("(min-width: 901px) and (orientation: landscape)");
     const update = () => setWide(media.matches);
@@ -364,26 +390,33 @@ export function FounderFragments() {
   }, []);
 
   useEffect(() => {
+    const media = matchMedia("(max-width: 700px)");
+    const update = () => setMobile(media.matches);
+    update(); media.addEventListener("change", update);
+    return () => media.removeEventListener("change", update);
+  }, []);
+
+  useEffect(() => {
     const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
-    if (reducedMotion.matches || (wide && view === "3d")) return;
+    if (reducedMotion.matches || ((wide || mobile) && view === "3d")) return;
 
     const timer = window.setTimeout(() => {
       setActiveSpread((current) => (current + 1) % fragmentSpreads.length);
     }, spreadDurationMs);
 
     return () => window.clearTimeout(timer);
-  }, [activeSpread, wide, view]);
+  }, [activeSpread, wide, mobile, view]);
 
   return (
-    <section id="fragments" className={styles.fragments} aria-labelledby="fragments-title" data-fragment-view={view}>
+    <section ref={section} id="fragments" className={styles.fragments} aria-labelledby="fragments-title" data-fragment-view={view}>
       <FragmentSignalField />
       <FragmentFilmAtmosphere />
       <div className={styles.sectionShell}>
         <header className={styles.fragmentsHeader}>
           <h2 id="fragments-title">FRAGMENTS</h2>
           <div className={styles.fragmentViewSwitch} role="group" aria-label="FRAGMENTSの表示形式">
-            <button type="button" aria-pressed={view === "3d"} aria-controls="fragment-film-view" onClick={() => setView("3d")}>3D</button>
-            <button type="button" aria-pressed={view === "original"} aria-controls="fragment-original-view" onClick={() => setView("original")}>Original</button>
+            <button type="button" aria-pressed={view === "3d"} aria-controls="fragment-film-view fragment-mobile-film-view" onClick={() => changeView("3d")}>3D</button>
+            <button type="button" aria-pressed={view === "original"} aria-controls="fragment-original-view fragment-mobile-original-view" onClick={() => changeView("original")}>Original</button>
           </div>
           <div className={styles.fragmentSequence} aria-label="FRAGMENTSの表示セット">
             {fragmentSpreads.map((_, index) => (
@@ -400,6 +433,9 @@ export function FounderFragments() {
 
         <div className={styles.fragmentFilmView} id="fragment-film-view">
           <FragmentFilm photos={fragmentPhotos} active={wide && view === "3d"} />
+        </div>
+        <div className={styles.mobileFilmView} id="fragment-mobile-film-view">
+          {mobile && view === "3d" && <MobileFragmentFilm photos={fragmentPhotos} active currentPhoto={currentPhoto.current} onCurrentPhoto={key => { currentPhoto.current=key; }} onFailure={() => setView("original")} />}
         </div>
         <div className={styles.fragmentsEssay} id="fragment-original-view">
           {fragmentSpreads.map((spread, spreadIndex) => (
@@ -438,7 +474,9 @@ export function FounderFragments() {
           ))}
         </div>
 
-        <FragmentMobileReel />
+        <div id="fragment-mobile-original-view" className={styles.mobileOriginalView}>
+          {(!mobile || view === "original") && <FragmentMobileReel currentPhoto={currentPhoto.current} />}
+        </div>
       </div>
     </section>
   );

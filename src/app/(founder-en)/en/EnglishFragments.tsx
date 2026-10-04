@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { useEffect, useRef, useState, type PointerEvent } from "react";
 import { FragmentFilm, FragmentFilmAtmosphere } from "../../(official)/founder/FragmentFilm";
+import { MobileFragmentFilm } from "../../(official)/founder/MobileFragmentFilm";
 import { fragmentPhotos, type FragmentPhoto } from "./content";
 import styles from "./english-founder.module.css";
 
@@ -46,6 +47,17 @@ export function EnglishFragments() {
   const dragRef = useRef({ active: false, startX: 0, startScroll: 0 });
   const [view, setView] = useState<"3d" | "original">("3d");
   const [wide, setWide] = useState(false);
+  const [mobile, setMobile] = useState(false);
+  const currentPhoto = useRef(fragmentPhotos[0].key);
+  const changeView = (next: "3d" | "original") => {
+    if (mobile && view === "original" && next === "3d") {
+      const rail = railRef.current;
+      const left = rail?.getBoundingClientRect().left ?? 0;
+      const nearest = Array.from(rail?.querySelectorAll<HTMLElement>("[data-fragment-photo]") ?? []).sort((a,b)=>Math.abs(a.getBoundingClientRect().left-left)-Math.abs(b.getBoundingClientRect().left-left))[0];
+      if (nearest) currentPhoto.current=nearest.dataset.fragmentPhoto!;
+    }
+    setView(next);
+  };
 
   useEffect(() => {
     const media = window.matchMedia("(min-width: 901px) and (orientation: landscape)");
@@ -56,9 +68,23 @@ export function EnglishFragments() {
   }, []);
 
   useEffect(() => {
+    const media = matchMedia("(max-width: 700px)");
+    const update = () => setMobile(media.matches);
+    update(); media.addEventListener("change", update);
+    return () => media.removeEventListener("change", update);
+  }, []);
+
+  useEffect(() => {
+    if (!mobile || view !== "original") return;
+    const rail=railRef.current;
+    const photo=rail?.querySelector<HTMLElement>(`[data-fragment-photo="${currentPhoto.current}"]`);
+    if (rail && photo) rail.scrollLeft=photo.offsetLeft;
+  },[mobile,view]);
+
+  useEffect(() => {
     const rail = railRef.current;
     const motionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
-    if (!rail || motionQuery.matches || (wide && view === "3d")) return;
+    if (!rail || motionQuery.matches || ((wide || mobile) && view === "3d")) return;
 
     let frame = 0;
     let lastTime = performance.now();
@@ -76,7 +102,7 @@ export function EnglishFragments() {
 
     frame = window.requestAnimationFrame(move);
     return () => window.cancelAnimationFrame(frame);
-  }, [view, wide]);
+  }, [view, wide, mobile]);
 
   useEffect(() => () => {
     if (resumeTimerRef.current) window.clearTimeout(resumeTimerRef.current);
@@ -133,13 +159,16 @@ export function EnglishFragments() {
           </div>
           <p>Research, systems, cities, and the quiet moments between them.</p>
           <div className={styles.fragmentViewSwitch} role="group" aria-label="FRAGMENTS presentation">
-            <button type="button" aria-pressed={view === "3d"} aria-controls="english-fragment-film" onClick={() => setView("3d")}>3D</button>
-            <button type="button" aria-pressed={view === "original"} aria-controls="english-fragment-original" onClick={() => setView("original")}>Original</button>
+            <button type="button" aria-pressed={view === "3d"} aria-controls="english-fragment-film english-fragment-mobile-film" onClick={() => changeView("3d")}>3D</button>
+            <button type="button" aria-pressed={view === "original"} aria-controls="english-fragment-original" onClick={() => changeView("original")}>Original</button>
           </div>
         </header>
 
         <div className={styles.fragmentFilmView} id="english-fragment-film">
           <FragmentFilm photos={fragmentPhotos} active={wide && view === "3d"} language="en" />
+        </div>
+        <div className={styles.mobileFilmView} id="english-fragment-mobile-film">
+          {mobile && view === "3d" && <MobileFragmentFilm photos={fragmentPhotos} active language="en" currentPhoto={currentPhoto.current} onCurrentPhoto={key => { currentPhoto.current=key; }} onFailure={() => setView("original")} />}
         </div>
         <div
           ref={railRef}
