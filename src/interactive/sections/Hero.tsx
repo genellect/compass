@@ -3,7 +3,7 @@ import { hero, links } from "../content/interactiveContent";
 import { CTAButton } from "../components/ui/CTAButton";
 import { FeatureChip } from "../components/ui/FeatureChip";
 import { FutureLectureHall } from "../components/hero/FutureLectureHall";
-import { MobileLearningSignal } from "../components/hero/MobileLearningSignal";
+import { MobileHallFilm } from "../components/hero/MobileHallFilm";
 import "../styles/future-hall.css";
 
 const mobileDisplay = Manrope({
@@ -18,7 +18,7 @@ export function Hero() {
       <div className="hero-visual" aria-hidden="true" />
       <div className="hero-shade" aria-hidden="true" />
       <FutureLectureHall />
-      <MobileLearningSignal />
+      <MobileHallFilm />
       <div className="hero-grid section__inner">
         <div className="hero-copy">
           <p className="eyebrow">{hero.eyebrow}</p>

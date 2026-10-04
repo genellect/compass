@@ -1,6 +1,6 @@
 # Interactive Desktop Hero の制作データ
 
-編集対象は /INTRO_Interactive/ の681 CSS px以上のHeroです。主タイトル、日本語説明、AI表記、CTAを主役に据え、Blenderで制作した空間をThree.jsで描画します。680px以下は既存のMobile Heroを使います。
+編集対象は /INTRO_Interactive/ のHeroです。主タイトル、日本語説明、AI表記、CTAを主役に据え、681 CSS px以上ではBlenderで制作した空間をThree.jsで描画します。680px以下では同じモデル・材質を縦向きに描画したMobile専用映像を使います。
 
 画面の題材を講義・COMPASSの意味に合わせる制約は設けません。判断基準は雰囲気、インパクト、リアリティ、および文字と背景を含む全体の構図です。合格済みのHeroは、段状の座席、曲面の天井、ガラス越しの景色、暖色の建築照明と実写の水平線を映す大型スクリーンで構成します。人物は配置していません。Heroのデザインはユーザー承認済みです。ヘッダー・下部の追加調整はPreviewでレビューします。
 
@@ -47,10 +47,24 @@ HDRは配置前に `node scripts/interactive/repack_hdr.cjs input.hdr output.hdr
 
 ## 描画と確認
 
-Mobileは新しい3Dモジュール、GLB、HDR、ポスターを取得しません。Desktopではポスターを先に表示し、準備完了後に3Dへ切り替えます。reduced motion、WebGL非対応、読み込み失敗、context lossではポスターを表示します。
+Mobileは3Dモジュール、GLB、HDR、Desktopポスターを取得しません。専用の縦向きポスターを先に表示し、動画の再生開始後に切り替えます。Desktopではポスターを先に表示し、準備完了後に3Dへ切り替えます。reduced motion、WebGL非対応、読み込み失敗、context lossではポスターを表示します。
 
 681〜1199pxの縦画面では、上部の二行タイトル・CTAと下部の3D背景を一つの構図として配置します。1024px幅のiPad Proにも適用し、横向きではDesktop構図へ戻します。ポスターとThree.jsは同じ描画領域を使用します。
 
 背景の停止ボタンは水面、光、カメラの緩やかな移動とマウスへの反応を止めます。画面外と非表示タブでは描画を停止し、680/681pxをまたぐリサイズとunmountではGPU資源・Observer・イベントを解放します。上限は30 FPS、DPR 1.5、230万pixelです。
 
 対象Heroのレスポンシブ・停止/再開・非表示・失敗時・境界リサイズのテスト、Interactiveの行組み、Mobileの既存visual baseline、型検査、build/static exportを確認します。自動テストの合格と、見た目の品質の合格は区別します。
+
+## Mobile映像とタイトルの調整（2026-10-04）
+
+`scripts/interactive/render_mobile_film.cjs` は、配信中のThree.jsレンダラーとBlender由来のGLB/HDRを使うオフライン書き出し処理です。公開ページには追加の制作UIや描画APIを含めません。カメラ位置はDesktopと同じで、縦画面用に垂直画角を58度へ調整します。カメラと水面を周期運動にし、720×1280・24fps・12秒のH.264映像と同じ先頭フレームのWebPを生成します。FFmpeg、Playwright Chromium、インストール済み開発依存のesbuildを使用します。
+
+```sh
+FFMPEG_PATH=/path/to/ffmpeg node scripts/interactive/render_mobile_film.cjs
+```
+
+追加配信物は `mobile-hall.mp4`（約1.3MB）と `mobile-poster.webp`（約54KB）です。AI生成画像や外部のストック動画は使いません。Mobileのコピー内容・CTAリンク先は維持し、映像に合わせて白い文字、暗いオーバーレイ、明るいCTAへ変更します。MobileヘッダーはHero上での配色だけを合わせます。
+
+`MobileHallFilm.tsx` は680px以下でのみ動画にsrcを設定します。reduced motion・Save-Dataではポスターのみ、自動再生が拒否された場合は静止画と再生ボタンを表示します。画面外・非表示タブ・手動停止で一時停止し、Desktopへの切り替え・アンマウントで動画のsrcを外してデコーダーを解放します。
+
+DesktopのタイトルはOS依存の代替フォントと950の太さ指定を避け、既に配信しているManrope（750/800）で描画します。文字サイズは画面幅を基準に上限88px、MOVEは1.32倍に揃え、画面の高さが増えても字形と二行の比率を維持します。
