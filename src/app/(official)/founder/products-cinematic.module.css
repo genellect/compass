@@ -129,9 +129,12 @@
   .product[data-product="platform"] .title strong { margin-top: 8px; font-weight: 750; }
   .platformFallback { position: absolute; width: 100%; height: 100%; inset: 0; transition: opacity 500ms ease; }
   .scene[data-ready="true"] .platformFallback { opacity: 0; }
-.product[data-product="cytellect"] .stage { background: #020817; }
-.product[data-product="cytellect"] .scene { background: #020817; pointer-events: none; }
-.product[data-product="cytellect"] .shade { background: linear-gradient(90deg, #020817e6, #02081788 45%, transparent 80%), linear-gradient(0deg, #020817 0%, #020817d9 22%, transparent 64%); }
+.product[data-product="cytellect"] .stage { background: #070e0f; }
+.product[data-product="cytellect"] .scene { z-index: 0; background: #070e0f; pointer-events: none; }
+.product[data-product="cytellect"] .shade { z-index: 1; background: linear-gradient(0deg, #070e0f 0%, #070e0ff5 24%, #070e0fbd 47%, transparent 73%), linear-gradient(180deg, #070e0fce, #070e0f99 19%, transparent 42%); }
+.product[data-product="cytellect"] .identity,
+.product[data-product="cytellect"] .title,
+.product[data-product="cytellect"] .destination { z-index: 2; }
 .product[data-product="cytellect"] .title { font-size: clamp(24px, 2.35vw, 31px); line-height: 1.15; letter-spacing: -.035em; }
 .product[data-product="cytellect"] .title strong { font-weight: 750; margin-top: 6px; white-space:nowrap; }
 .cellPoster, .cytellectFilm { position: absolute; width: 100%; height: 100%; inset: 0; object-fit: cover; object-position: center; transition: opacity 600ms ease; }

@@ -148,7 +148,7 @@ for (const mobile of [false, true]) {
       await expect(cell).toHaveAttribute("data-ready", "true", { timeout: 30_000 });
       const film = cell.locator("video");
       const time = () => film.evaluate((video: HTMLVideoElement) => video.currentTime);
-      await expect(film).toHaveAttribute("src", new RegExp(`kinetic-${mobile ? "mobile" : "desktop"}.mp4$`));
+      await expect(film).toHaveAttribute("src", new RegExp(`science-${mobile ? "mobile" : "desktop"}.mp4$`));
       const before = await time();
       await expect.poll(time).not.toBe(before);
       await cell.locator("..").screenshot({ path: testInfo.outputPath(`cell-${mobile ? "mobile" : "desktop"}-motion.png`) });
@@ -185,7 +185,7 @@ test("Cytellect media failure keeps artwork and CTA available", async ({ page })
       return Reflect.apply(original, this, [name, ...args]);
     } as typeof original;
   });
-  await page.route("**/cytellect/kinetic-*.mp4", route => route.abort());
+  await page.route("**/cytellect/science-*.mp4", route => route.abort());
   await page.goto("/en/", { waitUntil: "domcontentloaded" });
   const card = page.locator('[data-product="cytellect"]');
   await card.scrollIntoViewIfNeeded();

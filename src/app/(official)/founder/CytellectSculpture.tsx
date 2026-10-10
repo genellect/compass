@@ -37,11 +37,12 @@ export function CytellectSculpture({ paused }: { paused: boolean }) {
     const motion = () => {
       if (disposed) return;
       if (!reduced.matches && nearby && !failed) {
-        const next = `${assetRoot}/kinetic-${mobile.matches ? "mobile" : "desktop"}.mp4`;
+        const next = `${assetRoot}/science-${mobile.matches ? "mobile" : "desktop"}.mp4`;
         if (source !== next) {
           cancelFrame();
           setReady(false);
           source = next;
+          video.poster = `${assetRoot}/cell-field-${mobile.matches ? "mobile-" : ""}poster.webp`;
           video.src = next;
           video.load();
         }
@@ -112,7 +113,7 @@ export function CytellectSculpture({ paused }: { paused: boolean }) {
   }, []);
 
   return <div ref={host} className={styles.scene} data-scene="cytellect" data-ready={ready} aria-hidden="true">
-    <video ref={film} className={styles.cytellectFilm} muted playsInline loop preload="none" tabIndex={-1} />
+    <video ref={film} className={styles.cytellectFilm} muted playsInline loop preload="none" poster={`${assetRoot}/cell-field-poster.webp`} tabIndex={-1} />
     <picture>
       <source media="(max-width: 900px)" srcSet="/images/founder-products/cytellect/cell-field-mobile-poster.webp" />
       <Image className={styles.cellPoster} src="/images/founder-products/cytellect/cell-field-poster.webp" width={1120} height={640} sizes="(max-width: 900px) 100vw, 550px" alt="" loading="eager" />
