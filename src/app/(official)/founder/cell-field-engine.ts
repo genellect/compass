@@ -3,49 +3,54 @@ import * as THREE from "three";
 export type CellSceneController = { dispose(): void; syncMotion(): void };
 
 // Original deterministic artwork; not measured or reconstructed biological data.
-function membraneGeometry(detail: number, inner = false) {
+function membraneGeometry(detail: number) {
   const geometry = new THREE.SphereGeometry(1, detail, Math.round(detail * .7));
   const positions = geometry.attributes.position, p = new THREE.Vector3();
   for (let i = 0; i < positions.count; i++) {
     p.fromBufferAttribute(positions, i);
-    const shoulder = .085 * Math.sin(p.x * 3.6 + p.y * 2.1) * Math.cos(p.z * 3.2 - .5);
-    const hollow = .13 * Math.exp(-((p.x + .45) ** 2 + (p.y - .55) ** 2 + (p.z - .55) ** 2) * 7);
-    const folds = inner ? .045 * Math.sin(p.x * 14 + p.z * 8) * Math.sin(p.y * 10 - p.z * 4)
-      : .007 * Math.sin(p.x * 15 + p.y * 5) * Math.cos(p.z * 12 - p.y * 8);
-    const radius = 1 + shoulder - hollow + folds;
-    positions.setXYZ(i, p.x * radius * 1.08, p.y * radius * .86, p.z * radius * .73);
+    const angle = Math.atan2(p.y, p.x), radial = Math.hypot(p.x, p.y);
+    // A spread cell's shallow optical surface: broad asymmetry, not a swollen orb.
+    const outline = 1 + .105 * Math.sin(angle * 3 + .4) + .055 * Math.cos(angle * 5 - .8)
+      + .035 * Math.sin(angle * 2 - .6);
+    const edge = radial ** 4;
+    const drape = .16 * Math.sin(angle * 3 + .6) * edge
+      + .06 * Math.cos(angle * 6 - .9) * edge;
+    const saddle = .15 * p.x * p.y + .065 * Math.sin(p.x * 4 + p.y * 2) * radial;
+    const opticalFolds = .018 * Math.sin(p.x * 19 + p.y * 8 + Math.sin(p.y * 5) * 2)
+      + .009 * Math.sin(p.y * 31 - p.x * 7 + Math.sin(p.x * 4));
+    const thickness = .034 * p.z * (1 + .12 * Math.cos(p.x * 5 - p.y * 3));
+    positions.setXYZ(i, p.x * outline * 1.24, p.y * outline * .89, thickness + drape + saddle + opticalFolds * radial);
   }
   geometry.computeVertexNormals();
   return geometry;
 }
 
-function membraneMaterial(time: THREE.IUniform<number>, secondary = false) {
+function membraneMaterial(time: THREE.IUniform<number>) {
   const material = new THREE.MeshPhysicalMaterial({
-    color: secondary ? 0x427eb6 : 0x9ad8e9, metalness: 0, roughness: .22,
-    transmission: secondary ? .5 : .88, thickness: .24,
-    attenuationColor: new THREE.Color(0x6eafd6), attenuationDistance: 3.5, ior: 1.34,
-    clearcoat: .25, clearcoatRoughness: .3, side: THREE.FrontSide, envMapIntensity: .65,
+    color: 0x639ebd, metalness: .08, roughness: .22,
+    transmission: .48, thickness: .08,
+    attenuationColor: new THREE.Color(0x4e96d0), attenuationDistance: 2.5, ior: 1.34,
+    clearcoat: .12, clearcoatRoughness: .32, side: THREE.FrontSide, envMapIntensity: .85,
+    iridescence: .32, iridescenceIOR: 1.3, iridescenceThicknessRange: [140, 280],
   });
   material.onBeforeCompile = shader => {
     shader.uniforms.cellTime = time;
     shader.vertexShader = "uniform float cellTime; varying vec3 cellSurface;\n" + shader.vertexShader;
     shader.vertexShader = shader.vertexShader.replace("#include <begin_vertex>", `
       #include <begin_vertex>
-      float drift = sin(position.x * 3.2 + position.y * 2.1 + cellTime * .55)
-        * cos(position.z * 3.8 - cellTime * .38);
-      transformed += objectNormal * drift * .012;
+      float drift = sin(position.x * 3.2 + position.y * 2.1 + cellTime * .25);
+      transformed.z += drift * .003;
       cellSurface = position;
     `);
     shader.fragmentShader = "varying vec3 cellSurface;\n" + shader.fragmentShader;
     shader.fragmentShader = shader.fragmentShader.replace("#include <normal_fragment_maps>", `
       #include <normal_fragment_maps>
-      float relief = sin(dot(cellSurface, vec3(32.0, 19.0, 27.0)))
-        * cos(dot(cellSurface, vec3(-23.0, 31.0, 17.0)))
-        + .45 * sin(dot(cellSurface, vec3(71.0, -43.0, 53.0)));
-      normal = normalize(normal + vec3(dFdx(relief), dFdy(relief), 0.0) * .12);
+      float relief = sin(cellSurface.x * 46.0 + sin(cellSurface.y * 9.0) * 3.0)
+        * cos(cellSurface.y * 39.0 + sin(cellSurface.x * 7.0) * 2.0);
+      normal = normalize(normal + vec3(dFdx(relief), dFdy(relief), 0.0) * .055);
     `);
   };
-  material.customProgramCacheKey = () => "cytellect-membrane-field-v1";
+  material.customProgramCacheKey = () => "cytellect-spread-membrane-v2";
   return material;
 }
 
@@ -85,26 +90,19 @@ export async function mountCellScene(host: HTMLDivElement, isPaused: () => boole
     const fill = new THREE.DirectionalLight(0x4174ba, .7); fill.position.set(1, -3, 4);
     scene.add(key, rim, fill);
     const time = { value: 0 }, coarse = matchMedia("(max-width: 900px), (pointer: coarse)");
-    const outerGeometry = membraneGeometry(coarse.matches ? 80 : 112), innerGeometry = membraneGeometry(64, true);
-    geometries.add(outerGeometry); geometries.add(innerGeometry);
-    const membrane = membraneMaterial(time), distantMembrane = membraneMaterial(time, true);
-    const interior = new THREE.MeshPhysicalMaterial({ color: 0x1a467d, roughness: .38, metalness: 0, clearcoat: .18, envMapIntensity: .6 });
-    materials.add(membrane); materials.add(distantMembrane); materials.add(interior);
-    const createCell = (shellMaterial: THREE.MeshPhysicalMaterial) => {
-      const group = new THREE.Group(), inside = new THREE.Mesh(innerGeometry, interior);
-      inside.scale.set(.47, .52, .49); inside.position.set(-.13, .06, -.06); inside.rotation.set(.28, -.3, .25);
-      group.add(inside, new THREE.Mesh(outerGeometry, shellMaterial)); return group;
-    };
-    const hero = createCell(membrane), distant = createCell(distantMembrane);
-    scene.add(hero, distant); host.appendChild(renderer.domElement);
+    const outerGeometry = membraneGeometry(coarse.matches ? 96 : 128);
+    geometries.add(outerGeometry);
+    const membrane = membraneMaterial(time); materials.add(membrane);
+    const hero = new THREE.Mesh(outerGeometry, membrane);
+    scene.add(hero); host.appendChild(renderer.domElement);
     let visible = false, disposed = false, contextUnavailable = false;
     let frame = 0, lastTime = 0, lastRender = 0, elapsed = 0, renders = 0, heroX = 0, heroY = 0;
     const render = () => {
       if (disposed || contextUnavailable) return;
-      const phase = elapsed * Math.PI * 2 / 14; time.value = elapsed;
-      hero.rotation.set(.2 + Math.sin(phase + .6) * .14, -.28 + Math.sin(phase - .75) * .6, -.24 + Math.cos(phase) * .07);
-      hero.position.set(heroX + Math.sin(phase) * .07, heroY + Math.sin(phase + .5) * .1, 0);
-      distant.rotation.set(-.2, .5 - phase * .35, .28); distant.position.y = heroY + .8 + Math.cos(phase + .8) * .12;
+      const phase = elapsed * Math.PI * 2 / 16; time.value = elapsed;
+      // Reveal thickness by changing incidence, never by inflating the silhouette.
+      hero.rotation.set(.82 + Math.sin(phase) * .19, -.32 + Math.sin(phase + .6) * .28, -.38 + Math.sin(phase - .4) * .1);
+      hero.position.set(heroX + Math.sin(phase) * .055, heroY + Math.sin(phase + .5) * .05, 0);
       renderer.render(scene, camera); host.dataset.renderCount = String(++renders);
     };
     const animate = (timestamp: number) => {
@@ -122,10 +120,9 @@ export async function mountCellScene(host: HTMLDivElement, isPaused: () => boole
       const { width, height } = host.getBoundingClientRect(); if (!width || !height) return;
       renderer.setSize(width, height, false); camera.aspect = width / height; camera.updateProjectionMatrix();
       const viewHeight = 2 * camera.position.z * Math.tan(THREE.MathUtils.degToRad(camera.fov / 2)), narrow = camera.aspect < 1.35;
-      hero.scale.setScalar(viewHeight * (narrow ? .36 : .4));
-      heroX = viewHeight * camera.aspect * .22; heroY = viewHeight * .08;
-      distant.scale.setScalar(viewHeight * (narrow ? .18 : .2));
-      distant.position.set(heroX - viewHeight * .55, heroY + .8, -2.2); render();
+      hero.scale.setScalar(viewHeight * (narrow ? .30 : .45));
+      heroX = viewHeight * camera.aspect * (narrow ? .16 : .23);
+      heroY = viewHeight * (narrow ? .2 : .18); render();
     };
     const resizeObserver = new ResizeObserver(resize);
     const visibility = new IntersectionObserver(([entry]) => { visible = entry.isIntersecting; syncMotion(); });
