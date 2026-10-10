@@ -19,13 +19,14 @@ lighting and subtle rocking motion retain the cytellect presentation.
 This is authored microscopy-inspired artwork, not measured biological data.
 No research datasets or runtime dependency on the cytellect deployment are included.
 
-## Founder optical cell field — 2026-10-10
+## Founder optical sculpture — 2026-10-10
 
 The Founder card now uses original procedural artwork authored for this site in
 `src/app/(official)/founder/cell-field-engine.ts`, rather than the imported GLB.
-The shallow asymmetric spread-cell membrane is generated deterministically in
-Three.js, with gentle edge folds and optical surface relief, without internal
-organelle models. Its desktop and mobile WebP posters capture that same renderer.
+Three beveled geometric optical facets are generated deterministically in
+Three.js. Their separation, alignment and changing reflections form the motion;
+no cell membranes, organelles, organic deformation or microscopy imagery are used.
+Its desktop and mobile WebP posters capture that same renderer.
 No microscopy specimens, experimental data, external textures or AI-generated
 images are used. The original imported assets and provenance above are retained.
 Copyright (c) 2026 Yuto Matsui.

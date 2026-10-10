@@ -2,56 +2,35 @@ import * as THREE from "three";
 
 export type CellSceneController = { dispose(): void; syncMotion(): void };
 
-// Original deterministic artwork; not measured or reconstructed biological data.
-function membraneGeometry(detail: number) {
-  const geometry = new THREE.SphereGeometry(1, detail, Math.round(detail * .7));
-  const positions = geometry.attributes.position, p = new THREE.Vector3();
-  for (let i = 0; i < positions.count; i++) {
-    p.fromBufferAttribute(positions, i);
-    const angle = Math.atan2(p.y, p.x), radial = Math.hypot(p.x, p.y);
-    // A spread cell's shallow optical surface: broad asymmetry, not a swollen orb.
-    const outline = 1 + .105 * Math.sin(angle * 3 + .4) + .055 * Math.cos(angle * 5 - .8)
-      + .035 * Math.sin(angle * 2 - .6);
-    const edge = radial ** 4;
-    const drape = .16 * Math.sin(angle * 3 + .6) * edge
-      + .06 * Math.cos(angle * 6 - .9) * edge;
-    const saddle = .15 * p.x * p.y + .065 * Math.sin(p.x * 4 + p.y * 2) * radial;
-    const opticalFolds = .018 * Math.sin(p.x * 19 + p.y * 8 + Math.sin(p.y * 5) * 2)
-      + .009 * Math.sin(p.y * 31 - p.x * 7 + Math.sin(p.x * 4));
-    const thickness = .034 * p.z * (1 + .12 * Math.cos(p.x * 5 - p.y * 3));
-    positions.setXYZ(i, p.x * outline * 1.24, p.y * outline * .89, thickness + drape + saddle + opticalFolds * radial);
-  }
-  geometry.computeVertexNormals();
+// An authored optical sculpture, deliberately independent of cellular anatomy.
+function opticalFacet() {
+  const outline = new THREE.Shape();
+  outline.moveTo(-.94, -.69);
+  outline.lineTo(.92, -.54);
+  outline.lineTo(.15, .94);
+  outline.closePath();
+  const aperture = new THREE.Path();
+  aperture.moveTo(-.42, -.36);
+  aperture.lineTo(.15, .42);
+  aperture.lineTo(.45, -.29);
+  aperture.closePath();
+  outline.holes.push(aperture);
+  const geometry = new THREE.ExtrudeGeometry(outline, {
+    depth: .22, bevelEnabled: true, bevelSize: .06, bevelThickness: .06,
+    bevelSegments: 6, steps: 1, curveSegments: 1,
+  });
+  geometry.translate(0, 0, -.11);
   return geometry;
 }
 
-function membraneMaterial(time: THREE.IUniform<number>) {
-  const material = new THREE.MeshPhysicalMaterial({
-    color: 0x639ebd, metalness: .08, roughness: .22,
-    transmission: .48, thickness: .08,
-    attenuationColor: new THREE.Color(0x4e96d0), attenuationDistance: 2.5, ior: 1.34,
-    clearcoat: .12, clearcoatRoughness: .32, side: THREE.FrontSide, envMapIntensity: .85,
-    iridescence: .32, iridescenceIOR: 1.3, iridescenceThicknessRange: [140, 280],
+function opticalMaterial(color: number) {
+  return new THREE.MeshPhysicalMaterial({
+    color, metalness: .48, roughness: .13, transmission: .27,
+    thickness: .28, ior: 1.48, attenuationColor: new THREE.Color(color),
+    attenuationDistance: 1.7, clearcoat: 1, clearcoatRoughness: .065,
+    envMapIntensity: 1.8, iridescence: .18,
+    iridescenceIOR: 1.32, iridescenceThicknessRange: [160, 310],
   });
-  material.onBeforeCompile = shader => {
-    shader.uniforms.cellTime = time;
-    shader.vertexShader = "uniform float cellTime; varying vec3 cellSurface;\n" + shader.vertexShader;
-    shader.vertexShader = shader.vertexShader.replace("#include <begin_vertex>", `
-      #include <begin_vertex>
-      float drift = sin(position.x * 3.2 + position.y * 2.1 + cellTime * .25);
-      transformed.z += drift * .003;
-      cellSurface = position;
-    `);
-    shader.fragmentShader = "varying vec3 cellSurface;\n" + shader.fragmentShader;
-    shader.fragmentShader = shader.fragmentShader.replace("#include <normal_fragment_maps>", `
-      #include <normal_fragment_maps>
-      float relief = sin(cellSurface.x * 46.0 + sin(cellSurface.y * 9.0) * 3.0)
-        * cos(cellSurface.y * 39.0 + sin(cellSurface.x * 7.0) * 2.0);
-      normal = normalize(normal + vec3(dFdx(relief), dFdy(relief), 0.0) * .055);
-    `);
-  };
-  material.customProgramCacheKey = () => "cytellect-spread-membrane-v2";
-  return material;
 }
 
 function opticalEnvironment(renderer: THREE.WebGLRenderer) {
@@ -89,20 +68,32 @@ export async function mountCellScene(host: HTMLDivElement, isPaused: () => boole
     const rim = new THREE.DirectionalLight(0x58baff, 3.5); rim.position.set(4, 2, -2);
     const fill = new THREE.DirectionalLight(0x4174ba, .7); fill.position.set(1, -3, 4);
     scene.add(key, rim, fill);
-    const time = { value: 0 }, coarse = matchMedia("(max-width: 900px), (pointer: coarse)");
-    const outerGeometry = membraneGeometry(coarse.matches ? 96 : 128);
-    geometries.add(outerGeometry);
-    const membrane = membraneMaterial(time); materials.add(membrane);
-    const hero = new THREE.Mesh(outerGeometry, membrane);
+    const coarse = matchMedia("(max-width: 900px), (pointer: coarse)");
+    const facet = opticalFacet(); geometries.add(facet);
+    const hero = new THREE.Group();
+    const plates = [0x48a8c9, 0x628ed5, 0xc9e9f0].map((color, index) => {
+      const material = opticalMaterial(color); materials.add(material);
+      const plate = new THREE.Mesh(facet, material);
+      const edgeGeometry = new THREE.EdgesGeometry(facet, 28); geometries.add(edgeGeometry);
+      const edgeMaterial = new THREE.LineBasicMaterial({ color: index === 1 ? 0x90b6ff : 0xc9efff, transparent: true, opacity: .24 });
+      materials.add(edgeMaterial);
+      plate.add(new THREE.LineSegments(edgeGeometry, edgeMaterial));
+      hero.add(plate); return plate;
+    });
     scene.add(hero); host.appendChild(renderer.domElement);
     let visible = false, disposed = false, contextUnavailable = false;
     let frame = 0, lastTime = 0, lastRender = 0, elapsed = 0, renders = 0, heroX = 0, heroY = 0;
     const render = () => {
       if (disposed || contextUnavailable) return;
-      const phase = elapsed * Math.PI * 2 / 16; time.value = elapsed;
-      // Reveal thickness by changing incidence, never by inflating the silhouette.
-      hero.rotation.set(.82 + Math.sin(phase) * .19, -.32 + Math.sin(phase + .6) * .28, -.38 + Math.sin(phase - .4) * .1);
-      hero.position.set(heroX + Math.sin(phase) * .055, heroY + Math.sin(phase + .5) * .05, 0);
+      const phase = elapsed * Math.PI * 2 / 12;
+      hero.rotation.set(.32 + Math.sin(phase) * .16, -.48 + Math.sin(phase + .5) * .4, -.2);
+      hero.position.set(heroX, heroY + Math.sin(phase) * .035, 0);
+      plates.forEach((plate, index) => {
+        const lane = index - 1, opening = .5 - .5 * Math.cos(phase);
+        plate.position.set(lane * (.14 + opening * .16), lane * (.06 + opening * .09), lane * (.2 + opening * .19));
+        plate.rotation.y = lane * (.15 + opening * .24);
+        plate.rotation.z = lane * (.18 + opening * .12);
+      });
       renderer.render(scene, camera); host.dataset.renderCount = String(++renders);
     };
     const animate = (timestamp: number) => {
@@ -120,9 +111,9 @@ export async function mountCellScene(host: HTMLDivElement, isPaused: () => boole
       const { width, height } = host.getBoundingClientRect(); if (!width || !height) return;
       renderer.setSize(width, height, false); camera.aspect = width / height; camera.updateProjectionMatrix();
       const viewHeight = 2 * camera.position.z * Math.tan(THREE.MathUtils.degToRad(camera.fov / 2)), narrow = camera.aspect < 1.35;
-      hero.scale.setScalar(viewHeight * (narrow ? .30 : .45));
-      heroX = viewHeight * camera.aspect * (narrow ? .16 : .23);
-      heroY = viewHeight * (narrow ? .2 : .18); render();
+      hero.scale.setScalar(viewHeight * (narrow ? .30 : .36));
+      heroX = viewHeight * camera.aspect * (narrow ? .13 : .25);
+      heroY = viewHeight * (narrow ? .19 : .16); render();
     };
     const resizeObserver = new ResizeObserver(resize);
     const visibility = new IntersectionObserver(([entry]) => { visible = entry.isIntersecting; syncMotion(); });
