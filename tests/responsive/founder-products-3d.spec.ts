@@ -28,7 +28,7 @@ for (const language of ["ja", "en"] as const) {
       await expect(replacement.getByRole("link")).toHaveAttribute("href", "https://compass-official.pages.dev/");
       const cell = products.locator('[data-product="cytellect"]');
       await expect(cell.getByRole("link")).toHaveAttribute("href", "https://cytellect.vercel.app/");
-      await expect(cell.getByRole("link")).toHaveAccessibleName(`cytellect: ${language === "en" ? "Explore cytellect" : "未来の研究を体験する"}`);
+      await expect(cell.getByRole("link")).toHaveAccessibleName(`cytellect: ${language === "en" ? "Explore cytellect" : "プロダクトLP"}`);
       await expect(cell.locator("canvas")).toHaveCount(0);
       await expect(cell.locator("img")).toBeVisible();
       expect(await cell.locator("h3").evaluate(el => el.scrollWidth <= el.clientWidth)).toBe(true);
@@ -96,16 +96,43 @@ test("Platform remains a working link without WebGL", async ({ page }) => {
   await expect(platform.locator("svg[class*='platformFallback']")).toBeVisible();
   await expect(platform.getByRole("link", { name: "COMPASS: Explore COMPASS" })).toHaveAttribute("href", "https://compass-official.pages.dev/");
   const cell = page.locator('[data-product="cytellect"]');
+  await page.emulateMedia({ reducedMotion: "reduce" });
   await cell.scrollIntoViewIfNeeded();
   await expect(cell.locator("img")).toBeVisible();
   await expect(cell.locator("img")).toHaveCSS("opacity", "1");
+  await expect.poll(() => cell.locator("img").evaluate((image: HTMLImageElement) => image.naturalWidth)).toBeGreaterThan(0);
   await expect(cell.getByRole("link")).toHaveAttribute("href", "https://cytellect.vercel.app/");
 });
 
+test("Cytellect artwork is present before JavaScript initializes", async ({ browser }, testInfo) => {
+  for (const mobile of [false, true]) {
+    const context = await browser.newContext({ javaScriptEnabled: false, viewport: mobile ? { width: 390, height: 844 } : { width: 1440, height: 900 } });
+    try {
+      const page = await context.newPage();
+      await page.goto(`${testInfo.project.use.baseURL}/${mobile ? "en" : "founder"}/`, { waitUntil: "domcontentloaded" });
+      const cell = page.locator('[data-product="cytellect"]');
+      await cell.scrollIntoViewIfNeeded();
+      await expect(cell.locator("img")).toHaveCSS("opacity", "1");
+      await expect.poll(() => cell.locator("img").evaluate((image: HTMLImageElement) => image.naturalWidth)).toBeGreaterThan(0);
+      await expect(cell.locator("canvas")).toHaveCount(0);
+      await expect(cell.getByRole("link")).toHaveAttribute("href", "https://cytellect.vercel.app/");
+    } finally { await context.close(); }
+  }
+});
+
 for (const mobile of [false, true]) {
-  test(`Cell motion and lifecycle: ${mobile ? "touch mobile" : "desktop"}`, async ({ browser }, testInfo) => {
+  test(`Cytellect film motion and lifecycle: ${mobile ? "touch mobile" : "desktop"}`, async ({ browser }, testInfo) => {
     test.setTimeout(90_000);
     const context = await browser.newContext({ viewport: mobile ? { width: 390, height: 844 } : { width: 1440, height: 900 }, isMobile: mobile, hasTouch: mobile, reducedMotion: "no-preference" });
+    // These are media lifecycle tests. Avoid concurrently exercising unrelated
+    // Three.js scenes; this also proves the film does not depend on WebGL.
+    await context.addInitScript(() => {
+      const original = HTMLCanvasElement.prototype.getContext;
+      HTMLCanvasElement.prototype.getContext = function (this: HTMLCanvasElement, name: string, ...args: unknown[]) {
+        if (name.startsWith("webgl") || name === "experimental-webgl") return null;
+        return Reflect.apply(original, this, [name, ...args]);
+      } as typeof original;
+    });
     const origin = new URL(String(testInfo.project.use.baseURL)).origin;
     await context.route("**/*", route => {
       const request = route.request();
@@ -119,25 +146,50 @@ for (const mobile of [false, true]) {
       const cell = products.locator('[data-scene="cytellect"]');
       await cell.scrollIntoViewIfNeeded();
       await expect(cell).toHaveAttribute("data-ready", "true", { timeout: 30_000 });
-      const frames = () => cell.getAttribute("data-render-count").then(Number);
-      const before = await frames();
-      await expect.poll(frames).toBeGreaterThan(before);
+      const film = cell.locator("video");
+      const time = () => film.evaluate((video: HTMLVideoElement) => video.currentTime);
+      await expect(film).toHaveAttribute("src", new RegExp(`science-${mobile ? "mobile" : "desktop"}.mp4$`));
+      const before = await time();
+      await expect.poll(time).not.toBe(before);
       await cell.locator("..").screenshot({ path: testInfo.outputPath(`cell-${mobile ? "mobile" : "desktop"}-motion.png`) });
       const pause = products.locator("button[aria-pressed]");
       await pause.click();
       await cell.scrollIntoViewIfNeeded();
       await page.waitForTimeout(150);
-      const stopped = await frames();
+      const stopped = await time();
       await page.waitForTimeout(250);
-      expect(await frames()).toBe(stopped);
+      expect(await time()).toBe(stopped);
       await pause.click();
       await cell.scrollIntoViewIfNeeded();
-      await expect.poll(frames).toBeGreaterThan(stopped);
+      await expect.poll(time).not.toBe(stopped);
+      await page.locator("#top").scrollIntoViewIfNeeded();
+      await expect.poll(() => film.evaluate((video: HTMLVideoElement) => video.paused)).toBe(true);
+      await cell.scrollIntoViewIfNeeded();
+      await expect.poll(() => film.evaluate((video: HTMLVideoElement) => video.paused)).toBe(false);
       await page.setViewportSize({ width: mobile ? 844 : 1024, height: mobile ? 390 : 1366 });
-      await expect(cell.locator("canvas")).toHaveCount(1);
+      await expect(film).toHaveCount(1);
+      await expect(cell).toHaveAttribute("data-ready", "true");
       await page.emulateMedia({ reducedMotion: "reduce" });
       await expect(cell.locator("canvas")).toHaveCount(0);
+      await expect(film).not.toHaveAttribute("src");
       await expect(cell.locator("img")).toHaveCSS("opacity", "1");
     } finally { await context.close(); }
   });
 }
+
+test("Cytellect media failure keeps artwork and CTA available", async ({ page }) => {
+  await page.addInitScript(() => {
+    const original = HTMLCanvasElement.prototype.getContext;
+    HTMLCanvasElement.prototype.getContext = function (this: HTMLCanvasElement, name: string, ...args: unknown[]) {
+      if (name.startsWith("webgl") || name === "experimental-webgl") return null;
+      return Reflect.apply(original, this, [name, ...args]);
+    } as typeof original;
+  });
+  await page.route("**/cytellect/science-*.mp4", route => route.abort());
+  await page.goto("/en/", { waitUntil: "domcontentloaded" });
+  const card = page.locator('[data-product="cytellect"]');
+  await card.scrollIntoViewIfNeeded();
+  await expect(card.locator("img")).toHaveCSS("opacity", "1");
+  await expect.poll(() => card.locator("img").evaluate((image: HTMLImageElement) => image.naturalWidth)).toBeGreaterThan(0);
+  await expect(card.getByRole("link")).toHaveAttribute("href", "https://cytellect.vercel.app/");
+});
