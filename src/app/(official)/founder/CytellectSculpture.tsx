@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
-import type { CellSceneController } from "./cytellect-scene-engine";
+import type { CellSceneController } from "./cell-field-engine";
 import styles from "./products-cinematic.module.css";
 
 export function CytellectSculpture({ paused }: { paused: boolean }) {
@@ -35,15 +35,16 @@ export function CytellectSculpture({ paused }: { paused: boolean }) {
       const pending = new AbortController();
       request = pending;
       try {
-        const { mountCellScene } = await import("./cytellect-scene-engine");
+        const { mountCellScene } = await import("./cell-field-engine");
         if (pending.signal.aborted) return;
         const scene = await mountCellScene(element, () => pause.current, pending.signal, () => setReady(false));
         if (disposed || pending.signal.aborted) { scene.dispose(); return; }
         controller.current = scene;
         setReady(true);
         scene.syncMotion();
-      } catch {
+      } catch (error) {
         // The server-rendered poster and link remain available on any failure.
+        if (process.env.NODE_ENV === "development") console.warn("Cytellect scene initialization failed", error);
         if (!disposed && !pending.signal.aborted) setReady(false);
       }
     };
@@ -65,6 +66,9 @@ export function CytellectSculpture({ paused }: { paused: boolean }) {
   }, []);
 
   return <div ref={host} className={styles.scene} data-scene="cytellect" data-ready={ready} aria-hidden="true">
-    <Image className={styles.cellPoster} src="/images/founder-products/cytellect/cell-sculpture-poster.webp" width={1600} height={1000} sizes="(max-width: 900px) 100vw, 550px" alt="" loading="lazy" />
+    <picture>
+      <source media="(max-width: 900px)" srcSet="/images/founder-products/cytellect/cell-field-mobile-poster.webp" />
+      <Image className={styles.cellPoster} src="/images/founder-products/cytellect/cell-field-poster.webp" width={1600} height={1000} sizes="(max-width: 900px) 100vw, 550px" alt="" loading="eager" />
+    </picture>
   </div>;
 }

@@ -28,7 +28,7 @@ for (const language of ["ja", "en"] as const) {
       await expect(replacement.getByRole("link")).toHaveAttribute("href", "https://compass-official.pages.dev/");
       const cell = products.locator('[data-product="cytellect"]');
       await expect(cell.getByRole("link")).toHaveAttribute("href", "https://cytellect.vercel.app/");
-      await expect(cell.getByRole("link")).toHaveAccessibleName(`cytellect: ${language === "en" ? "Explore cytellect" : "未来の研究を体験する"}`);
+      await expect(cell.getByRole("link")).toHaveAccessibleName(`cytellect: ${language === "en" ? "Explore cytellect" : "プロダクトLP"}`);
       await expect(cell.locator("canvas")).toHaveCount(0);
       await expect(cell.locator("img")).toBeVisible();
       expect(await cell.locator("h3").evaluate(el => el.scrollWidth <= el.clientWidth)).toBe(true);
@@ -99,7 +99,24 @@ test("Platform remains a working link without WebGL", async ({ page }) => {
   await cell.scrollIntoViewIfNeeded();
   await expect(cell.locator("img")).toBeVisible();
   await expect(cell.locator("img")).toHaveCSS("opacity", "1");
+  await expect.poll(() => cell.locator("img").evaluate((image: HTMLImageElement) => image.naturalWidth)).toBeGreaterThan(0);
   await expect(cell.getByRole("link")).toHaveAttribute("href", "https://cytellect.vercel.app/");
+});
+
+test("Cell is present before JavaScript initializes", async ({ browser }, testInfo) => {
+  for (const mobile of [false, true]) {
+    const context = await browser.newContext({ javaScriptEnabled: false, viewport: mobile ? { width: 390, height: 844 } : { width: 1440, height: 900 } });
+    try {
+      const page = await context.newPage();
+      await page.goto(`${testInfo.project.use.baseURL}/${mobile ? "en" : "founder"}/`, { waitUntil: "domcontentloaded" });
+      const cell = page.locator('[data-product="cytellect"]');
+      await cell.scrollIntoViewIfNeeded();
+      await expect(cell.locator("img")).toHaveCSS("opacity", "1");
+      await expect.poll(() => cell.locator("img").evaluate((image: HTMLImageElement) => image.naturalWidth)).toBeGreaterThan(0);
+      await expect(cell.locator("canvas")).toHaveCount(0);
+      await expect(cell.getByRole("link")).toHaveAttribute("href", "https://cytellect.vercel.app/");
+    } finally { await context.close(); }
+  }
 });
 
 for (const mobile of [false, true]) {

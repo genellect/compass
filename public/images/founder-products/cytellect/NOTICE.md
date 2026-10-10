@@ -18,3 +18,13 @@ lighting and subtle rocking motion retain the cytellect presentation.
 
 This is authored microscopy-inspired artwork, not measured biological data.
 No research datasets or runtime dependency on the cytellect deployment are included.
+
+## Founder optical cell field — 2026-10-10
+
+The Founder card now uses original procedural artwork authored for this site in
+`src/app/(official)/founder/cell-field-engine.ts`, rather than the imported GLB.
+The closed asymmetric membrane and internal volume are generated deterministically
+in Three.js. Its desktop and mobile WebP posters are captures of that same renderer.
+No microscopy specimens, experimental data, external textures or AI-generated
+images are used. The original imported assets and provenance above are retained.
+Copyright (c) 2026 Yuto Matsui.
