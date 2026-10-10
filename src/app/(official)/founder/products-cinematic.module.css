@@ -134,7 +134,9 @@
 .product[data-product="cytellect"] .shade { background: linear-gradient(90deg, #020817e6, #02081788 45%, transparent 80%), linear-gradient(0deg, #020817 0%, #020817d9 22%, transparent 64%); }
 .product[data-product="cytellect"] .title { font-size: clamp(24px, 2.35vw, 31px); line-height: 1.15; letter-spacing: -.035em; }
 .product[data-product="cytellect"] .title strong { font-weight: 750; margin-top: 6px; white-space:nowrap; }
-.cellPoster { position: absolute; width: 100%; height: 100%; inset: 0; object-fit: cover; object-position: 70% center; transition: opacity 600ms ease; }
+.cellPoster, .cytellectFilm { position: absolute; width: 100%; height: 100%; inset: 0; object-fit: cover; object-position: center; transition: opacity 600ms ease; }
+.cytellectFilm { display: block; opacity: 0; pointer-events: none; }
+.scene[data-ready="true"] .cytellectFilm { opacity: 1; }
 .scene[data-ready="true"] .cellPoster { opacity: 0; }
 @media (max-width: 900px) {
   .product[data-product="platform"] .stage { height: 380px; }
@@ -146,5 +148,5 @@
   .product[data-product="platform"] .title, .product[data-product="cytellect"] .title { font-size: clamp(24px, 7vw, 31px); }
 }
 @media (prefers-reduced-motion: reduce) {
-  .platformFallback, .cellPoster { transition: none; }
+  .platformFallback, .cellPoster, .cytellectFilm { transition: none; }
 }
