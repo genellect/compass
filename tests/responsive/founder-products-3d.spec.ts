@@ -112,6 +112,7 @@ test("Cytellect artwork is present before JavaScript initializes", async ({ brow
       await page.goto(`${testInfo.project.use.baseURL}/${mobile ? "en" : "founder"}/`, { waitUntil: "domcontentloaded" });
       const cell = page.locator('[data-product="cytellect"]');
       await cell.scrollIntoViewIfNeeded();
+      await expect(cell.locator('[data-scene="cytellect"]')).toHaveCSS("background-color", "rgb(32, 36, 53)");
       await expect(cell.locator("img")).toHaveCSS("opacity", "1");
       await expect.poll(() => cell.locator("img").evaluate((image: HTMLImageElement) => image.naturalWidth)).toBeGreaterThan(0);
       await expect(cell.locator("canvas")).toHaveCount(0);

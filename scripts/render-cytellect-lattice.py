@@ -37,6 +37,10 @@ def build(variant, mobile):
     scene.render.fps = 24
     scene.frame_start, scene.frame_end = 1, 288
     scene.render.image_settings.file_format = 'PNG'
+    # Keep the studio world for reflections, but separate the camera background.
+    # The encoder composites the unchanged sculpture over the shared card navy.
+    scene.render.image_settings.color_mode = 'RGBA'
+    scene.render.film_transparent = True
     scene.view_settings.view_transform = 'AgX'
     scene.view_settings.look = 'AgX - Medium High Contrast'
     scene.world.use_nodes = True

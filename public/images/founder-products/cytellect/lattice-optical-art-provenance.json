@@ -28,6 +28,10 @@
     "coatRoughness": 0.12,
     "reflection": "broad rectangular studio lights"
   },
+  "background": {
+    "color": "#202435",
+    "method": "Transparent film alpha composited over COMPASS card navy; studio world, object lighting, materials and motion unchanged"
+  },
   "sources": [
     "scripts/render-cytellect-lattice.py",
     "scripts/encode-cytellect-art.mjs"
@@ -37,23 +41,23 @@
   "assets": [
     {
       "file": "lattice-optical-desktop.mp4",
-      "bytes": 3043666,
-      "sha256": "4a950f3b7fd99176ea525786027e49c62c3399772eeeff929d60f6a2b1ce1046"
+      "bytes": 2888078,
+      "sha256": "5f63fd92e5311913cd298db8d55c73619ef91997a1317899282ef9b3f7cf074a"
     },
     {
       "file": "lattice-optical-mobile.mp4",
-      "bytes": 2069076,
-      "sha256": "80baaf2ff3a0197ddd5141a45a5685972e037279d8f95a25ec12c7276c8e2352"
+      "bytes": 1941714,
+      "sha256": "f22cdaf184cd600b6306cbab3cfa5e5dbacba261494ed08b130aa42cdc6d8be4"
     },
     {
       "file": "lattice-optical-poster.webp",
-      "bytes": 48196,
-      "sha256": "d0e969cb5e79231691e064b2b7c3f37331495cc21d41388478389247be7f9681"
+      "bytes": 47092,
+      "sha256": "5483bb99a34c294268c2f8a1e399c2ec4340ca36318095c4e27379b64d288873"
     },
     {
       "file": "lattice-optical-mobile-poster.webp",
-      "bytes": 32990,
-      "sha256": "b601ddfd312df55c37b01ad882a2ac51aa6dde21324b452c247a314aa08bc157"
+      "bytes": 31770,
+      "sha256": "499b72f2f124357bbd5ee4baefa65c2c5abc291eebe873f6c5e6051761cbb3c4"
     }
   ]
 }
