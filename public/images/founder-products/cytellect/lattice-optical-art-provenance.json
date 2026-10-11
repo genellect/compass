@@ -1,0 +1,59 @@
+{
+  "artwork": "Optical molecular lattice — original face-centered connection sculpture",
+  "author": "Yuto Matsui",
+  "created": "2026-10-11",
+  "tools": {
+    "blender": "4.5.9 LTS",
+    "renderer": "Eevee",
+    "ffmpeg": "7.1",
+    "fps": 24,
+    "frames": 288,
+    "loopSeconds": 12
+  },
+  "structure": {
+    "variant": 0,
+    "cubicCells": 1,
+    "cornerSites": 8,
+    "faceCenterSites": 6,
+    "jointRadius": 0.105,
+    "bondRadius": 0.046,
+    "nearestNeighborSquaredDistance": 0.5,
+    "cubicEdgesAdded": true,
+    "deformation": "none"
+  },
+  "finish": {
+    "metallic": 0.56,
+    "roughness": 0.22,
+    "coatWeight": 0.28,
+    "coatRoughness": 0.12,
+    "reflection": "broad rectangular studio lights"
+  },
+  "sources": [
+    "scripts/render-cytellect-lattice.py",
+    "scripts/encode-cytellect-art.mjs"
+  ],
+  "externalAssets": [],
+  "interpretation": "Original cubic framework with corner and face-center sites, nearest-neighbor connections and continuous object-space gradient. Inspired by FCC spatial order but with additional cubic edge frames, not a measured atomic structure, biological simulation or Cytellect research result. No third-party models, textures or reference-site assets used.",
+  "assets": [
+    {
+      "file": "lattice-optical-desktop.mp4",
+      "bytes": 3043666,
+      "sha256": "4a950f3b7fd99176ea525786027e49c62c3399772eeeff929d60f6a2b1ce1046"
+    },
+    {
+      "file": "lattice-optical-mobile.mp4",
+      "bytes": 2069076,
+      "sha256": "80baaf2ff3a0197ddd5141a45a5685972e037279d8f95a25ec12c7276c8e2352"
+    },
+    {
+      "file": "lattice-optical-poster.webp",
+      "bytes": 48196,
+      "sha256": "d0e969cb5e79231691e064b2b7c3f37331495cc21d41388478389247be7f9681"
+    },
+    {
+      "file": "lattice-optical-mobile-poster.webp",
+      "bytes": 32990,
+      "sha256": "b601ddfd312df55c37b01ad882a2ac51aa6dde21324b452c247a314aa08bc157"
+    }
+  ]
+}

@@ -148,8 +148,8 @@ for (const mobile of [false, true]) {
       await expect(cell).toHaveAttribute("data-ready", "true", { timeout: 30_000 });
       const film = cell.locator("video");
       const time = () => film.evaluate((video: HTMLVideoElement) => video.currentTime);
-      await expect(film).toHaveAttribute("src", new RegExp(`lattice-${mobile ? "mobile" : "desktop"}.mp4$`));
-      await expect.poll(() => film.evaluate((video: HTMLVideoElement) => video.duration)).toBe(8);
+      await expect(film).toHaveAttribute("src", new RegExp(`lattice-optical-${mobile ? "mobile" : "desktop"}.mp4$`));
+      await expect.poll(() => film.evaluate((video: HTMLVideoElement) => video.duration)).toBe(12);
       const before = await time();
       await expect.poll(time).not.toBe(before);
       await cell.locator("..").screenshot({ path: testInfo.outputPath(`cell-${mobile ? "mobile" : "desktop"}-motion.png`) });

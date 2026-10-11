@@ -1,7 +1,7 @@
 """Original hollow lattice artwork. Blender 4.5 authoring, no runtime dependency.
 
-No molecules, scientific data, third-party models or textures are imported.
-The cubic framework, face-center connections and spatial color field are the artwork.
+No measured molecules, scientific data, third-party models or textures are imported.
+The cubic framework, small atomic joints and spatial color field are the artwork.
 --studies renders both shapes and both card cameras before film production.
 """
 import argparse
@@ -35,7 +35,7 @@ def build(variant, mobile):
     scene.render.resolution_y = 800 if mobile else 640
     scene.render.resolution_percentage = 100
     scene.render.fps = 24
-    scene.frame_start, scene.frame_end = 1, 192
+    scene.frame_start, scene.frame_end = 1, 288
     scene.render.image_settings.file_format = 'PNG'
     scene.view_settings.view_transform = 'AgX'
     scene.view_settings.look = 'AgX - Medium High Contrast'
@@ -49,10 +49,10 @@ def build(variant, mobile):
     material.use_nodes = True
     nodes, links = material.node_tree.nodes, material.node_tree.links
     shader = nodes.get('Principled BSDF')
-    shader.inputs['Metallic'].default_value = 0.38
-    shader.inputs['Roughness'].default_value = 0.28
-    shader.inputs['Coat Weight'].default_value = 0.12
-    shader.inputs['Coat Roughness'].default_value = 0.16
+    shader.inputs['Metallic'].default_value = 0.56
+    shader.inputs['Roughness'].default_value = 0.22
+    shader.inputs['Coat Weight'].default_value = 0.28
+    shader.inputs['Coat Roughness'].default_value = 0.12
     coordinate = nodes.new('ShaderNodeTexCoord')
     separate = nodes.new('ShaderNodeSeparateXYZ')
     ramp = nodes.new('ShaderNodeValToRGB')
@@ -75,7 +75,8 @@ def build(variant, mobile):
     sculpture = bpy.data.objects.new('Hollow connection field', None)
     scene.collection.objects.link(sculpture)
     # Corner and face-center sites of one or two joined cubic unit cells.
-    # No curved sheet, random displacement, cell blobs or atom-sized spheres.
+    # No curved sheet, random displacement or cell blobs. Small regular joints
+    # make the atomic sites legible without filling the open chambers.
     cells = 1 if variant == 0 else 2
     sites = set()
     for cell in range(cells):
@@ -120,21 +121,37 @@ def build(variant, mobile):
     bonds.select_set(True)
     bpy.ops.object.convert(target='MESH')
     bonds = bpy.context.object
+    parts = [bonds]
+    for site in sites:
+        bpy.ops.mesh.primitive_uv_sphere_add(segments=24, ring_count=12, radius=0.105, location=position(site))
+        joint = bpy.context.object
+        joint.name = 'Atomic joint'
+        joint.data.materials.append(material)
+        parts.append(joint)
+    bpy.ops.object.select_all(action='DESELECT')
+    for part in parts:
+        part.select_set(True)
+    bpy.context.view_layer.objects.active = bonds
+    bpy.ops.object.join()
+    # A single generated coordinate field keeps joints and bonds the same hue.
     for polygon in bonds.data.polygons:
         polygon.use_smooth = True
     sculpture.rotation_euler = (0.18, -0.20, 0.14)
     sculpture.location = (1.15 if not mobile else 0.0, 0.0, 0.5)
 
-    def light(name, location, color, power, size, target=(0, 0, 0)):
+    def light(name, location, color, power, size, target=(0, 0, 0), strip_height=None):
         data = bpy.data.lights.new(name, 'AREA')
         data.energy, data.color, data.shape, data.size = power, color, 'DISK', size
+        if strip_height is not None:
+            data.shape, data.size_y = 'RECTANGLE', strip_height
         obj = bpy.data.objects.new(name, data)
         scene.collection.objects.link(obj)
         obj.location = location
         obj.rotation_euler = (Vector(target) - obj.location).to_track_quat('-Z', 'Y').to_euler()
 
-    light('Broad clean key', (0, -4, 6), (0.93, 0.97, 1), 650, 5)
-    light('White rim through voids', (2, 4, 3), (0.9, 0.95, 1), 600, 3)
+    light('Broad clean key', (0, -4, 6), (0.93, 0.97, 1), 650, 5, strip_height=3)
+    light('White rim through voids', (2, 4, 3), (0.9, 0.95, 1), 600, 4, strip_height=1.5)
+    light('Long optical reflection', (-3, -4, 2), (0.94, 0.98, 1), 180, 4, strip_height=0.8)
     light('Cyan edge', (-4, 0, 2), (0.45, 0.91, 1), 220, 3)
     light('Amber edge', (4, -2, 0), (1, 0.72, 0.47), 260, 3)
 
@@ -154,8 +171,8 @@ def build(variant, mobile):
 
     base = sculpture.rotation_euler.copy()
     if args.animate:
-        for frame in range(1, 194):
-            phase = (frame - 1) / 192 * math.tau
+        for frame in range(1, 290):
+            phase = (frame - 1) / 288 * math.tau
             sculpture.rotation_euler = (base.x + 0.10 * math.sin(phase), base.y + phase, base.z + 0.07 * math.sin(phase))
             sculpture.location.z = 0.5 + 0.05 * math.sin(phase)
             sculpture.keyframe_insert(data_path='rotation_euler', frame=frame)
