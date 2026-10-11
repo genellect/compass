@@ -112,6 +112,7 @@ test("Cytellect artwork is present before JavaScript initializes", async ({ brow
       await page.goto(`${testInfo.project.use.baseURL}/${mobile ? "en" : "founder"}/`, { waitUntil: "domcontentloaded" });
       const cell = page.locator('[data-product="cytellect"]');
       await cell.scrollIntoViewIfNeeded();
+      await expect(cell.locator('[data-scene="cytellect"]')).toHaveCSS("background-color", "rgb(32, 36, 53)");
       await expect(cell.locator("img")).toHaveCSS("opacity", "1");
       await expect.poll(() => cell.locator("img").evaluate((image: HTMLImageElement) => image.naturalWidth)).toBeGreaterThan(0);
       await expect(cell.locator("canvas")).toHaveCount(0);
@@ -148,8 +149,8 @@ for (const mobile of [false, true]) {
       await expect(cell).toHaveAttribute("data-ready", "true", { timeout: 30_000 });
       const film = cell.locator("video");
       const time = () => film.evaluate((video: HTMLVideoElement) => video.currentTime);
-      await expect(film).toHaveAttribute("src", new RegExp(`lattice-${mobile ? "mobile" : "desktop"}.mp4$`));
-      await expect.poll(() => film.evaluate((video: HTMLVideoElement) => video.duration)).toBe(8);
+      await expect(film).toHaveAttribute("src", new RegExp(`lattice-optical-${mobile ? "mobile" : "desktop"}.mp4$`));
+      await expect.poll(() => film.evaluate((video: HTMLVideoElement) => video.duration)).toBe(12);
       const before = await time();
       await expect.poll(time).not.toBe(before);
       await cell.locator("..").screenshot({ path: testInfo.outputPath(`cell-${mobile ? "mobile" : "desktop"}-motion.png`) });
