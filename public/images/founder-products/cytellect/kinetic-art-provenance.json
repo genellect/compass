@@ -1,0 +1,39 @@
+{
+  "artwork": "Original kinetic architecture",
+  "author": "Yuto Matsui",
+  "created": "2026-10-10",
+  "tools": {
+    "blender": "4.5.9 LTS",
+    "renderer": "Eevee",
+    "ffmpeg": "7.1",
+    "fps": 24,
+    "frames": 144
+  },
+  "sources": [
+    "scripts/render-cytellect-art.py",
+    "scripts/encode-cytellect-art.mjs"
+  ],
+  "externalAssets": [],
+  "assets": [
+    {
+      "file": "kinetic-desktop.mp4",
+      "bytes": 1817982,
+      "sha256": "d1d841a2e5501fcbce2febc54333fb013216bea17b2f7acadc7ce048a9ecff4b"
+    },
+    {
+      "file": "kinetic-mobile.mp4",
+      "bytes": 1330874,
+      "sha256": "42da1a31bf060c168867f4091425733a925c50862332dbe5a82e0836dc5ae0f3"
+    },
+    {
+      "file": "cell-field-poster.webp",
+      "bytes": 55524,
+      "sha256": "420ab8b4f82b4fc5da06ea433fcb69ba1cdf565ac83c06138ec6398f92776738"
+    },
+    {
+      "file": "cell-field-mobile-poster.webp",
+      "bytes": 42354,
+      "sha256": "e3894441430f26a0264532ba0dedca0d6dd8524851a1fe537fdfaa1604e66d57"
+    }
+  ]
+}

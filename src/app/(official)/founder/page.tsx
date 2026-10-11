@@ -99,7 +99,7 @@ const products = [
     key: "cytellect",
     label: "cytellect",
     title: "Get your microscopy publication-ready.",
-    links: [{ label: "未来の研究を体験する", href: "https://cytellect.vercel.app/" }]
+    links: [{ label: "プロダクトLP", href: "https://cytellect.vercel.app/" }]
   },
   {
     key: "platform",
