@@ -407,7 +407,9 @@
 .evidenceHeading h2 { margin-top: 18px; font-size: clamp(3.6rem, 6.5vw, 7rem); line-height: 0.9; }
 .evidenceHeading > p { margin: 0; color: rgba(232, 244, 235, 0.48); font-family: ui-monospace, SFMono-Regular, Consolas, monospace; font-size: 0.62rem; letter-spacing: 0.08em; text-transform: uppercase; }
 .experienceGrid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 32px; }
-.experienceItem { border-top: 1px solid rgba(232, 244, 235, 0.18); }
+.experienceItem { position: relative; border-top: 1px solid rgba(232, 244, 235, 0.18); }
+.experienceLink { position: absolute; inset: 0; z-index: 10; }
+.experienceLink:focus-visible { outline: 2px solid var(--biotic); outline-offset: -3px; }
 .experienceImage { position: relative; aspect-ratio: 4 / 3; margin: 18px 0 26px; overflow: hidden; }
 .experienceImage img { object-fit: cover; filter: saturate(0.66) brightness(0.83); }
 .experienceMeta { display: flex; align-items: end; justify-content: space-between; gap: 20px; }

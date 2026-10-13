@@ -127,7 +127,7 @@ const experience = [
   {
     area: "Development",
     years: "4+ years",
-    focus: ["フルスタックWeb開発", "クラウドエンジニアリング", "Agentic Workflows"],
+    focus: ["フルスタックWeb開発", "クラウド・インフラ設計", "AI・Machine Learning"],
     image: "/images/founder-portfolio/source/experience-development.webp",
     alt: "ソースコードを表示したモニター",
     accent: "ai"
@@ -421,6 +421,7 @@ export default function FounderPage() {
             <div className={styles.experienceGrid}>
               {experience.map((item) => (
                 <DepthCard key={item.area} depth="experience" className={styles.experienceCard} data-accent={item.accent}>
+                  {item.area === "Development" ? <a className={styles.experienceLink} href="https://github.com/genellect" target="_blank" rel="noopener noreferrer" aria-label="Development — Yuto MatsuiのGitHubプロフィール（新しいタブで開く）" /> : null}
                   <DepthVisual className={styles.experienceVisual} data-depth-layer="image">
                     <Image decoding="sync" loading="eager" src={item.image} alt={item.alt} fill sizes="(min-width: 901px) 31vw, (min-width: 641px) 31vw, 100vw" />
                   </DepthVisual>
