@@ -45,8 +45,6 @@ Contactの導入には、Blenderで制作した建築映像を使用していま
 
 ### 利用者データ基盤および未来戦略ライブラリ登録基盤
 
-> 注: 本節は現行ソース上の論理構成を説明するもので、Library公開登録API・管理API・Drive WorkerのProduction検証は未完了です。
-
 未来戦略ライブラリの登録基盤は、FastAPI、Neon PostgreSQL、Google Cloud Runを中心に構成しています。Public API、Admin API、Drive Worker、Migration Jobを分離し、それぞれに必要な権限だけを持たせています。Google IDトークンはバックエンドで検証し、利用資格や管理者権限もサーバー側で判定します。
 
 PostgreSQLではPublic API、Admin API、Worker、MigrationごとにDBロールを分け、各サービスから実行できる操作を限定しています。SQLAlchemy / Psycopgで接続し、スキーマ変更はAlembicで管理しています。登録や管理操作のうち、権限境界を越える処理はRPCに寄せ、アプリケーションから直接触れる範囲を絞っています。
@@ -55,7 +53,7 @@ Google Driveへの権限反映は同期処理にせず、Transactional Outboxを
 
 管理APIはCloudflare側のプロキシと共有シークレットを経由し、Google認証とDB側の権限判定を重ねています。Secret ManagerではDB接続情報やDrive OAuth情報を用途ごとに分離し、Cloud Runの各サービスには必要なSecretだけを渡します。
 
-インフラはTerraformで定義し、Cloud Run、Cloud Run Jobs、Cloud Scheduler、IAM、Secret Managerまでコード化しています。Migration、Public API、Admin API、Drive処理は個別に有効化できるようにし、本番反映時には段階的に公開範囲を広げられる構成です。管理操作、権限変更、エクスポート処理は監査ログに記録しています。
+インフラはTerraformで定義し、Cloud Run、Cloud Run Jobs、Cloud Scheduler、IAM、Secret Managerまでコード化しています。Migration、Public API、Admin API、Drive処理は個別に有効化できるようにし、本番反映時には段階的に公開範囲を広げられる設計としています。管理操作、権限変更、エクスポート処理は監査ログに記録しています。
 
 
 
