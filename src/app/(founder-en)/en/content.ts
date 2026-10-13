@@ -109,7 +109,7 @@ export const experience = [
   {
     area: "Development",
     years: "4+ years",
-    focus: ["Full-Stack Web Development", "Cloud Engineering", "Agentic Workflows"],
+    focus: ["Full-Stack Web Development", "Cloud & Infrastructure Design", "AI & Machine Learning"],
     image: "/images/founder-portfolio/source/experience-development.webp",
     alt: "Monitor displaying source code"
   },

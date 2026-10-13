@@ -2224,6 +2224,7 @@
 }
 
 .experienceCard {
+  position: relative;
   display: grid;
   min-width: 0;
   grid-template-rows: auto 1fr;
@@ -2233,6 +2234,9 @@
   background: rgba(255, 255, 255, 0.86);
   box-shadow: 0 12px 34px rgba(40, 80, 114, 0.055);
 }
+
+.experienceLink { position: absolute; inset: 0; z-index: 10; border-radius: inherit; }
+.experienceLink:focus-visible { outline: 2px solid #4a68c8; outline-offset: -3px; }
 
 .experienceCard[data-accent="bio"] { --experience-accent: #279c8c; --experience-tint: rgba(39, 156, 140, 0.075); }
 .experienceCard[data-accent="ai"] { --experience-accent: #4a68c8; --experience-tint: rgba(74, 104, 200, 0.075); }

@@ -209,6 +209,7 @@ export default function EnglishFounderPage() {
             <div className={styles.experienceGrid}>
               {experience.map((item) => (
                 <DepthCard key={item.area} depth="experience" editorial className={styles.experienceItem}>
+                  {item.area === "Development" ? <a className={styles.experienceLink} href="https://github.com/genellect" target="_blank" rel="noopener noreferrer" aria-label="Development — Yuto Matsui’s GitHub profile (opens in a new tab)" /> : null}
                   <DepthVisual className={styles.experienceImage} data-depth-layer="image">
                     <Image decoding="sync" loading="eager" src={item.image} alt={item.alt} fill sizes="(min-width: 901px) 31vw, 92vw" />
                   </DepthVisual>
