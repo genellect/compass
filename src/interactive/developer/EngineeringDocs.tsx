@@ -25,7 +25,7 @@ const detailDescriptions: Partial<Record<Topic, string>> = {
   ai: "字幕・要約・資料分析・学術回答の構成。外部APIの実行許可、利用量管理、字幕セッションの制御。",
   security: "学生の匿名認証と教員・管理者の共通認証。操作ごとの認可、データの保存・送信先、テナント分離の開発計画。"
 };
-const topicKeys = Object.keys(topics) as Topic[];
+const topicKeys: Topic[] = (Object.keys(topics) as Topic[]).filter(key => key !== "archive");
 const overviewSections = [["architecture", "システム構成"], ["runtime", "実行環境"], ["documents", "設計と実装"]] as const;
 
 export function engineeringMetadata(topic?: Topic): Metadata {
@@ -53,7 +53,7 @@ function Overview() {
       ]} />
       <details className={styles.supplement}><summary>本体でReact / Viteを採用する構成上の理由</summary><p>PDF描画、音声取得、状態同期はブラウザ上で継続して動作する。認証・DB操作・外部APIには独立したバックエンドがあるため、画面にSSR用サーバーを設けず配信できる。Next.jsでも同様の構成は可能だが、現行の役割分担ではSSRを導入する必然性は低い。この紹介サイト自体は、別リポジトリのNext.js静的出力である。</p></details>
     </Section>
-    <Section id="documents" title="設計と実装"><div className={styles.documentIndex}>{topicKeys.filter(key => key !== "archive").map(key => <Link href={`${DOC_ROOT}${key}/`} key={key}><strong>{topics[key].title}</strong><span>{topics[key].description}</span><span aria-hidden="true">→</span></Link>)}</div></Section>
+    <Section id="documents" title="設計と実装"><div className={styles.documentIndex}>{topicKeys.map(key => <Link href={`${DOC_ROOT}${key}/`} key={key}><strong>{topics[key].title}</strong><span>{topics[key].description}</span><span aria-hidden="true">→</span></Link>)}</div></Section>
   </>;
 }
 export function EngineeringDocs({ topic }: { topic?: Topic }) {
@@ -66,11 +66,11 @@ export function EngineeringDocs({ topic }: { topic?: Topic }) {
     <div className={`${styles.layout} ${topic === "security" ? styles.securityLayout : ""}`}><aside className={styles.sidebar}><Contents topic={topic} /></aside><div className={styles.mainColumn}>
       <details className={styles.mobileContents}><summary>目次・ページ一覧</summary><Contents topic={topic} /></details>
       <main id="developer-main" tabIndex={-1} className={styles.article}>
-        <header id="developer-top" className={styles.pageIntro}><p className={styles.breadcrumb}>{topic ? <Link href={DOC_ROOT}>開発者向け技術情報 / システム構成</Link> : "COMPASS Interactive / 開発者向け技術情報"}</p><div className={styles.introTitleRow}><h1>{title}</h1>{!topic && <Link className={styles.archiveCallout} href={`${DOC_ROOT}archive/2026-08/`}><strong>審査員の方へ</strong><span>8月時点のアーカイブはこちら</span></Link>}</div>{topic === "developer" && <p className={styles.lead}>{topics[topic].description}</p>}</header>
+        <header id="developer-top" className={styles.pageIntro}><p className={styles.breadcrumb}>{topic ? <Link href={DOC_ROOT}>開発者向け技術情報 / システム構成</Link> : "COMPASS Interactive / 開発者向け技術情報"}</p><div className={styles.introTitleRow}><h1>{title}</h1></div>{topic === "developer" && <p className={styles.lead}>{topics[topic].description}</p>}</header>
         {!topic && <Overview />}{topic === "architecture" && <ArchitectureArticle />}{topic === "ai" && <AiArticle />}{topic === "delivery" && <DeliveryArticle />}{topic === "security" && <SecurityArticle />}{topic === "developer" && <DeveloperArticle />}{topic === "archive" && <ArchiveArticle />}
         <nav className={styles.pageNavigation} aria-label="前後のページ">{topic && <Link href={index > 0 ? `${DOC_ROOT}${topicKeys[index - 1]}/` : DOC_ROOT}>← {index > 0 ? topics[topicKeys[index - 1]].title : "システム構成"}</Link>}{next && <Link href={`${DOC_ROOT}${next}/`}>{topics[next].title} →</Link>}</nav>
       </main>
-      <footer className={styles.footer}><div><Link href={`${DOC_ROOT}developer/`}>開発者</Link><Link href={`${DOC_ROOT}archive/`}>アーカイブ</Link><Link href="/INTRO_Interactive/">製品紹介</Link><a href="#developer-top">ページ上部へ ↑</a></div></footer>
+      <footer className={styles.footer}><div><Link href={`${DOC_ROOT}developer/`}>開発者</Link><Link href="/INTRO_Interactive/">製品紹介</Link><a href="#developer-top">ページ上部へ ↑</a></div></footer>
     </div></div>
   </div>;
 }
