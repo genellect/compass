@@ -22,7 +22,7 @@ Dev Container Specificationを唯一の環境正本とする。別のDockerfile�
 
 | 層 | 人が用意するもの | repositoryが自動で揃えるもの |
 |---|---|---|
-| Codespaces | GitHub access、repository access、Codespaces利用権 | Linux、Node 22.16.0、Python 3.12、独立Docker daemon、Compose、GitHub CLI、Copilot CLI、VS Code extensions、npm、Playwright、uv、Library API環境 |
+| Codespaces | GitHub access、repository access、Codespaces利用権 | Linux、Node 24.22.1、Python 3.12、独立Docker daemon、Compose、GitHub CLI、Copilot CLI、VS Code extensions、npm、Playwright、uv、Library API環境 |
 | VS Code + Docker | Git、Docker Desktop/Engine、VS Code、Dev Containers extension | Codespacesと同じDev Container内容 |
 | Dev Container CLI | Git、Docker Desktop/Engine、Node.js（固定CLI起動用） | Codespacesと同じDev Container内容 |
 | Codex Cloud | GitHub接続とCodex environment | Node/npm/Python/uv依存、Playwright、repository instructions。Docker作業はCodespacesへhandoff |

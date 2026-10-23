@@ -91,3 +91,20 @@ npm run verify:git-history-secrets
 
 脆弱なバージョンの存在は、悪用された証拠ではない。本番ログ・開発端末の侵害調査は
 今回のソース・依存監査に含まれておらず、過去の実害の有無は未確定である。
+
+## 2026-10-23のNode.js更新記録
+
+| 対象 | 更新 | 利用経路・判断 |
+|---|---|---|
+| Node.js（`.node-version`、`toolchain.env`、Dev Container node feature） | 22.16.0 → 24.22.1（LTS Krypton、2026-10-20公開） | Node 22のEOLは2027-04-30、Node 24は2028-04-30。Node 26はLTS前のため採用しない。CI（`node-version-file`）とCloudflare Pagesのbuildは`.node-version`を読む |
+| Dev Container base image | `javascript-node:1-22-bookworm` → `javascript-node:5-24-bookworm` | `1-*`系列はNode 24を提供しない。Node本体はnode featureが固定版を導入する。`remoteUser`（`node`）と`NVM_DIR`は同一 |
+| 同梱npm | 10.9系 → 11.19.1 | `npm ci`は成功し、`npm install --package-lock-only --ignore-scripts`で`package-lock.json`は変化しない。未承認install scriptは警告のみで従来どおり実行される（`strict-allow-scripts=false`） |
+
+本番影響: mainへのmerge後、Cloudflare Pagesの本番buildがNode 24.22.1で実行される。Node 22とNode 24で
+`npm run build`した`out/`（497ファイル）を比較し、build IDを正規化した後の差分はなかった。
+`npm test`、`npm run typecheck`、`npm run check:repository`、`npm run verify`はNode 24で合格した。
+Node 24の`node:test`既定reporterはTAPからspecへ変わるが、repository内にTAP出力への依存はない。
+Python・Library APIはNodeを使用しないため対象外とした。
+
+Rollback: `.node-version`、`.devcontainer/toolchain.env`、`.devcontainer/devcontainer.json`を22.16.0の値へ戻すcommitを作る。
+即時の復旧が必要な場合は、Cloudflare Pages dashboardで直前のProduction deploymentへrollbackする。
