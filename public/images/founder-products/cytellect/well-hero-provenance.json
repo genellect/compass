@@ -1,0 +1,14 @@
+{
+  "asset": "well-hero.webp",
+  "source_repository": "genellect/cytellect",
+  "source_commit": "74b21d2249d722e0577703cb0c5998fbc4a52707",
+  "source_path": "apps/web/public/marketing/hero-film-poster.webp",
+  "source_manifest": "apps/web/public/marketing/hero-film-provenance.json",
+  "sha256": "7b631a40c17183de7492e84fd8ac3b82b78e94639ecf30174e1490179d1dd645",
+  "creator": "CDC",
+  "source_page": "https://www.pexels.com/photo/person-doing-an-experiment-3992927/",
+  "license": "Pexels License",
+  "license_url": "https://www.pexels.com/license/",
+  "treatment": "Byte-for-byte reuse of the current Cytellect Hero poster. Responsive display crop only.",
+  "scope": "Illustrative laboratory photograph, not product usage evidence, research data or an endorsement."
+}

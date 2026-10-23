@@ -57,23 +57,18 @@ export const expertise = [
 
 export const products = [
   {
-    key: "interactive",
-    label: "COMPASS Interactive",
-    title: "Real-time feedback and AI, built into the lecture experience.",
-    links: [
-      { label: "Explore Interactive", href: `${compassOrigin}/INTRO_Interactive/` },
-      {
-        label: "GitHub",
-        href: "https://github.com/genellect/compass-interactive"
-      },
-      { label: "Technical Overview", href: `${compassOrigin}/INTRO_Interactive/developers/` }
-    ]
-  },
-  {
     key: "cytellect",
     label: "cytellect",
     title: "Get your microscopy publication-ready.",
     links: [{ label: "Explore cytellect", href: "https://cytellect.vercel.app/" }]
+  },
+  {
+    key: "interactive",
+    label: "COMPASS Interactive",
+    title: "Real-time feedback and AI, built into the lecture experience.",
+    links: [
+      { label: "Explore Interactive", href: `${compassOrigin}/INTRO_Interactive/` }
+    ]
   },
   {
     key: "platform",
