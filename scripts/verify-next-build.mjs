@@ -99,6 +99,15 @@ const interactiveDevelopers = await readFile(
   path.join(out, "INTRO_Interactive", "developers", "index.html"),
   "utf8"
 );
+// The developer profile (and its GitHub Portfolio CTA) moved to its own topic page in #142.
+const interactiveDeveloperProfile = await readFile(
+  path.join(out, "INTRO_Interactive", "developers", "developer", "index.html"),
+  "utf8"
+);
+const interactiveDeveloperArchive = await readFile(
+  path.join(out, "INTRO_Interactive", "developers", "archive", "2026-08", "index.html"),
+  "utf8"
+);
 const communityJoin = await readFile(path.join(out, "community", "join", "index.html"), "utf8");
 const contact = await readFile(path.join(out, "contact", "index.html"), "utf8");
 const messages = await readFile(path.join(out, "messages", "index.html"), "utf8");
@@ -255,7 +264,8 @@ const githubProfileUrl = "https://github.com/genellect";
 for (const [html, label, expectedCount] of [
   [official, "Official founder profile", 0],
   [interactive, "Interactive developer profile", 0],
-  [interactiveDevelopers, "Interactive developer introduction profile", 1]
+  [interactiveDevelopers, "Interactive developer overview", 0],
+  [interactiveDeveloperProfile, "Interactive developer introduction profile", 1]
 ]) {
   const links = html.match(new RegExp(`<a\\b[^>]*href="${githubProfileUrl}"[^>]*>`, "g")) ?? [];
   if (links.length !== expectedCount) {
@@ -634,7 +644,6 @@ for (const expected of [
   "/images/founder-portfolio/off-hours-shogi.webp",
   "/images/founder-portfolio/off-hours-climbing.webp",
   "/images/founder-portfolio/source/software-development-unsplash.jpg",
-  "/images/Image4.jpg",
   "/images/founder-portfolio/yuto-matsui-profile-hero.webp",
   "/images/founder-portfolio/yuto-matsui-nagano-lake-hero-centered-20260917.webp",
   "/images/founder-portfolio/yuto-matsui-front.webp",
@@ -672,8 +681,8 @@ for (const expected of [
   "細胞生物学",
   "神経科学",
   "フルスタックWeb開発",
-  "クラウドエンジニアリング",
-  "Agentic Workflows",
+  "クラウド・インフラ設計",
+  "AI・Machine Learning",
   "英語教育",
   "生命科学教育",
   "AIリテラシー",
@@ -873,8 +882,19 @@ expectExcludes(founderStoryText, "From a tool to COMPASS", "Founder legacy story
 
 for (const expected of [
   'id="developer-top"',
-  'id="stack"',
   'id="architecture"',
+  "56",
+  "31",
+  "43",
+  "18",
+  "/INTRO_Interactive/developers/opengraph-image-",
+  "/INTRO_Interactive/developers/twitter-image-",
+  'rel="canonical" href="https://compass-official.pages.dev/INTRO_Interactive/developers/"'
+]) expectIncludes(interactiveDevelopers, expected, "Interactive developer page");
+
+// The August single-page developer introduction is preserved as an archive since #142.
+for (const expected of [
+  'id="stack"',
   'id="security"',
   'id="decisions"',
   'id="verification"',
@@ -885,19 +905,12 @@ for (const expected of [
   "One real-time foundation",
   "Web、DB、Edge、Windowsを、ひとつのコードベースでつなぐ。",
   "748",
-  "56",
-  "31",
-  "43",
-  "18",
   "x86 + x64",
   "匿名参加でも、権限は曖昧にしない。",
   "75 / 75",
   "WebからWindowsまで、単一リポジトリで管理。",
-  "専門領域を超え、COMPASSシリーズを一つの体験で貫く。",
-  "/INTRO_Interactive/developers/opengraph-image-",
-  "/INTRO_Interactive/developers/twitter-image-",
-  'rel="canonical" href="https://compass-official.pages.dev/INTRO_Interactive/developers/"'
-]) expectIncludes(interactiveDevelopers, expected, "Interactive developer page");
+  "専門領域を超え、COMPASSシリーズを一つの体験で貫く。"
+]) expectIncludes(interactiveDeveloperArchive, expected, "Interactive developer August archive");
 
 for (const unexpected of [
   'class="developer-codebase__metrics"',

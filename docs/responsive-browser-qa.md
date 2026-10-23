@@ -8,7 +8,7 @@ Last verified: 2026-08-02
 
 ## 1. Purpose
 
-局所変更の検証範囲・実行頻度は[Agentの検証とPreview完了契約](agent-delivery-policy.md)に従います。この文書の全viewport matrixは総合監査・CIの責任範囲です。カード表現などの局所変更に全route・全matrixを毎回適用せず、対象のDesktop/Mobileと変更した境界・操作を選びます。既存の失敗を一度切り分けた後に、同じ総合監査やbuildを機械的に繰り返しません。
+局所変更の検証範囲・実行頻度は[Agentの検証とPreview完了契約](agent-delivery-policy.md)に従います。この文書の全viewport matrixは明示された総合監査で使う任意の検査です（CIの必須checkではありません）。カード表現などの局所変更に全route・全matrixを毎回適用せず、対象のDesktop/Mobileと変更した境界・操作を選びます。既存の失敗を一度切り分けた後に、同じ総合監査やbuildを機械的に繰り返しません。
 
 このrunbookは、物理解像度だけでは見落とすレスポンシブ崩れを、実際のCSS viewportで再現・検出するための正本です。静的HTML、CSS文字列、build成功だけでは合格にしません。Chromiumでページを描画し、文字、改行、CTA、navigation、展開状態、consoleを統合監査します。
 
@@ -90,10 +90,7 @@ npm.cmd run test:responsive:update-snapshots
 
 Playwrightはsnapshotをplatform別に解決します。現行baselineは`tests/responsive/visual-regression.spec.ts-snapshots/*-win32.png`のみであり、Linux（Codespaces、Codex Cloud、Claude Code、Dev Container）から`visual-regression.spec.ts`を実行すると`*-linux.png`を探して必ず失敗します。
 
-したがってvisual regressionの判定元は次のいずれかだけです。
-
-1. Windows hostでの`npm.cmd run check:responsive:full`
-2. GitHub Actions **Responsive Quality Gate**（`windows-latest`）
+したがってvisual regressionの判定元は、Windows hostでの`npm.cmd run check:responsive:full`だけです。CIでは実行しません。
 
 cloud sessionから`test:responsive:update-snapshots`を実行しないでください。承認済みWindows baselineの横にLinux baselineを作り、以後どちらが正本か判別できなくなります。
 
@@ -108,7 +105,7 @@ npm run cloud:check
 npm run check:responsive:cloud
 ```
 
-`check:responsive:cloud`は`check:responsive:full`からvisual regressionだけを除いた同一内容です。viewport matrix、breakpoint境界、interaction contract、interactive hero、manifesto章、semantic line、mobile device emulationをすべて含みます。visual regressionは上のPlatform boundaryに従い、CIの結果を使用します。
+`check:responsive:cloud`は`check:responsive:full`からvisual regressionだけを除いた同一内容です。viewport matrix、breakpoint境界、interaction contract、interactive hero、manifesto章、semantic line、mobile device emulationをすべて含みます。visual regressionは上のPlatform boundaryに従い、Windows hostでだけ実行します。
 
 ### Windows
 
@@ -122,6 +119,16 @@ npm.cmd run check:responsive:full
 既にbuild済みなら`npm run test:responsive`、`npm run test:responsive:cloud`、または（Windowsのみ）`npm.cmd run test:responsive:full`を実行できます。
 
 Hero visual baselineだけを確認する場合はWindowsで`npm.cmd run test:responsive:visual`を使います。
+
+次のspecは対象surfaceを変更した場合に名前で実行する個別監査です。
+
+| Command | 対象 | 実行環境の前提 |
+|---|---|---|
+| `npm run test:responsive:media` | Contact入口film、EN Hero、Founder film・3D、Mobile habitat、Mobile return | 映像decodeを伴う。Playwright同梱のChromiumではH.264 filmが再生できず、film系の検証が失敗する |
+| `npm run test:responsive:explorer` | 独立3D Explorer | `msedge`とD3D11を指定するためWindows専用 |
+| `npm run test:responsive:explorer-soak` | Explorerの15分連続移動 | Windows専用。`EXPLORER_SOAK=1`がない場合はskipする |
+
+新しいspecをどのnpm scriptにも登録しない場合、`npm run test:repository`が失敗します。
 
 Production成果物へ同じsmokeを適用する場合:
 
@@ -145,9 +152,7 @@ failure時は`test-results/`と`playwright-report/`へviewport、DPR、実描画
 
 Web UI実装はPRとCloudflare Previewの作成、対象Preview URLの実ブラウザー確認までを完了契約とします。明示依頼された独立surfaceにも適用し、localhostだけで完了としません。必要なローカル検証と総合CIを区別し、同じ全範囲を二重に走らせません。Production公開は別の明示指示が必要です。
 
-`.github/workflows/responsive-quality.yml`はpull request、`main` push、manual dispatchで完全gateを実行します。branch protectionでは、このjobをrequired checkに設定してください。
-
-`.github/workflows/production-responsive-smoke.yml`はmanual dispatch、またはdeployment workflowからの`workflow_call`でhosted URLを監査します。監査先はHTTPSのcanonical `https://compass-official.pages.dev`だけを許可し、credentials、custom port、path、query、fragment付きURLを拒否します。deployment workflowではstepとしてではなく、deploy jobを`needs`に指定した別jobの`jobs.<id>.uses`から、このreusable workflowを呼び出してください。
+ブラウザーのresponsive検査はGitHub Actionsの必須checkではありません（2026-10-23に`Responsive Quality Gate`と`Production Responsive Smoke`を廃止）。hosted URLの監査が必要な場合は、§5の`RESPONSIVE_BASE_URL`指定でローカルから実行します。
 
 Local / CI PASSとProduction acceptanceは別です。Productionではcanonical URL、実配信asset、console、responsive layoutを再確認し、必要に応じてEdge実画面もhuman gateとして残します。
 
@@ -167,4 +172,4 @@ Hero、navigation、font、breakpoint、animation、authentication、registratio
 
 ### 写真・本文の初期描画
 
-画像の`complete`・`naturalWidth`やDOMの可視性だけでは、3D合成面に内容が隠れる不具合を検出できない。写真・本文の描画やtransformを変更した場合は、対象カードをタップする前のスクリーンショットで内容も確認する。Safari系へ影響する変更はMobile WebKitを対象に含める。portfolioの対象検証は`PORTFOLIO_WEBKIT=1`を指定でき、WindowsのResponsive Quality Gateではこれを有効にする。無関係な全routeを追加で再実行する理由にはしない。
+画像の`complete`・`naturalWidth`やDOMの可視性だけでは、3D合成面に内容が隠れる不具合を検出できない。写真・本文の描画やtransformを変更した場合は、対象カードをタップする前のスクリーンショットで内容も確認する。Safari系へ影響する変更はMobile WebKitを対象に含める。portfolioの対象検証は`PORTFOLIO_WEBKIT=1`を指定できる。無関係な全routeを追加で再実行する理由にはしない。

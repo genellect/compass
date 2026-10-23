@@ -1,5 +1,12 @@
 name: Library Security Quality Gate
 
+# Security gate for the Future Strategy Library, Library registration and the
+# public forms. Secret and dependency-change scans run on every pull request;
+# the Library artifact rehearsal and API tests run only when their surfaces
+# change. Code correctness for the whole site is owned by ci.yml, and
+# advisories published after merge are owned by the scheduled
+# Repository Maintenance audit, so neither is repeated here.
+
 on:
   pull_request:
   push:
@@ -10,13 +17,45 @@ permissions:
   contents: read
 
 concurrency:
-  group: library-security-${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
+  group: library-security-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
-  public-source-and-frontend:
-    runs-on: windows-latest
-    timeout-minutes: 30
+  changes:
+    name: Classify Library and form changes
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      frontend: ${{ steps.classify.outputs.frontend }}
+      backend: ${{ steps.classify.outputs.backend }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Detect Library, registration and form surfaces
+        id: classify
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+        run: |
+          if [ "$EVENT_NAME" != "pull_request" ]; then
+            echo "frontend=true" >> "$GITHUB_OUTPUT"
+            echo "backend=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          changed="$(git diff --name-only "$BASE_SHA"...HEAD)"
+          printf '%s\n' "$changed"
+          frontend='^(src/app/\(library\)/|src/app/\(official\)/(future-strategy-library|community|contact)/|src/library-registration/|src/lib/futureStrategyLibrary|functions/|google-apps-script/|contracts/|scripts/[^/]*library|scripts/(assemble-next-export|run-next-build|cloudflare-git-build-environment|finalize-cloudflare-git-build)\.mjs|_headers|_redirects|next\.config\.ts|package(-lock)?\.json|tests/.*(library|registration|contact|community)|\.github/workflows/library-security-quality\.yml)'
+          backend='^(services/library-api/|contracts/|infra/|\.github/workflows/library-security-quality\.yml)'
+          if printf '%s\n' "$changed" | grep -qE "$frontend"; then echo "frontend=true" >> "$GITHUB_OUTPUT"; else echo "frontend=false" >> "$GITHUB_OUTPUT"; fi
+          if printf '%s\n' "$changed" | grep -qE "$backend"; then echo "backend=true" >> "$GITHUB_OUTPUT"; else echo "backend=false" >> "$GITHUB_OUTPUT"; fi
+
+  secret-scan:
+    name: Public source and Git history secrets
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
       - name: Checkout
         uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
@@ -27,23 +66,48 @@ jobs:
         uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
         with:
           node-version-file: .node-version
-          cache: npm
       - name: Reject private material in public source
         run: npm run verify:public-source
       - name: Reject high-confidence secrets in reachable Git history
         run: npm run verify:git-history-secrets
+
+  dependency-review:
+    name: Dependency changes
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Review dependency changes
+        uses: actions/dependency-review-action@a1d282b36b6f3519aa1f3fc636f609c47dddb294 # v5.0.0
+        with:
+          fail-on-severity: moderate
+
+  library-frontend:
+    name: Library production artifact rehearsal
+    needs: changes
+    if: needs.changes.outputs.frontend == 'true'
+    # The rehearsal is a PowerShell contract shared with the Windows release path.
+    runs-on: windows-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          persist-credentials: false
+      - name: Set up Node.js
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
+        with:
+          node-version-file: .node-version
+          cache: npm
       - name: Install locked dependencies
         run: npm ci
-      - name: Audit installed npm dependencies
-        run: npm audit --audit-level=high
-      - name: Run registration and release tests
-        run: npm test
-      - name: Type-check
-        run: npm run typecheck
       - name: Rehearse the production frontend artifact
         run: npm run rehearse:library-production
 
   backend:
+    name: Library API tests
+    needs: changes
+    if: needs.changes.outputs.backend == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 20
     defaults:
@@ -69,12 +133,21 @@ jobs:
       - name: Run the complete API test suite
         run: uv run --locked pytest
 
-  dependency-review:
-    if: github.event_name == 'pull_request'
+  result:
+    name: Library security result
+    needs: [changes, secret-scan, dependency-review, library-frontend, backend]
+    if: always()
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 5
     steps:
-      - name: Review dependency changes
-        uses: actions/dependency-review-action@a1d282b36b6f3519aa1f3fc636f609c47dddb294 # v5.0.0
-        with:
-          fail-on-severity: moderate
+      - name: Require every job to pass or be intentionally skipped
+        env:
+          RESULTS: ${{ join(needs.*.result, ' ') }}
+        run: |
+          echo "Job results: $RESULTS"
+          for result in $RESULTS; do
+            case "$result" in
+              success|skipped) ;;
+              *) echo "::error::A Library security job ended as $result."; exit 1 ;;
+            esac
+          done

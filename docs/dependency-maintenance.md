@@ -59,7 +59,7 @@ LGPL/MPL等は、ビルドでの利用、ブラウザ配信、コンテナ再配
 
 ## 定期確認と公開境界
 
-`Repository Maintenance` workflowはPR、mainの更新、毎週のスケジュールで監査する。
+`Repository Maintenance` workflowは毎週のスケジュールと手動実行で、merge済み依存のadvisoryを監査する。PRの必須checkにはせず、PRが持ち込む脆弱な依存は`Library Security Quality Gate`の依存差分レビューで拒否する。
 オンライン照合が停止した場合も合格扱いにしない。既存のCodeQL、依存差分レビュー、
 ソース・Git履歴スキャナーを併用する。
 

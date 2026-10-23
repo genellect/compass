@@ -29,4 +29,6 @@ Codex Desktop is the primary agent environment for COMPASS. Claude Code is a sec
 | Broad responsive changes / explicit full audit | `npm run check:responsive:cloud` |
 | Dev Container environment contract | `npm run dev:doctor`（Codex Cloud単体では必須ではない） |
 
-`npm run check:responsive:full` and every `.ps1` script are Windows-only. Do not invoke them from a cloud session; report visual regression as owned by the GitHub Actions **Responsive Quality Gate**.
+Required GitHub checks are **CI result** and **Library security result** (see AGENTS.md). Browser responsive checks are not a CI gate; the Cloudflare Preview is the visual acceptance surface.
+
+`npm run check:responsive:full` and every `.ps1` script are Windows-only. Do not invoke them from a cloud session; report visual regression as not run.
