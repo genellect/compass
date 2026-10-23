@@ -252,4 +252,12 @@ describe("workflow contracts", () => {
       }
     }
   });
+
+  it("runs the write-token script only from the trusted base commit", async () => {
+    const workflow = await readFile(path.join(".github", "workflows", "preview-links.yml"), "utf8");
+    expect(workflow).toMatch(
+      /ref: \$\{\{ github\.event_name == 'pull_request' && github\.event\.pull_request\.base\.sha \|\| github\.sha \}\}/
+    );
+    expect(workflow).toMatch(/if: hashFiles\('\.github\/scripts\/preview-links\.mjs'\) != ''/);
+  });
 });

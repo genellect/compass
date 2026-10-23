@@ -10,9 +10,10 @@ name: Preview links
 #   the default branch, in the default-branch context, so the checkout below is
 #   trusted main code. It updates the comment as soon as Cloudflare finishes.
 # - pull_request: same-repository pull requests only. It posts the comment
-#   immediately and polls the check run, so stacked pull requests and the
-#   period before this file reaches main still get a comment. Fork and
-#   Dependabot runs receive a read-only token and are skipped.
+#   immediately and polls the check run. The comment script is checked out
+#   from the base commit, never from the pull request, so a modified script
+#   cannot run with the write token; script changes take effect after merge.
+#   Fork and Dependabot runs receive a read-only token and are skipped.
 #
 # Not a required check. See docs/development-workflows.md.
 
@@ -47,13 +48,17 @@ jobs:
       group: preview-links-${{ github.event.pull_request.head.sha || github.event.check_run.head_sha }}
       cancel-in-progress: false
     steps:
-      - name: Checkout the comment script
+      - name: Checkout the trusted comment script from the base commit
         uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
         with:
+          ref: ${{ github.event_name == 'pull_request' && github.event.pull_request.base.sha || github.sha }}
           persist-credentials: false
           sparse-checkout: .github/scripts
           sparse-checkout-cone-mode: false
       - name: Update the Preview comment
+        # The base commit may predate this workflow (for example the pull
+        # request that introduces it); skip rather than run untrusted code.
+        if: hashFiles('.github/scripts/preview-links.mjs') != ''
         env:
           GITHUB_TOKEN: ${{ github.token }}
           PREVIEW_WAIT_SECONDS: '1080'
