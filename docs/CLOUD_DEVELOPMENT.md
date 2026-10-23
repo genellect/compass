@@ -51,7 +51,7 @@ Node.jsの版はbootstrapもdoctorもhardcodeせず、`.node-version`を読む�
 | 層 | 人が用意するもの | repositoryが自動で揃えるもの |
 |---|---|---|
 | Claude Code cloud | GitHub接続、claude.ai/codeの環境設定（setup script 1行、下記） | npm依存、Playwright Chromium（同梱版または`/opt/pw-browsers`のfallback）、Library API環境、session環境変数 |
-| Codespaces | GitHub access、repository access、Codespaces利用権 | Linux、Node 22.16.0、Python 3.12、独立Docker daemon、Compose、GitHub CLI、Copilot CLI、VS Code extensions、npm、Playwright、uv、Library API環境 |
+| Codespaces | GitHub access、repository access、Codespaces利用権 | Linux、Node 24.22.1、Python 3.12、独立Docker daemon、Compose、GitHub CLI、Copilot CLI、VS Code extensions、npm、Playwright、uv、Library API環境 |
 | VS Code + Docker | Git、Docker Desktop/Engine、VS Code、Dev Containers extension | Codespacesと同じDev Container内容 |
 | Dev Container CLI | Git、Docker Desktop/Engine、Node.js（固定CLI起動用） | Codespacesと同じDev Container内容 |
 | Codex Cloud | GitHub接続とCodex environment | Node/npm/Python/uv依存、Playwright、repository instructions。Docker作業はCodespacesへhandoff |

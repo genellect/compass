@@ -47,7 +47,7 @@ jobs:
           fi
           changed="$(git diff --name-only "$BASE_SHA"...HEAD)"
           printf '%s\n' "$changed"
-          frontend='^(src/app/\(library\)/|src/app/\(official\)/(future-strategy-library|community|contact)/|src/library-registration/|src/lib/futureStrategyLibrary|functions/|google-apps-script/|contracts/|scripts/[^/]*library|scripts/(assemble-next-export|run-next-build|cloudflare-git-build-environment|finalize-cloudflare-git-build)\.mjs|_headers|_redirects|next\.config\.ts|package(-lock)?\.json|tests/.*(library|registration|contact|community)|\.github/workflows/library-security-quality\.yml)'
+          frontend='^(src/app/\(library\)/|src/app/\(official\)/(future-strategy-library|community|contact)/|src/library-registration/|src/lib/futureStrategyLibrary|functions/|google-apps-script/|contracts/|scripts/[^/]*library|scripts/(assemble-next-export|run-next-build|cloudflare-git-build-environment|finalize-cloudflare-git-build)\.mjs|_headers|_redirects|next\.config\.ts|package(-lock)?\.json|\.node-version|tests/.*(library|registration|contact|community)|\.github/workflows/library-security-quality\.yml)'
           backend='^(services/library-api/|contracts/|infra/|\.github/workflows/library-security-quality\.yml)'
           if printf '%s\n' "$changed" | grep -qE "$frontend"; then echo "frontend=true" >> "$GITHUB_OUTPUT"; else echo "frontend=false" >> "$GITHUB_OUTPUT"; fi
           if printf '%s\n' "$changed" | grep -qE "$backend"; then echo "backend=true" >> "$GITHUB_OUTPUT"; else echo "backend=false" >> "$GITHUB_OUTPUT"; fi

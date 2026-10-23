@@ -15,7 +15,7 @@ Googleの実環境E2Eは副作用を伴うため、許可された検証アカ�
 
 | Runtime | Version / Tooling |
 |---|---|
-| Node.js | `.node-version` — `22.16.0` |
+| Node.js | `.node-version` — `24.22.1`（LTS） |
 | Python | `services/library-api/.python-version` — `3.12` |
 | Python package manager | `uv` |
 | Container runtime | Docker Desktop / Docker Compose |
