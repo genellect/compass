@@ -153,7 +153,7 @@ export function renderComment({ headSha, check, changedFiles, totalChangedFiles,
   const lines = [COMMENT_MARKER, "### Preview対象route", ""];
   const commit = `\`${String(headSha).slice(0, 7)}\``;
   if (state.kind === "ready") {
-    const branch = state.branchUrl ? `、Branch Preview ${state.branchUrl}` : "";
+    const branch = state.branchUrl ? `（Branch Preview: ${state.branchUrl}）` : "";
     lines.push(`commit ${commit} のPreview ${state.previewUrl} を基底にしています${branch}。`);
   } else if (state.kind === "pending") {
     lines.push(`commit ${commit} のCloudflare Pages deploy待ちです。check run完了後にURLを追記します。`);

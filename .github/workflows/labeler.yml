@@ -1,14 +1,17 @@
 name: Pull Request Labeler
 
 # Applies the area:* labels defined in .github/labeler.yml from the changed
-# paths. The recommended configuration is the pull_request_target trigger
-# with no checkout. TEMPORARY: this commit uses pull_request so the initial
-# pull request can verify the configuration, as the actions/labeler README
-# describes; it is switched back before review.
+# paths. This is the actions/labeler recommended configuration: the
+# pull_request_target trigger with no checkout, so no pull-request content is
+# fetched or executed and the configuration is read from the base branch.
+# Fork and Dependabot pull requests are labeled as well.
+# pull_request_target runs the workflow file of the base branch, so a pull
+# request whose base does not contain this file is not labeled.
 # Not a required check. See docs/development-workflows.md.
 
 on:
-  pull_request:
+  pull_request_target:
+    types: [opened, synchronize, reopened, ready_for_review]
 
 permissions:
   contents: read
