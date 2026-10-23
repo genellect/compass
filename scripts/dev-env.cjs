@@ -1,7 +1,7 @@
 "use strict";
 // Shared environment probes for scripts/dev-bootstrap.sh, .devcontainer/doctor.sh
 // and playwright.config.ts. CommonJS so the Playwright config loader can require
-// it on every supported Node 22 release without ESM interop.
+// it on every supported Node release without ESM interop.
 //
 //   node scripts/dev-env.cjs chromium      -> "bundled <path>" | "fallback <source> <path>" | "missing"
 //   node scripts/dev-env.cjs node-modules  -> exit 0 when node_modules matches package-lock.json
