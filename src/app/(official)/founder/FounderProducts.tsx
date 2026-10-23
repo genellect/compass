@@ -2,8 +2,8 @@
 
 import { useState } from "react";
 import { ProductSculpture, type SculptureKind } from "./ProductSculpture";
-import { CytellectSculpture } from "./CytellectSculpture";
-import styles from "./products-cinematic.module.css";
+import sceneStyles from "./products-cinematic.module.css";
+import styles from "./products-equal.module.css";
 
 type Product = {
   key: SculptureKind | "cytellect";
@@ -19,16 +19,28 @@ export function FounderProducts({ products, language = "ja" }: { products: reado
   const [paused, setPaused] = useState(false);
   const english = language === "en";
   return (
-    <div className={styles.world} data-products-cinematic="true" data-language={language} data-paused={paused}>
+    <div className={`${sceneStyles.world} ${styles.world}`} data-products-cinematic="true" data-language={language} data-paused={paused}>
       <div className={styles.grid}>
         {products.map(product => {
           const [primary, ...secondary] = product.links;
           const external = english || new URL(primary.href).origin !== "https://compass-official.pages.dev";
           return (
-            <article key={product.key} className={styles.product} data-product={product.key}>
+            <article key={product.key} className={`${sceneStyles.product} ${styles.product}`} data-product={product.key}>
               <div className={styles.stage}>
-                {product.key === "cytellect" ? <CytellectSculpture paused={paused} /> : <ProductSculpture kind={product.key} paused={paused} />}
-                <div className={styles.shade} aria-hidden="true" />
+                <div className={styles.media}>
+                  {product.key === "cytellect" || product.key === "platform" ? (
+                    <div className={styles.still} data-scene={product.key}>
+                      <img
+                        src={product.key === "cytellect" ? "/images/founder-products/cytellect/well-hero.webp" : "/habitat/night-v1/top.webp"}
+                        alt={product.key === "cytellect"
+                          ? (english ? "A six-well culture plate and pipette, from the Cytellect landing page" : "Cytellectの紹介サイトで使用している6穴プレートとピペット")
+                          : (english ? "An illuminated circular gateway from the COMPASS homepage" : "COMPASS親サイトの光る円環と通路")}
+                        width={1920} height={1080} loading="lazy" decoding="async"
+                      />
+                    </div>
+                  ) : <ProductSculpture kind={product.key} paused={paused} />}
+                </div>
+                <div className={styles.copy}>
                 <div className={styles.identity}><span className={styles.mark} aria-hidden="true" />{product.label}</div>
                 <h3 className={styles.title}>
                   {product.key === "interactive" ? <><span>LET EVERYTHING</span><strong>MOVE.</strong></>
@@ -40,6 +52,7 @@ export function FounderProducts({ products, language = "ja" }: { products: reado
                 <a className={styles.destination} href={primary.href} aria-label={`${product.label}: ${primary.label}`} target={external ? "_blank" : undefined} rel={external ? "noopener noreferrer" : undefined}>
                   <span>{primary.label}</span><Arrow />
                 </a>
+                </div>
               </div>
               {secondary.length > 0 && <nav className={styles.secondary} aria-label={english ? `${product.label} links` : `${product.label}へのリンク`}>
                 {secondary.map((link) => {
