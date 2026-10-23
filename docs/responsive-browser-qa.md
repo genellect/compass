@@ -123,6 +123,16 @@ npm.cmd run check:responsive:full
 
 Hero visual baselineだけを確認する場合はWindowsで`npm.cmd run test:responsive:visual`を使います。
 
+次のspecはCIの責任gateに未編入の個別監査です。対象surfaceを変更した場合に名前で実行します。gateへ編入する前に、実行環境で合格を確認します。
+
+| Command | 対象 | 実行環境の前提 |
+|---|---|---|
+| `npm run test:responsive:media` | Contact入口film、EN Hero、Founder film・3D、Mobile habitat、Mobile return | 映像decodeを伴う。Playwright同梱のChromiumではH.264 filmが再生できず、film系の検証が失敗する |
+| `npm run test:responsive:explorer` | 独立3D Explorer | `msedge`とD3D11を指定するためWindows専用 |
+| `npm run test:responsive:explorer-soak` | Explorerの15分連続移動 | Windows専用。`EXPLORER_SOAK=1`がない場合はskipする |
+
+新しいspecをどのnpm scriptにも登録しない場合、`npm run test:repository`が失敗します。
+
 Production成果物へ同じsmokeを適用する場合:
 
 ```bash

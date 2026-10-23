@@ -93,7 +93,17 @@ powershell.exe -NoProfile -ExecutionPolicy Bypass -File `
 npm run check
 ```
 
-`check`は、公開ソース境界、Community／Contact、Library登録／管理、release gate、TypeScript、Production build、static export、全公開routeのPlaywright responsive smokeを順に検証します。cloud環境では同一gateの別名`npm run cloud:check`を使用します。Windows PowerShellから直接実行する場合のみ`npm.cmd run check`と読み替えます。
+`check`は、公開ソース境界、Community／Contact、Library登録／管理、Habitat・Explorer、release gate、TypeScript、Production build、static export、全公開routeのPlaywright responsive smokeを順に検証します。cloud環境では同一gateの別名`npm run cloud:check`を使用します。Windows PowerShellから直接実行する場合のみ`npm.cmd run check`と読み替えます。
+
+### Unit testとLinux CI
+
+```bash
+npm run test:unit
+```
+
+Vitestは`vitest.config.ts`のpatternで`tests/`と`src/`の`*.test.ts(x)`を自動検出します。新しいunit testをnpm scriptへ個別登録する必要はありません。既知のcontent driftで一時的に除外したfileは、同configに理由を記載します。`test:registration`等の個別scriptは対象を絞った反復用として残します。
+
+GitHub Actions **CI**（`.github/workflows/ci.yml`）は、PRごとにLinuxで公開ソース境界、型検査、`npm test`、static export build、`npm run verify`を実行します。`src/`・`public/`・`functions/`以外のMarkdownだけを変更したPRでは、build系jobをskipします。必須checkには集約job **CI result**を指定します。このworkflowはdeployせず、secretも使用しません。
 
 ### API検証
 

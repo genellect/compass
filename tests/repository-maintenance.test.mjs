@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { readFile } from 'node:fs/promises';
+import { readFile, readdir } from 'node:fs/promises';
 import { inspectLicenses } from '../scripts/check-dependency-licenses.mjs';
 import { verifyToolchain } from '../scripts/verify-toolchain.mjs';
 import { TEXT_FILE, publicSourceFindings } from '../scripts/verify-public-source-boundary.mjs';
@@ -32,4 +32,12 @@ test('public scanner covers shell, Apps Script, lockfiles, SVG and LICENSE', () 
     assert.deepEqual(publicSourceFindings([{ file, contents: marker }]), [{ file, rule: 'github_token' }]);
   }
   assert.equal(TEXT_FILE.test('scene.glb'), false);
+});
+
+test('every Playwright spec and node:test file is reachable from an npm script', async () => {
+  const scripts = Object.values(JSON.parse(await readFile('package.json', 'utf8')).scripts).join('\n');
+  const specs = (await readdir('tests/responsive')).filter(f => f.endsWith('.spec.ts')).map(f => `tests/responsive/${f}`);
+  const nodeTests = (await readdir('tests')).filter(f => f.endsWith('.test.mjs')).map(f => `tests/${f}`);
+  assert.ok(specs.length > 0 && nodeTests.length > 0);
+  assert.deepEqual([...specs, ...nodeTests].filter(file => !scripts.includes(file)), []);
 });
