@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { mkdir, mkdtemp, readFile, readdir, writeFile } from 'node:fs/promises';
+import { chmod, mkdir, mkdtemp, readFile, readdir, writeFile } from 'node:fs/promises';
 import { createRequire } from 'node:module';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
@@ -90,7 +90,7 @@ test('doctor cloud skips match the documented Claude Code cloud limitations', as
 });
 
 test('Playwright Chromium fallback and node_modules lock probe', async () => {
-  const { resolveChromium, nodeModulesInSync } = createRequire(import.meta.url)('../scripts/dev-env.cjs');
+  const { resolveChromium, nodeModulesInSync, hasInstalledBrowser } = createRequire(import.meta.url)('../scripts/dev-env.cjs');
   const root = await mkdtemp(path.join(tmpdir(), 'compass-dev-env-'));
   const explicit = resolveChromium({ root, env: { PLAYWRIGHT_CHROMIUM_EXECUTABLE: process.execPath } });
   assert.deepEqual([explicit.source, explicit.executablePath], ['PLAYWRIGHT_CHROMIUM_EXECUTABLE', process.execPath]);
@@ -103,7 +103,20 @@ test('Playwright Chromium fallback and node_modules lock probe', async () => {
   await mkdir(path.join(root, 'node_modules'));
   const hidden = path.join(root, 'node_modules', '.package-lock.json');
   await writeFile(hidden, JSON.stringify({ packages: { 'node_modules/a': { version: '1.0.0', integrity: 'sha512-a' } } }));
+  assert.match(nodeModulesInSync(root).reason, /node_modules\/a is recorded but missing on disk/);
+  await mkdir(path.join(root, 'node_modules', 'a'));
+  await writeFile(path.join(root, 'node_modules', 'a', 'package.json'), '{}');
   assert.equal(nodeModulesInSync(root).inSync, true);
   await writeFile(hidden, JSON.stringify({ packages: { 'node_modules/a': { version: '0.9.0' } } }));
   assert.match(nodeModulesInSync(root).reason, /differs from locked 1\.0\.0/);
+
+  const browser = path.join(root, 'chromium_headless_shell-1');
+  const shell = path.join(browser, 'chrome-headless-shell-linux64', 'chrome-headless-shell');
+  await mkdir(path.dirname(shell), { recursive: true });
+  assert.equal(hasInstalledBrowser(browser, ['chrome-headless-shell']), false, 'directory alone is not an install');
+  await writeFile(path.join(browser, 'INSTALLATION_COMPLETE'), '');
+  assert.equal(hasInstalledBrowser(browser, ['chrome-headless-shell']), false, 'marker without the executable');
+  await writeFile(shell, '');
+  await chmod(shell, 0o755);
+  assert.equal(hasInstalledBrowser(browser, ['chrome-headless-shell']), true);
 });

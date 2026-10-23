@@ -19,6 +19,7 @@ export interface ResolvedChromium {
 }
 
 export declare function bundledChromium(root?: string): BundledChromium;
+export declare function hasInstalledBrowser(dir: string, executableNames: string[]): boolean;
 export declare function resolveChromium(options?: {
   env?: NodeJS.ProcessEnv;
   root?: string;

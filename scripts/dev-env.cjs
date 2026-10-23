@@ -20,6 +20,31 @@ function isExecutableFile(file) {
   }
 }
 
+// Playwright writes INSTALLATION_COMPLETE only after a browser finishes
+// installing. A directory without it, or without the executable inside one of
+// its platform subdirectories, is an interrupted download or partial restore.
+const HEADLESS_SHELL_NAMES = [
+  "chrome-headless-shell",
+  "chrome-headless-shell.exe",
+  "headless_shell",
+  "headless_shell.exe",
+];
+
+function hasInstalledBrowser(dir, executableNames) {
+  if (!fs.existsSync(path.join(dir, "INSTALLATION_COMPLETE"))) return false;
+  let entries;
+  try {
+    entries = fs.readdirSync(dir, { withFileTypes: true });
+  } catch {
+    return false;
+  }
+  return entries.some(
+    (entry) =>
+      entry.isDirectory() &&
+      executableNames.some((name) => isExecutableFile(path.join(dir, entry.name, name))),
+  );
+}
+
 function bundledChromium(root = process.cwd()) {
   let executable;
   try {
@@ -37,7 +62,9 @@ function bundledChromium(root = process.cwd()) {
   // chromium-<revision> directory. Both come from `playwright install chromium`.
   const match = /^(.*)[\\/]chromium-(\d+)[\\/]/.exec(executable);
   const headlessShell = match ? path.join(match[1], `chromium_headless_shell-${match[2]}`) : null;
-  const ready = fs.existsSync(executable) && (!headlessShell || fs.existsSync(headlessShell));
+  const ready =
+    isExecutableFile(executable) &&
+    (!headlessShell || hasInstalledBrowser(headlessShell, HEADLESS_SHELL_NAMES));
   return {
     ready,
     executable,
@@ -113,11 +140,22 @@ function nodeModulesInSync(root = process.cwd()) {
   for (const [name, entry] of Object.entries(locked)) {
     if (name === "" || entry.optional || entry.link) continue;
     if (!installed[name]) return { inSync: false, reason: `${name} is locked but not installed` };
+    // The hidden lockfile can outlive a package directory removed by an
+    // interrupted operation on a cached volume; confirm the package is on disk.
+    if (name.startsWith("node_modules/") && !fs.existsSync(path.join(root, name, "package.json"))) {
+      return { inSync: false, reason: `${name} is recorded but missing on disk` };
+    }
   }
   return { inSync: true, reason: null };
 }
 
-module.exports = { PREINSTALLED_CHROMIUM, bundledChromium, nodeModulesInSync, resolveChromium };
+module.exports = {
+  PREINSTALLED_CHROMIUM,
+  bundledChromium,
+  hasInstalledBrowser,
+  nodeModulesInSync,
+  resolveChromium,
+};
 
 if (require.main === module) {
   const command = process.argv[2];
