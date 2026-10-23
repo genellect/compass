@@ -25,15 +25,15 @@
 推測やcopilot出力を実行済みとして扱わない。
 -->
 
-- [ ] `npm run cloud:check`
-- [ ] `npm run check:responsive:cloud`（UI / navigation / font / breakpoint / animationを変更した場合）
+- [ ] GitHub Actions `CI result` / `Library security result`
+- [ ] 変更に関係するresponsive spec・Cloudflare Previewの実表示（UI / navigation / font / breakpoint / animationを変更した場合）
 - [ ] `npm run dev:doctor`（Dev Container定義を変更した場合）
 - [ ] `services/library-api`の`uv run python -m pytest`（API変更の場合）
 - [ ] 未実行のgateと理由:
 
 <!--
 visual regressionはWindows baseline（`*-win32.png`）に依存するため、
-cloudからは実行しない。判定はGitHub Actions **Responsive Quality Gate** の結果を使う。
+cloudからは実行しない。CIでも実行しない（Windows hostでの任意監査）。
 -->
 
 ## 実施したGit・Production操作

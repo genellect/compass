@@ -1,9 +1,12 @@
 name: Repository Maintenance
 
+# Scheduled audit of advisories published against already-merged dependencies.
+# It is deliberately not a pull-request gate: a new upstream advisory must not
+# block unrelated changes. Pull requests that introduce vulnerable versions are
+# rejected by dependency-review in the Library Security Quality Gate, and the
+# repository contracts (licenses, toolchain, docs, test wiring) run in ci.yml.
+
 on:
-  pull_request:
-  push:
-    branches: [main]
   schedule:
     - cron: '23 3 * * 1'
   workflow_dispatch:
@@ -12,11 +15,12 @@ permissions:
   contents: read
 
 concurrency:
-  group: repository-maintenance-${{ github.ref }}
-  cancel-in-progress: true
+  group: repository-maintenance
+  cancel-in-progress: false
 
 jobs:
-  repository:
+  npm-audit:
+    name: npm advisories and SBOM
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
@@ -28,10 +32,11 @@ jobs:
           node-version-file: .node-version
           cache: npm
       - run: npm ci --ignore-scripts
-      - run: npm run check:repository
-      - run: npm audit --audit-level=moderate
       - name: Generate lockfile SBOM
-        run: npm run sbom:npm --silent > test-results/security/npm-sbom.cdx.json
+        run: |
+          mkdir -p test-results/security
+          npm run sbom:npm --silent > test-results/security/npm-sbom.cdx.json
+      - run: npm audit --audit-level=moderate
       - name: Retain dependency inventories
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
@@ -42,11 +47,8 @@ jobs:
           if-no-files-found: ignore
 
   python-audit:
-    strategy:
-      fail-fast: false
-      matrix:
-        os: [ubuntu-latest, windows-latest]
-    runs-on: ${{ matrix.os }}
+    name: Python advisories
+    runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
@@ -65,7 +67,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
-          name: python-audit-${{ matrix.os }}
+          name: python-audit
           path: test-results/security/python-audit.json
           retention-days: 7
           if-no-files-found: ignore

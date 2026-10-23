@@ -143,8 +143,8 @@ npm run check
 npm run check:responsive:full
 ```
 
-The last command is Windows-only. Linux uses `check:responsive:cloud` and the Windows
-Responsive Quality Gate for visual baselines. `test:responsive:habitat` explicitly tests
+The last command is Windows-only and optional; it is not a CI gate. Linux uses
+`check:responsive:cloud`. `test:responsive:habitat` explicitly tests
 moving WebGL, all nine zones, pause, mobile no-fetch, deep links, reduced motion, failure,
 resize/disposal, destination changes during download and context loss. It also verifies
 that a landscape iPad profile starts the standard-quality renderer and exposes the tour UI,

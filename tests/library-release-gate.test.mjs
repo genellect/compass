@@ -790,9 +790,21 @@ test("public repository CI runs the locked frontend and backend security gates w
     "utf8"
   );
   assert.match(workflow, /^permissions:\r?\n\s+contents: read$/m);
-  assert.equal((workflow.match(/persist-credentials: false/g) ?? []).length, 2);
+  const checkouts = (workflow.match(/uses: actions\/checkout@/g) ?? []).length;
+  assert.ok(checkouts > 0);
+  assert.equal((workflow.match(/persist-credentials: false/g) ?? []).length, checkouts);
   assert.match(workflow, /run: npm run verify:public-source/);
-  assert.match(workflow, /run: npm audit --audit-level=high/);
+  assert.match(workflow, /run: npm run verify:git-history-secrets/);
+  assert.match(workflow, /name: Library security result/);
+  // Post-merge advisories are a scheduled audit, not a pull-request gate.
+  assert.doesNotMatch(workflow, /npm audit/);
+  const maintenance = await readFile(
+    join(repositoryRoot, ".github", "workflows", "repository-maintenance.yml"),
+    "utf8"
+  );
+  assert.match(maintenance, /schedule:/);
+  assert.doesNotMatch(maintenance, /pull_request:/);
+  assert.match(maintenance, /run: npm audit --audit-level=moderate/);
   assert.match(workflow, /run: npm run rehearse:library-production/);
   assert.match(workflow, /run: uv sync --locked --dev/);
   assert.match(workflow, /run: uv run --locked pytest/);

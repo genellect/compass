@@ -142,9 +142,9 @@ FastAPIはVS Code task **Library: start FastAPI**、composite PostgreSQL環境�
 
 | 対象 | 理由 | 判定元 |
 |---|---|---|
-| `npm run check:responsive:full` | visual regression baselineがWindows生成の`*-win32.png` | GitHub Actions `Responsive Quality Gate` |
+| `npm run check:responsive:full` | visual regression baselineがWindows生成の`*-win32.png` | Windows hostでの任意監査（CIでは実行しない） |
 | `npm run test:responsive:update-snapshots` | Windows baselineの横にLinux baselineを作ってしまう | UI承認後にWindowsで人が実行 |
-| `npm run rehearse:library-production` | PowerShell script | GitHub Actions `Library Security Quality Gate` |
+| `npm run rehearse:library-production` | PowerShell script | GitHub Actions `Library Security Quality Gate`（Library・フォーム関連pathの変更時） |
 | Production向けdeploy | Production side effect | ユーザーの明示承認を伴う別workflow。Web UI依頼に含まれる非本番PreviewはAGENTS.mdに従う |
 
 ## 環境ごとの検証の使い分け

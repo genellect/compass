@@ -126,6 +126,14 @@ npm run check
 これはform関連テスト、TypeScript検査、Production build、static export検証、全公開routeのPlaywright responsive smokeを実行する。変更範囲に応じて個別commandを使う場合も、実行したもの・省略したもの・理由を最終報告へ記載する。
 
 環境・依存・権利インベントリ・保守ツール変更では`npm run check:repository`を実行する。文書のみの変更では`npm run verify:docs`と差分確認を行う。
+
+### GitHub Actionsの必須check
+
+- 全PRの必須checkは`CI result`（`.github/workflows/ci.yml`）と`Library security result`（`.github/workflows/library-security-quality.yml`）の2つである。いずれもskipされたjobを合格として集約する。
+- `CI result`はLinuxでrepository契約、型検査、unit test、static export build、`npm run verify`を実行する。Web UI改修はこのcheckで足りる。
+- `Library security result`は全PRで公開ソース・Git履歴のsecret scanと依存差分レビューを行い、未来戦略ライブラリ、Library登録、Community・Contactフォーム、Pages Functions、GAS、Library APIに関係するpathを変更した場合だけ、Library成果物のrehearsalとAPI testを追加する。
+- 既にmergeされた依存へ後から公開されたadvisoryは、週次の`Repository Maintenance`で検出する。PRの必須checkにしない。
+- CIの失敗は放置しない。無関係な既存失敗は一度切り分け、修正PRまたはIssueで追跡する。
 Python依存の監査・テストは`docs/dependency-maintenance.md`に従う。
 
 ## Git and Deployment
@@ -164,11 +172,11 @@ Python依存の監査・テストは`docs/dependency-maintenance.md`に従う。
 - 複数のwrite-capable agentを同じbranch・worktreeで同時実行しない。並列実装はagentごとにbranchまたはworktreeを分離する。
 - 明示的に並列reviewを依頼された場合は、`.codex/agents/`または`.claude/agents/`のread-only agentを使い、main agentが判断と最終統合を担当する。両者は同じreview観点（repo mapping、quality、security）を持つ。
 
-## Responsive Browser Gate
+## Responsive Browser Checks
 
-- UI、navigation、font、breakpoint、animationを変更した場合は、`docs/responsive-browser-qa.md`に従い責任gateを実行する。
-- 局所的な変更では対象route・操作・viewportの検証を選ぶ。Linux・cloudで全responsive contractが必要な変更や明示的な総合監査では`npm run check:responsive:cloud`を使う。CIの責任gateは維持し、同じ全範囲をローカルとCIで機械的に重複実行しない。
-- visual regression baselineはWindowsで生成された`*-win32.png`であり、Linuxからは実行も更新もしない。`npm run check:responsive:full`はWindows専用gateであり、cloudからの合格判定にはGitHub Actions `Responsive Quality Gate`の結果を使う。
+- ブラウザーのresponsive検査はCIの必須checkではない（2026-10-23のユーザー決定）。表示の最終確認はCloudflare Previewの実表示で行う。
+- UI、navigation、font、breakpoint、animationを変更した場合は、`docs/responsive-browser-qa.md`から変更に関係するspec・viewport・操作を選び、ローカルまたはcloudで実行する。広範囲の変更や明示的な総合監査では`npm run check:responsive:cloud`を使う。
+- visual regression baselineはWindowsで生成された`*-win32.png`であり、Linuxからは実行も更新もしない。`npm run check:responsive:full`はWindows hostで人が実行する任意の監査である。
 - 物理解像度だけで合格にせず、CSS viewport、height境界、DPR、実描画行、overflow、consoleを記録する。
 - responsive testを通すためにcanonical copy、背景、layoutを無関係に変更しない。意図的なcontract変更では、差分を人間が確認してからtest expectationを更新する。
 

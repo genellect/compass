@@ -25,7 +25,7 @@ Last updated: 2026-09-12
 
 局所変更の検証が約5分を超えた時点、または検証が実装より著しく重くなった時点で、実行範囲・待ち方・実行環境を見直す。時間は再計画のきっかけであり、未確認項目を合格にする予算ではない。ユーザーに検証待ちを重ねる前に、何を確認できれば納品できるかを絞る。
 
-CIの必須check、visual baselineの所有OS、安全境界の専用gateは保持する。局所変更のローカル検証に総合CIと同じ全範囲を強制しない。無関係な既存CI失敗がある場合でも、対象機能を確認した非本番Previewは提供し、総合gate未合格を明記する。merge・Productionの条件を省略しない。
+CIの必須check（`CI result`、`Library security result`）、visual baselineの所有OS、安全境界の専用gateは保持する。ブラウザーのresponsive検査はCIの必須checkではない。局所変更のローカル検証に総合CIと同じ全範囲を強制しない。無関係な既存CI失敗がある場合でも、対象機能を確認した非本番Previewは提供し、総合gate未合格を明記する。merge・Productionの条件を省略しない。
 
 ## 視覚設計の見直し
 

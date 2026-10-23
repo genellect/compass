@@ -103,7 +103,9 @@ npm run test:unit
 
 Vitestは`vitest.config.ts`のpatternで`tests/`と`src/`の`*.test.ts(x)`を自動検出します。新しいunit testをnpm scriptへ個別登録する必要はありません。既知のcontent driftで一時的に除外したfileは、同configに理由を記載します。`test:registration`等の個別scriptは対象を絞った反復用として残します。
 
-GitHub Actions **CI**（`.github/workflows/ci.yml`）は、PRごとにLinuxで公開ソース境界、型検査、`npm test`、static export build、`npm run verify`を実行します。`src/`・`public/`・`functions/`以外のMarkdownだけを変更したPRでは、build系jobをskipします。必須checkには集約job **CI result**を指定します。このworkflowはdeployせず、secretも使用しません。
+GitHub Actions **CI**（`.github/workflows/ci.yml`）は、PRごとにLinuxでrepository契約（`npm run check:repository`）、公開ソース境界、型検査、`npm test`、static export build、`npm run verify`を実行します。`src/`・`public/`・`functions/`以外のMarkdownだけを変更したPRでは、build系jobをskipします。集約job **CI result**が必須checkです。このworkflowはdeployせず、secretも使用しません。
+
+**Library Security Quality Gate**（`.github/workflows/library-security-quality.yml`）は、全PRでsecret scanと依存差分レビューを行い、未来戦略ライブラリ・Library登録・フォーム・Pages Functions・GAS・Library APIのpathを変更した場合だけrehearsalとAPI testを追加します。集約job **Library security result**が必須checkです。**Repository Maintenance**は週次の依存advisory監査で、PRでは実行しません。
 
 ### API検証
 
@@ -154,7 +156,7 @@ visual regression baselineはWindowsで生成された`*-win32.png`のため、W
 npm.cmd run check:responsive:full
 ```
 
-完全監査では、正式なviewport matrix、Windows表示倍率、browser chromeを考慮した実効表示領域、意味を損なわない改行、Mobile menu、CTA hit test、clipping、visual regression、failure artifactを検証します。cloudからはGitHub Actions **Responsive Quality Gate** の結果をvisual regressionの判定に使用します。
+完全監査では、正式なviewport matrix、Windows表示倍率、browser chromeを考慮した実効表示領域、意味を損なわない改行、Mobile menu、CTA hit test、clipping、visual regression、failure artifactを検証します。ブラウザー検査はCIでは実行しません。表示の受入はCloudflare Previewの実表示で行います。
 
 詳細は[`docs/responsive-browser-qa.md`](responsive-browser-qa.md)を参照してください。
 
