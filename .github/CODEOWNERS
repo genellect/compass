@@ -1,0 +1,25 @@
+# Code owners for the safety-boundary paths of this repository.
+# Owner review is requested automatically for pull requests that touch them.
+# Whether a code owner review is required by Rulesets is a separate decision;
+# this file does not change any repository setting.
+# The last matching pattern takes precedence.
+
+# Agent policy and its execution setup
+/AGENTS.md @genellect
+/CLAUDE.md @genellect
+/.github/ @genellect
+
+# Public forms, Pages Functions and Google Apps Script
+/functions/ @genellect
+/google-apps-script/ @genellect
+/src/app/(official)/community/ @genellect
+/src/app/(official)/contact/ @genellect
+
+# Future Strategy Library, Library registration and its backend
+/services/library-api/ @genellect
+/infra/ @genellect
+/contracts/ @genellect
+/src/library-registration/ @genellect
+/src/app/(library)/ @genellect
+/src/app/(official)/future-strategy-library/ @genellect
+/scripts/*library* @genellect

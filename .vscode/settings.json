@@ -3,5 +3,15 @@
   "chatgpt.followUpQueueMode": "steer",
   "files.eol": "\n",
   "files.insertFinalNewline": true,
-  "terminal.integrated.defaultProfile.linux": "bash"
+  "terminal.integrated.defaultProfile.linux": "bash",
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "editor.formatOnSave": true,
+  "editor.formatOnSaveMode": "modifications",
+  "prettier.requireConfig": true,
+  "[markdown]": {
+    "editor.formatOnSave": false
+  },
+  "[python]": {
+    "editor.formatOnSave": false
+  }
 }
