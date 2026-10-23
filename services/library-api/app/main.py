@@ -85,7 +85,6 @@ from app.schemas import (
     Phase7RegistrationStatusResponse,
     Phase7RevokeResponse,
     Phase7RetryResponse,
-    AdminApplicationItem,
     AdminApplicationDetail,
     AdminApplicationListResponse,
     AdminApplicationSearchRequest,

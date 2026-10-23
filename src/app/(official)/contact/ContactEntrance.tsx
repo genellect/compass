@@ -80,7 +80,6 @@ export function ContactEntrance({ onSelect, onComplete }: Props) {
         <picture className={styles.poster}>
           <source media="(max-width: 700px)" srcSet={`${mediaRoot}/lobby-mobile.webp`} />
           {/* The first rendered frame exactly matches both branch films. */}
-          {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src={`${mediaRoot}/lobby-desktop.webp`} alt="" width="1280" height="720" fetchPriority="high" />
         </picture>
         {!selected ? <>
