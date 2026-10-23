@@ -87,7 +87,7 @@ PASS GATE:
 - [x] COMPASS Interactiveのpath/resourceへアクセス・変更していない。
 
 2026-08-01判定: `R0 PASS / LOCAL ONLY / NOT RELEASED`。詳細は
-`release-baseline-verification-2026-08-01.md`を参照する。
+`docs/archive/library-registration/release-baseline-verification-2026-08-01.md`（Historical）を参照する。
 
 R0 PASS後もpush・preview deployは別承認とする。
 
@@ -172,7 +172,7 @@ LOCAL IMPLEMENTATION GATE:
   verifyがPASS。最新件数はPhase報告とcanonical local gate証跡を正本とする。
 
 判定: `PHASE 8A LOCAL IMPLEMENTATION PASS / CLOUD AND MANUAL GATES PENDING / PRODUCTION BLOCKED`。
-証跡と未実施操作は`phase8a-implementation-report.md`および
+証跡と未実施操作は`docs/archive/library-registration/phase8a-implementation-report.md`（Historical）および
 `phase8a-production-platform-runbook.md`を参照する。
 
 CLOUD / MANUAL PASS GATE:
@@ -228,7 +228,7 @@ LOCAL IMPLEMENTATION GATE:
 - [x] accepted mutationが監査tableへ追記され、停止時の未完了grantが再付与待ちに残らない。
 
 判定: `PHASE 8B LOCAL IMPLEMENTATION PASS / EXTERNAL AUTH AND HUMAN ACCEPTANCE PENDING / PRODUCTION BLOCKED`。
-詳細は`phase8b-implementation-report.md`と`phase8b-admin-operations-runbook.md`を参照する。
+詳細は`docs/archive/library-registration/phase8b-implementation-report.md`（Historical）と`phase8b-admin-operations-runbook.md`を参照する。
 
 EXTERNAL AUTH / HUMAN PASS GATE:
 
@@ -287,7 +287,7 @@ LOCAL IMPLEMENTATION GATE:
 - [x] Drive operation、Google/Drive/email/Neon/Cloud Runの外部副作用0。
 
 判定: `PHASE 9 LOCAL IMPLEMENTATION PASS / REAL SNAPSHOT AND HUMAN APPROVAL PENDING / PRODUCTION BLOCKED`。
-詳細は`phase9-implementation-report.md`と`phase9-legacy-migration-runbook.md`を参照する。
+詳細は`docs/archive/library-registration/phase9-implementation-report.md`（Historical）と`phase9-legacy-migration-runbook.md`を参照する。
 
 REAL SNAPSHOT / HUMAN / PRODUCTION PASS GATE:
 
@@ -333,7 +333,7 @@ LOCAL IMPLEMENTATION GATE:
   idempotency、rate limit、追記専用監査をAPI経由で確認。
 
 判定: `PHASE 10A LOCAL IMPLEMENTATION PASS / DATA-HANDLING AND PRODUCTION AUTH GATES PENDING / PRODUCTION BLOCKED`。
-詳細は`phase10a-implementation-report.md`と`phase10a-export-runbook.md`を参照する。
+詳細は`docs/archive/library-registration/phase10a-implementation-report.md`（Historical）と`phase10a-export-runbook.md`を参照する。
 
 DATA-HANDLING / AUTH / PRODUCTION PASS GATE:
 

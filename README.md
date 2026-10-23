@@ -160,11 +160,15 @@ API・専用ローカルDB・E2Eの手順は[Development Workflows](docs/develop
 | 文書 | 目的 |
 |---|---|
 | [Documentation Index](docs/README.md) | 正本文書、運用手順、過去の記録への入口 |
-| [Project Guide](Project.guide/PROJECT_GUIDE.md) | 理念、ブランド、プロジェクト原則 |
+| [Project Guide](docs/PROJECT_GUIDE.md) | 理念、ブランド、プロジェクト原則 |
+| [Contributing](CONTRIBUTING.md) | 新メンバー向けの開発の始め方、PRの流れ、承認が必要な操作 |
 | [Architecture](docs/ARCHITECTURE.md) | 配信・認証・データ・外部サービスの構成 |
 | [Content Governance](docs/CONTENT_GOVERNANCE.md) | 正式な文言、CTA、公開状態、指標の管理 |
+| [Route Contract](docs/ROUTE_CONTRACT.md) | route、canonical URL、journey別の遷移先 |
+| [ADR](docs/adr/README.md) | architecture・運用上の決定記録 |
 | [Responsive QA](docs/responsive-browser-qa.md) | ブラウザ検証と画像差分の手順 |
 | [Library Registration](docs/library-registration/) | 登録基盤の設計、プライバシー、運用・公開ゲート |
+| [Archive](docs/archive/README.md) | 完了済みPhase報告、完了済み移行要件、旧PDF（Historical） |
 | [AGENTS.md](AGENTS.md) | エージェント向けの作業範囲、実装・検証・承認規則 |
 
 ブランチでの変更とCI確認を経て、レビュー可能なPull Requestを作成します。本番へ影響する操作には権利者の事前承認が必要です。既存CDは維持し、mainへの反映が本番配信を起動する場合は公開操作として扱います。
