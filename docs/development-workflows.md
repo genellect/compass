@@ -107,6 +107,35 @@ GitHub Actions **CI**（`.github/workflows/ci.yml`）は、PRごとにLinuxでre
 
 **Library Security Quality Gate**（`.github/workflows/library-security-quality.yml`）は、全PRでsecret scanと依存差分レビューを行い、未来戦略ライブラリ・Library登録・フォーム・Pages Functions・GAS・Library APIのpathを変更した場合だけrehearsalとAPI testを追加します。集約job **Library security result**が必須checkです。**Repository Maintenance**は週次の依存advisory監査で、PRでは実行しません。
 
+### PRの自動化
+
+以下はreviewを助ける補助で、必須checkではありません。deploy、secret、repository設定の変更は行いません。
+
+**Preview対象routeコメント**（`.github/workflows/preview-links.yml`）は、PRごとに1件のcommentを作成し、以後は同じcommentを更新します。deployの詳細はCloudflare自身のcommentとcheck runが示すため、このcommentは対象routeのlink一覧に絞ります。URLは「Cloudflare Pages」check runの出力から転記し、branch名から組み立てません。
+
+- 冒頭の1行が対象commitと基底URLです。route linkは対象commit固定のPreview URLを基底にします。Branch Preview（branchの最新commitを指すalias）はcheck run出力にある場合だけ併記します。
+- 「変更pathに対応するroute」は、変更fileを`docs/WEBSITE_BOUNDARIES.md`のroute・source対応（実装は`.github/scripts/preview-links.mjs`）で照合した結果です。build設定、`_redirects`、`functions/_middleware.ts`、`src/styles/`は全routeに、`(official)`のlayoutはFounder JPにも影響すると扱います。独立surfaceには「独立surface」と表示します。
+- 全9 routeのlinkは折りたたみ内にあります。deploy待ち・失敗時はURLを出さず、状態だけを表示します。
+- `check_run`起点の更新はdefault branch上のworkflow定義だけで動きます。mainへ入る前のPRやstacked PRでは、`pull_request`起点のjobがcheck run完了を最大18分待って更新します。fork・Dependabotのpull_request runはread-only tokenのためskipします。
+
+**自動ラベル**（`.github/labeler.yml`、`.github/workflows/labeler.yml`）は、変更pathから次の`area:*`ラベルを付け、該当しなくなったラベルを外します。
+
+| ラベル | 意味 |
+| --- | --- |
+| `area:official` | 親サイト`/`、Messages、共通header・footer・style |
+| `area:library` | 未来戦略ライブラリ、Library登録、Library API、infra、contracts |
+| `area:forms` | Community参加、Contact、`functions/api/`、フォーム用GAS |
+| `area:interactive` | Interactive紹介・開発者紹介（独立surface） |
+| `area:founder` | yuto-matsui.com JP/EN（独立surface） |
+| `area:ci` | `.github/`配下 |
+| `area:docs` | `docs/`、build入力ではないMarkdown |
+| `area:deps` | npm・uv lockfile、Dockerfile、Terraform lock |
+| `area:env` | Dev Container、`.codex/`、`.claude/`、toolchain pin |
+
+`area:interactive`または`area:founder`が付いたPRは、Independent Website Boundariesの対象を変更しています。依頼がそのsurfaceを明示しているか確認します。labelerは公式推奨の`pull_request_target`・checkoutなし構成のため、base branchにworkflowがあるPRで動きます。
+
+**CODEOWNERS**（`.github/CODEOWNERS`）は、Functions、GAS、Library API、infra、contracts、Library・フォームのroute、`.github/`、`AGENTS.md`、`CLAUDE.md`、`scripts/*library*`のownerを指定し、PRでreview依頼を自動化します。現状は単独開発のため、Rulesetsでcode owner reviewを必須にするかは別判断であり、このfileはrepository設定を変更しません。
+
 ### API検証
 
 ```bash
