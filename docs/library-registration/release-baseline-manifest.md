@@ -43,7 +43,7 @@ docker compose -f compose.library-dev.yaml config
 加えてGit差分からsecret、token、PII、cache、DB fileがないことを確認する。
 
 2026-08-01に上記を完了し、`R0 PASS / LOCAL ONLY / NOT RELEASED`と判定した。
-結果は`release-baseline-verification-2026-08-01.md`に記録する。
+結果は`docs/archive/library-registration/release-baseline-verification-2026-08-01.md`（Historical）に記録する。
 
 このR0 PASSは当時のsource baselineに対する結果であり、2026-08-02のrelease候補のcanonical PASSへ
 読み替えない。

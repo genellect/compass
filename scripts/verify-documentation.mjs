@@ -6,6 +6,7 @@ const files = [
   'THIRD_PARTY_NOTICES.md', 'docs/README.md', 'docs/CLOUD_DEVELOPMENT.md',
   'docs/development-workflows.md', 'docs/dependency-maintenance.md',
   'docs/documentation-maintenance.md', 'docs/legal/permissions.md', 'docs/legal/asset-register.md',
+  'CONTRIBUTING.md', 'docs/PROJECT_GUIDE.md', 'docs/ROUTE_CONTRACT.md', 'docs/adr/README.md', 'docs/archive/README.md',
 ];
 const errors = [];
 let links = 0;

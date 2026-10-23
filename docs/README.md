@@ -1,17 +1,17 @@
 # COMPASS Documentation Index
 
 Status: Canonical Index
-Last verified: 2026-09-10 (entry documents; external operational states require their own checks)
+Last verified: 2026-10-23 (entry documents; external operational states require their own checks)
 
 ## 文書の優先順位
 
 1. そのtaskでユーザーが明示した要件
 2. 現行Production挙動と最新`origin/main`の実装
 3. [`AGENTS.md`](../AGENTS.md)
-4. [`Project.guide/PROJECT_GUIDE.md`](../Project.guide/PROJECT_GUIDE.md)
+4. [`PROJECT_GUIDE.md`](PROJECT_GUIDE.md)
 5. [`ARCHITECTURE.md`](ARCHITECTURE.md) / [`CONTENT_GOVERNANCE.md`](CONTENT_GOVERNANCE.md)
 6. route-specific requirement・test・runbook
-7. completed migration record・旧PDF・過去資料
+7. [`archive/`](archive/README.md)の完了済み記録・旧PDF・過去資料
 
 Productionと`origin/main`が食い違う場合は差分を報告し、どちらかを推測で正本化しない。
 
@@ -20,11 +20,14 @@ Productionと`origin/main`が食い違う場合は差分を報告し、どちら
 | Document | Responsibility |
 |---|---|
 | [`README.md`](../README.md) | repositoryの入口、開発・検証command、主要構成 |
+| [`CONTRIBUTING.md`](../CONTRIBUTING.md) | 新メンバー向けの開発の始め方、branchとPRの流れ、承認が必要な操作 |
 | [`AGENTS.md`](../AGENTS.md) | coding agent向け実装契約、安全境界、確認事項 |
-| [`PROJECT_GUIDE.md`](../Project.guide/PROJECT_GUIDE.md) | COMPASSの理念、identity、project関係、experience原則 |
+| [`PROJECT_GUIDE.md`](PROJECT_GUIDE.md) | COMPASSの理念、identity、project関係、experience原則 |
 | [`ARCHITECTURE.md`](ARCHITECTURE.md) | repository、runtime、deployment、form、data境界 |
 | [`CONTENT_GOVERNANCE.md`](CONTENT_GOVERNANCE.md) | canonical copy、CTA、metrics、status、editorial rule |
-| [`CODEX_LINKS.md`](../CODEX_LINKS.md) | 正規公開URLとjourney別destination |
+| [`ROUTE_CONTRACT.md`](ROUTE_CONTRACT.md) | route、所属surface、canonical URL、redirect、journey別destination、tabの扱い |
+| [`WEBSITE_BOUNDARIES.md`](WEBSITE_BOUNDARIES.md) | 独立Web・独立surfaceの編集境界 |
+| [`adr/README.md`](adr/README.md) | ADRの索引と新規ADRのテンプレート |
 
 ## Operational Runbooks
 
@@ -49,34 +52,28 @@ runbookはsource上の契約と運用手順を記録する。Cloudflare dashboar
 
 | Document | Status / responsibility |
 |---|---|
-| [`../project.guide.md`](../project.guide.md) | 固定仕様、保護境界、現状、次の作業順の入口 |
+| [`REGISTRATION_PLATFORM_GUIDE.md`](library-registration/REGISTRATION_PLATFORM_GUIDE.md) | 固定仕様、保護境界、現状、次の作業順の入口（旧root `project.guide.md`。現状・作業順・正式判定の記述は2026-08-03時点） |
 | [`phase-roadmap-v3.md`](library-registration/phase-roadmap-v3.md) | Phase、PASS Gate、Preview/Pilot/Production Gateの正本 |
 | [`release-baseline-manifest.md`](library-registration/release-baseline-manifest.md) | historical R0と現行release候補のbase/head・検証境界 |
-| [`adr/0007-near-zero-cost-production-runtime.md`](library-registration/adr/0007-near-zero-cost-production-runtime.md) | FastAPI/Neon/Cloud Runを維持する準0円運用、spend cap、残余riskの決定 |
+| [`adr/0007-near-zero-cost-production-runtime.md`](adr/0007-near-zero-cost-production-runtime.md) | FastAPI/Neon/Cloud Runを維持する準0円運用、spend cap、残余riskの決定 |
 | [`cost-capacity-and-docker-plan.md`](library-registration/cost-capacity-and-docker-plan.md) | 2026-08-02料金基準、容量、Docker隔離、課金停止線 |
-| [`phase9-implementation-report.md`](library-registration/phase9-implementation-report.md) | Phase 9 local実装証跡と未完了の実snapshot・本番gate |
-| [`phase10a-implementation-report.md`](library-registration/phase10a-implementation-report.md) | Phase 10A local実装証跡と未完了のデータ取扱・認証gate |
 | [`roster-and-legacy-reconciliation-2026-08-02.md`](library-registration/roster-and-legacy-reconciliation-2026-08-02.md) | 旧Sheet/Driveのread-only件数照合、名簿正規化、未解決22行、PostgreSQL正本方針 |
 | [`admin-access-security-boundary.md`](library-registration/admin-access-security-boundary.md) | 管理画面をURLやclient表示だけで守らない多層認可とProduction手動ゲート |
+
+Phase 9/10Aの実装報告は[`archive/library-registration/`](archive/README.md)へ移した（Historical）。
 
 Phase 9/10Aの対象gateは`LOCAL IMPLEMENTATION PASS`だが、現行候補のcanonical統合判定には
 現在HEADと一致するmachine evidenceが必要である。billingは意図的に未登録、外部認証・実PII・
 公開は未実施である。正式判定は常に
 `phase-roadmap-v3.md`と最新machine evidenceで確認する。
 
-## Completed Implementation Record
-
-[`Project.guide/FUTURE_STRATEGY_LIBRARY_NEXT_REQUIREMENTS.md`](../Project.guide/FUTURE_STRATEGY_LIBRARY_NEXT_REQUIREMENTS.md)は、2026-07-31に完了したNext.js移行の要件記録である。現行copy・architectureを上書きしない。
-
 ## Historical Documents
 
-次のPDFは過去の理念・Library設計を理解するために保持するが、現行実装の正本ではない。
+完了済みPhase報告、旧版roadmap、2026-07-31に完了したNext.js移行の要件記録、旧PDFは、2026-10-23に[`archive/`](archive/README.md)へ移した。索引は[`archive/README.md`](archive/README.md)にある。
 
-- `Project.guide/COMPASS Founding Vision 2.0.pdf`
-- `Project.guide/COMPASS_Founding_Vision.pdf`
-- `Project.guide/Future_Strategy_Library_Design_Philosophy.pdf`
+これらは過去の判断を理解するために保持するが、現行実装の正本ではない。現行copy・architecture・Gate判定を上書きしない。
 
-最初の2件は内容が重複する旧版として監査されている。今回は履歴保全のため移動・削除しない。将来の整理では、編集可能な原稿を正本とし、PDFを大学提出・説明用の派生物としてversion管理する。
+旧PDFのうち`COMPASS Founding Vision 2.0.pdf`と`COMPASS_Founding_Vision.pdf`は、内容が重複する旧版として監査されている。履歴保全のため削除せず移動だけを行った。将来の整理では、編集可能な原稿を正本とし、PDFを大学提出・説明用の派生物としてversion管理する。
 
 ## Status Labels
 

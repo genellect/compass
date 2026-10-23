@@ -72,13 +72,13 @@ Educationの提供形式としてWorkshopを表示できるが、活動領域そ
 | Interactiveを試す | `https://compass-interactive.pages.dev/demo` |
 | 講義codeで参加する | `https://compass-interactive.pages.dev/join` |
 | Libraryを知る | `/future-strategy-library/` |
-| Library登録 | Library専用Google Form |
+| Library登録 | `/library-registration/`（Library専用Google Formはrollback専用） |
 | Essentials access | Essentials専用Google Form |
 | Manifestoを読む | `/messages/` |
 | Community参加 | `/community/join/` |
 | Contact | `/contact/` |
 
-full URLとsource ownerは`CODEX_LINKS.md`を参照する。一般的な`Join`や`Register`だけを根拠に、別journeyのURLへ差し替えない。
+full URLとsource ownerは[`ROUTE_CONTRACT.md`](ROUTE_CONTRACT.md)を参照する。一般的な`Join`や`Register`だけを根拠に、別journeyのURLへ差し替えない。
 
 ## 6. Link and Navigation Rules
 
