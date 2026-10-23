@@ -8,11 +8,22 @@ export interface BundledChromium {
 }
 
 export interface ResolvedChromium {
-  source: 'bundled' | 'PLAYWRIGHT_CHROMIUM_EXECUTABLE' | 'PLAYWRIGHT_BROWSERS_PATH' | 'preinstalled' | 'missing';
+  source:
+    | "bundled"
+    | "PLAYWRIGHT_CHROMIUM_EXECUTABLE"
+    | "PLAYWRIGHT_BROWSERS_PATH"
+    | "preinstalled"
+    | "missing";
   executablePath: string | undefined;
   bundled: BundledChromium;
 }
 
 export declare function bundledChromium(root?: string): BundledChromium;
-export declare function resolveChromium(options?: { env?: NodeJS.ProcessEnv; root?: string }): ResolvedChromium;
-export declare function nodeModulesInSync(root?: string): { inSync: boolean; reason: string | null };
+export declare function resolveChromium(options?: {
+  env?: NodeJS.ProcessEnv;
+  root?: string;
+}): ResolvedChromium;
+export declare function nodeModulesInSync(root?: string): {
+  inSync: boolean;
+  reason: string | null;
+};

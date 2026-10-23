@@ -35,7 +35,9 @@ export default defineConfig({
     serviceWorkers: "block",
     screenshot: "only-on-failure",
     trace: "retain-on-failure",
-    ...(chromium.executablePath ? { launchOptions: { executablePath: chromium.executablePath } } : {}),
+    ...(chromium.executablePath
+      ? { launchOptions: { executablePath: chromium.executablePath } }
+      : {}),
   },
   webServer: process.env.RESPONSIVE_BASE_URL
     ? undefined
