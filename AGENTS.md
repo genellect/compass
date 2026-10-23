@@ -18,11 +18,12 @@ COMPASS Interactiveプロダクト本体、Productionデータベース、保護
 変更前に、次の順で必要な文書とソースを読む。
 
 1. `AGENTS.md`
-2. `docs/ARCHITECTURE.md`
-3. `docs/CONTENT_GOVERNANCE.md`
-4. 対象routeのソース、テスト、runbook
+2. `docs/PROJECT_GUIDE.md`
+3. `docs/ARCHITECTURE.md`
+4. `docs/CONTENT_GOVERNANCE.md`
+5. 対象routeのソース、テスト、runbook
 
-`docs/archive/`の旧Project Guide、旧PDF、完了済みPhase報告は`Historical`であり、現行実装の正本ではない。
+`docs/archive/`の旧PDF、完了済み移行要件、完了済みPhase報告は`Historical`であり、現行実装の正本ではない。
 
 ## Independent Website Boundaries (user instruction, 2026-09-09)
 

@@ -2,7 +2,7 @@
 
 Status: Canonical
 Scope: COMPASSの公開brand、公式Webサイト、接続する公開体験
-Last verified: 2026-08-01
+Last verified: 2026-10-23（§5のrepository公開区分、§12、§15、Responsive Experience Acceptanceのみ現行source・文書と照合。その他は2026-08-01時点の記述）
 Reference: `genellect/compass` / `origin/main`
 
 ## 1. この文書の役割
@@ -75,7 +75,7 @@ Manifestoは独立事業ではなく、COMPASSの思想と言語を外部へ伝�
 
 ### COMPASS Interactive
 
-リアルタイムとAIを用いて、質問、反応、理解、教材、教員操作を一つの講義体験へ接続する旗艦product。公開repositoryには紹介・Developer説明routeが含まれるが、product本体は別の非公開repository・別deploymentで管理される。
+リアルタイムとAIを用いて、質問、反応、理解、教材、教員操作を一つの講義体験へ接続する旗艦product。このrepository（`genellect/compass`）には紹介・Developer説明routeが含まれるが、product本体は別の公開repository（`genellect/compass-interactive`）・別deploymentで管理される。
 
 ### 未来戦略ライブラリ
 
@@ -198,26 +198,19 @@ AIは学習、思考、執筆、research preparation、system operationを支援
 
 未来戦略ライブラリ登録は、公開static UI、public/admin/workerに分離したFastAPI、PostgreSQL、
 Google OAuth、Drive permission worker、認証済み管理者画面で構成する。Production移行後の登録情報の正本は
-PostgreSQLとし、旧GoogleスプレッドシートとExcel/CSVはそれぞれ読み取り専用の移行元、
-監査済み一時出力として扱う。管理者画面では「申請・システム処理」と「登録者名簿」を分離し、
-名簿の学年表示は`1年`〜`6年`、`M1`、`M2`、`その他`へ固定する。実PII、database dump、
-credentialは公開source treeへ保存しない。
+PostgreSQLとする。実PII、database dump、credentialは公開source treeへ保存しない。
 
-repositoryはpublicであり、管理URLや実装コードを秘匿できる前提を置かない。Library管理機能は
-Cloudflare Access、同一originの最小Pages proxy、private edge secret、Google完全一致allowlist、
-server-side `sub` RBAC、serviceごとのDB loginと最小DB roleを重ねる。public serviceは管理routeを
-常時404とし、管理者・監査・export表へ到達できないため、sourceを読まれてもsecret値とProduction identity／dataなしでは
-認証・認可を突破できない構成とする。管理URLは公開導線へ掲載しないが、非掲載や`noindex`を認可とは扱わない。
-2026-09-10のsource確認では、旧public DB roleのraw `SELECT`を前提とする説明は過去の状態である。
-現行sourceはraw table権限を撤去し、独立したtokenを要求する限定RPCで公開登録を処理する。
-詳細と残余条件は`docs/library-registration/public-repository-security-boundary.md`を正本とする。
-実production相当LOGINでのPostgreSQL権限試験など、同文書のgateを満たすまで本番受入済みと記載しない。
-Drive副作用は、producerが実Drive IDを持たずversioned HMAC-SHA256 operation attestationを発行し、
-private workerだけが固定targetとOAuth credentialを持つ。DB行のtarget ID、欠損・改変・期限切れ・再利用署名を
-権限根拠にせず、検証失敗時はDrive APIを呼ばない。
+repositoryはpublicであり、管理URLや実装コードを秘匿できる前提を置かない。sourceを読まれても、secret値と
+Production identity／dataなしでは認証・認可を突破できない構成とする。管理URLの非掲載や`noindex`を認可とは扱わない。
+正本は次のとおりで、各文書のgateを満たすまで本番受入済みと記載しない。
 
-Libraryの公開repository前提のthreat modelと秘密情報区分は
-`docs/library-registration/public-repository-security-boundary.md`を正本とする。
+- 構成、data境界、旧Sheet・CSV/XLSXの扱い: [`ARCHITECTURE.md`](ARCHITECTURE.md)
+- 公開repository前提のthreat model、秘密情報区分、公開DB role・Drive operation attestationの境界と残余条件:
+  [`public-repository-security-boundary.md`](library-registration/public-repository-security-boundary.md)
+- 管理画面の多層認可（Cloudflare Access、Pages proxy、edge secret、allowlist、`sub` RBAC、DB role）:
+  [`admin-access-security-boundary.md`](library-registration/admin-access-security-boundary.md)
+- 管理者画面の二段構成と名簿の学年表示区分:
+  [`roster-and-legacy-reconciliation-2026-08-02.md`](library-registration/roster-and-legacy-reconciliation-2026-08-02.md)
 
 COMPASS Interactive本体は別repository・別deploymentで、独自のfrontend、data、authorization、AI、storage、verification architectureを持つ。保護されたLibrary content、Production user data、private credential、Production databaseは公開repositoryへ置かない。
 
@@ -250,10 +243,10 @@ traffic、登録、code量、feature数は補助指標であり、missionその�
 1. そのtaskでユーザーが明示した要件
 2. 現行Production挙動と最新`origin/main`の実装
 3. `AGENTS.md`
-4. `Project.guide/PROJECT_GUIDE.md`
+4. `docs/PROJECT_GUIDE.md`
 5. `docs/ARCHITECTURE.md` / `docs/CONTENT_GOVERNANCE.md`
 6. route-specific requirement・test・runbook
-7. completed migration record・旧PDF・過去資料
+7. completed migration record・旧PDF・過去資料（`docs/archive/`）
 
 Productionと`origin/main`が食い違う場合は、一方を推測で正本化せず差分を報告する。旧PDFと完了済み要件は`Historical`または`Completed`として扱い、現行sourceを上書きしない。
 
@@ -267,7 +260,9 @@ Productionと`origin/main`が食い違う場合は、一方を推測で正本化
 
 ## Responsive Experience Acceptance
 
-Desktop / Mobileに加え、Windows 125%・150%表示やbrowser chromeで生じる横長・短尺CSS viewportを検証する。検証正本は`docs/responsive-browser-qa.md`とし、意味のある改行、実文字範囲、Mobile menu、展開前後、Hero初期画面を統合監査する。
+UI、navigation、font、breakpoint、animationを変更した場合は、Desktop / Mobileに加え、Windows 125%・150%表示やbrowser chromeで生じる横長・短尺CSS viewportのうち、変更に関係する範囲を検証する。検証正本は`docs/responsive-browser-qa.md`とし、意味のある改行、実文字範囲、Mobile menu、展開前後、Hero初期画面を確認対象とする。
+
+ブラウザーのresponsive検査はCIの必須checkではない。表示の最終確認はCloudflare Previewの実表示で行い、広範囲の変更や明示的な総合監査では`npm run check:responsive:cloud`を使う（`AGENTS.md`のResponsive Browser Checks）。
 
 ## 17. Core Principle
 

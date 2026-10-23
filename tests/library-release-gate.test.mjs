@@ -304,7 +304,7 @@ test("administrator documents and API responses are explicitly non-cacheable", a
 
 test("current administrator gates require a private initial two-account allowlist and no second human", async () => {
   const currentPolicyPaths = [
-    "docs/archive/project-guide/project.guide.md",
+    "docs/library-registration/REGISTRATION_PLATFORM_GUIDE.md",
     "docs/library-registration/admin-access-security-boundary.md",
     "docs/library-registration/phase-roadmap-v3.md",
     "docs/library-registration/phase8b-admin-operations-runbook.md",

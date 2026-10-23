@@ -20,8 +20,9 @@ Last verified: 2026-10-23
 
 1. [`README.md`](README.md): COMPASSの価値、技術構成、実装の場所
 2. [`AGENTS.md`](AGENTS.md): 作業範囲、編集・検証・承認の規則（人もagentも同じ規則に従う）
-3. [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md)と[`docs/CONTENT_GOVERNANCE.md`](docs/CONTENT_GOVERNANCE.md): 技術境界と、正式な文言・CTA・状態語
-4. 変更する対象routeのsource、test、runbook
+3. [`docs/PROJECT_GUIDE.md`](docs/PROJECT_GUIDE.md): COMPASSの理念、identity、project間の関係、experience原則
+4. [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md)と[`docs/CONTENT_GOVERNANCE.md`](docs/CONTENT_GOVERNANCE.md): 技術境界と、正式な文言・CTA・状態語
+5. 変更する対象routeのsource、test、runbook
 
 Interactive紹介、開発者紹介、yuto-matsui.comは、COMPASS公式サイトとは独立した編集範囲である。依頼で名指しされない限り変更しない。境界は`AGENTS.md`のIndependent Website Boundariesと[`docs/WEBSITE_BOUNDARIES.md`](docs/WEBSITE_BOUNDARIES.md)にある。
 
@@ -79,6 +80,7 @@ Previewでは、Production branch、secret、独自domainの設定を変更し�
 |---|---|
 | 全文書の一覧と優先順位 | [`docs/README.md`](docs/README.md) |
 | 作業規則・承認条件 | [`AGENTS.md`](AGENTS.md) |
+| 理念・identity・project間の関係 | [`docs/PROJECT_GUIDE.md`](docs/PROJECT_GUIDE.md) |
 | 開発環境 | [`docs/CLOUD_DEVELOPMENT.md`](docs/CLOUD_DEVELOPMENT.md) |
 | コマンドと検証 | [`docs/development-workflows.md`](docs/development-workflows.md)、[`docs/agent-delivery-policy.md`](docs/agent-delivery-policy.md) |
 | 技術構成・境界 | [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) |

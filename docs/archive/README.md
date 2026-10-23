@@ -1,7 +1,7 @@
 # Archive
 
 Status: Historical
-Scope: 完了したPhase報告・証跡、旧版roadmap、旧Project Guide、旧PDF
+Scope: 完了したPhase報告・証跡、旧版roadmap、完了済み移行要件、旧PDF
 Last verified: 2026-10-23
 
 ## この場所の扱い
@@ -38,17 +38,23 @@ Last verified: 2026-10-23
 
 運用手順はアーカイブしていない。Phase 7〜10Aのrunbook、Cloudflare・GCP・GASのrunbook、`admin-access-security-boundary.md`、`public-repository-security-boundary.md`、`release-baseline-manifest.md`等は`docs/library-registration/`に残る。
 
-## 旧Project Guide・旧PDF（`project-guide/`）
+## 旧PDF（`founding-documents/`）
 
-2026-10-23に、repository rootの`project.guide.md`と`Project.guide/`から移動した。内容が古く、現行の正本としては扱わないというユーザー判断による。
+2026-10-23に、repository rootの`Project.guide/`から移動した。過去の理念・Library設計を理解するために保持する。
 
 | 文書 | 内容 |
 |---|---|
-| [`PROJECT_GUIDE.md`](project-guide/PROJECT_GUIDE.md) | COMPASS全体の旧Project Guide（Last verified 2026-08-01） |
-| [`project.guide.md`](project-guide/project.guide.md) | 未来戦略ライブラリ登録基盤の旧プロジェクトガイド（2026-08-03） |
-| [`FUTURE_STRATEGY_LIBRARY_NEXT_REQUIREMENTS.md`](project-guide/FUTURE_STRATEGY_LIBRARY_NEXT_REQUIREMENTS.md) | 2026-07-31に完了したNext.js移行の要件記録 |
-| [`COMPASS Founding Vision 2.0.pdf`](<project-guide/COMPASS Founding Vision 2.0.pdf>) | 旧理念PDF |
-| [`COMPASS_Founding_Vision.pdf`](project-guide/COMPASS_Founding_Vision.pdf) | 旧理念PDF。上記と内容が重複する旧版として監査済み |
-| [`Future_Strategy_Library_Design_Philosophy.pdf`](project-guide/Future_Strategy_Library_Design_Philosophy.pdf) | 未来戦略ライブラリの旧設計思想PDF |
+| [`COMPASS Founding Vision 2.0.pdf`](<founding-documents/COMPASS Founding Vision 2.0.pdf>) | 旧理念PDF |
+| [`COMPASS_Founding_Vision.pdf`](founding-documents/COMPASS_Founding_Vision.pdf) | 旧理念PDF。上記と内容が重複する旧版として監査済み |
+| [`Future_Strategy_Library_Design_Philosophy.pdf`](founding-documents/Future_Strategy_Library_Design_Philosophy.pdf) | 未来戦略ライブラリの旧設計思想PDF |
 
-現行のidentity、公開導線の分類、copy、status語彙は`AGENTS.md`と[`CONTENT_GOVERNANCE.md`](../CONTENT_GOVERNANCE.md)、技術境界は[`ARCHITECTURE.md`](../ARCHITECTURE.md)を正本とする。
+## 未来戦略ライブラリNext.js移行（`future-strategy-library-migration/`）
+
+| 文書 | 内容 |
+|---|---|
+| [`FUTURE_STRATEGY_LIBRARY_NEXT_REQUIREMENTS.md`](future-strategy-library-migration/FUTURE_STRATEGY_LIBRARY_NEXT_REQUIREMENTS.md) | 2026-07-31に完了したNext.js移行の要件記録（Status: Completed）。`Project.guide/`から移動 |
+
+## アーカイブしなかった旧`Project.guide/`の文書
+
+- `Project.guide/PROJECT_GUIDE.md`は現行の正本として[`docs/PROJECT_GUIDE.md`](../PROJECT_GUIDE.md)へ移した。
+- root の`project.guide.md`（未来戦略ライブラリ登録基盤のプロジェクトガイド）は、本文を変更せずに[`docs/library-registration/REGISTRATION_PLATFORM_GUIDE.md`](../library-registration/REGISTRATION_PLATFORM_GUIDE.md)へ改名した。

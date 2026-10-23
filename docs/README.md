@@ -8,9 +8,10 @@ Last verified: 2026-10-23 (entry documents; external operational states require 
 1. そのtaskでユーザーが明示した要件
 2. 現行Production挙動と最新`origin/main`の実装
 3. [`AGENTS.md`](../AGENTS.md)
-4. [`ARCHITECTURE.md`](ARCHITECTURE.md) / [`CONTENT_GOVERNANCE.md`](CONTENT_GOVERNANCE.md)
-5. route-specific requirement・test・runbook
-6. [`archive/`](archive/README.md)の完了済み記録・旧PDF・過去資料
+4. [`PROJECT_GUIDE.md`](PROJECT_GUIDE.md)
+5. [`ARCHITECTURE.md`](ARCHITECTURE.md) / [`CONTENT_GOVERNANCE.md`](CONTENT_GOVERNANCE.md)
+6. route-specific requirement・test・runbook
+7. [`archive/`](archive/README.md)の完了済み記録・旧PDF・過去資料
 
 Productionと`origin/main`が食い違う場合は差分を報告し、どちらかを推測で正本化しない。
 
@@ -21,6 +22,7 @@ Productionと`origin/main`が食い違う場合は差分を報告し、どちら
 | [`README.md`](../README.md) | repositoryの入口、開発・検証command、主要構成 |
 | [`CONTRIBUTING.md`](../CONTRIBUTING.md) | 新メンバー向けの開発の始め方、branchとPRの流れ、承認が必要な操作 |
 | [`AGENTS.md`](../AGENTS.md) | coding agent向け実装契約、安全境界、確認事項 |
+| [`PROJECT_GUIDE.md`](PROJECT_GUIDE.md) | COMPASSの理念、identity、project関係、experience原則 |
 | [`ARCHITECTURE.md`](ARCHITECTURE.md) | repository、runtime、deployment、form、data境界 |
 | [`CONTENT_GOVERNANCE.md`](CONTENT_GOVERNANCE.md) | canonical copy、CTA、metrics、status、editorial rule |
 | [`ROUTE_CONTRACT.md`](ROUTE_CONTRACT.md) | route、所属surface、canonical URL、redirect、journey別destination、tabの扱い |
@@ -50,6 +52,7 @@ runbookはsource上の契約と運用手順を記録する。Cloudflare dashboar
 
 | Document | Status / responsibility |
 |---|---|
+| [`REGISTRATION_PLATFORM_GUIDE.md`](library-registration/REGISTRATION_PLATFORM_GUIDE.md) | 固定仕様、保護境界、現状、次の作業順の入口（旧root `project.guide.md`。現状・作業順・正式判定の記述は2026-08-03時点） |
 | [`phase-roadmap-v3.md`](library-registration/phase-roadmap-v3.md) | Phase、PASS Gate、Preview/Pilot/Production Gateの正本 |
 | [`release-baseline-manifest.md`](library-registration/release-baseline-manifest.md) | historical R0と現行release候補のbase/head・検証境界 |
 | [`adr/0007-near-zero-cost-production-runtime.md`](adr/0007-near-zero-cost-production-runtime.md) | FastAPI/Neon/Cloud Runを維持する準0円運用、spend cap、残余riskの決定 |
@@ -66,7 +69,7 @@ Phase 9/10Aの対象gateは`LOCAL IMPLEMENTATION PASS`だが、現行候補のca
 
 ## Historical Documents
 
-完了済みPhase報告、旧版roadmap、旧Project Guide（`PROJECT_GUIDE.md`、`project.guide.md`）、2026-07-31に完了したNext.js移行の要件記録、旧PDFは、2026-10-23に[`archive/`](archive/README.md)へ移した。索引は[`archive/README.md`](archive/README.md)にある。
+完了済みPhase報告、旧版roadmap、2026-07-31に完了したNext.js移行の要件記録、旧PDFは、2026-10-23に[`archive/`](archive/README.md)へ移した。索引は[`archive/README.md`](archive/README.md)にある。
 
 これらは過去の判断を理解するために保持するが、現行実装の正本ではない。現行copy・architecture・Gate判定を上書きしない。
 
