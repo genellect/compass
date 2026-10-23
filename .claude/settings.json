@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-settings.json",
+  "env": {
+    "NEXT_TELEMETRY_DISABLED": "1",
+    "NPM_CONFIG_UPDATE_NOTIFIER": "false",
+    "PYTHONDONTWRITEBYTECODE": "1"
+  },
+  "hooks": {
+    "SessionStart": [
+      {
+        "matcher": "startup|resume",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/session-start.sh\"",
+            "timeout": 300,
+            "statusMessage": "Bootstrapping COMPASS cloud workspace..."
+          }
+        ]
+      }
+    ]
+  }
+}
