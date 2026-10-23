@@ -92,7 +92,7 @@ export function createScene(host: HTMLElement, onState: (state: SceneState) => v
     filmMask = id;
     film.style.maskImage = `url("${base}${id}.water.webp")`;
   };
-  const useNativeMotion = () => {
+  const switchToNativeMotion = () => {
     native = true;
     host.dataset.renderMode = 'film-composite';
     host.dataset.fallbackReason = 'sustained-frame-budget';
@@ -184,7 +184,7 @@ export function createScene(host: HTMLElement, onState: (state: SceneState) => v
       const fps = frames * 1000 / (now - sampleAt);
       host.dataset.fps = fps.toFixed(1); host.dataset.fpsAt = String(now);
       slowWindows = fps < 28 ? slowWindows + 1 : 0; sampleAt = now; frames = 0;
-      if (!native && slowWindows >= 3) useNativeMotion();
+      if (!native && slowWindows >= 3) switchToNativeMotion();
     }
     frame = requestAnimationFrame(tick);
   };

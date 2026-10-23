@@ -1,0 +1,119 @@
+# Area labels for pull requests, applied by .github/workflows/labeler.yml
+# (actions/labeler). Path groups follow docs/WEBSITE_BOUNDARIES.md.
+# area:interactive and area:founder mark the independent surfaces, which are
+# edited only on a request that names them.
+
+area:official:
+  - changed-files:
+      - any-glob-to-any-file:
+          - 'src/app/(official)/page.tsx'
+          - 'src/app/(official)/layout.tsx'
+          - 'src/app/(official)/messages/**'
+          - 'src/app/(spatial)/**'
+          - 'src/App.tsx'
+          - 'src/LegacyPageBody.tsx'
+          - 'src/legacy-interactions.ts'
+          - 'src/sections/**'
+          - 'src/hooks/**'
+          - 'src/styles/**'
+          - 'src/components/{SiteHeader,SiteFooter,NightBackdrop,siteRouteContext,BrandSignalGraphics,Disclosure,LegacyInteractions}*'
+          - 'src/components/{site-header,site-footer,night-backdrop,mobile-chrome,parent-brand}*'
+          - 'src/components/{Hero,Habitat,Explorer}/**'
+          - 'public/habitat/**'
+          - 'public/media/explorer/**'
+          - 'public/images/{Image*,hero.*,compass-mark.svg}'
+          - 'public/images/{technology,experience}/**'
+          - 'scripts/{habitat,explorer}/**'
+
+area:library:
+  - changed-files:
+      - any-glob-to-any-file:
+          - 'src/app/(official)/future-strategy-library/**'
+          - 'src/app/(library)/**'
+          - 'src/library-registration/**'
+          - 'src/lib/futureStrategyLibrary*'
+          - 'public/images/future-strategy-library/**'
+          - 'functions/library-registration/**'
+          - 'google-apps-script/library-registration-notifications/**'
+          - 'services/library-api/**'
+          - 'contracts/**'
+          - 'infra/**'
+          - 'scripts/*library*'
+          - 'tests/*library*'
+
+area:forms:
+  - changed-files:
+      - any-glob-to-any-file:
+          - 'src/app/(official)/community/**'
+          - 'src/app/(official)/contact/**'
+          - 'src/lib/{community-registration,contact}-schema*'
+          - 'functions/api/**'
+          - 'google-apps-script/Code.gs'
+          - 'google-apps-script/contact/**'
+          - 'public/media/contact-entry/**'
+          - 'scripts/contact-entry/**'
+          - 'tests/*{community,contact}*'
+
+area:interactive:
+  - changed-files:
+      - any-glob-to-any-file:
+          - 'src/app/(interactive)/**'
+          - 'src/interactive/**'
+          - 'public/interactive/**'
+          - 'public/images/interactive/**'
+          - 'scripts/interactive/**'
+          - 'src/components/GitHubProfileLink*'
+          - 'src/styles/github-profile-link.css'
+
+area:founder:
+  - changed-files:
+      - any-glob-to-any-file:
+          - 'src/app/(official)/founder/**'
+          - 'src/app/(founder-en)/**'
+          - 'functions/index.ts'
+          - 'functions/en/**'
+          - 'public/founder-*'
+          - 'public/images/founder*/**'
+          - 'src/components/FounderJapaneseLink*'
+          - 'src/components/portfolio/**'
+          - 'tests/*founder*'
+
+area:ci:
+  - changed-files:
+      - any-glob-to-any-file:
+          - '.github/**'
+
+area:docs:
+  - changed-files:
+      - any-glob-to-any-file:
+          - 'docs/**'
+          - 'Project.guide/**'
+          - 'LICENSE'
+      # Markdown under src/, public/ or functions/ can be build input
+      # (for example the Messages page), matching ci.yml's docs-only rule.
+      - all-globs-to-any-file:
+          - '**/*.md'
+          - '!{src,public,functions}/**'
+
+area:deps:
+  - changed-files:
+      - any-glob-to-any-file:
+          - 'package.json'
+          - 'package-lock.json'
+          - 'services/library-api/{pyproject.toml,uv.lock}'
+          - '**/Dockerfile*'
+          - 'infra/**/.terraform.lock.hcl'
+
+area:env:
+  - changed-files:
+      - any-glob-to-any-file:
+          - '.devcontainer/**'
+          - '.codex/**'
+          - '.claude/**'
+          - '.vscode/**'
+          - '.node-version'
+          - '.editorconfig'
+          - 'compose.library-dev.yaml'
+          - '.env.example'
+          - '.dev.vars.example'
+          - 'scripts/{devcontainer,library-docker-dev}.*'
