@@ -659,7 +659,7 @@ for (const expected of [
   "MOVE.",
   "cytellect",
   "Get your microscopy",
-  "publication ready",
+  "publication-ready.",
   "English Proficiency",
   "Area / Experience / Focus",
   "EXPERIENCE",

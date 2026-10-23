@@ -57,6 +57,12 @@ export const expertise = [
 
 export const products = [
   {
+    key: "cytellect",
+    label: "cytellect",
+    title: "Get your microscopy publication-ready.",
+    links: [{ label: "Explore cytellect", href: "https://cytellect.vercel.app/" }]
+  },
+  {
     key: "interactive",
     label: "COMPASS Interactive",
     title: "Real-time feedback and AI, built into the lecture experience.",
@@ -68,12 +74,6 @@ export const products = [
       },
       { label: "Technical Overview", href: `${compassOrigin}/INTRO_Interactive/developers/` }
     ]
-  },
-  {
-    key: "cytellect",
-    label: "cytellect",
-    title: "Get your microscopy publication-ready.",
-    links: [{ label: "Explore cytellect", href: "https://cytellect.vercel.app/" }]
   },
   {
     key: "platform",
