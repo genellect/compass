@@ -160,6 +160,7 @@ API・専用ローカルDB・E2Eの手順は[Development Workflows](docs/develop
 | 文書 | 目的 |
 |---|---|
 | [Documentation Index](docs/README.md) | 正本文書、運用手順、過去の記録への入口 |
+| [Contributing](CONTRIBUTING.md) | 新メンバー向けの開発の始め方、PRの流れ、承認が必要な操作 |
 | [Architecture](docs/ARCHITECTURE.md) | 配信・認証・データ・外部サービスの構成 |
 | [Content Governance](docs/CONTENT_GOVERNANCE.md) | 正式な文言、CTA、公開状態、指標の管理 |
 | [Route Contract](docs/ROUTE_CONTRACT.md) | route、canonical URL、journey別の遷移先 |

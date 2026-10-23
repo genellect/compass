@@ -19,6 +19,7 @@ Productionと`origin/main`が食い違う場合は差分を報告し、どちら
 | Document | Responsibility |
 |---|---|
 | [`README.md`](../README.md) | repositoryの入口、開発・検証command、主要構成 |
+| [`CONTRIBUTING.md`](../CONTRIBUTING.md) | 新メンバー向けの開発の始め方、branchとPRの流れ、承認が必要な操作 |
 | [`AGENTS.md`](../AGENTS.md) | coding agent向け実装契約、安全境界、確認事項 |
 | [`ARCHITECTURE.md`](ARCHITECTURE.md) | repository、runtime、deployment、form、data境界 |
 | [`CONTENT_GOVERNANCE.md`](CONTENT_GOVERNANCE.md) | canonical copy、CTA、metrics、status、editorial rule |
