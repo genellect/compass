@@ -14,6 +14,6 @@ COMPASS-specific traps to check rather than assume:
 - `src/components/Hero/index.tsx` currently selects `NewHero.tsx`.
 - Public pages are a Next.js static export, but `/api/community-registration` and `/api/contact` are Cloudflare Pages Functions under `functions/`. A Next.js dev server alone does not exercise them.
 - COMPASS Interactive is a separate repository and deployment. Do not describe its implementation as this repository's.
-- Canonical URLs live in `CODEX_LINKS.md`. Never infer a destination from a link label.
+- Routes, canonical URLs, and journey destinations live in `docs/ROUTE_CONTRACT.md`. Never infer a destination from a link label.
 
 Read `AGENTS.md` first. Report file paths and line references, not summaries of intent.

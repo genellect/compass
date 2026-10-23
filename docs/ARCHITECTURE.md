@@ -14,7 +14,7 @@ Last source verification: 2026-08-28
 | System | Responsibility | Repository / deployment |
 |---|---|---|
 | COMPASS公式site | Brand、公開情報、紹介route、公開form UI | この公開repository / `compass-official.pages.dev` |
-| COMPASS Interactive | Student、Admin、Display、Archive、lecture lifecycle、AI・realtime product | 別の非公開repository / `compass-interactive.pages.dev` |
+| COMPASS Interactive | Student、Admin、Display、Archive、lecture lifecycle、AI・realtime product | 別の公開repository（`genellect/compass-interactive`） / `compass-interactive.pages.dev` |
 | 未来戦略ライブラリcontent | 登録者向け保護資料とaccess運用 | 公開source tree外 |
 | Library公開登録API | Google認証、資格判定、PostgreSQL正本への登録 | 専用FastAPI public service / Production verification pending |
 | Library管理API | 管理者Google認証、完全一致allowlist、`sub` RBAC、名簿・監査・export | 専用FastAPI admin service + 専用DB role / Production verification pending |
@@ -41,7 +41,7 @@ Last source verification: 2026-08-28
 | `/INTRO_Interactive/` | `src/app/(interactive)/INTRO_Interactive/page.tsx` | Interactive紹介 |
 | `/INTRO_Interactive/developers/` | `src/app/(interactive)/INTRO_Interactive/developers/page.tsx` | Interactive設計・技術紹介 |
 
-canonical URLは`CODEX_LINKS.md`を参照する。
+canonical URL、redirect、journey別の遷移先は[ROUTE_CONTRACT.md](ROUTE_CONTRACT.md)を参照する。
 
 管理routeはstatic exportに存在しても、公開siteのheader、footer、navigation、CTA、sitemapからリンクしない。
 ProductionではCloudflare Access、path/method allowlist型Pages proxy、Pages/GCP間のprivate edge secret、
@@ -176,4 +176,4 @@ Responsiveの実描画gateは`docs/responsive-browser-qa.md`を正本とする�
 - static exportとPages Functionsが同居し、Next.jsだけのlocal previewではAPIを確認できない。
 - public Developer routeは別productの詳細を説明するため、repository境界を誤認しやすい。
 - external dashboard・GAS・secret状態はGitだけでは現在性を証明できない。
-- historical PDFとcompleted requirementがcanonical文書と同じfolderに残るため、`docs/README.md`のstatus区分を必ず参照する。
+- 旧PDF、completed requirement、完了済みPhase報告は`docs/archive/`へ分離した。本文には当時のpathと状態語が残るため、現行判断には使用しない。
