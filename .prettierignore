@@ -1,0 +1,29 @@
+# Prettier runs only on files changed in a pull request
+# (`npm run format:check:changed`). Paths below are never formatted.
+
+# Build output, caches and reports
+node_modules/
+out/
+.next/
+.next-*/
+.build/
+.legacy-vite/
+.review/
+.wrangler/
+dist/
+outputs/
+playwright-report/
+test-results/
+
+# Lockfiles, generated files and large data
+package-lock.json
+.devcontainer/devcontainer-lock.json
+public/
+scripts/art-data/
+next-env.d.ts
+
+# Markdown and YAML are out of scope for the first stage (see
+# docs/development-workflows.md); they are reorganised on other branches.
+*.md
+*.yml
+*.yaml

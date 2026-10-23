@@ -1,0 +1,14 @@
+# Commits listed here are skipped by `git blame` so that a bulk, behaviour-free
+# reformat does not hide the original author of each line.
+#
+# Nothing is listed yet: the repository has not been bulk-formatted.
+# When a bulk Prettier (or Ruff format) commit lands, append its full 40-character
+# SHA on its own line with a comment naming the tool and scope, for example:
+#
+#   # Prettier: src/ and tests/ (no behaviour change)
+#   <full commit SHA>
+#
+# GitHub reads this file automatically. Locally, run once per clone:
+#   git config blame.ignoreRevsFile .git-blame-ignore-revs
+#
+# Procedure: docs/development-workflows.md (一括整形の手順).
