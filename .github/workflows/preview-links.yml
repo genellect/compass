@@ -1,0 +1,66 @@
+name: Preview links
+
+# Keeps one pull-request comment with the Cloudflare Pages Preview URLs and
+# the public routes the pull request touches. URLs are copied from the
+# "Cloudflare Pages" check run that the Cloudflare Pages Git integration
+# creates; this workflow never deploys, uses no secrets and runs no
+# pull-request content with a privileged token.
+#
+# - check_run (completed): GitHub runs this trigger only from the workflow on
+#   the default branch, in the default-branch context, so the checkout below is
+#   trusted main code. It updates the comment as soon as Cloudflare finishes.
+# - pull_request: same-repository pull requests only. It posts the comment
+#   immediately and polls the check run. The comment script is checked out
+#   from the base commit, never from the pull request, so a modified script
+#   cannot run with the write token; script changes take effect after merge.
+#   Fork and Dependabot runs receive a read-only token and are skipped.
+#
+# Not a required check. See docs/development-workflows.md.
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+  check_run:
+    types: [completed]
+
+permissions:
+  contents: read
+
+jobs:
+  comment:
+    name: Preview links comment
+    if: >-
+      (github.event_name == 'pull_request'
+        && github.event.pull_request.head.repo.full_name == github.repository
+        && github.actor != 'dependabot[bot]')
+      || (github.event_name == 'check_run'
+        && github.event.check_run.app.slug == 'cloudflare-workers-and-pages'
+        && github.event.check_run.name == 'Cloudflare Pages')
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    permissions:
+      contents: read
+      checks: read
+      pull-requests: write
+    concurrency:
+      # Both triggers for one commit share a group so they never race to
+      # create the first comment. Runs queue instead of cancelling each other.
+      group: preview-links-${{ github.event.pull_request.head.sha || github.event.check_run.head_sha }}
+      cancel-in-progress: false
+    steps:
+      - name: Checkout the trusted comment script from the base commit
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          ref: ${{ github.event_name == 'pull_request' && github.event.pull_request.base.sha || github.sha }}
+          persist-credentials: false
+          sparse-checkout: .github/scripts
+          sparse-checkout-cone-mode: false
+      - name: Update the Preview comment
+        # The base commit may predate this workflow (for example the pull
+        # request that introduces it); skip rather than run untrusted code.
+        if: hashFiles('.github/scripts/preview-links.mjs') != ''
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          PREVIEW_WAIT_SECONDS: '1080'
+          PREVIEW_POLL_SECONDS: '20'
+        run: node .github/scripts/preview-links.mjs
