@@ -13,7 +13,7 @@ case "$action" in
     npx --yes "$cli" up --workspace-folder "$repo_root" --frozen-lockfile
     ;;
   setup)
-    npx --yes "$cli" exec --workspace-folder "$repo_root" bash -lc "bash .devcontainer/install-dependencies.sh && bash .devcontainer/doctor.sh"
+    npx --yes "$cli" exec --workspace-folder "$repo_root" bash scripts/dev-bootstrap.sh --profile devcontainer --doctor
     ;;
   doctor)
     npx --yes "$cli" exec --workspace-folder "$repo_root" bash .devcontainer/doctor.sh
