@@ -304,7 +304,7 @@ test("administrator documents and API responses are explicitly non-cacheable", a
 
 test("current administrator gates require a private initial two-account allowlist and no second human", async () => {
   const currentPolicyPaths = [
-    "project.guide.md",
+    "docs/archive/project-guide/project.guide.md",
     "docs/library-registration/admin-access-security-boundary.md",
     "docs/library-registration/phase-roadmap-v3.md",
     "docs/library-registration/phase8b-admin-operations-runbook.md",
@@ -343,16 +343,16 @@ test("current administrator gates require a private initial two-account allowlis
 
 test("historical second-administrator artifacts cannot override the current owner-only gate", async () => {
   const historicalPaths = [
-    "docs/library-registration/adr/0002-drive-resource-automation.md",
-    "docs/library-registration/phase-roadmap-v2.md",
-    "docs/library-registration/phase4-admin-oauth-succession-record.md",
-    "docs/library-registration/phase4-blocker-resolution-pack.md",
-    "docs/library-registration/phase4-evidence-and-decision.md",
-    "docs/library-registration/phase4-hd-evidence-record.md",
-    "docs/library-registration/phase5-implementation-report.md",
-    "docs/library-registration/phase5-postgresql-integration-gate.md",
-    "docs/library-registration/phase6a-implementation-report.md",
-    "docs/library-registration/phase7-implementation-report.md"
+    "docs/adr/0002-drive-resource-automation.md",
+    "docs/archive/library-registration/phase-roadmap-v2.md",
+    "docs/archive/library-registration/phase4-admin-oauth-succession-record.md",
+    "docs/archive/library-registration/phase4-blocker-resolution-pack.md",
+    "docs/archive/library-registration/phase4-evidence-and-decision.md",
+    "docs/archive/library-registration/phase4-hd-evidence-record.md",
+    "docs/archive/library-registration/phase5-implementation-report.md",
+    "docs/archive/library-registration/phase5-postgresql-integration-gate.md",
+    "docs/archive/library-registration/phase6a-implementation-report.md",
+    "docs/archive/library-registration/phase7-implementation-report.md"
   ];
   for (const path of historicalPaths) {
     const source = await readFile(join(repositoryRoot, path), "utf8");

@@ -18,12 +18,11 @@ COMPASS Interactiveプロダクト本体、Productionデータベース、保護
 変更前に、次の順で必要な文書とソースを読む。
 
 1. `AGENTS.md`
-2. `Project.guide/PROJECT_GUIDE.md`
-3. `docs/ARCHITECTURE.md`
-4. `docs/CONTENT_GOVERNANCE.md`
-5. 対象routeのソース、テスト、runbook
+2. `docs/ARCHITECTURE.md`
+3. `docs/CONTENT_GOVERNANCE.md`
+4. 対象routeのソース、テスト、runbook
 
-旧PDFと完了済み移行要件は履歴資料であり、現行実装の正本ではない。
+`docs/archive/`の旧Project Guide、旧PDF、完了済みPhase報告は`Historical`であり、現行実装の正本ではない。
 
 ## Independent Website Boundaries (user instruction, 2026-09-09)
 
@@ -93,7 +92,7 @@ COMPASS Interactiveプロダクト本体、Productionデータベース、保護
 - 既存component、design token、responsive pattern、content sourceを優先して再利用する。
 - one `h1`、論理的なheading順、keyboard focus、reduced motion、Mobile可読性を維持する。
 - 同一domainの導線は原則同一tab。外部formや別productはroute契約に従う。
-- `Join`や`Register`等の一般ラベルから遷移先を推測しない。`CODEX_LINKS.md`と対象sourceを確認する。
+- `Join`や`Register`等の一般ラベルから遷移先を推測しない。`docs/ROUTE_CONTRACT.md`と対象sourceを確認する。
 
 ## Security and Privacy
 

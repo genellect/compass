@@ -13,7 +13,7 @@ Check specifically:
 - One `h1` per route, logical heading order, keyboard focus, reduced motion, mobile readability.
 - Existing components, design tokens, responsive patterns, and content sources reused rather than duplicated.
 - Approved core copy not rewritten as a side effect of a technical change.
-- Same-domain links staying in the same tab; external forms following the route contract in `CODEX_LINKS.md`.
+- Same-domain links staying in the same tab; external forms following the route contract in `docs/ROUTE_CONTRACT.md`.
 - Which gate the change actually requires: `npm run cloud:check` for repository-wide work, `npm run check:responsive:cloud` when UI, navigation, font, breakpoint, or animation changed.
 - Claims of verification that were not actually run. Report the gap rather than assuming it passed.
 
