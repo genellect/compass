@@ -93,12 +93,7 @@ const products = [
     image: "/images/hero.desktop.highlight.webp",
     alt: "DNA、コンパス、ネットワークで構成されたCOMPASS Interactiveのビジュアル",
     links: [
-      { label: "紹介サイト", href: `${COMPASS_ORIGIN}/INTRO_Interactive/` },
-      {
-        label: "GitHub",
-        href: "https://github.com/genellect/compass-interactive"
-      },
-      { label: "開発者向け技術情報", href: `${COMPASS_ORIGIN}/INTRO_Interactive/developers/` }
+      { label: "紹介サイト", href: `${COMPASS_ORIGIN}/INTRO_Interactive/` }
     ]
   },
   {

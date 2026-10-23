@@ -67,12 +67,7 @@ export const products = [
     label: "COMPASS Interactive",
     title: "Real-time feedback and AI, built into the lecture experience.",
     links: [
-      { label: "Explore Interactive", href: `${compassOrigin}/INTRO_Interactive/` },
-      {
-        label: "GitHub",
-        href: "https://github.com/genellect/compass-interactive"
-      },
-      { label: "Technical Overview", href: `${compassOrigin}/INTRO_Interactive/developers/` }
+      { label: "Explore Interactive", href: `${compassOrigin}/INTRO_Interactive/` }
     ]
   },
   {

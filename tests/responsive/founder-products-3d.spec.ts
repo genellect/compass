@@ -11,10 +11,11 @@ for (const language of ["ja", "en"] as const) {
     const cards = products.locator("article");
     await expect(cards).toHaveCount(3);
     expect(await cards.evaluateAll(nodes => nodes.map(n => n.getAttribute("data-product")))).toEqual(["cytellect", "interactive", "platform"]);
-    await expect(products.locator("a")).toHaveCount(5);
+    await expect(products.locator("a")).toHaveCount(3);
     await expect(cards.nth(0).getByRole("link")).toHaveAttribute("href", "https://cytellect.vercel.app/");
     await expect(cards.nth(2).getByRole("link")).toHaveAttribute("href", "https://compass-official.pages.dev/");
-    await expect(cards.nth(1).getByRole("link", { name: "GitHub", exact: true })).toHaveAttribute("href", "https://github.com/genellect/compass-interactive");
+    await expect(cards.nth(1).getByRole("link")).toHaveAttribute("href", "https://compass-official.pages.dev/INTRO_Interactive/");
+    await expect(cards.nth(1).getByRole("navigation")).toHaveCount(0);
     if (language === "en") expect(await products.innerText()).not.toMatch(/[\u3040-\u30ff\u3400-\u9fff]/);
     for (const [width, height] of [[1440, 900], [1180, 820], [1024, 1366], [1001, 900], [1000, 900], [768, 1024], [390, 844], [320, 568]]) {
       await page.setViewportSize({ width, height });
@@ -100,7 +101,7 @@ test("WebGL failure leaves all product destinations available", async ({ page })
   await page.goto("/en/");
   const products = page.locator("[data-products-cinematic]");
   await products.scrollIntoViewIfNeeded();
-  await expect(products.locator("a")).toHaveCount(5);
+  await expect(products.locator("a")).toHaveCount(3);
   await expect(products.locator('[data-product="interactive"] svg').first()).toBeVisible();
   await expect(products.locator('[data-product="cytellect"] img')).toBeVisible();
   await expect(products.locator('[data-product="platform"] img')).toBeVisible();
