@@ -210,7 +210,7 @@ test('Sustained low frame rate preserves architecture and keeps filmed water mov
   await page.setViewportSize({width:1280,height:720});
   await page.addInitScript(()=>{
     const request=window.requestAnimationFrame.bind(window);
-    window.requestAnimationFrame=callback=>request(()=>{const start=performance.now();while(performance.now()-start<45){} callback(performance.now());});
+    window.requestAnimationFrame=callback=>request(()=>{const start=performance.now();while(performance.now()-start<45){/* busy-wait to simulate a slow frame */} callback(performance.now());});
   });
   await page.goto('/');
   await expect(page.locator('[data-habitat]')).toHaveAttribute('data-scene-state','ready',{timeout:40000});

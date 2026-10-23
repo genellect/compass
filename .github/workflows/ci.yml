@@ -1,7 +1,8 @@
 name: CI
 
 # Required, fast Linux gate for every pull request: repository contracts,
-# types, unit tests, and the static export with its contract verifier.
+# types, unit tests, lint and changed-file format, and the static export with
+# its contract verifier.
 # Library and form security is owned by library-security-quality.yml.
 # This workflow does not deploy and needs no secrets.
 
@@ -95,6 +96,62 @@ jobs:
       - name: Run unit and release gate tests
         run: npm test
 
+  lint:
+    name: Lint and changed-file format
+    needs: changes
+    if: needs.changes.outputs.code == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Set up Node.js
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
+        with:
+          node-version-file: .node-version
+          cache: npm
+      - name: Install locked dependencies
+        run: npm ci
+      - name: ESLint (errors fail, staged rules warn)
+        run: npm run lint
+      - name: Prettier on files changed by this pull request
+        if: github.event_name == 'pull_request'
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+        run: npm run format:check:changed -- "$BASE_SHA"
+      - name: Detect Library API changes
+        id: python
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+        run: |
+          if [ "$EVENT_NAME" != "pull_request" ] || git diff --name-only "$BASE_SHA"...HEAD | grep -q '^services/library-api/'; then
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+          fi
+      - name: Set up Python
+        if: steps.python.outputs.changed == 'true'
+        uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6
+        with:
+          python-version: "3.12"
+      - name: Set up uv
+        if: steps.python.outputs.changed == 'true'
+        uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b # v8.1.0
+        with:
+          version: "0.11.28"
+          enable-cache: true
+          cache-dependency-glob: services/library-api/uv.lock
+      - name: Ruff (Library API)
+        if: steps.python.outputs.changed == 'true'
+        working-directory: services/library-api
+        run: |
+          uv sync --locked --dev
+          uv run --locked ruff check
+
   build:
     name: Static export build
     needs: changes
@@ -120,7 +177,7 @@ jobs:
 
   ci-success:
     name: CI result
-    needs: [changes, repository, unit, build]
+    needs: [changes, repository, unit, lint, build]
     if: always()
     runs-on: ubuntu-latest
     timeout-minutes: 5
