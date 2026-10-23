@@ -404,6 +404,7 @@ export async function applyMockAdminExport(
 }
 
 function csvCell(value: string): string {
+  // eslint-disable-next-line no-control-regex -- formula-injection guard must see leading C0 controls.
   const normalized = /^[\u0000-\u0020]*[=+\-@]/.test(value)
     || /^[\t\r\n]/.test(value)
     ? `'${value}`

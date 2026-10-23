@@ -62,7 +62,7 @@ function buildNodes(width: number, height: number) {
     }
 
     let x = normalizedX * width;
-    let y = normalizedY * height;
+    const y = normalizedY * height;
     if (isCopyZone(x, y, width, height)) {
       x = width * (0.44 + random() * 0.09);
     }

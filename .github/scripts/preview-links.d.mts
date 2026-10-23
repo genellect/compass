@@ -23,8 +23,8 @@ export interface CheckRun {
 }
 
 export interface GitHubClient {
-  request(method: string, route: string, body?: { body: string }): Promise<any>;
-  paginate(route: string, pick?: (data: any) => any[], maxPages?: number): Promise<any[]>;
+  request(method: string, route: string, body?: { body: string }): Promise<unknown>;
+  paginate(route: string, pick?: (data: unknown) => unknown[], maxPages?: number): Promise<unknown[]>;
 }
 
 export interface UpdateResult {

@@ -34,7 +34,8 @@ export function createExplorer(root: HTMLElement, host: HTMLElement, markers: HT
   let questionDelivery='',questionAt=0,focusLook:{yaw:number;pitch:number}|null=null;
   let loadingUntil=0, sampleAt=0, slowWindows=0, stepping=false;
   let finishProbe:((value:boolean)=>void)|null=null,dirty=true,soundVolume=.65;
-  let viewportWidth=innerWidth, viewportHeight=innerHeight, sourceOpacity=host.style.opacity;
+  let viewportWidth=innerWidth, viewportHeight=innerHeight;
+  const sourceOpacity=host.style.opacity;
 
   let qualityStep=0;
   const solids=new CollisionWorld(), movingDoors=new CollisionWorld(), keys=new Set<string>();
