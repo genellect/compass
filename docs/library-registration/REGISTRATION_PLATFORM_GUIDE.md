@@ -159,7 +159,7 @@ OAuth第1層の仕様変更を、第2層の削除・緩和・置換理由にし�
   冪等性、rollback・re-import、raw payload改変拒否をPASSした。実snapshotは未取得であり、
   データ取扱承認、同一基準時刻snapshot、人間dry-run承認、production applyはPENDINGである。
 
-詳細は`docs/library-registration/phase9-implementation-report.md`と
+詳細は`docs/archive/library-registration/phase9-implementation-report.md`（Historical）と
 `docs/library-registration/phase9-legacy-migration-runbook.md`を正本とする。
 
 ### 管理者機能
@@ -250,7 +250,7 @@ single-operator構成であるため、本人不在や両アカウント同時�
 - `PHASE10A_EXPORT_API_ENABLED`は既定OFFである。保管・暗号化・再共有・削除方針、
   正規host admin OAuth/MFA、production DB role、実Excel受入はPENDINGである。
 
-詳細は`docs/library-registration/phase10a-implementation-report.md`と
+詳細は`docs/archive/library-registration/phase10a-implementation-report.md`（Historical）と
 `docs/library-registration/phase10a-export-runbook.md`を正本とする。
 
 ### ローカルpre-Production統合ゲート
@@ -421,7 +421,7 @@ rollbackを実環境確認する。
 ## 10. 現在の正式判定
 
 - Historical Release Baseline: `PASS`。2026-08-01時点の証跡は
-  `docs/library-registration/release-baseline-verification-2026-08-01.md`を参照するが、現在候補の
+  `docs/archive/library-registration/release-baseline-verification-2026-08-01.md`（Historical）を参照するが、現在候補の
   canonical PASSへ読み替えない。
 - Phase 7: `LOCAL PASS / REAL DRIVE E2E PENDING`。
 - Phase 8A: `LOCAL IMPLEMENTATION PASS / CLOUD AND MANUAL GATES PENDING / PRODUCTION BLOCKED`。
