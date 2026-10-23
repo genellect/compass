@@ -146,7 +146,8 @@ CIと同じnpm 10の`npm ci`と`npm ls --all`で整合を確認した。
 | 同梱npm | 10.9系 → 11.19.1 | `npm ci`は成功し、`npm install --package-lock-only --ignore-scripts`で`package-lock.json`は変化しない。未承認install scriptは警告のみで従来どおり実行される（`strict-allow-scripts=false`） |
 
 本番影響: mainへのmerge後、Cloudflare Pagesの本番buildがNode 24.22.1で実行される。Node 22とNode 24で
-`npm run build`した`out/`（497ファイル）を比較し、build IDを正規化した後の差分はなかった。
+`npm run build`した`out/`（497ファイル）を比較した。build IDとwebpack runtimeのファイル名を正規化した後の差分は、
+webpack runtime内のchunk対応表（17組、内容は同一）の並び順だけだった。画像・CSS・その他のJS chunkは同一である。
 `npm test`、`npm run typecheck`、`npm run check:repository`、`npm run verify`はNode 24で合格した。
 Node 24の`node:test`既定reporterはTAPからspecへ変わるが、repository内にTAP出力への依存はない。
 Python・Library APIはNodeを使用しないため対象外とした。
