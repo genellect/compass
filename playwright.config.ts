@@ -1,4 +1,20 @@
 import { defineConfig } from "@playwright/test";
+import { resolveChromium } from "./scripts/dev-env.cjs";
+
+// When the Chromium bundled with the installed Playwright is absent (for
+// example a Claude Code cloud session that disables browser downloads), use
+// PLAYWRIGHT_CHROMIUM_EXECUTABLE or the preinstalled /opt/pw-browsers/chromium.
+// Windows, CI and the Dev Container have the bundled browser and are unchanged.
+// Specs that set their own launchOptions (msedge Explorer) are not affected.
+const chromium = resolveChromium();
+if (chromium.executablePath && !process.env.COMPASS_PLAYWRIGHT_FALLBACK_LOGGED) {
+  process.env.COMPASS_PLAYWRIGHT_FALLBACK_LOGGED = "1";
+  console.warn(
+    `[playwright] Bundled Chromium is missing (${chromium.bundled.reason}); ` +
+      `falling back to ${chromium.executablePath} (${chromium.source}). ` +
+      "The browser revision may differ from the pinned Playwright.",
+  );
+}
 
 export default defineConfig({
   testDir: "./tests/responsive",
@@ -19,6 +35,9 @@ export default defineConfig({
     serviceWorkers: "block",
     screenshot: "only-on-failure",
     trace: "retain-on-failure",
+    ...(chromium.executablePath
+      ? { launchOptions: { executablePath: chromium.executablePath } }
+      : {}),
   },
   webServer: process.env.RESPONSIVE_BASE_URL
     ? undefined

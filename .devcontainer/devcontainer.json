@@ -42,6 +42,9 @@
     "source=compass-cloud-dev-user-cache,target=/home/node/.cache,type=volume"
   ],
   "postCreateCommand": "bash .devcontainer/post-create.sh",
+  "containerEnv": {
+    "COMPASS_DEV_PROFILE": "devcontainer"
+  },
   "remoteEnv": {
     "NEXT_TELEMETRY_DISABLED": "1",
     "NPM_CONFIG_UPDATE_NOTIFIER": "false",

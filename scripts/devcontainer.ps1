@@ -20,7 +20,7 @@ try {
       & npx.cmd -y $cli up --workspace-folder $repoRoot --frozen-lockfile
     }
     "setup" {
-      & npx.cmd -y $cli exec --workspace-folder $repoRoot bash -lc "bash .devcontainer/install-dependencies.sh && bash .devcontainer/doctor.sh"
+      & npx.cmd -y $cli exec --workspace-folder $repoRoot bash scripts/dev-bootstrap.sh --profile devcontainer --doctor
     }
     "doctor" {
       & npx.cmd -y $cli exec --workspace-folder $repoRoot bash .devcontainer/doctor.sh

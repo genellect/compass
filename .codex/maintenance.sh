@@ -1,13 +1,5 @@
 #!/usr/bin/env bash
+# Codex Cloud maintenance script (a cached container resumed for a new task).
+# All provisioning lives in scripts/dev-bootstrap.sh.
 set -euo pipefail
-
-repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-cd "$repo_root"
-
-git fetch --prune
-npm ci
-npx --no-install playwright install chromium
-(
-  cd services/library-api
-  uv sync --locked --dev
-)
+exec bash "$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)/scripts/dev-bootstrap.sh" --profile codex-cloud --maintenance

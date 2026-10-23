@@ -154,20 +154,20 @@ Python依存の監査・テストは`docs/dependency-maintenance.md`に従う。
 
 ## Cloud Development
 
-- GitHubを正本とし、新規作業は最新`origin/main`からGitHub CodespacesまたはCodex Cloudで開始する。
-- Dev Container Specificationを環境の唯一の正本とし、Codespaces、VS Code + Docker Desktop、Dev Container CLIで同じ`.devcontainer/devcontainer.json`を使用する。
+- GitHubを正本とし、新規作業は最新`origin/main`から開始する。既定の開発環境はClaude Code cloud（claude.ai/code）とする（2026-10-23のユーザー決定）。Codex（Desktop / Cloud）とGitHub Codespaces / Dev Containerは同等にサポートし、Claude Code cloudで実行できないDocker・Windows専用作業は`docs/CLOUD_DEVELOPMENT.md`の代替経路で行う。
+- 依存導入は全経路で`scripts/dev-bootstrap.sh`を唯一の手順とし、各経路の入口はこれを呼ぶだけにする。version pinは`.devcontainer/toolchain.env`と各lockfileを正本とする。containerを作る経路（Codespaces、VS Code + Docker Desktop、Dev Container CLI）は同じ`.devcontainer/devcontainer.json`を使用する。
 - repositoryごとに環境とbranchを分離し、COMPASS Interactiveのcheckout、secret、runtimeを共有しない。
 - Codespacesでは`.devcontainer/devcontainer.json`と`docs/CLOUD_DEVELOPMENT.md`を正本とする。
 - 既存PCの`.env*`、credential、Production dataをcloud環境へcopyしない。
 - 通常のcloud taskはnon-live testを基本とし、Production form、実email、Production deploy、migration、secret変更を実行しない。Web UI依頼の非本番PR/Cloudflare Previewは上記の完了契約に従う。
 - Codex taskは完了前に該当testを実行する。Git操作まで依頼された実装taskではbranchへcommitし、Draft PRでreview可能にする。調査・提案だけの依頼や、本番影響を伴うGit操作にはこの自動実行規則を適用しない。
-- Dev Containerの初回作成後と環境定義変更後は`npm run dev:doctor`を実行し、手作業のglobal package導入で不足を隠さない。
+- 環境の初回作成後と環境定義変更後は`npm run dev:doctor`を実行し、手作業のglobal package導入で不足を隠さない。doctorは`claude-cloud`・`codex-cloud`・`devcontainer`のprofileを自動判定し、その経路の必須項目を検査する。
 - cloud経路はLinuxである。`.ps1` script、`npm.cmd`、`Get-NetTCPConnection`等のWindows専用手順をcloud taskの前提にしない。Docker composeを使うLibrary環境は`scripts/library-docker-dev.sh`を使用する。
 
 ## Agent Interoperability
 
 - `AGENTS.md`を全エージェント共通の正本とする。`CLAUDE.md`と`.github/copilot-instructions.md`はこの文書と`docs/CLOUD_DEVELOPMENT.md`へ従う。
-- Codex、Claude Code、GitHub Copilot、VS Code上のエージェントは、同じDev Container、同じnpm/uv lockfile、同じ検証コマンドを使用する。
+- Claude Code、Codex、GitHub Copilot、VS Code上のエージェントは、同じbootstrap（`scripts/dev-bootstrap.sh`）、同じnpm/uv lockfile、同じ検証コマンドを使用する。
 - agent別の実行設定は正本を分けない。`.codex/`はCodex、`.claude/`はClaude Codeの起動・権限・read-only agent定義のみを持ち、方針は`AGENTS.md`が唯一の正本である。両者の内容が食い違った場合は`AGENTS.md`を優先し、差分を報告する。
 - 複数のwrite-capable agentを同じbranch・worktreeで同時実行しない。並列実装はagentごとにbranchまたはworktreeを分離する。
 - 明示的に並列reviewを依頼された場合は、`.codex/agents/`または`.claude/agents/`のread-only agentを使い、main agentが判断と最終統合を担当する。両者は同じreview観点（repo mapping、quality、security）を持つ。

@@ -6,15 +6,43 @@ GitHubを正本とし、日常開発はクラウドを優先する。既存PCの
 
 ## 推奨する実行経路
 
+既定の開発環境はClaude Code cloud（claude.ai/codeのcloud session）である（2026-10-23のユーザー決定）。Codex（Desktop / Cloud）とGitHub Codespaces / Dev Containerは同等にサポートする経路であり、Docker等のClaude Code cloudで実行できない作業の受け皿でもある。
+
 | 優先度 | 経路 | 主な用途 | 環境の正本 |
 |---|---|---|---|
-| 1 | GitHub Codespaces | ブラウザ中心の実装、実行、テスト、commit、PR | `.devcontainer/devcontainer.json` |
-| 1 | Codex Cloud | Codexによる非同期実装、review、Draft PR | Codex環境設定 + `AGENTS.md` |
-| 2 | VS Code + Docker Desktop | ローカルDocker上で同一環境を再現 | `.devcontainer/devcontainer.json` |
-| 2 | Dev Container CLI | GUIなしのDocker起動、CI相当検証 | `.devcontainer/devcontainer.json` |
-| 3 | DevPod等の互換サービス | 別クラウド／SSH host上のDev Container | `.devcontainer/devcontainer.json` |
+| 1（既定） | Claude Code cloud | 実装、review、テスト、commit、Draft PR | `.claude/settings.json` + `scripts/dev-bootstrap.sh` |
+| 2 | Codex Cloud / Codex Desktop | Codexによる非同期実装、review、Draft PR | Codex環境設定 + `.codex/setup.sh` |
+| 2 | GitHub Codespaces | ブラウザ中心の実装、Docker・Library PostgreSQL作業 | `.devcontainer/devcontainer.json` |
+| 3 | VS Code + Docker Desktop | ローカルDocker上で同一環境を再現 | `.devcontainer/devcontainer.json` |
+| 3 | Dev Container CLI | GUIなしのDocker起動、CI相当検証 | `.devcontainer/devcontainer.json` |
+| 4 | DevPod等の互換サービス | 別クラウド／SSH host上のDev Container | `.devcontainer/devcontainer.json` |
 
-Dev Container Specificationを唯一の環境正本とする。別のDockerfileや手作業のmachine setupを標準経路にしない。Dev Container CLIはfeatures、VS Code設定、`postCreateCommand`まで適用するため、素の`docker build` / `docker run`よりCodespacesとの再現性が高い。
+version pinは`.devcontainer/toolchain.env`・`.node-version`・各lockfile、依存の導入手順は`scripts/dev-bootstrap.sh`が全経路共通の唯一の正本である。containerを作る経路ではDev Container Specificationを正本とし、別のDockerfileや手作業のmachine setupを標準経路にしない。Dev Container CLIはfeatures、VS Code設定、`postCreateCommand`まで適用するため、素の`docker build` / `docker run`よりCodespacesとの再現性が高い。
+
+3 repository共用のDev Container imageは採用しない。Claude Code cloudは独自に管理されたcontainerで動きcustom imageを使わないため既定環境の改善にならず、COMPASSとCOMPASS Interactiveはbase imageとfeature digestが既に一致している。
+
+## 入口 → 共通bootstrap → doctor
+
+どの経路も入口scriptは`scripts/dev-bootstrap.sh`を呼ぶだけで、手順を複製しない（`tests/repository-maintenance.test.mjs`が検査する）。bootstrapは冪等で、lockfileと一致する`node_modules`ではnpm ciを省略し、`uv sync --locked --dev`、Playwright Chromiumの準備、`git config`調整を行う。失敗は「何が・なぜ・次に何をするか」を表示する。doctorは実行環境のprofileを自動判定し、その経路の必須項目だけをfail-closedで検査する。
+
+| 経路 | 入口 | bootstrap | doctor profile |
+|---|---|---|---|
+| Claude Code cloud | `.claude/settings.json`のSessionStart hook → `.claude/hooks/session-start.sh` | `scripts/dev-bootstrap.sh --hook` | `claude-cloud`（`CLAUDE_CODE_REMOTE=true`） |
+| Codex Cloud | 環境設定のsetup script `bash .codex/setup.sh` / maintenance `bash .codex/maintenance.sh` | `--profile codex-cloud`（maintenanceは`--maintenance`で`git fetch --prune`も行う） | `codex-cloud`（`CODEX_*`環境変数） |
+| Codespaces / VS Code Dev Containers | `postCreateCommand` → `.devcontainer/post-create.sh` | `--profile devcontainer --doctor` | `devcontainer`（`containerEnv`の`COMPASS_DEV_PROFILE`） |
+| Dev Container CLI | `./scripts/devcontainer.sh setup` / `scripts/devcontainer.ps1 -Action setup` | `--profile devcontainer --doctor` | `devcontainer` |
+
+`COMPASS_DEV_PROFILE=<profile>`は自動判定を上書きする。判定できないhostは最も厳しい`devcontainer` profileとして扱う。
+
+| doctorの判定 | `devcontainer` | `claude-cloud` / `codex-cloud` |
+|---|---|---|
+| Node.js | `.node-version`と完全一致 | 同じmajorならWARNで続行。別majorはFAIL |
+| uv・GitHub CLI | pinと完全一致 | 差分はWARN。uvは必須、`gh`は無ければSKIP |
+| Docker daemon・Compose・Copilot CLI・pnpm | 必須 | SKIP（下表の代替経路） |
+| Python | system Python 3.12とLibrary API venv | Library API venvのPython 3.12 |
+| `node_modules`とpackage-lockの一致、Playwright Chromium、Library API venv | 必須（Chromiumは同梱版） | 必須（同梱版が無ければfallbackをWARNで許容） |
+
+Node.jsの版はbootstrapもdoctorもhardcodeせず、`.node-version`を読む。nvm・fnm・voltaのいずれかがあれば、bootstrapはその版へprocess単位で切り替え、Claude Code cloudでは`CLAUDE_ENV_FILE`の`PATH`でsession内の後続commandへ引き継ぐ。nvmの`default` aliasは書き換えない（同じcontainerの他のsession・agentのNodeを変えないため。初回`nvm install`が作ったaliasは削除する）。fnmは導入済みの版だけを使う。version managerが無ければglobal導入で隠さず、major一致で続行してdoctorにWARNを出す。Claude Code cloudの現行imageが提供するNode・uvはpinと異なるため、doctorはこの差分をWARNとして表示する。
 
 ## 自動プロビジョニング契約
 
@@ -22,31 +50,41 @@ Dev Container Specificationを唯一の環境正本とする。別のDockerfile�
 
 | 層 | 人が用意するもの | repositoryが自動で揃えるもの |
 |---|---|---|
+| Claude Code cloud | GitHub接続、claude.ai/codeの環境設定（setup script 1行、下記） | npm依存、Playwright Chromium（同梱版または`/opt/pw-browsers`のfallback）、Library API環境、session環境変数 |
 | Codespaces | GitHub access、repository access、Codespaces利用権 | Linux、Node 22.16.0、Python 3.12、独立Docker daemon、Compose、GitHub CLI、Copilot CLI、VS Code extensions、npm、Playwright、uv、Library API環境 |
 | VS Code + Docker | Git、Docker Desktop/Engine、VS Code、Dev Containers extension | Codespacesと同じDev Container内容 |
 | Dev Container CLI | Git、Docker Desktop/Engine、Node.js（固定CLI起動用） | Codespacesと同じDev Container内容 |
 | Codex Cloud | GitHub接続とCodex environment | Node/npm/Python/uv依存、Playwright、repository instructions。Docker作業はCodespacesへhandoff |
 
-環境定義は`.devcontainer/devcontainer.json`、Feature digestは`.devcontainer/devcontainer-lock.json`、JavaScript/Python依存は各lockfile、Codex setupは`.codex/setup.sh`が正本である。`.gitattributes`はWindows checkoutでもshell scriptをLFに固定する。
+環境定義は`.devcontainer/devcontainer.json`、Feature digestは`.devcontainer/devcontainer-lock.json`、JavaScript/Python依存は各lockfile、依存導入は`scripts/dev-bootstrap.sh`が正本である。`.gitattributes`はWindows checkoutでもshell scriptをLFに固定する。
 
-`postCreateCommand`は依存導入後に環境doctorを実行する。doctorはNode、Python、GitHub CLI、Copilot CLI、Docker daemon、Compose、Playwright、uv、Library API virtual environmentをfail-closedで検査する。初回作成後、Dev Container変更後、別PCでの初回利用時は次を受入証跡にする。
+`postCreateCommand`は依存導入後に`devcontainer` profileのdoctorを実行する。doctorはNode、Python、GitHub CLI、Copilot CLI、Docker daemon、Compose、Playwright、uv、Library API virtual environmentをfail-closedで検査する。初回作成後、環境定義の変更後、別PCや新しいcloud環境での初回利用時は次を受入証跡にする。
 
 ```bash
 npm run dev:doctor
 npm run cloud:check
 ```
 
-不足を個人PCへのglobal installで回避しない。必要packageはDev Container Featureまたはrepository lockfileへ追加し、再buildとdoctorを通す。これにより次の参加者にも自動適用される。
+不足を個人PCやcloud sessionへのglobal installで回避しない。必要packageはDev Container Feature、repository lockfile、または`scripts/dev-bootstrap.sh`へ追加し、再buildとdoctorを通す。これにより次の参加者と全経路へ自動適用される。
 
 ### 新PC／新メンバーの受入チェック
 
-1. repository accessを確認し、最新`main`からCodespaceまたは専用branchを作る。
-2. container作成が自動完了し、doctorが`READY`を返すことを確認する。
+1. repository accessを確認し、最新`main`からClaude Code cloud session、Codespace、または専用branchを作る。
+2. 環境の作成が自動完了し、doctorが`READY <profile>`を返すことを確認する。
 3. `npm run dev:cloud`でprivate port `3000`を開く。
 4. 小さな非本番変更は`docs/agent-delivery-policy.md`に従い対象の検証を行う。Web UI依頼ではcommit、push、PR、Cloudflare Preview、対象URL確認まで進める。CDによる本番公開は別の許可境界とする。
 5. PR checksとreview権限を確認し、Production権限や秘密値なしで通常開発できることを記録する。
 
 ## 5分で開始する
+
+### Claude Code cloud（既定）
+
+1. claude.ai/codeでこのrepositoryのcloud環境を選び、環境設定のsetup scriptへ下記の1行を入れる（初回のみ）。
+2. sessionを開始すると、commit済みの`.claude/settings.json`のSessionStart hookがbootstrapとdoctorを実行し、結果の要約をsessionへ渡す。
+3. 専用branchで作業し、`npm run dev:doctor`が`READY claude-cloud`であることを確認する。
+4. 変更後は`docs/agent-delivery-policy.md`に従い対象の検証を行い、commit、push、Draft PRを作成する。
+
+詳細は下記の「Claude Code cloud（既定環境）」を参照する。
 
 ### GitHub Codespaces
 
@@ -151,15 +189,64 @@ FastAPIはVS Code task **Library: start FastAPI**、composite PostgreSQL環境�
 
 | 実行環境 | 初期整備 | 受入条件 |
 |---|---|---|
-| Codespaces / Dev Container | `.devcontainer/post-create.sh` | `npm run dev:doctor`と該当test |
-| Codex Cloud | `.codex/setup.sh` | 変更リスクに対応する検証。総合監査は`npm run cloud:check`。Docker専用doctorは要求しない |
+| Claude Code cloud（既定） | SessionStart hook（`scripts/dev-bootstrap.sh --hook`） | `npm run dev:doctor`（`claude-cloud`）と変更リスクに対応する検証。総合監査は`npm run cloud:check` |
+| Codex Cloud | `.codex/setup.sh` | `npm run dev:doctor`（`codex-cloud`）と変更リスクに対応する検証。総合監査は`npm run cloud:check` |
+| Codespaces / Dev Container | `.devcontainer/post-create.sh` | `npm run dev:doctor`（`devcontainer`）と該当test |
 | Windowsの補助検証 | lockfileで導入、Windows専用手順 | 変更リスクに対応する検証。総合監査は`npm.cmd run check`と必要なvisual regression |
 
 pnpmは補助CLIとして固定し、依存管理はnpm/uvのlockfileで行います。Git操作は依頼の許可範囲で実行します。
 固定バージョンの整合は `npm run verify:toolchain`、非本番コマンドの詳細は
 [開発・検証](development-workflows.md)、更新手順は[依存保守](dependency-maintenance.md)を参照してください。
 
-## Codexを主要開発環境にする
+## Claude Code cloud（既定環境）
+
+Claude Code cloudを既定の開発環境とする。`CLAUDE.md` → `AGENTS.md`の順に読み、他の経路と同じlockfile・bootstrap・検証コマンドを使う。
+
+### 環境設定（repository外、初回のみ）
+
+claude.ai/codeの環境設定にあるsetup scriptは、新しいsessionの開始時にrepositoryの1階層上で実行される。Gitで保守できないため、中身は次の1行だけにし、手順はrepository側の`scripts/dev-bootstrap.sh`で保守する。
+
+```bash
+cd compass && bash scripts/dev-bootstrap.sh --profile claude-cloud
+```
+
+setup scriptを設定しなくても、commit済みのSessionStart hookがsession開始時に同じbootstrapを実行する。setup scriptを併用すると依存導入が環境側で済み、hookはlockfile一致を確認するだけで終わる。
+
+### repository側で共有するもの
+
+| 資産 | 内容 |
+|---|---|
+| `CLAUDE.md` | 入口。`AGENTS.md`へ委譲し、gateとworkspace資産だけを示す |
+| `.claude/settings.json` | commit済みの共有設定。SessionStart hook（`startup`・`resume`）とDev Containerの`remoteEnv`と同じsession環境変数だけを持つ |
+| `.claude/hooks/session-start.sh` | `scripts/dev-bootstrap.sh --hook`へ委譲する。cloud session（`CLAUDE_CODE_REMOTE=true`）以外では何もしない |
+| `.claude/settings.json.example` | 任意の個人用permission allowlistと`deny`境界のtemplate |
+| `.claude/agents/` | read-onlyの`repo-mapper`、`quality-reviewer`、`security-reviewer` |
+| `.claude/commands/` | `/cloud-check`、`/responsive-check`、`/handoff` |
+
+hookはsessionを失敗させない。結果を1行ずつ要約してsessionのcontextへ渡し、詳細logは`${TMPDIR:-/tmp}/compass-bootstrap/`へ保存する。version managerでNode.jsを切り替えた場合だけ、`CLAUDE_ENV_FILE`へ`PATH`を追記して後続のBash commandへ引き継ぐ。
+
+`.claude/settings.json`は全員に適用されるため、permissionのallowlistを入れない。allowlistを使うかは各利用者の判断とし、`.claude/settings.json.example`の全ruleをreviewしてから`permissions`を自分の`.claude/settings.local.json`（Git管理外）へcopyする。`deny`はsecret操作、Terraform apply、force push、credential読み取り等の境界を保持する。Pages deployは非本番Previewまで一律拒否しないよう`ask`とし、AGENTS.mdに基づく既存の実装依頼と非本番branchの根拠をtoolの権限reviewへ提示する。Productionへの許可へ読み替えない。templateの変更は各利用者の有効な設定を自動変更しない。
+
+Claude CodeのsubscriptionログインはGitへ保存しない。
+
+### Playwright
+
+Claude Code cloudはbrowserのdownloadを抑止し（`PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=1`）、`/opt/pw-browsers`に固定revisionのChromiumを置く。`playwright.config.ts`は、同梱版のChromiumが無い場合に限り`PLAYWRIGHT_CHROMIUM_EXECUTABLE`、`$PLAYWRIGHT_BROWSERS_PATH/chromium`、`/opt/pw-browsers/chromium`の順で実行fileを探してfallbackし、その旨をlogへ出す。同梱版がある環境（Windows、CI、Dev Container）の挙動は変わらない。`msedge`を指定するExplorer specはfallbackの対象外である。fallback先のrevisionはpin済みPlaywrightと異なり得るため、doctorはWARNを出す。
+
+### Claude Code cloudで実行できないもの
+
+doctorの`claude-cloud` / `codex-cloud` profileは、次の各行をSKIPとして代替経路付きで表示する（表とdoctorの一致は`tests/repository-maintenance.test.mjs`が検査する）。
+
+| 対象 | 理由 | 代替経路 |
+|---|---|---|
+| Docker daemon / Compose: Library PostgreSQL (library-docker-dev.sh Up/Test/Phase9Phase10Test) | Docker daemonが無い | Codespaces（`./scripts/library-docker-dev.sh Test`等）。PostgreSQLを使わないAPI testはcloudで`uv run --locked pytest`、PRではGitHub Actions `Library API tests` |
+| Docker images and Terraform: library-docker-dev.sh BuildProductionImages/TerraformValidate | TerraformもDocker container内で実行する | Codespaces |
+| Dev Container contract (devcontainer profile of dev:doctor) | Dev Container自体を起動しない | GitHub Actions Dev Container Contract（`.devcontainer/**`等の変更時） |
+| Windows PowerShell scripts (*.ps1, rehearse:library-production) | Windows専用 | GitHub Actions Library production artifact rehearsal / Windows host |
+| H.264 film decode and GPU 3D scene (test:responsive:media, film/3D cases of interactive-hero.spec.ts) | Playwright用ChromiumはH.264を再生できない。GPUが無くsoftware WebGLでは3D sceneが30秒以内に`ready`へ達しない（2026-10-23実測、`interactive-hero.spec.ts`の5件） | Cloudflare Preview real display / Windows host |
+| msedge Explorer specs and Windows visual regression (test:responsive:explorer, test:responsive:visual) | `msedge`・D3D11・`*-win32.png` baselineに依存する | Windows host |
+
+## Codexから参加する
 
 ### Codex Desktop
 
@@ -184,34 +271,16 @@ bash .codex/setup.sh
 bash .codex/maintenance.sh
 ```
 
-Codex CloudはDev Containerそのものを起動する経路ではないため、Node.jsは`.node-version`、Pythonは`3.12`へ固定する。DockerやProduction接続を必要としない通常の実装・review・非live testに使用する。
+Codex CloudはDev Containerそのものを起動する経路ではないため、Node.jsは`.node-version`、Pythonは`3.12`へCodex環境設定で固定する。DockerやProduction接続を必要としない通常の実装・review・非live testに使用する。Docker作業はClaude Code cloudと同じく上表の代替経路へ渡す。
 
-Codex Cloud環境では`.devcontainer/doctor.sh`のDev Container専用checkが失敗する。これは想定挙動であり、doctorは全項目を報告してからexit 1する。Codex Cloudの受入基準は変更リスクに対応する検証とし、総合監査のコマンドは`npm run cloud:check`である。
-
-## Claude Codeから参加する
-
-Claude CodeはCodexを主環境とする前提の上で、review・focusした微修正・監査に使用する副次的なagentである。`CLAUDE.md` → `AGENTS.md`の順に読み、Codexと同じ検証コマンドを使う。
-
-repository側で共有するもの:
-
-| 資産 | 内容 |
-|---|---|
-| `CLAUDE.md` | 入口。`AGENTS.md`へ委譲し、gateとworkspace資産だけを示す |
-| `.claude/settings.json.example` | SessionStart hook登録と権限境界のtemplate。`.claude/settings.json`へcopyして有効化する |
-| `.claude/hooks/session-start.sh` | cloud session開始時にnpm・Playwright・Library API環境を用意する |
-| `.claude/agents/` | read-onlyの`repo-mapper`、`quality-reviewer`、`security-reviewer` |
-| `.claude/commands/` | `/cloud-check`、`/responsive-check`、`/handoff` |
-
-`.claude/settings.json`はrepositoryへcommitしていない。権限のallowlistを共有するかは各利用者の判断とし、有効化する場合は`.claude/settings.json.example`の全ruleをreviewしてからcopyする。`deny`はsecret操作、Terraform apply、force push、credential読み取り等の境界を保持する。Pages deployは非本番Previewまで一律拒否しないよう`ask`とし、AGENTS.mdに基づく既存の実装依頼と非本番branchの根拠をtoolの権限reviewへ提示する。Productionへの許可へ読み替えない。このtemplateの変更は各利用者の有効な設定を自動変更しない。
-
-Claude CodeのsubscriptionログインはGitへ保存しない。`.claude/settings.local.json`は個人設定であり共有しない。
+Codex Cloudではdoctorが`codex-cloud` profileを選び、Docker等のDev Container専用項目をSKIPとして表示する。必須項目が揃えば`READY codex-cloud`を返す。総合監査のコマンドは`npm run cloud:check`である。
 
 ## 複数エージェント運用
 
 | Agent / IDE | 読む指示 | 標準コマンド | repository資産 |
 |---|---|---|---|
-| Codex（主） | `AGENTS.md`, `.codex/config.toml` | `npm run dev:cloud`, `npm run cloud:check` | `.codex/agents/` |
-| Claude Code（副） | `CLAUDE.md` → `AGENTS.md` | 同上 | `.claude/agents/`, `.claude/commands/` |
+| Claude Code（既定） | `CLAUDE.md` → `AGENTS.md` | `npm run dev:cloud`, `npm run cloud:check` | `.claude/agents/`, `.claude/commands/` |
+| Codex | `AGENTS.md`, `.codex/config.toml` | 同上 | `.codex/agents/` |
 | GitHub Copilot | `.github/copilot-instructions.md` → `AGENTS.md` | 同上 | — |
 | VS Code agent | workspace recommendations + `AGENTS.md` | VS Code tasks | `.vscode/tasks.json` |
 
@@ -255,6 +324,7 @@ cloud taskは次を満たしてからhandoffする。
 
 ## Troubleshooting
 
+- 環境が`NOT READY`: `bash scripts/dev-bootstrap.sh`を手動で実行し、表示された`Next:`とlog（`${TMPDIR:-/tmp}/compass-bootstrap/`）に従う。何度実行しても安全である。
 - Dev Container変更後: **Rebuild Container**を実行する。
 - feature lock mismatch: 意図した更新であることを確認後、固定CLIの`upgrade`でlockfileを更新する。
 - Dockerが起動しない: Docker Desktop/Engineの状態を確認し、Codespacesへ切り替えて作業を継続する。

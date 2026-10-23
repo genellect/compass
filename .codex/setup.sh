@@ -1,7 +1,5 @@
 #!/usr/bin/env bash
+# Codex Cloud environment setup script. All provisioning lives in
+# scripts/dev-bootstrap.sh.
 set -euo pipefail
-
-repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-cd "$repo_root"
-
-bash .devcontainer/install-dependencies.sh
+exec bash "$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)/scripts/dev-bootstrap.sh" --profile codex-cloud
