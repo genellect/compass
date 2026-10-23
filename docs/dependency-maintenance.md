@@ -2,7 +2,7 @@
 
 Status: Operational Runbook
 Scope: ソース、lockfile、開発・CI環境の非本番監査
-Last verified: 2026-09-10
+Last verified: 2026-10-23
 
 ## 再現可能なインストール
 
@@ -91,6 +91,51 @@ npm run verify:git-history-secrets
 
 脆弱なバージョンの存在は、悪用された証拠ではない。本番ログ・開発端末の侵害調査は
 今回のソース・依存監査に含まれておらず、過去の実害の有無は未確定である。
+
+## 2026-10-23の修正記録
+
+修正前の`npm audit`は9件（critical 1 / high 6 / moderate 2）、Python OSV照合は3パッケージを検出した。
+修正後はいずれも0件である。更新はすべて非majorで、lockfileは対象パッケージとその固定依存だけを更新した。
+
+| 対象 | 更新 | 利用経路・判断 |
+|---|---|---|
+| Next.js | 16.3.4 → 16.4.3 | `next/og` ImageResponseのRCE、画像最適化API・`use cache`・Server Actions等の修正を含む。静的export・`images.unoptimized`の配信ではサーバー処理を使わないが、`opengraph-image`はbuild時に`next/og`で生成するため更新する |
+| sharp | 0.35.4 → 0.35.5 | 直接依存とoverrideを更新。同梱librsvgの脆弱性。Nextのoptional依存、miniflare、画像制作スクリプトが利用する |
+| wrangler / miniflare | 4.114.0 → 4.152.0 / 4.20260722.0 → 5.20261019.2-beta | 開発・Preview用CLI。miniflare経由のundici・sharpを解消する。miniflareとworkerdはwranglerが版を固定する |
+| undici | 7.29.0 → 7.30.1（override） | 旧overrideが脆弱範囲7.0.0–7.29.0の版に固定していた。miniflare経由の開発依存 |
+| Vitest / mocker | 4.1.11 → 4.1.12 | 開発・テスト依存。公開アプリにテストサーバーを含めない |
+| vite | 8.2.2 → 8.2.4 | Vitestの推移依存。開発サーバーとlaunch-editorの修正。manifestは8.2.2と同一 |
+| source-map-js | 1.2.1 → 1.2.2 | postcssの推移依存。indexed source mapによるDoS |
+| Mako | 1.3.12 → 1.4.3 | Python本番依存（alembic経由、`--no-dev`に含まれる）。WindowsのTemplateLookupでのpath traversal。Library APIのソースはMakoを直接importせず、alembicのmigration雛形生成で使われる |
+| urllib3 | 2.7.0 → 2.8.0 | Python本番依存（requests・cachecontrol経由、`--no-dev`に含まれる）。HTTPS proxyのTLS設定、chunked応答のDoS |
+| certifi | 2026.7.22 → 2026.10.23 | Python本番依存（requests経由、`--no-dev`に含まれる）。鍵が侵害されたemSignルートCAを同梱していた。2026-10-20公開のadvisoryで、本作業中のOSV照合で検出した |
+
+`overrides.postcss`（8.5.25）と`overrides.nanoid`（3.3.18）は該当advisoryがなく、変更していない。
+
+出典: [Next next/og RCE](https://github.com/advisories/GHSA-vcvr-r3jv-pc5j)、
+[Next 画像最適化 SVG RCE](https://github.com/advisories/GHSA-2464-fhr4-w9xw)、
+[Next `use cache` RCE](https://github.com/advisories/GHSA-673q-mjm6-r5xr)、
+[Next 画像最適化 SSRF](https://github.com/advisories/GHSA-cjq9-62q9-8jv4)、
+[Next Server Actions DoS](https://github.com/advisories/GHSA-p3m5-59mp-jv5r)、
+[sharp](https://github.com/advisories/GHSA-wq5f-xc86-pv6w)、
+[undici WebSocket DoS](https://github.com/advisories/GHSA-rfgv-xxqx-mfg5)、
+[undici BalancedPool TLS](https://github.com/advisories/GHSA-w293-vg96-wgc3)、
+[Vitest mocker](https://github.com/advisories/GHSA-qxg6-89mg-rqv8)、
+[Vitest Windows traversal](https://github.com/advisories/GHSA-xp26-3454-mjgp)、
+[launch-editor（vite）](https://github.com/advisories/GHSA-587h-7wmj-h5pm)、
+[source-map-js](https://github.com/advisories/GHSA-68fv-2mgg-jv7q)、
+[Mako](https://github.com/advisories/GHSA-5639-2j2p-m4mx)、
+[urllib3 proxy TLS](https://github.com/advisories/GHSA-8988-9cw3-xx77)、
+[urllib3 deflate](https://github.com/advisories/GHSA-gh4c-6fx4-qh6g)、
+[urllib3 chunk-size](https://github.com/advisories/GHSA-vxq7-64xx-v4gw)、
+[certifi](https://github.com/advisories/GHSA-6q48-6c7w-9gw2)。
+Next.js・undici・viteの残りのadvisoryは`npm audit --json`の出力で確認できる。
+
+npm 10.9系の`npm install`はこの依存グラフで`Cannot read properties of null (reading 'edgesOut')`を出して失敗した。
+lockfileはnpm 11で解決した。そのうえで、対象外のパッケージ（chai、tinyrainbow、rolldown等）が範囲内の最新版へ再解決された分を元の版へ戻した。
+CIと同じnpm 10の`npm ci`と`npm ls --all`で整合を確認した。
+
+今回の更新でも、脆弱なバージョンの存在は悪用の証拠ではない。本番ログ・開発端末の侵害調査は行っていない。
 
 ## 2026-10-23のNode.js更新記録
 
