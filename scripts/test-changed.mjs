@@ -3,10 +3,10 @@
 //   node scripts/test-changed.mjs [base] [extra vitest args]
 //
 // base defaults to origin/main. Vitest follows the module graph from files
-// changed since merge-base(base, HEAD), including uncommitted files. A change
-// to package.json, a lockfile or vitest.config.* reruns the whole suite
-// (Vitest forceRerunTriggers). node:test files (`npm run test:library-release-gate`)
-// are outside Vitest and are not selected here.
+// changed since merge-base(base, HEAD), including uncommitted files. Changes to
+// package.json, lockfiles or vitest.config.ts do not rerun the whole suite, so
+// use `npm run test:unit` for dependency or config changes. node:test files
+// (`npm run test:library-release-gate`) and Playwright are not selected here.
 import { execFileSync, spawnSync } from "node:child_process";
 import process from "node:process";
 

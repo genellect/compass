@@ -122,7 +122,7 @@ npm run test:changed          # 変更に関係するVitest unit testだけ実�
 - 既存コードに違反が残るruleは、`eslint.config.mjs`の`stagedWarnings`に導入時の件数付きでwarnとして列挙しています。あるruleの違反を0件にしたPRで、そのruleを`stagedWarnings`から外してerrorへ戻します。
 - Prettierは`.prettierrc.json`（2 space、LF。`.editorconfig`と同じ）を使います。repositoryは一括整形していないため、新規fileと、merge-base時点で整形済みだったfileが未整形の場合だけerrorにします。
 - merge-base時点で未整形だった既存file（legacy）はwarningだけで強制せず、`format:changed`も書き換えません。file全体を整形してよい場合だけ`npm run format:changed -- --include-legacy`を使います。Markdown・YAMLは今回の対象外です（`.prettierignore`）。
-- `test:changed`は`vitest run --changed <merge-base>`を実行し、Vitestがmodule graphから関係するtestを選びます。`package.json`・lockfile・`vitest.config.ts`を変えた場合は全unit testが実行されます。node:testのrelease gate（`npm run test:library-release-gate`）は対象外なので、該当範囲を変えた場合は個別に実行します。
+- `test:changed`は`vitest run --changed <merge-base>`を実行し、Vitestがmodule graphから関係するtestを選びます（例: `src/library-registration/admin/adminMock.ts`だけの変更では`adminMock.test.ts`だけを実行）。`package.json`・lockfile・`vitest.config.ts`の変更では全体を再実行しないため、依存や設定を変えた場合は`npm run test:unit`を使います。node:testのrelease gate（`npm run test:library-release-gate`）とPlaywrightも対象外なので、該当範囲を変えた場合は個別に実行します。
 - Library APIはRuffでlintします（`services/library-api/pyproject.toml`の`[tool.ruff]`）。
 
 ```bash
