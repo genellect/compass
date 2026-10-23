@@ -42,7 +42,7 @@ version pinは`.devcontainer/toolchain.env`・`.node-version`・各lockfile、�
 | Python | system Python 3.12とLibrary API venv | Library API venvのPython 3.12 |
 | `node_modules`とpackage-lockの一致、Playwright Chromium、Library API venv | 必須（Chromiumは同梱版） | 必須（同梱版が無ければfallbackをWARNで許容） |
 
-Node.jsは、nvm・fnm・voltaのいずれかがあればbootstrapが`.node-version`の版へ切り替える。無ければglobal導入で隠さず、major一致で続行してdoctorにWARNを出す。Claude Code cloudの現行imageはNode 22.22.0・uv 0.11.32を提供するため、doctorはこの差分をWARNとして表示する。
+Node.jsの版はbootstrapもdoctorもhardcodeせず、`.node-version`を読む。nvm・fnm・voltaのいずれかがあれば、bootstrapはその版へprocess単位で切り替え、Claude Code cloudでは`CLAUDE_ENV_FILE`の`PATH`でsession内の後続commandへ引き継ぐ。nvmの`default` aliasは書き換えない（同じcontainerの他のsession・agentのNodeを変えないため。初回`nvm install`が作ったaliasは削除する）。fnmは導入済みの版だけを使う。version managerが無ければglobal導入で隠さず、major一致で続行してdoctorにWARNを出す。Claude Code cloudの現行imageが提供するNode・uvはpinと異なるため、doctorはこの差分をWARNとして表示する。
 
 ## 自動プロビジョニング契約
 

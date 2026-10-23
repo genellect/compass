@@ -138,20 +138,30 @@ step_git() {
 }
 
 node_bin_from_manager() {
-  # Prints the bin directory of the pinned Node version from an existing
-  # version manager. Never installs a manager or a global Node.
+  # Prints the bin directory of the .node-version release from a version
+  # manager that already exists. Never installs a manager or a system-wide Node;
+  # nvm may add the pinned release to its own directory.
   local want="$1" exe=""
   local nvm_dir="${NVM_DIR:-$HOME/.nvm}"
   if [[ -s "$nvm_dir/nvm.sh" ]]; then
+    # The switch is per process/session (PATH), never nvm's `default` alias:
+    # other sessions or agents sharing this container keep their Node. A first
+    # `nvm install` creates that alias, so remove it again if it did not exist.
+    local had_default=false
+    [[ -e "$nvm_dir/alias/default" ]] && had_default=true
     exe="$(
       set +eu
       # shellcheck disable=SC1091
-      source "$nvm_dir/nvm.sh" >/dev/null 2>&1
-      nvm install "$want" >"$log_dir/node-manager.log" 2>&1 && nvm which "$want" 2>/dev/null
+      source "$nvm_dir/nvm.sh" --no-use >/dev/null 2>&1
+      { nvm which "$want" || { nvm install --no-progress "$want" >"$log_dir/node-manager.log" 2>&1 && nvm which "$want"; }; } 2>/dev/null | tail -n 1
     )" || true
+    if [[ "$had_default" == false && -e "$nvm_dir/alias/default" ]]; then
+      rm -f "$nvm_dir/alias/default"
+    fi
   fi
   if [[ -z "$exe" ]] && command -v fnm >/dev/null 2>&1; then
-    exe="$(fnm install "$want" >"$log_dir/node-manager.log" 2>&1 && fnm exec --using="$want" node -p process.execPath 2>/dev/null)" || true
+    # Use an already installed version only: a first `fnm install` sets its default.
+    exe="$(fnm exec --using="$want" node -p process.execPath 2>>"$log_dir/node-manager.log")" || true
   fi
   if [[ -z "$exe" ]] && command -v volta >/dev/null 2>&1; then
     exe="$(volta run --node "$want" node -p process.execPath 2>>"$log_dir/node-manager.log")" || true
@@ -201,7 +211,7 @@ ensure_writable() {
 
 step_npm() {
   if ! command -v npm >/dev/null 2>&1; then
-    report FAIL npm "npm is not installed." "provide Node $NODE_VERSION with npm."
+    report FAIL npm "npm is not installed." "provide Node from .node-version with npm."
     return
   fi
   local reason

@@ -68,12 +68,12 @@ if [[ "$pinned_node" != "$NODE_VERSION" ]]; then
 fi
 if has_command node; then
   actual_node="$(node -p 'process.versions.node' 2>/dev/null || true)"
-  if [[ "$actual_node" == "$NODE_VERSION" ]]; then
+  if [[ "$actual_node" == "$pinned_node" ]]; then
     pass "Node.js $actual_node"
-  elif [[ "$strict" == false && "${actual_node%%.*}" == "${NODE_VERSION%%.*}" ]]; then
-    warn "Node.js $actual_node differs from .node-version $NODE_VERSION (same major; pin it in the environment settings for exact parity)"
+  elif [[ "$strict" == false && "${actual_node%%.*}" == "${pinned_node%%.*}" ]]; then
+    warn "Node.js $actual_node differs from .node-version $pinned_node (same major; pin it in the environment settings for exact parity)"
   else
-    fail "Node.js ${actual_node:-unavailable} (expected $NODE_VERSION)"
+    fail "Node.js ${actual_node:-unavailable} (expected $pinned_node)"
   fi
 fi
 
