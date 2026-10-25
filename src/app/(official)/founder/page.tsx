@@ -220,10 +220,6 @@ function GitHubIcon() {
   );
 }
 
-function CompassIcon() {
-  return <Image src="/images/compass-mark.svg" alt="" width={28} height={28} aria-hidden="true" />;
-}
-
 export default function FounderPage() {
   return (
     <div className={styles.page} data-founder-page>
@@ -254,7 +250,6 @@ export default function FounderPage() {
               <div className={styles.mobileExternalIcons}>
                 <a href="https://www.instagram.com/n.m.w.314/?__pwa=1#" target="_blank" rel="noopener noreferrer" aria-label="Instagram"><InstagramIcon /></a>
                 <a href="https://github.com/genellect" target="_blank" rel="noopener noreferrer" aria-label="GitHub"><GitHubIcon /></a>
-                <a href={`${COMPASS_ORIGIN}/`} aria-label="COMPASS公式サイト"><CompassIcon /></a>
               </div>
               <div className={styles.mobileLanguagePanel}>
                 <span>Language</span>
@@ -288,9 +283,6 @@ export default function FounderPage() {
               </a>
               <a href="https://github.com/genellect" target="_blank" rel="noopener noreferrer" aria-label="GitHub" title="GitHub">
                 <GitHubIcon />
-              </a>
-              <a href={`${COMPASS_ORIGIN}/`} aria-label="COMPASS公式サイト" title="COMPASS公式サイト">
-                <CompassIcon />
               </a>
             </nav>
           </div>
@@ -369,10 +361,10 @@ export default function FounderPage() {
                 buttonClassName={styles.essayContinuationButton}
                 contentClassName={styles.essayContinuationContent}
               >
-                <section className={styles.essayChapter} aria-labelledby="chapter-compass">
-                  <header><span>02</span><h3 id="chapter-compass">COMPASS</h3></header>
-                  <p>この考えを最初に形にしたのが、現在のCOMPASS Platformにつながる開発です。当初は、学生向け資料を共有するGoogle Driveの招待や名簿管理を自動化する小さな仕組みでした。その後、学生支援団体COMPASSの設立、大学講義支援システムCOMPASS Interactiveの開発へと対象を広げてきました。</p>
-                  <p>現在は、生命科学研究を継続しながら、教育・研究支援システムの開発、研究OSの構築、ITベンチャーでのエンジニアリングにも取り組んでいます。研究・教育現場の課題を理解し、それを要件へ落とし込み、実装可能なシステムへ変換することが、現在の私のエンジニアリングの中心です。</p>
+                <section className={styles.essayChapter} aria-labelledby="chapter-work">
+                  <header><span>02</span><h3 id="chapter-work">WORK</h3></header>
+                  <p>個人開発から始めたソフトウェア開発は、研究を続けるなかで、生命科学研究の成果を事業として社会に届けたいという目標へと変わっていきました。そのためには、顧客と向き合い、要件を定め、システムとして届けるまでを実務で経験する必要があると考え、3年間続けた集団指導講師のアルバイトを辞めました。現在はITベンチャー企業2社でシステムエンジニアとして、顧客折衝から要件定義、設計、実装までを担っています。</p>
+                  <p>実務を通じて実感したのは、AIによって、これまで分業されていた工程を一人で担えるようになり、経験年数や肩書きよりも、課題を見極め、AIの出力を評価し、結果に責任を持つ判断力が問われるようになったということです。研究の現場を知り、事業の現場で要件を定め、実装まで担えることが、これからの私の強みになると考えています。</p>
                 </section>
 
                 <section className={styles.essayChapter} aria-labelledby="chapter-interface">
@@ -504,7 +496,6 @@ export default function FounderPage() {
           <nav aria-label="Personal links">
             <a href="https://www.instagram.com/n.m.w.314/?__pwa=1#" target="_blank" rel="noopener noreferrer">Instagram <ArrowIcon /></a>
             <a href="https://github.com/genellect" target="_blank" rel="noopener noreferrer">GitHub <ArrowIcon /></a>
-            <a href={`${COMPASS_ORIGIN}/`}>COMPASS <ArrowIcon /></a>
             <a href="#top">Back to top ↑</a>
           </nav>
         </div>
