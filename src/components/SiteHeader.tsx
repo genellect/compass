@@ -70,12 +70,6 @@ const navGroups: NavGroup[] = [
         label: "未来戦略ライブラリ",
         description: "北里薬学生への未来の羅針盤",
         mobileDescription: "北里薬学生への未来の羅針盤"
-      },
-      {
-        href: "/messages/",
-        label: "AI時代をどう生きるか",
-        description: "COMPASS Manifesto",
-        mobileDescription: "COMPASS Manifesto"
       }
     ]
   },

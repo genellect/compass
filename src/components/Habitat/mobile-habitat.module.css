@@ -53,6 +53,9 @@
   .root :global(.li-system-index__arrow) { position:absolute; top:12px; right:8px; font-size:10px; }
   .root :global(.li-system-index__item:nth-child(odd)) { border-right:1px solid #39535c; }
   .root :global(.li-system-index__item:nth-child(n+3)) { border-top:1px solid #39535c; }
+  .root :global(.li-system-index__item:last-child:nth-child(odd)) { grid-column:1 / -1; border-right:0; }
+  /* /3d/ is a Desktop experience; its habitat entry stop has nothing to show here. */
+  .root :global(.v4-platform-entry) { display:none; }
   .root :global(.li-system-index__number),.root :global(.li-system-index__copy small),.root :global(.li-system-index__arrow) { color:#bad0d3; }
   .root :global(.li-system-index__copy strong) { color:#f3f7f3; font-size:13px; }
   .root :global(.li-system-index__copy small) { font-size:10px; }

@@ -89,6 +89,8 @@ Manifestoは独立事業ではなく、COMPASSの思想と言語を外部へ伝�
 
 AI時代を生きる学生へ向けた思想と行動のessay。技術仕様でも、独立した運営部門でもない。問いを投げかけ、読者を観客席から行動へ誘う。
 
+`/messages/`は公開を続けるが、2026-10-25のユーザー決定で親サイトとLibraryからの導線を外した。トップの`#manifesto`は、Desktop habitatのcamera停止位置を保ったまま`/3d/`への入口（`src/sections/PlatformEntrySection.tsx`）に置き換え、Mobileでは非表示にする。
+
 ### COMPASS Community
 
 白金campusを主な拠点とする共同制作・学習community。教育企画、情報発信、教材、design、media、Web開発等を、関心と経験に応じて学生が一緒に形にする。

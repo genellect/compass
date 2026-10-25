@@ -334,7 +334,6 @@ for (const expected of [
   'id="community"',
   'id="contact"',
   'id="manifesto"',
-  'href="/messages/"',
   'href="INTRO_Interactive/"',
   'href="/community/join/"',
   'href="/contact/"',
@@ -374,15 +373,6 @@ for (const expected of [
   "面白そうなので、",
   "始めました。",
   "COMPASSを知る",
-  "MANIFESTO",
-  "Manifesto",
-  "観客席から",
-  "見ているには、",
-  "この時代は",
-  "面白すぎる。",
-  "AI時代の学生へ贈る、",
-  "COMPASSからの招待状。",
-  "ストーリーを読む",
   "お問い合わせフォーム",
   "Web開発・プログラミング 4年",
   "/images/founder/yuto-matsui-parent-20260908-800.jpg",
@@ -398,6 +388,26 @@ for (const expected of [
 ]) expectIncludes(official, expected, "Official page");
 
 expectExcludes(official, "AI時代の学生へ贈る、COMPASSの決意。", "Manifesto declaration");
+
+// The Manifesto was withdrawn from the parent site; /messages/ stays published but unlinked.
+// `#manifesto` remains as the Desktop habitat stop, now the entry to /3d/.
+for (const expected of [
+  'id="platform-entry-title"',
+  "この空間を、歩いてみる。",
+  'class="v4-manifesto__cta" href="/3d/"'
+]) expectIncludes(official, expected, "Parent 3D platform entry");
+for (const unexpected of [
+  'href="/messages/"',
+  'href="#manifesto"',
+  "MANIFESTO",
+  "COMPASS Manifesto",
+  "観客席から",
+  "私は先に、AIを部下にしました。",
+  "ストーリーを読む"
+]) expectExcludes(official, unexpected, "Withdrawn parent Manifesto");
+for (const [html, label] of [[library, "Library"], [communityJoin, "Community join"], [contact, "Contact"]]) {
+  expectExcludes(html, 'href="/messages/"', `${label} Manifesto link`);
+}
 
 expectOrdered(
   official,
@@ -1044,11 +1054,8 @@ for (const expected of [
   "運営メンバーとして参加する",
   "無料で資料を見る"
 ]) expectIncludes(siteHeaderSource, expected, "Official header source");
-expectIncludes(
-  siteHeaderSource.replace(/\r\n/g, "\n"),
-  'href: "/messages/",\n        label: "AI時代をどう生きるか",\n        description: "COMPASS Manifesto",\n        mobileDescription: "COMPASS Manifesto"',
-  "Resources Manifesto navigation"
-);
+expectExcludes(siteHeaderSource, 'href: "/messages/"', "Withdrawn Resources Manifesto navigation");
+expectExcludes(siteHeaderSource, "COMPASS Manifesto", "Withdrawn Resources Manifesto navigation");
 expectExcludes(siteHeaderSource, 'activeId: "manifesto"', "Independent Manifesto navigation");
 expectExcludes(official.match(/<header[\s\S]*?<\/header>/)?.[0] ?? '', '>Technology Core<', "Retired parent Technology Core navigation");
 expectIncludes(siteHeaderSource, "items: [navGroups[0].items[0]]", "Mobile Technology navigation");
@@ -1078,7 +1085,6 @@ for (const expected of [
   "CHAPTERS",
   'href="/#technology"',
   'href="/INTRO_Interactive/"',
-  'href="/messages/"',
   'type="application/ld+json"'
 ]) expectIncludes(messages, expected, "Messages page");
 

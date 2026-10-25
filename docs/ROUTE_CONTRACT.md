@@ -68,14 +68,14 @@ surfaceは[`WEBSITE_BOUNDARIES.md`](WEBSITE_BOUNDARIES.md)の区分である。c
 |---|---|---|---|
 | COMPASSを知る | `/` | 同一tab | header logo、Interactive headerの`COMPASS`（`src/interactive/content/interactiveContent.ts:4`） |
 | 参加型講義systemを知る | `/INTRO_Interactive/` | 同一tab | header Technology menu、header CTA、footer CTA（`src/components/SiteFooter.tsx:55`）、`src/sections/OfficialCoreSections.tsx:11` |
-| 3D体験を開く | `/3d/` | 同一tab | Desktopでhabitat有効時だけ、header CTAとTechnology menuに出る（`src/components/SiteHeader.tsx:44-47,346,422`） |
+| 3D体験を開く | `/3d/` | 同一tab | Desktopでhabitat有効時だけ、header CTAとTechnology menuに出る（`src/components/SiteHeader.tsx:44-47,346,422`）。トップのResourcesとCommunityの間の入口（`src/sections/PlatformEntrySection.tsx`、Mobileでは非表示）にも出る |
 | 技術・設計を評価する | `/INTRO_Interactive/developers/` | 同一tab | Interactive紹介のnavigation・footer（`src/interactive/components/layout/navigation.ts:33`、`Footer.tsx:49`） |
 | Interactiveを試す | <https://compass-interactive.pages.dev/demo> | 同一tab（sourceにtarget指定なし） | `src/interactive/content/interactiveContent.ts:2`。講義体験を開始する場合だけ使用する |
 | 講義codeで参加する | <https://compass-interactive.pages.dev/join> | 同一tab（sourceにtarget指定なし） | `src/interactive/content/interactiveContent.ts:3`。講義codeを持つ利用者だけに使用する |
 | Libraryを知る | `/future-strategy-library/` | 同一tab | `SiteHeader.tsx:42`、`SiteFooter.tsx:9`、`OfficialCoreSections.tsx:12,187` |
 | Libraryへ登録する | `/library-registration/` | 同一tab | 5章を参照 |
 | 薬学部生以外が一部資料へアクセスする | COMPASS Essentials Form <https://forms.gle/sW49M329Dcets8ga9> | 新規tab | 6章を参照 |
-| COMPASSの思想を読む | `/messages/` | 同一tab | header Resources menu、`SiteFooter.tsx:57` |
+| COMPASSの思想を読む | `/messages/` | 同一tab | `/3d/`のManifesto展示（`src/components/Explorer/RoomExhibits.tsx`、`exhibit-content.ts`）のみ。親サイトのheader・footer・Hero・sectionとLibrary footerからは2026-10-25に外した |
 | 運営・共同制作へ参加する | `/community/join/` | 同一tab | header Community menu（`SiteHeader.tsx:92`）、`SiteFooter.tsx:58`、`OfficialCoreSections.tsx:14` |
 | 問い合わせる | `/contact/` | 同一tab | `SiteHeader.tsx:110`、`SiteFooter.tsx:41` |
 | 代表を知る | <https://yuto-matsui.com/> | 同一tab | `SiteHeader.tsx:103`（label `Founder`、Mobileは`代表について`）、`SiteFooter.tsx:40` |

@@ -33,7 +33,9 @@ Technology / Resources / Education / Community
 
 ### Public experiences
 
-Interactive / Library / Manifesto / Community
+Interactive / Library / Community
+
+Manifesto（`/messages/`）は公開を続けるが、主要な公開導線から外した（2026-10-25のユーザー決定：Manifestoは親サイト・Library・Community・Contactからの導線を外した。`/messages/`のページと`/3d/`の展示は公開したまま残す）。親サイトのheader・footer・Hero・section、Library footerから`/messages/`へリンクしない。
 
 Educationの提供形式としてWorkshopを表示できるが、活動領域そのものをWorkshopへ改名したと説明しない。ManifestoやFounderを独立事業領域として数えない。
 
@@ -74,7 +76,7 @@ Educationの提供形式としてWorkshopを表示できるが、活動領域そ
 | Libraryを知る | `/future-strategy-library/` |
 | Library登録 | `/library-registration/`（Library専用Google Formはrollback専用） |
 | Essentials access | Essentials専用Google Form |
-| Manifestoを読む | `/messages/` |
+| Manifestoを読む | `/messages/`（直接アクセスと`/3d/`展示のみ。親サイトから導線を張らない） |
 | Community参加 | `/community/join/` |
 | Contact | `/contact/` |
 

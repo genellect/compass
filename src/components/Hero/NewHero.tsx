@@ -1,8 +1,7 @@
 const systemIndex = [
   { number: "01", label: "Interactive", detail: "Learning system", href: "#technology" },
   { number: "02", label: "Library", detail: "Future strategy", href: "#resources" },
-  { number: "03", label: "Manifesto", detail: "Ideas for the AI era", href: "#manifesto" },
-  { number: "04", label: "Community", detail: "Student co-creation", href: "#community" }
+  { number: "03", label: "Community", detail: "Student co-creation", href: "#community" }
 ] as const;
 
 const intelligenceDomains = [

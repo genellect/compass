@@ -103,7 +103,6 @@ export const trustFacts = [
 export const footerLinks = [
   { label: "COMPASS公式サイト", href: "/" },
   { label: "COMPASS Interactive", href: "/INTRO_Interactive/" },
-  { label: "COMPASS Manifesto", href: "/messages/" },
   { label: "Community", href: "/community/join/" },
   { label: "Contact", href: "/contact/" }
 ] as const;

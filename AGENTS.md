@@ -53,7 +53,7 @@ COMPASS Interactiveプロダクト本体、Productionデータベース、保護
 - Origin: 北里大学薬学部
 - Status: 学生有志による任意の学生支援活動。大学公式組織ではない。
 
-活動領域はTechnology / Resources / Education / Community。主要な公開導線はInteractive / Library / Manifesto / Community。この2つの分類を混同しない。
+活動領域はTechnology / Resources / Education / Community。主要な公開導線はInteractive / Library / Community。Manifesto（`/messages/`）は公開を続けるが、親サイトからの導線は2026-10-25のユーザー決定で外した。この2つの分類を混同しない。
 
 ## Repository Boundaries
 
