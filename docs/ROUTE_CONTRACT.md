@@ -68,7 +68,7 @@ surfaceは[`WEBSITE_BOUNDARIES.md`](WEBSITE_BOUNDARIES.md)の区分である。c
 |---|---|---|---|
 | COMPASSを知る | `/` | 同一tab | header logo、Interactive headerの`COMPASS`（`src/interactive/content/interactiveContent.ts:4`） |
 | 参加型講義systemを知る | `/INTRO_Interactive/` | 同一tab | header Technology menu、header CTA、footer CTA（`src/components/SiteFooter.tsx:55`）、`src/sections/OfficialCoreSections.tsx:11` |
-| 3D体験を開く | `/3d/` | 同一tab | Desktopでhabitat有効時だけ、header CTAとTechnology menuに出る（`src/components/SiteHeader.tsx:44-47,346,422`） |
+| 3D体験を開く | `/3d/` | 同一tab | Desktopでhabitat有効時だけ、header CTAとTechnology menuに出る（`src/components/SiteHeader.tsx:44-47,346,422`）。トップのResourcesとCommunityの間の入口（`src/sections/PlatformEntrySection.tsx`、Mobileでは非表示）にも出る |
 | 技術・設計を評価する | `/INTRO_Interactive/developers/` | 同一tab | Interactive紹介のnavigation・footer（`src/interactive/components/layout/navigation.ts:33`、`Footer.tsx:49`） |
 | Interactiveを試す | <https://compass-interactive.pages.dev/demo> | 同一tab（sourceにtarget指定なし） | `src/interactive/content/interactiveContent.ts:2`。講義体験を開始する場合だけ使用する |
 | 講義codeで参加する | <https://compass-interactive.pages.dev/join> | 同一tab（sourceにtarget指定なし） | `src/interactive/content/interactiveContent.ts:3`。講義codeを持つ利用者だけに使用する |

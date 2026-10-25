@@ -5,7 +5,7 @@ import mobileStyles from "./components/Habitat/mobile-habitat.module.css";
 import habitatStyles from "./components/Habitat/habitat.module.css";
 import { Hero } from "./components/Hero";
 import { SiteFooter } from "./components/SiteFooter";
-import { ManifestoSection } from "./sections/ManifestoSection";
+import { PlatformEntrySection } from "./sections/PlatformEntrySection";
 import { ContactSection } from "./sections/ContactSection";
 import {
   CommunityExperienceSection,
@@ -29,7 +29,7 @@ export function LegacyPageBody() {
         <TechnologyCoreSection />
         <ResourcesExperienceSection />
         <div className="v4-closing v4-closing--manifesto v4-closing--resource-manifesto">
-          <ManifestoSection />
+          <PlatformEntrySection />
         </div>
         <CommunityExperienceSection />
         <FounderPortfolioSection />

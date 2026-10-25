@@ -390,7 +390,12 @@ for (const expected of [
 expectExcludes(official, "AI時代の学生へ贈る、COMPASSの決意。", "Manifesto declaration");
 
 // The Manifesto was withdrawn from the parent site; /messages/ stays published but unlinked.
-// `#manifesto` remains only as an empty interlude for the Desktop habitat camera stop.
+// `#manifesto` remains as the Desktop habitat stop, now the entry to /3d/.
+for (const expected of [
+  'id="platform-entry-title"',
+  "この空間を、歩いてみる。",
+  'class="v4-manifesto__cta" href="/3d/"'
+]) expectIncludes(official, expected, "Parent 3D platform entry");
 for (const unexpected of [
   'href="/messages/"',
   'href="#manifesto"',

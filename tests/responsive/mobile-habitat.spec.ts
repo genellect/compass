@@ -29,8 +29,8 @@ for (const width of [320,340,341,390,430,768,900]) {
     await expect(credits.locator('a')).toHaveCount(3);
     await expect(credits.locator('a').first()).toBeVisible();
     await credits.locator('summary').click();
-    // `#manifesto` is a copy-free scene interlude; it keeps its poster but has no heading.
-    await expect(page.locator('#manifesto :is(h1,h2,a)')).toHaveCount(0);
+    // `#manifesto` is the Desktop-only entry to /3d/; Mobile has no walkable scene.
+    await expect(page.locator('#manifesto')).toBeHidden();
     for (const id of ['top','vision','experience','technology','resources','community','founder','contact']) {
       await page.locator('#'+id).scrollIntoViewIfNeeded();
       const bounds=await page.locator('#'+id).evaluate(el=>{
@@ -180,7 +180,7 @@ test('Images failing to load and 200 percent text retain the reading flow',async
   await page.setViewportSize({width:390,height:844});await page.emulateMedia({reducedMotion:'reduce'});
   await page.route('**/habitat/mobile-v1/*.webp',route=>route.abort());await page.goto('/');
   await page.addStyleTag({content:'[data-mobile-habitat] :is(h1,h2,h3,p,a,summary,button){font-size:200% !important}'});
-  for(const id of ['top','vision','experience','technology','resources','manifesto','community','founder','contact']){
+  for(const id of ['top','vision','experience','technology','resources','community','founder','contact']){
     await page.locator('#'+id).scrollIntoViewIfNeeded();
     expect(await page.evaluate(()=>document.documentElement.scrollWidth-innerWidth)).toBeLessThanOrEqual(1);
   }
