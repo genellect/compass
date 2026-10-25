@@ -20,8 +20,9 @@ for (const language of ["ja", "en"] as const) {
         await expect.poll(() => page.locator("[data-depth-card] img").evaluateAll(images => images.every(img => (img as HTMLImageElement).complete && (img as HTMLImageElement).naturalWidth > 0))).toBe(true);
         for (const id of ["expertise", "experience", "off-hours"]) {
           const cards = page.locator(`#${id} [data-depth-card]`);
-          await expect(cards).toHaveCount(3);
-          await expect(cards.locator("[data-depth-geometry]")).toHaveCount(3);
+          const expectedCount = id === "expertise" ? 2 : 3;
+          await expect(cards).toHaveCount(expectedCount);
+          await expect(cards.locator("[data-depth-geometry]")).toHaveCount(expectedCount);
           for (const card of await cards.all()) {
             await card.scrollIntoViewIfNeeded();
             const photo = card.locator("[data-depth-visual] img");

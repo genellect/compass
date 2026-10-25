@@ -23,9 +23,9 @@ import styles from "./english-founder.module.css";
 const canonicalUrl = `${founderOrigin}/en/`;
 
 export const metadata: Metadata = {
-  title: "Yuto Matsui | Life Science Research & AI-Native Engineering",
+  title: "Yuto Matsui | Life Science Research & AI-Native Development",
   description:
-    "The English portfolio of Yuto Matsui, a researcher and engineer working across life science, AI-native engineering, and higher education.",
+    "The portfolio of Yuto Matsui, a systems engineer working at the intersection of molecular biology research and AI-native development.",
   authors: [{ name: "Yuto Matsui" }],
   alternates: {
     canonical: canonicalUrl,
@@ -161,10 +161,10 @@ export default function EnglishFounderPage() {
         <section id="top" className={styles.hero} aria-labelledby="english-founder-title" data-hero-interface data-hero-cycle="0">
           <ConvergenceField />
           <div className={styles.heroCopy}>
-            <p className={styles.heroRole}>Researcher &amp; Engineer</p>
+            <p className={styles.heroRole}><span>Systems Engineer</span> · <span>Molecular Biology Research</span></p>
             <h1 id="english-founder-title">Yuto Matsui</h1>
             <p className={styles.heroThesis}>Advancing Science,<br />Transforming Education.</p>
-            <p className={styles.heroDomains}>Life Science Research · AI-Native Engineering · Higher Education</p>
+            <p className={styles.heroDomains}><span>Life Science Research</span> × <span>AI-Native Development</span></p>
             <nav className={styles.heroSocialLinks} aria-label="Yuto Matsui social profiles">
               <a href="https://www.instagram.com/n.m.w.314/?__pwa=1#" target="_blank" rel="noopener noreferrer" aria-label="Instagram" title="Instagram">
                 <InstagramIcon />
@@ -181,13 +181,13 @@ export default function EnglishFounderPage() {
           <div className={styles.sectionShell}>
             <header className={styles.sectionHeading}>
               <p className={styles.sectionIndex}>02 / Expertise</p>
-              <h2 id="expertise-title">Three disciplines.<br />One direction.</h2>
+              <h2 id="expertise-title">Expertise</h2>
             </header>
             <div className={styles.expertiseGrid}>
               {expertise.map((item, index) => (
                 <DepthCard key={item.number} depth="expertise" editorial className={styles.expertisePlate} data-accent={item.accent} data-order={index + 1}>
                   <DepthVisual className={styles.expertiseImage} data-depth-layer="image">
-                    <Image decoding="sync" loading="eager" src={item.image} alt={item.alt} fill sizes="(min-width: 901px) 38vw, 92vw" />
+                    <Image decoding="sync" loading="eager" src={item.image} alt={item.alt} fill sizes="(min-width: 1100px) 438px, (min-width: 901px) 43vw, (min-width: 641px) 552px, 86vw" />
                     <div className={styles.expertiseNumber} data-depth-layer="detail">{item.number}</div>
                   </DepthVisual>
                   <div className={styles.expertiseCopy} data-depth-layer="copy">

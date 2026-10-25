@@ -672,7 +672,9 @@
 
 .fieldGrid {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  max-width: 1000px;
+  margin-inline: auto;
   gap: 24px;
 }
 
@@ -721,7 +723,6 @@
 }
 
 .fieldCopy {
-  min-height: 158px;
   padding: 30px;
   background: transparent;
 }
@@ -2647,7 +2648,7 @@
 
   .heroCopy h1 { max-width: none; font-size: clamp(2.75rem, 10vw, 4rem); }
   .heroStatement { margin-top: 22px; }
-  .axisList { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px 16px; margin-top: 23px; }
+  .axisList { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px 16px; margin-top: 23px; }
   .axisList li { align-items: flex-start; font-size: 0.71rem; line-height: 1.5; }
   .socialLinks { margin-top: 24px; }
   .interfaceGraphic { bottom: 20px; opacity: 0.32; transform: scale(0.76); transform-origin: right bottom; }

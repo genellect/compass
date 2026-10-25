@@ -43,15 +43,6 @@ export const expertise = [
     image: "/images/founder-portfolio/source/software-development-unsplash.jpg",
     alt: "Software development environment displaying source code",
     accent: "signal"
-  },
-  {
-    number: "03",
-    title: "Higher Education",
-    description:
-      "Turning challenges in higher education into systems that work in the real world.",
-    image: "/images/founder-portfolio/yuto-matsui-education-support.webp",
-    alt: "Yuto Matsui presenting research fields on a whiteboard",
-    accent: "academic"
   }
 ] as const;
 
