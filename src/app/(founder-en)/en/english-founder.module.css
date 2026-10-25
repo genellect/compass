@@ -259,6 +259,7 @@
   clip-path: inset(0 100% 0 0);
   animation: heroTextReveal 620ms 330ms cubic-bezier(.2, .75, .2, 1) forwards;
 }
+.heroRole > span, .heroDomains > span { display: inline-block; }
 .heroSocialLinks { display: flex; gap: 10px; margin-top: 27px; clip-path: inset(0 100% 0 0); animation: heroTextReveal 560ms 390ms cubic-bezier(.2, .75, .2, 1) forwards; }
 .heroSocialLinks a, .mobileMenuSocials a {
   display: grid;
@@ -359,13 +360,13 @@
 }
 .sectionHeading h2 { font-size: clamp(3.5rem, 6.2vw, 6.9rem); line-height: 0.92; }
 
-.expertiseGrid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 28px; }
+.expertiseGrid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); max-width: 1000px; margin-inline: auto; gap: 28px; }
 .expertisePlate { position: relative; display: flex; flex-direction: column; min-width: 0; border-top: 1px solid rgba(57,49,87,.25); background: rgba(255,255,255,.48); }
 .expertiseImage { position: relative; height: clamp(240px, 24vw, 300px); flex-shrink: 0; min-height: 0; margin: 24px 24px 0; }
 .expertiseImage img { object-fit: cover; filter: saturate(.84) contrast(.98); }
 .expertiseNumber { position: absolute; bottom: 16px; left: 16px; z-index: 2; color: #fff; font-family: ui-monospace, SFMono-Regular, Consolas, monospace; font-size: .7rem; letter-spacing: .08em; }
 .expertiseCopy { display: flex; flex-direction: column; gap: 22px; padding: 30px 30px 32px; }
-.expertiseCopy h3 { min-height: 2.1em; margin: 0; font-family: var(--font-en-editorial), Georgia, serif; font-size: clamp(1.9rem, 2.7vw, 2.7rem); font-weight: 450; letter-spacing: -.04em; line-height: 1.05; }
+.expertiseCopy h3 { margin: 0; font-family: var(--font-en-editorial), Georgia, serif; font-size: clamp(1.9rem, 2.7vw, 2.7rem); font-weight: 450; letter-spacing: -.04em; line-height: 1.05; }
 .expertiseCopy p { min-height: 0; margin: 0; color: #403d49; font-size: .9rem; font-weight: 520; line-height: 1.75; }
 
 .work { padding: clamp(110px, 12vw, 180px) 0; color: #eef5ef; background: var(--ink); }

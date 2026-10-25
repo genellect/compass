@@ -17,9 +17,9 @@ const FOUNDER_EN_URL = "https://yuto-matsui.com/en/";
 const COMPASS_ORIGIN = "https://compass-official.pages.dev";
 
 export const metadata: Metadata = {
-  title: "Yuto Matsui / 松井優知 | Life Science, AI & Education",
+  title: "Yuto Matsui / 松井優知 | Life Science Research & AI-Native Development",
   description:
-    "ライフサイエンス研究、AIネイティブ開発、大学教育支援を横断するYuto Matsui / 松井優知の個人ポートフォリオ。",
+    "生命科学研究とAIネイティブ開発を軸に、分子生物学研究とシステムエンジニアとしての実務に取り組むYuto Matsui / 松井優知の個人ポートフォリオ。",
   alternates: {
     canonical: FOUNDER_URL,
     languages: { ja: FOUNDER_URL, en: FOUNDER_EN_URL, "x-default": FOUNDER_URL }
@@ -62,20 +62,11 @@ const fields = [
   {
     id: "02",
     title: "AIネイティブ開発",
-    english: "AI-native Development",
+    english: "AI-Native Development",
     description: "AIとともに、一人が設計・実装できるシステムの規模を広げる。",
     image: "/images/founder-portfolio/source/software-development-unsplash.jpg",
     alt: "ソースコードを表示したPCの開発環境",
     accent: "ai"
-  },
-  {
-    id: "03",
-    title: "大学教育支援",
-    english: "University Education Support",
-    description: "学生と教育現場の課題を、実際に使われる仕組みへ変換する。",
-    image: "/images/founder-portfolio/yuto-matsui-education-support.webp",
-    alt: "ホワイトボードに研究分野を書き示すスーツ姿のYuto Matsui",
-    accent: "education"
   }
 ] as const;
 
@@ -266,15 +257,14 @@ export default function FounderPage() {
           <FounderHeroGallery />
 
           <div className={styles.heroCopy}>
-            <p className={styles.eyebrow}>Life science · AI · Education</p>
+            <p className={styles.eyebrow}>システムエンジニア・分子生物学研究</p>
             <h1 id="founder-title">Yuto Matsui</h1>
             <p className={styles.japaneseName}>松井優知</p>
             <p className={styles.heroStatement}><span>境界を越え、</span><span>新しい可能性へ。</span></p>
 
             <ul className={styles.axisList} aria-label="専門領域">
-              <li data-accent="bio"><span aria-hidden="true" />ライフサイエンス研究</li>
+              <li data-accent="bio"><span aria-hidden="true" />生命科学研究</li>
               <li data-accent="ai"><span aria-hidden="true" />AIネイティブ開発</li>
-              <li data-accent="education"><span aria-hidden="true" />大学教育支援</li>
             </ul>
 
             <nav className={styles.socialLinks} aria-label="Yuto Matsuiの外部リンク">
@@ -310,7 +300,7 @@ export default function FounderPage() {
               {fields.map((field) => (
                 <DepthCard key={field.id} depth="expertise" className={styles.fieldCard} data-accent={field.accent}>
                   <DepthVisual className={styles.fieldImage} data-depth-layer="image">
-                    <Image decoding="sync" loading="eager" src={field.image} alt={field.alt} fill sizes="(min-width: 901px) 32vw, (min-width: 641px) 50vw, 100vw" />
+                    <Image decoding="sync" loading="eager" src={field.image} alt={field.alt} fill sizes="(min-width: 1100px) 438px, (min-width: 901px) 43vw, (min-width: 641px) 552px, 86vw" />
                     <div className={styles.fieldOverlay} aria-hidden="true" />
                     <span className={styles.fieldNumber}>{field.id}</span>
                   </DepthVisual>
@@ -363,8 +353,8 @@ export default function FounderPage() {
               >
                 <section className={styles.essayChapter} aria-labelledby="chapter-work">
                   <header><span>02</span><h3 id="chapter-work">WORK</h3></header>
-                  <p>個人開発から始めたソフトウェア開発は、研究を続けるなかで、生命科学研究の成果を事業として社会に届けたいという目標へと変わっていきました。そのためには、顧客と向き合い、要件を定め、システムとして届けるまでを実務で経験する必要があると考え、3年間続けた集団指導講師のアルバイトを辞めました。現在はITベンチャー企業2社でシステムエンジニアとして、顧客折衝から要件定義、設計、実装までを担っています。</p>
-                  <p>実務を通じて実感したのは、AIによって、これまで分業されていた工程を一人で担えるようになり、経験年数や肩書きよりも、課題を見極め、AIの出力を評価し、結果に責任を持つ判断力が問われるようになったということです。研究の現場を知り、事業の現場で要件を定め、実装まで担えることが、これからの私の強みになると考えています。</p>
+                  <p>個人開発から始めたソフトウェア開発は、研究を続けるなかで、生命科学研究の成果を事業として社会に届けたいという目標へと変わっていきました。そのためには、顧客と向き合い、要件を定め、システムとして届けるまでを実務で経験する必要があると考え、3年間続けた集団指導講師のアルバイトを辞めました。現在はITベンチャー企業2社でシステムエンジニアとして、顧客の課題整理から要件定義、設計、実装までを一貫して担当しています。</p>
+                  <p>実務を通じて実感したのは、AIによって、これまで分業されていた工程を一人で担えるようになり、経験年数や肩書きよりも、課題を見極め、AIの出力を評価し、結果に責任を持つ判断力が問われるようになったということです。研究の現場で生まれる課題を、事業として成り立つシステムへと形にしていく。それが、いまの私の仕事の中心にあります。</p>
                 </section>
 
                 <section className={styles.essayChapter} aria-labelledby="chapter-interface">
