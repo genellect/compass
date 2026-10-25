@@ -300,7 +300,6 @@ export default function EnglishFounderPage() {
           <nav aria-label="Personal links">
             <a href="https://www.instagram.com/n.m.w.314/?__pwa=1#" target="_blank" rel="noopener noreferrer">Instagram <Arrow /></a>
             <a href="https://github.com/genellect" target="_blank" rel="noopener noreferrer">GitHub <Arrow /></a>
-            <a href={`${compassOrigin}/`} target="_blank" rel="noopener noreferrer">COMPASS <Arrow /></a>
             <a href="#top">Back to top ↑</a>
           </nav>
         </div>
