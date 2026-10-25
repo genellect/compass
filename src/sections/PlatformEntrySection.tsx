@@ -6,7 +6,11 @@
  */
 export function PlatformEntrySection() {
   return (
-    <section id="manifesto" className="section v4-manifesto v4-platform-entry" aria-labelledby="platform-entry-title">
+    <section
+      id="manifesto"
+      className="section v4-manifesto v4-platform-entry"
+      aria-labelledby="platform-entry-title"
+    >
       <div className="container v4-manifesto__frame" data-reveal>
         <div className="v4-manifesto__copy">
           <p className="v4-manifesto__label">COMPASS PLATFORM</p>
