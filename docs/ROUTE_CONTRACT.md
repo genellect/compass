@@ -75,7 +75,7 @@ surfaceは[`WEBSITE_BOUNDARIES.md`](WEBSITE_BOUNDARIES.md)の区分である。c
 | Libraryを知る | `/future-strategy-library/` | 同一tab | `SiteHeader.tsx:42`、`SiteFooter.tsx:9`、`OfficialCoreSections.tsx:12,187` |
 | Libraryへ登録する | `/library-registration/` | 同一tab | 5章を参照 |
 | 薬学部生以外が一部資料へアクセスする | COMPASS Essentials Form <https://forms.gle/sW49M329Dcets8ga9> | 新規tab | 6章を参照 |
-| COMPASSの思想を読む | `/messages/` | 同一tab | header Resources menu、`SiteFooter.tsx:57` |
+| COMPASSの思想を読む | `/messages/` | 同一tab | `/3d/`のManifesto展示（`src/components/Explorer/RoomExhibits.tsx`、`exhibit-content.ts`）のみ。親サイトのheader・footer・Hero・sectionとLibrary footerからは2026-10-25に外した |
 | 運営・共同制作へ参加する | `/community/join/` | 同一tab | header Community menu（`SiteHeader.tsx:92`）、`SiteFooter.tsx:58`、`OfficialCoreSections.tsx:14` |
 | 問い合わせる | `/contact/` | 同一tab | `SiteHeader.tsx:110`、`SiteFooter.tsx:41` |
 | 代表を知る | <https://yuto-matsui.com/> | 同一tab | `SiteHeader.tsx:103`（label `Founder`、Mobileは`代表について`）、`SiteFooter.tsx:40` |

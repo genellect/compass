@@ -54,7 +54,6 @@ export function SiteFooter({ routeContext = "root" }: { routeContext?: SiteRoute
         <>
           <a href={resolveHref("INTRO_Interactive/")}>COMPASS Interactive紹介サイト</a>
           <a href={libraryUrl}>未来戦略ライブラリ紹介サイト</a>
-          <a href="/messages/" aria-current={routeContext === "messages" ? "page" : undefined}>COMPASS Manifesto</a>
           <a href="/community/join/">Community参加フォーム</a>
         </>
       )}

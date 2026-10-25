@@ -12,12 +12,10 @@ test('Desktop content columns match the room composition and Contact stays legib
     expect(Math.abs(cards[1].y-cards[0].y)).toBeLessThan(1);
     if(width===1440)expect(Math.abs(cards[3].y-cards[0].y)).toBeLessThan(1);
     const composition=await page.evaluate(()=>{
-      const copy=document.querySelector('.v4-manifesto__copy')!.getBoundingClientRect();
       const button=document.querySelector('.contact-card > .button')!,r=button.getBoundingClientRect();
       const text=document.createRange();text.selectNodeContents(button);
-      return {copyLeft:copy.left,buttonWidth:r.width,buttonHeight:r.height,textFits:[...text.getClientRects()].every(t=>t.left>=r.left&&t.right<=r.right),overflow:document.documentElement.scrollWidth-innerWidth};
+      return {buttonWidth:r.width,buttonHeight:r.height,textFits:[...text.getClientRects()].every(t=>t.left>=r.left&&t.right<=r.right),overflow:document.documentElement.scrollWidth-innerWidth};
     });
-    if(width===1440)expect(composition.copyLeft).toBeGreaterThan(width*.48);
     expect(composition.buttonWidth).toBeGreaterThan(260);
     expect(composition.buttonHeight).toBeLessThan(110);
     expect(composition.textFits).toBe(true);expect(composition.overflow).toBeLessThanOrEqual(1);

@@ -29,7 +29,9 @@ for (const width of [320,340,341,390,430,768,900]) {
     await expect(credits.locator('a')).toHaveCount(3);
     await expect(credits.locator('a').first()).toBeVisible();
     await credits.locator('summary').click();
-    for (const id of ['top','vision','experience','technology','resources','manifesto','community','founder','contact']) {
+    // `#manifesto` is a copy-free scene interlude; it keeps its poster but has no heading.
+    await expect(page.locator('#manifesto :is(h1,h2,a)')).toHaveCount(0);
+    for (const id of ['top','vision','experience','technology','resources','community','founder','contact']) {
       await page.locator('#'+id).scrollIntoViewIfNeeded();
       const bounds=await page.locator('#'+id).evaluate(el=>{
         const heading=el.querySelector('h1,h2')!; const r=heading.getBoundingClientRect();
