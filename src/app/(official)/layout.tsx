@@ -16,7 +16,7 @@ export const metadata: Metadata = {
   metadataBase: new URL("https://compass-official.pages.dev"),
   title: "COMPASS | 学生主導の教育・テクノロジープラットフォーム",
   description:
-    "COMPASSは、北里大学薬学部を起点に、WebシステムとAIを中核として、資料、ワークショップ、学生との共創をつなぎ、学びとより良い意思決定を支える任意の学生支援活動です。",
+    "COMPASSは、北里大学薬学部を起点に、WebシステムとAIを中核として、資料、ワークショップ、学生との共創をつなぎ、学びとより良い意思決定を支える学生主導型の教育・テクノロジープラットフォームです。",
   keywords:
     "COMPASS, コンパス, 北里大学, 北里薬学部, 学生主導, 教育テクノロジー, 教育DX, リアルタイム講義支援, 未来戦略ライブラリ, AI活用教育, 生命科学教育, 学生コミュニティ, 松井優知",
   authors: [{ name: "COMPASS / 松井優知" }],

@@ -298,6 +298,17 @@ for (const [html, label] of [
   expectExcludes(html, "G-6M7JL9VCWK", `${label} legacy Library GA4`);
 }
 
+for (const [html, label] of [
+  [official, "Official page"],
+  [communityJoin, "Community join"],
+  [contact, "Contact"],
+  [library, "Future Strategy Library"]
+]) {
+  for (const retired of ["学生支援団体", "任意の学生支援活動", "学生有志による"]) {
+    expectExcludes(html, retired, `${label} retired student-organization wording`);
+  }
+}
+
 expectIncludes(
   livingHeroStyles,
   "-webkit-text-fill-color: #e6fbff;",
@@ -1410,7 +1421,7 @@ expectOrdered(libraryText, [
   "FOR KITASATO PHARMACY STUDENTS",
   "北里薬学生のためだけに、つくりました。",
   "このライブラリは、北里大学薬学部生だけが利用できる限定公開です。 登録・利用は無料。大学アカウントによる認証で、資料と利用者の信頼を守ります。",
-  "COMPASSは、学生有志による独立した活動です。 大学・学部が運営する公式サービスではありません。",
+  "COMPASSは、学生主導型の独立した教育・テクノロジープラットフォームです。 大学・学部が運営する公式サービスではありません。",
   "個人の学習利用に限ります無断共有・転載・再配布は禁止です",
   "試験、履修、進級、研究室配属、進路などの重要事項は、 必ず大学・学部が発信する最新の公式情報と照合してください。",
   "YOUR NEXT MOVE",

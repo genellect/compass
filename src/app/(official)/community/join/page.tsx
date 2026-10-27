@@ -7,12 +7,12 @@ import styles from "./community-join.module.css";
 
 export const metadata: Metadata = {
   title: "COMPASS Communityに参加する | COMPASS",
-  description: "学生支援団体COMPASS Communityへの登録申請フォームです。",
+  description: "COMPASS Communityへの登録申請フォームです。",
   alternates: { canonical: "/community/join/" },
   robots: { index: false, follow: true },
   openGraph: {
     title: "COMPASS Communityに参加する | COMPASS",
-    description: "学生支援団体COMPASS Communityへの登録申請フォームです。",
+    description: "COMPASS Communityへの登録申請フォームです。",
     url: "/community/join/"
   }
 };

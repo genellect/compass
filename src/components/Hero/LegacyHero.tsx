@@ -6,7 +6,7 @@ export function LegacyHero() {
       <div className="hero-shade" aria-hidden="true"></div>
       <div className="container hero-grid">
         <div className="hero-copy" data-reveal>
-          <p className="hero-label">任意学生支援団体 COMPASS</p>
+          <p className="hero-label">学生主導型 教育・テクノロジープラットフォーム</p>
           <h1 id="hero-title"><span>Better Education.</span><br /><span>Better Decisions.</span></h1>
           <p className="hero-subcopy">
             北里大学・生命科学系学生のための<br />教育支援プラットフォーム。

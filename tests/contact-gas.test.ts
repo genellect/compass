@@ -196,7 +196,7 @@ describe("Contact Google Apps Script", () => {
       to: identity.email,
       subject: "【COMPASS】お問い合わせ確認コード",
       options: {
-        name: "学生支援団体COMPASS",
+        name: "COMPASS",
         noReply: true
       }
     });
@@ -296,7 +296,7 @@ describe("Contact Google Apps Script", () => {
     expect(operator).toMatchObject({
       to: adminRecipient,
       subject: "【COMPASS】お問い合わせ",
-      options: { name: "学生支援団体COMPASS", replyTo: identity.email }
+      options: { name: "COMPASS", replyTo: identity.email }
     });
     expect(operator?.body).toContain(`・お名前：${identity.name}`);
     expect(operator?.body).toContain(`・学部・学科 / 所属：${identity.affiliation}`);
@@ -307,7 +307,7 @@ describe("Contact Google Apps Script", () => {
     expect(applicant).toMatchObject({
       to: identity.email,
       subject: "【COMPASS】お問い合わせを受け付けました",
-      options: { name: "学生支援団体COMPASS", replyTo: adminRecipient }
+      options: { name: "COMPASS", replyTo: adminRecipient }
     });
     expect(applicant?.body).toContain(submitPayload.details);
     expect(applicant?.body).toContain("※本メールはGoogle Apps Scriptにより自動送信されています。");

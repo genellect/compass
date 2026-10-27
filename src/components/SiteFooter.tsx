@@ -63,7 +63,7 @@ export function SiteFooter({ routeContext = "root" }: { routeContext?: SiteRoute
       {routeContext === "library" ? (
         <>
           <p>
-            COMPASSは、学生有志による任意の学生支援活動であり、大学の公式組織ではありません。
+            COMPASSは、学生主導型の教育・テクノロジープラットフォームであり、大学の公式組織ではありません。
             本サイトおよび関連資料は、大学・学部・研究室・所属機関の公式見解を示すものではありません。
           </p>
           <p>
@@ -74,7 +74,7 @@ export function SiteFooter({ routeContext = "root" }: { routeContext?: SiteRoute
       ) : (
         <>
           <p>
-            COMPASSは、学生有志による任意の学生支援活動であり、大学公式組織ではありません。
+            COMPASSは、学生主導型の教育・テクノロジープラットフォームであり、大学公式組織ではありません。
             本サイトおよび関連資料の内容は、大学・学部・研究室・所属機関の見解を代表するものではありません。
           </p>
           <p>

@@ -20,7 +20,7 @@ const CONFIG = Object.freeze({
   GLOBAL_RATE_LIMIT: 100,
   MAX_CODE_ATTEMPTS: 5,
   MAX_BODY_BYTES: 16 * 1024,
-  SENDER_NAME: "学生支援団体COMPASS",
+  SENDER_NAME: "COMPASS",
   TIME_ZONE: "Asia/Tokyo"
 });
 
@@ -587,7 +587,7 @@ ${verificationCode}
 ※本メールはGoogle Apps Scriptにより自動送信されています。
 
 ――――――――――――――――
-学生支援団体COMPASS
+教育・テクノロジープラットフォーム COMPASS
 公式サイト
 https://compass-official.pages.dev/
 ――――――――――――――――`;
@@ -631,7 +631,7 @@ ${payload.details}
 大変お手数ですが、本メールへの返信にてご連絡ください。
 
 ――――――――――――――――
-学生支援団体COMPASS
+教育・テクノロジープラットフォーム COMPASS
 代表　Yuto Matsui
 
 公式サイト

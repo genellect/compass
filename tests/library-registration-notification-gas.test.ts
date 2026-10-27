@@ -268,7 +268,7 @@ describe("Future Strategy Library notification GAS", () => {
       "24時間経過してもアクセスできない場合は、公式サイトのお問い合わせフォームよりご連絡ください。",
       "https://compass-official.pages.dev/contact/",
       "",
-      "学生支援団体 COMPASS",
+      "教育・テクノロジープラットフォーム COMPASS",
       "代表　YUTO MATSUI"
     ].join("\n"));
     expect(applicant?.options.htmlBody).toContain(`${payload.fullName} さん`);
