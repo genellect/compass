@@ -4,7 +4,7 @@ const CONFIG = Object.freeze({
   IDEMPOTENCY_PROPERTY: "COMMUNITY_REGISTRATION_IDEMPOTENCY",
   MAX_BODY_BYTES: 16 * 1024,
   MAX_TRACKED_REQUESTS: 50,
-  SENDER_NAME: "学生支援団体COMPASS",
+  SENDER_NAME: "COMPASS",
   TIME_ZONE: "Asia/Tokyo",
   YEARS: Object.freeze(["1年", "2年", "3年", "4年", "5・6年", "大学院生"]),
   FOCUS_AREAS: Object.freeze([
@@ -286,7 +286,7 @@ COMPASSにご関心をお寄せいただき、ありがとうございます。
 メールアドレスが誤って入力された可能性がございます。大変お手数ですが、本メールへの返信、または公式サイトのお問い合わせフォームよりご連絡いただけますと幸いです。
 
 ――――――――――――――――
-学生支援団体COMPASS
+教育・テクノロジープラットフォーム COMPASS
 代表　Yuto Matsui
 
 公式サイト

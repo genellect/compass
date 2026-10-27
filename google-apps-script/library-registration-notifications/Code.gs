@@ -536,7 +536,7 @@ ${configured.driveUrl}
 24時間経過してもアクセスできない場合は、公式サイトのお問い合わせフォームよりご連絡ください。
 ${CONFIG.CONTACT_URL}
 
-学生支援団体 COMPASS
+教育・テクノロジープラットフォーム COMPASS
 代表　YUTO MATSUI`;
 }
 
@@ -583,7 +583,7 @@ function buildApplicantHtml_(payload, configured) {
               <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="width:100%;margin-top:34px;border-top:1px solid #cedae0;border-collapse:collapse;">
                 <tr>
                   <td style="padding-top:22px;">
-                    <p style="margin:0;font-size:13px;font-weight:700;line-height:1.8;color:#0b1b2e;">学生支援団体 COMPASS</p>
+                    <p style="margin:0;font-size:13px;font-weight:700;line-height:1.8;color:#0b1b2e;">教育・テクノロジープラットフォーム COMPASS</p>
                     <p style="margin:2px 0 0;font-size:13px;line-height:1.8;color:#516074;">代表　YUTO MATSUI</p>
                   </td>
                 </tr>

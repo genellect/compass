@@ -54,7 +54,6 @@ export function NewHero() {
                 学生主導型 教育・テクノロジープラットフォーム
               </span>
             </p>
-            <p className="li-hero-trust">任意学生支援団体 COMPASS</p>
           </div>
 
           <h1 id="hero-title" className="li-hero-title">

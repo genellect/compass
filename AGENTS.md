@@ -51,7 +51,8 @@ COMPASS Interactiveプロダクト本体、Productionデータベース、保護
 - Vision: `学びを、意思決定の力へ。`
 - Core transition: 学生の「知る」を、「選ぶ」「動く」へ変える。
 - Origin: 北里大学薬学部
-- Status: 学生有志による任意の学生支援活動。大学公式組織ではない。
+- Status: 学生主導型の独立した教育・テクノロジープラットフォーム。大学公式組織ではない。
+- Naming: 公開surface、メール署名、metadataで「学生支援団体」「任意の学生支援活動」「学生有志による活動」を名称・自己紹介に使わない（2026-10-27のユーザー決定）。メール送信者名は`COMPASS`、署名とMobile menuのブランド表記は`教育・テクノロジープラットフォーム COMPASS`とする。
 
 活動領域はTechnology / Resources / Education / Community。主要な公開導線はInteractive / Library / Community。Manifesto（`/messages/`）は公開を続けるが、親サイトからの導線は2026-10-25のユーザー決定で外した。この2つの分類を混同しない。
 

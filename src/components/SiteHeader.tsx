@@ -453,7 +453,7 @@ export function SiteHeader({
         <div ref={mobilePanelRef} className="mobile-menu-panel">
           <div className="mobile-menu-top">
             <div>
-              <p><a className="mobile-home-brand" href="/" onClick={() => closeMobileMenu(false)}>{routeContext === "library" ? "未来戦略ライブラリ" : "学生支援団体 COMPASS"}</a></p>
+              <p><a className="mobile-home-brand" href="/" onClick={() => closeMobileMenu(false)}>{routeContext === "library" ? "未来戦略ライブラリ" : <><span className="mobile-home-brand__descriptor">教育・テクノロジープラットフォーム</span> <span className="mobile-home-brand__name">COMPASS</span></>}</a></p>
               <span>{routeContext === "library" ? "A COMPASS Resource" : "Strategic Constellation Compass"}</span>
             </div>
             <button className="mobile-menu-close" type="button" aria-label="メニューを閉じる" onClick={() => closeMobileMenu()}>

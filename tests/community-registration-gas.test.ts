@@ -125,7 +125,7 @@ describe("Community registration Google Apps Script", () => {
     expect(operator.to).toBe(adminRecipient);
     expect(operator.subject).toBe("【COMPASS】Community登録申請");
     expect(operator.options).toEqual({
-      name: "学生支援団体COMPASS",
+      name: "COMPASS",
       replyTo: payload.email
     });
     expect(operator.body).toContain("COMPASS Communityの登録申請がありました。");
@@ -140,7 +140,7 @@ describe("Community registration Google Apps Script", () => {
     expect(applicant.to).toBe(payload.email);
     expect(applicant.subject).toBe("【COMPASS】コミュニティ参加フォームを受け付けました");
     expect(applicant.options).toEqual({
-      name: "学生支援団体COMPASS",
+      name: "COMPASS",
       replyTo: adminRecipient
     });
     expect(applicant.body).toBe(`松井 優人 さん
@@ -159,7 +159,7 @@ COMPASSにご関心をお寄せいただき、ありがとうございます。
 メールアドレスが誤って入力された可能性がございます。大変お手数ですが、本メールへの返信、または公式サイトのお問い合わせフォームよりご連絡いただけますと幸いです。
 
 ――――――――――――――――
-学生支援団体COMPASS
+教育・テクノロジープラットフォーム COMPASS
 代表　Yuto Matsui
 
 公式サイト

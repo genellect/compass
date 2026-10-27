@@ -6,7 +6,7 @@ export const libraryItems = materials;
 export const questionExamples = heroLectureMock.questions;
 export const chapterIds = ['between-science-and-development', 'humans-make-the-bet', 'skills-for-the-future'] as const;
 export const founderStory = [
-  { label: 'From a tool to COMPASS', text: 'この考えを最初に形にしたのが、現在のCOMPASS Platformにつながる開発です。当初は、学生向け資料を共有するGoogle Driveの招待や名簿管理を自動化する小さな仕組みでした。その後、学生支援団体COMPASSの設立、大学講義支援システムCOMPASS Interactiveの開発へと対象を広げてきました。' },
+  { label: 'From a tool to COMPASS', text: 'この考えを最初に形にしたのが、現在のCOMPASS Platformにつながる開発です。当初は、学生向け資料を共有するGoogle Driveの招待や名簿管理を自動化する小さな仕組みでした。その後、教育・テクノロジープラットフォームCOMPASSの立ち上げ、大学講義支援システムCOMPASS Interactiveの開発へと対象を広げてきました。' },
   { label: 'The interface', text: '私が目指しているのは、研究者として生命科学の課題を理解し、エンジニアとして、その解決を支えるシステムを実装することです。一人の研究成果だけでなく、多くの研究者の生産性や研究体験を改善することで、より大きなスケールで生命科学に貢献することを目指しています。' },
   { label: 'Future', text: '生命科学研究、ソフトウェア開発、大学教育、英語学習。扱う領域は異なりますが、根底にある考え方は共通しています。', closing: '人が持つ能力や知識を、より大きな成果につなげる仕組みをつくること。' },
 ] as const;

@@ -662,6 +662,29 @@ p {
   font-size: 0.74rem;
 }
 
+.mobile-menu-top > div {
+  min-width: 0;
+}
+
+/* The two-line brand keeps the long descriptor off the close button on narrow phones. */
+.mobile-menu-top .mobile-home-brand .mobile-home-brand__descriptor,
+.mobile-menu-top .mobile-home-brand .mobile-home-brand__name {
+  display: block;
+  color: inherit;
+}
+
+.mobile-menu-top .mobile-home-brand .mobile-home-brand__descriptor {
+  margin-bottom: 2px;
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  line-height: 1.5;
+}
+
+.mobile-menu-top .mobile-home-brand .mobile-home-brand__name {
+  font-size: inherit;
+}
+
 .mobile-menu-close {
   width: 44px;
   height: 44px;
