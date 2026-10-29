@@ -99,11 +99,6 @@ const interactiveDevelopers = await readFile(
   path.join(out, "INTRO_Interactive", "developers", "index.html"),
   "utf8"
 );
-// The developer profile (and its GitHub Portfolio CTA) moved to its own topic page in #142.
-const interactiveDeveloperProfile = await readFile(
-  path.join(out, "INTRO_Interactive", "developers", "developer", "index.html"),
-  "utf8"
-);
 const interactiveDeveloperArchive = await readFile(
   path.join(out, "INTRO_Interactive", "developers", "archive", "2026-08", "index.html"),
   "utf8"
@@ -264,8 +259,7 @@ const githubProfileUrl = "https://github.com/genellect";
 for (const [html, label, expectedCount] of [
   [official, "Official founder profile", 0],
   [interactive, "Interactive developer profile", 0],
-  [interactiveDevelopers, "Interactive developer overview", 0],
-  [interactiveDeveloperProfile, "Interactive developer introduction profile", 1]
+  [interactiveDevelopers, "Interactive developer overview", 0]
 ]) {
   const links = html.match(new RegExp(`<a\\b[^>]*href="${githubProfileUrl}"[^>]*>`, "g")) ?? [];
   if (links.length !== expectedCount) {
@@ -629,6 +623,8 @@ if (interactive.includes('<div id="root"></div>')) {
 expectOneH1(official, "Official page");
 expectOneH1(interactive, "Interactive page");
 expectExcludes(interactiveDevelopers, 'href="/founder/"', "Interactive developer page Web Portfolio scope");
+expectIncludes(interactiveDevelopers, 'href="https://yuto-matsui.com/"', "Interactive developer page Web Portfolio menu link");
+expectExcludes(interactiveDevelopers, 'href="/INTRO_Interactive/developers/developer/"', "Interactive developer page retired profile topic");
 expectIncludes(official, 'href="https://yuto-matsui.com/"', "Official Founder portfolio link");
 expectExcludes(official, 'href="/founder/"', "Official legacy Founder portfolio link");
 expectExcludes(official, 'href="#founder"', "Official legacy Founder section navigation");

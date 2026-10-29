@@ -30,7 +30,7 @@ surfaceは[`WEBSITE_BOUNDARIES.md`](WEBSITE_BOUNDARIES.md)の区分である。c
 | `/3d/` | COMPASS公式（3D体験）※ | <https://compass-official.pages.dev/3d/> | index | `src/app/(spatial)/layout.tsx:5-8` |
 | `/INTRO_Interactive/` | Interactive紹介（独立） | <https://compass-official.pages.dev/INTRO_Interactive/> | index | `src/app/(interactive)/layout.tsx:18-22` |
 | `/INTRO_Interactive/developers/` | 開発者紹介（独立） | <https://compass-official.pages.dev/INTRO_Interactive/developers/> | index | `src/interactive/developer/EngineeringDocs.tsx:31-35` |
-| `/INTRO_Interactive/developers/<topic>/` | 開発者紹介（独立） | 各topicのURL | index | topicは`architecture`、`delivery`、`ai`、`security`、`developer`、`archive`（`EngineeringDocs.tsx:13-19`） |
+| `/INTRO_Interactive/developers/<topic>/` | 開発者紹介（独立） | 各topicのURL | index | topicは`architecture`、`delivery`、`ai`、`security`、`archive`（`EngineeringDocs.tsx:14-19`）。旧`developer`は廃止し、header・footerの「開発者」は<https://yuto-matsui.com/>へリンクする |
 | `/INTRO_Interactive/developers/archive/2026-08/` | 開発者紹介（独立） | <https://compass-official.pages.dev/INTRO_Interactive/developers/archive/2026-08/> | `noindex, follow` | `src/app/(interactive)/INTRO_Interactive/developers/archive/2026-08/page.tsx:9-10` |
 | `https://yuto-matsui.com/` | yuto-matsui.com 日本語（独立Web） | <https://yuto-matsui.com/> | index | `src/app/(official)/founder/page.tsx:15,24`。static exportでは`/founder/`に置き、`functions/index.ts`がCustom Domainのrootへ配信する |
 | `https://yuto-matsui.com/en/` | yuto-matsui.com 英語（独立Web） | <https://yuto-matsui.com/en/> | index | `src/app/(founder-en)/en/page.tsx:23,31`、配信は`functions/en/[[path]].ts` |
@@ -54,6 +54,7 @@ surfaceは[`WEBSITE_BOUNDARIES.md`](WEBSITE_BOUNDARIES.md)の区分である。c
 | `/interactive`、`/intro` | `/INTRO_Interactive/` | 301 | `_redirects:1-2` |
 | `/library`、`/library/` | `/future-strategy-library/` | 301 | `_redirects:3-4` |
 | `/future-strategy-library/index.html` | `/future-strategy-library/` | 301 | `_redirects:5` |
+| `/INTRO_Interactive/developers/developer`、`/INTRO_Interactive/developers/developer/` | `https://yuto-matsui.com/` | 301 | `_redirects:6-7` |
 | `compass-official.pages.dev`の`/en`、`/en/`、`/en/index.html` | `https://yuto-matsui.com/en/` | 301 | `functions/_middleware.ts`、`functions/en/[[path]].ts:20-24` |
 | `yuto-matsui.com`の`/en`、`/en/index.html` | `https://yuto-matsui.com/en/` | 301 | `functions/en/[[path]].ts:27-33` |
 | 旧Pages hostの`/founder`、`/founder/`、`/founder/index.html` | `https://yuto-matsui.com/` | 301 | Cloudflare Bulk Redirect（外部設定。`docs/ARCHITECTURE.md`、`docs/founder-domain-operations.md`）。`functions/index.ts:16-37`にも同じ対応がある |

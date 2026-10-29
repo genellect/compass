@@ -4,18 +4,17 @@ import { Section, Table } from "./DocPrimitives";
 import { SecurityArticle } from "./TopicArticles";
 import { ArchitectureArticle } from "./SynchronizationArticle";
 import { AiArticle, DeliveryArticle } from "./ExternalServicesArticles";
-import { DeveloperArticle } from "./DeveloperArticle";
 import { ArchiveArticle } from "./ArchiveArticle";
 import { ArchitectureMap } from "./MechanismFigures";
 import styles from "./engineering-docs.module.css";
 
 export const DOC_ROOT = "/INTRO_Interactive/developers/";
+const PORTFOLIO_URL = "https://yuto-matsui.com/";
 export const topics = {
   architecture: { title: "講義状態と同期", description: "投票・資料ページの共有、参加と終了の競合、Displayの描画確認。", sections: [["state", "講義状態の管理"], ["lifecycle", "トランザクションと講義終了"], ["recovery", "状態の配信と再同期"], ["display", "Displayの描画確認"], ["capacity", "読み取り負荷の制御"]] },
   delivery: { title: "資料配信とPowerPoint連携", description: "PDFの公開と通信失敗からの復旧、PowerPointの現在位置への追従。", sections: [["path", "資料の配信経路"], ["publication", "資料の公開手順"], ["consistency", "DBとR2の整合性"], ["presenter", "PowerPoint連携"]] },
   ai: { title: "AI機能と実行制御", description: "資料分析の再要求、字幕の開始と停止、学術回答の出典検査。", sections: [["features", "AI処理の構成"], ["dispatch", "実行許可と利用量管理"], ["admission", "字幕セッションの制御"], ["evidence", "学術回答の生成と公開"]] },
   security: { title: "認証とデータ管理", description: "学生・教員・管理者の認証経路、操作権限とデータの管理。", sections: [["identity", "認証とアクセス制御"], ["permissions", "管理者権限"], ["data", "データの保存と外部送信"], ["future", "今後の開発計画"]] },
-  developer: { title: "開発者", description: "Yuto Matsui｜開発者・プロダクト設計者", sections: [["profile", "開発者紹介"]] },
   archive: { title: "アーカイブ", description: "", sections: [["judges", "審査員の方へ"]] }
 } as const;
 export type Topic = keyof typeof topics;
@@ -62,15 +61,15 @@ export function EngineeringDocs({ topic }: { topic?: Topic }) {
   const next = topicKeys[index + 1];
   return <div className={styles.page}>
     <a className={styles.skipLink} href="#developer-main">本文へスキップ</a>
-    <header className={styles.header}><div className={styles.headerInner}><Link href={DOC_ROOT} className={styles.brand}>COMPASS Interactive<span>開発者向け技術情報</span></Link><nav aria-label="関連ページ" className={styles.headerLinks}><Link href={`${DOC_ROOT}developer/`}>開発者</Link><Link href="/INTRO_Interactive/">製品紹介</Link><a href="https://github.com/genellect/compass-interactive">GitHub ↗</a></nav></div></header>
+    <header className={styles.header}><div className={styles.headerInner}><Link href={DOC_ROOT} className={styles.brand}>COMPASS Interactive<span>開発者向け技術情報</span></Link><nav aria-label="関連ページ" className={styles.headerLinks}><a href={PORTFOLIO_URL}>開発者 ↗</a><Link href="/INTRO_Interactive/">製品紹介</Link><a href="https://github.com/genellect/compass-interactive">GitHub ↗</a></nav></div></header>
     <div className={`${styles.layout} ${topic === "security" ? styles.securityLayout : ""}`}><aside className={styles.sidebar}><Contents topic={topic} /></aside><div className={styles.mainColumn}>
       <details className={styles.mobileContents}><summary>目次・ページ一覧</summary><Contents topic={topic} /></details>
       <main id="developer-main" tabIndex={-1} className={styles.article}>
-        <header id="developer-top" className={styles.pageIntro}><p className={styles.breadcrumb}>{topic ? <Link href={DOC_ROOT}>開発者向け技術情報 / システム構成</Link> : "COMPASS Interactive / 開発者向け技術情報"}</p><div className={styles.introTitleRow}><h1>{title}</h1></div>{topic === "developer" && <p className={styles.lead}>{topics[topic].description}</p>}</header>
-        {!topic && <Overview />}{topic === "architecture" && <ArchitectureArticle />}{topic === "ai" && <AiArticle />}{topic === "delivery" && <DeliveryArticle />}{topic === "security" && <SecurityArticle />}{topic === "developer" && <DeveloperArticle />}{topic === "archive" && <ArchiveArticle />}
+        <header id="developer-top" className={styles.pageIntro}><p className={styles.breadcrumb}>{topic ? <Link href={DOC_ROOT}>開発者向け技術情報 / システム構成</Link> : "COMPASS Interactive / 開発者向け技術情報"}</p><div className={styles.introTitleRow}><h1>{title}</h1></div></header>
+        {!topic && <Overview />}{topic === "architecture" && <ArchitectureArticle />}{topic === "ai" && <AiArticle />}{topic === "delivery" && <DeliveryArticle />}{topic === "security" && <SecurityArticle />}{topic === "archive" && <ArchiveArticle />}
         <nav className={styles.pageNavigation} aria-label="前後のページ">{topic && <Link href={index > 0 ? `${DOC_ROOT}${topicKeys[index - 1]}/` : DOC_ROOT}>← {index > 0 ? topics[topicKeys[index - 1]].title : "システム構成"}</Link>}{next && <Link href={`${DOC_ROOT}${next}/`}>{topics[next].title} →</Link>}</nav>
       </main>
-      <footer className={styles.footer}><div><Link href={`${DOC_ROOT}developer/`}>開発者</Link><Link href="/INTRO_Interactive/">製品紹介</Link><a href="#developer-top">ページ上部へ ↑</a></div></footer>
+      <footer className={styles.footer}><div><a href={PORTFOLIO_URL}>開発者 ↗</a><Link href="/INTRO_Interactive/">製品紹介</Link><a href="#developer-top">ページ上部へ ↑</a></div></footer>
     </div></div>
   </div>;
 }
