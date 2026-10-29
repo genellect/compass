@@ -41,7 +41,6 @@
 .archiveCallout span { color: var(--blue); }
 .page .breadcrumb { color: var(--muted); font-size: 12px; margin-bottom: 16px; }
 .breadcrumb a { text-decoration: none; color: inherit; }
-.page .lead { max-width: 790px; margin-bottom: 8px; font-size: 17px; line-height: 1.85; }
 .section { padding-top: 6px; margin-bottom: 42px; }
 .section + .section { border-top: 1px solid var(--line); padding-top: 32px; }
 .section > p { max-width: 790px; }
@@ -195,7 +194,6 @@
   .introTitleRow h1 { margin-bottom: 12px; }
   .archiveCallout { margin-bottom: 18px; }
   .page h2 { font-size: 21px; }
-  .page .lead { font-size: 16px; }
   .section { margin-bottom: 32px; }
   .section + .section { padding-top: 26px; }
   .tableWrap th, .tableWrap td { padding: 12px; }
@@ -263,33 +261,6 @@
   .page a { color: inherit; }
 }
 
-/* Preserve the production DeveloperProfile UI; only its stack content changes. */
-.productionProfile {
-  --portfolio-cyan: #73e7ff;
-  font-family: Inter, "Helvetica Neue", "Hiragino Sans", "Yu Gothic", Meiryo, system-ui, sans-serif;
-  color: #eef7ff; line-height: 1.75; letter-spacing: normal;
-}
-.productionProfile :global(.developer-credit--portfolio) {
-  max-width: none; margin: 0; padding: clamp(30px, 4vw, 52px);
-  border-color: rgba(127, 222, 239, .19); border-radius: 18px;
-  background: radial-gradient(circle at 86% 16%, rgba(6,182,212,.15), transparent 31%),
-    radial-gradient(circle at 8% 84%, rgba(124,58,237,.08), transparent 30%), #061421;
-}
-.productionProfile :global(.developer-credit--portfolio) > span { color: var(--portfolio-cyan); }
-.productionProfile :global(.developer-credit--portfolio) > strong { color: #f4fbfd; font-weight: 700; }
-.productionProfile :global(.developer-credit--portfolio) > p { color: rgba(230,244,247,.74); margin: 10px 0 0; }
-.productionProfile :global(.developer-credit--portfolio) h3 { color: #f4fbfd; margin: 0; font-size: .94rem; line-height: 1.12; font-weight: 700; letter-spacing: -.02em; }
-.productionProfile :global(.developer-credit--portfolio) li,
-.productionProfile :global(.developer-expertise) dd { color: rgba(230,244,247,.74); }
-.productionProfile :global(.developer-credit__github) { color: rgba(223,251,255,.78); text-decoration: none; }
-.productionProfile :global(.developer-credit__github) strong { font-weight: 720; }
-.productionProfile :global(.developer-credit__github):hover { color: #f3fdff; }
-.productionProfile :global(.developer-expertise) summary { color: #eef7ff; }
-.visuallyHidden { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; border: 0; }
-@media (max-width: 680px) {
-  .productionProfile :global(.developer-credit--portfolio) { padding: 26px 20px; }
-  .productionProfile :global(.developer-credit__grid) { grid-template-columns: 1fr; }
-}
 
 .securityLayout .pageIntro { margin-bottom: 12px; }
 .securityLayout .introTitleRow h1 { margin-bottom: 12px; }
