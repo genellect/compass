@@ -31,6 +31,13 @@
 .motion { display: flex; align-items: center; gap: 8px; margin: 13px 0 0 auto; padding: 7px 10px; min-height: 44px; background: transparent; border: 1px solid #34445a30; border-radius: 4px; color: #34445a; font: inherit; font-size: 11px; cursor: pointer; }
 .world[data-language="en"] .secondary a, .world[data-language="en"] .motion { color: #dce7e2; }
 .world[data-language="en"] .motion { border-color: #dce7e24d; }
+/* yuto-matsui.com JP: product cards share the page's type scale and self-hosted Latin face. */
+.world[data-language="ja"] .identity { font-weight: 600; }
+.world[data-language="ja"] .title { font-family: inherit; font-weight: 600; }
+.world[data-language="ja"] .title strong { font-weight: 700; }
+.world[data-language="ja"] .destination { font-weight: 600; }
+.world[data-language="ja"] .secondary a { font-weight: 500; }
+.world[data-language="ja"] .motion { font-size: 12px; }
 @media (max-width: 1000px) {
   .grid { grid-template-columns: 1fr; gap: 28px; }
   .media { aspect-ratio: 16 / 9; }

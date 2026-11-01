@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Inter } from "next/font/google";
 import Image from "next/image";
 import Script from "next/script";
 import { LegacyInteractions } from "../../../components/LegacyInteractions";
@@ -11,6 +12,12 @@ import { MobileExternalMenu } from "./MobileExternalMenu";
 import { DepthCard, DepthVisual } from "../../../components/portfolio/DepthCard";
 import { OffHoursGallery } from "../../../components/portfolio/OffHoursGallery";
 import styles from "./founder.module.css";
+
+const founderLatin = Inter({
+  subsets: ["latin"],
+  display: "swap",
+  variable: "--font-founder-latin"
+});
 
 const FOUNDER_URL = "https://yuto-matsui.com/";
 const FOUNDER_EN_URL = "https://yuto-matsui.com/en/";
@@ -213,7 +220,7 @@ function GitHubIcon() {
 
 export default function FounderPage() {
   return (
-    <div className={styles.page} data-founder-page>
+    <div className={`${styles.page} ${founderLatin.variable}`} data-founder-page>
       <a className={styles.skipLink} href="#founder-main">本文へスキップ</a>
 
       <header className={styles.header}>
