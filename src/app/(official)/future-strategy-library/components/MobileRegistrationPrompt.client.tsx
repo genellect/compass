@@ -20,6 +20,9 @@ export function MobileRegistrationPrompt() {
 
     const update = () => {
       const hero = document.querySelector<HTMLElement>('[data-library-section="hero"]');
+      // The prompt takes over as soon as the Hero's own registration action
+      // has scrolled under the header, not only after the whole Hero.
+      const heroAction = hero?.querySelector<HTMLElement>('[data-placement="hero"]') ?? hero;
       const finalSection = document.querySelector<HTMLElement>('[data-library-section="final"]');
       const header = document.querySelector<HTMLElement>(".site-header");
 
@@ -29,7 +32,7 @@ export function MobileRegistrationPrompt() {
       }
 
       const headerOffset = header?.getBoundingClientRect().height ?? 0;
-      const heroHasPassed = hero.getBoundingClientRect().bottom <= headerOffset + 8;
+      const heroHasPassed = (heroAction ?? hero).getBoundingClientRect().bottom <= headerOffset + 8;
       const finalSectionIsNear = finalSection.getBoundingClientRect().top <= window.innerHeight * 0.82;
       const menuIsOpen = body.classList.contains("menu-open");
 

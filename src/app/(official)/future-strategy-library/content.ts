@@ -1,8 +1,8 @@
 export const libraryMetrics = {
   startedAt: "2024.02",
-  registeredUsers: 73,
+  registeredUsers: 150,
   materialCount: 100,
-  registeredUsersAsOf: "2026年6月時点"
+  registeredUsersAsOf: "2026年11月時点"
 } as const;
 
 export const knowledgeCoordinates = [

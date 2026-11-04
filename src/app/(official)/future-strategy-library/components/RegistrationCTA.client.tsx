@@ -8,7 +8,7 @@ import {
   isExternalCompassHref
 } from "../../../../lib/futureStrategyLibrary";
 
-type Placement = "header" | "hero" | "materials" | "final" | "sticky";
+type Placement = "header" | "hero" | "materials" | "fields" | "final" | "sticky";
 
 declare global {
   interface Window {
@@ -20,6 +20,7 @@ const placementClasses: Record<Placement, string> = {
   header: styles.ctaHeader,
   hero: styles.ctaHero,
   materials: styles.ctaMaterials,
+  fields: styles.ctaFields,
   final: styles.ctaFinal,
   sticky: styles.ctaSticky
 };

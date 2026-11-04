@@ -3,6 +3,7 @@ import type { ReactNode } from "react";
 import { SiteHeader } from "../../../components/SiteHeader";
 import styles from "./future-strategy-library.module.css";
 import { FutureStrategyHero } from "./components/FutureStrategyHero";
+import { KnowledgeHorizonGraphic } from "./components/KnowledgeHorizonGraphic";
 import { MobileRegistrationPrompt } from "./components/MobileRegistrationPrompt.client";
 import { RegistrationCTA } from "./components/RegistrationCTA.client";
 import { fields, footerLinks, libraryMetrics, materials, trustFacts } from "./content";
@@ -112,21 +113,6 @@ export default function FutureStrategyLibraryPage() {
                 </p>
               </div>
             </div>
-
-            <dl className={styles.proofRail} aria-label="未来戦略ライブラリの実績">
-              <div className={styles.proofDate}>
-                <dt>{libraryMetrics.startedAt}</dt>
-                <dd>活動開始</dd>
-              </div>
-              <div>
-                <dt>{libraryMetrics.registeredUsers}<span>+</span></dt>
-                <dd>利用登録者 <small>{libraryMetrics.registeredUsersAsOf}</small></dd>
-              </div>
-              <div>
-                <dt>{libraryMetrics.materialCount}<span>+</span></dt>
-                <dd>掲載資料</dd>
-              </div>
-            </dl>
           </div>
         </section>
 
@@ -148,23 +134,22 @@ export default function FutureStrategyLibraryPage() {
             </header>
 
             <div className={styles.materialsGrid}>
-              {materials.map((material, index) => (
+              {materials.map((material) => (
                 <article key={material.title} className={styles.materialCard}>
                   <div className={styles.materialFrame}>
-                    <span className={styles.materialIndex} aria-hidden="true">0{index + 1}</span>
+                    <span className={styles.materialStatus} data-library-material><svg viewBox="0 0 12 14" aria-hidden="true" focusable="false"><path d="M3 6V4.2a3 3 0 0 1 6 0V6" fill="none" stroke="currentColor" strokeWidth="1.6" /><rect x="1.2" y="6" width="9.6" height="7" rx="1.6" fill="currentColor" /></svg>登録後に閲覧できます</span>
                     <img
                       src={material.image}
                       alt={material.alt}
                       width="600"
                       height="800"
-                      sizes="(max-width: 720px) 100px, (max-width: 900px) 38vw, 28vw"
+                      sizes="(max-width: 720px) 128px, (max-width: 900px) 30vw, 360px"
                       loading="lazy"
                       decoding="async"
                     />
                   </div>
                   <div className={styles.materialCopy}>
-                    <span className={styles.materialStatus} data-library-material>登録後に閲覧できます</span>
-                    <p className={styles.materialCategory}>{material.category}</p>
+                                        <p className={styles.materialCategory}>{material.category}</p>
                     <h3>{material.titleLines.map((line) => <span key={line}>{line}</span>)}</h3>
                     {material.paragraphs.map((paragraph) => <p key={paragraph}>{paragraph}</p>)}
                   </div>
@@ -174,8 +159,10 @@ export default function FutureStrategyLibraryPage() {
 
             <div className={styles.materialsConversion}>
               <p>掲載資料は{libraryMetrics.materialCount}点以上。試験対策、TOEIC・英検、英会話、大学院進学なども扱っています。</p>
-              <RegistrationCTA placement="materials" />
-              <small>登録・利用無料 · 北里大学の大学アカウントが必要です</small>
+              <div className={styles.conversionAction}>
+                <RegistrationCTA placement="materials" />
+                <small>登録・利用無料 · 北里大学の大学アカウントが必要です</small>
+              </div>
             </div>
           </div>
         </section>
@@ -196,26 +183,28 @@ export default function FutureStrategyLibraryPage() {
               </div>
             </header>
 
+            <KnowledgeHorizonGraphic />
+
             <div className={styles.fieldsGrid}>
               {fields.map((field) => (
                 <article key={field.number} className={`${styles.fieldCard} ${styles[field.accent]}`}>
-                  <div className={styles.fieldMeta}>
-                    <span>{field.number}</span>
-                    <strong>{field.name}</strong>
-                  </div>
+                  <p className={styles.fieldMeta}>{field.name}</p>
                   <h3>{field.title.map((line) => <span key={line}>{line}</span>)}</h3>
                   <div className={styles.fieldCopy}>
                     {field.paragraphs.map((paragraph) => <p key={paragraph}>{paragraph}</p>)}
                   </div>
-                  <span className={styles.fieldCoordinate} aria-hidden="true">DOMAIN / {field.number}</span>
                 </article>
               ))}
+            </div>
+
+            <div className={styles.fieldsConversion}>
+              <RegistrationCTA placement="fields" />
+              <p>北里大学薬学部生限定 · 登録・利用無料 · 大学アカウント認証</p>
             </div>
           </div>
         </section>
 
         <section id="access" className={styles.trustSection} aria-labelledby="trust-title" data-library-section="trust">
-          <div className={styles.trustGridBackdrop} aria-hidden="true" />
           <div className={`${styles.sectionShell} ${styles.trustLayout}`}>
             <div className={styles.trustCopy}>
               <SectionLabel>FOR KITASATO PHARMACY STUDENTS</SectionLabel>
@@ -255,10 +244,6 @@ export default function FutureStrategyLibraryPage() {
         </section>
 
         <section className={styles.finalSection} aria-labelledby="final-title" data-library-section="final">
-          <div className={styles.finalGrid} aria-hidden="true" />
-          <div className={styles.finalHorizon} aria-hidden="true">
-            <i /><i /><i /><i />
-          </div>
           <div className={styles.finalInner}>
             <SectionLabel>YOUR NEXT MOVE</SectionLabel>
             <h2 id="final-title">

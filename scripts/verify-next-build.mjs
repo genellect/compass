@@ -210,17 +210,16 @@ for (const expected of [
 ]) expectIncludes(libraryStyles, expected, "Library trust heading two-line fit");
 for (const expected of [
   ".heroLower",
-  "grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);",
+  "grid-template-columns: minmax(0, 6fr) minmax(0, 5fr);",
   ".heroEditorial",
+  ".heroShelf",
   ".knowledgeGraphic",
-  ".heroIntelligenceField",
-  "mix-blend-mode: screen;",
-  "animation: desktopAmbientLightSweep 22s ease-in-out infinite alternate;",
-  "animation: desktopParticleDrift 18s ease-in-out infinite alternate;",
+  "--signal: #ffb938;",
+  "animation: coverFan 1100ms var(--ease-out) 150ms both;",
   "@media (min-width: 901px) and (max-width: 1179px)",
-  "@media (min-width: 1180px)",
+  "@media (prefers-reduced-motion: reduce)",
   "min-height: 100svh;"
-]) expectIncludes(libraryStyles, expected, "Library Desktop Hero refinement and responsive rhythm");
+]) expectIncludes(libraryStyles, expected, "Library conversion-first Hero and responsive rhythm");
 for (const unexpected of [
   "@media (min-width: 901px) and (min-height: 761px)",
   "@media (min-width: 901px) and (max-height: 760px)",
@@ -1378,13 +1377,13 @@ expectOrdered(libraryText, [
   "BEYOND THE SYLLABUS.",
   "未来は、知っている人から動き出す。",
   "北里大学薬学部生のための、 学生目線の資料ライブラリ。",
+  "2024.02活動開始",
+  "150+利用登録者 2026年11月時点",
+  "100+掲載資料",
   "WHY THIS LIBRARY",
   "未来戦略ライブラリは、北里大学薬学部生のための資料ライブラリです。",
   "試験対策、英語、AI、研究室、大学院、キャリア。 一見ばらばらに見えるテーマをつなぎ、大学で学ぶ「今」を、これからの選択へ変えていきます。",
   "まずは、次の試験のためでも構いません。 登録した理由より、登録したあとに見える景色のほうが大切です。",
-  "2024.02活動開始",
-  "73+利用登録者 2026年6月時点",
-  "100+掲載資料",
   "FEATURED MATERIALS",
   "未来は、案外、一つの資料から動き出す。",
   "まずは、気になるテーマから。",
@@ -1425,7 +1424,7 @@ expectOrdered(libraryText, [
   "入口は、次の試験でも、英語でも、研究室選びでも構いません。 今の自分に必要な一つを知ることから、未来は少しずつ動き始めます。"
 ], "Future Strategy Library canonical copy");
 
-for (const expected of ["2024.02", "73", "100"]) {
+for (const expected of ["2024.02", "150", "100"]) {
   expectIncludes(libraryMain, expected, "Future Strategy Library server-rendered metrics");
 }
 for (const unexpected of ['data-count-target=', ">0+</", "/images/future-strategy-library/library-horizon.webp"]) {
@@ -1435,8 +1434,8 @@ for (const unexpected of ['data-count-target=', ">0+</", "/images/future-strateg
 const libraryRegistrationCount = (
   library.match(/data-library-registration="true"/g) ?? []
 ).length;
-if (libraryRegistrationCount !== 4) {
-  throw new Error("Future Strategy Library must contain four server-rendered registration actions; found " + libraryRegistrationCount + ".");
+if (libraryRegistrationCount !== 5) {
+  throw new Error("Future Strategy Library must contain five server-rendered registration actions (header, hero, materials, fields, final); found " + libraryRegistrationCount + ".");
 }
 
 const libraryRegistrationActions = library.match(/<a\b[^>]*data-library-registration="true"[^>]*>[\s\S]*?<\/a>/g) ?? [];
