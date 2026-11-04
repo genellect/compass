@@ -66,7 +66,7 @@ test.describe("FSL breakpoint boundaries", () => {
       if (viewport.width >= 1179 && viewport.height >= 759) {
         const metrics = await page.evaluate(() => {
           const title = document.querySelector("h1")!;
-          const graphic = document.querySelector('[class*="knowledgeGraphic"]')!;
+          const graphic = document.querySelector('[class*="heroShelf"]')!;
           const inner = document.querySelector('[class*="heroInner"]')!;
           const titleRect = title.getBoundingClientRect();
           const graphicRect = graphic.getBoundingClientRect();

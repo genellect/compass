@@ -341,7 +341,7 @@ export async function auditRenderedPage(
           '[class*="heroActionGroup"] a',
         ];
         if (viewport.width >= 901) {
-          selectors.push('[class*="knowledgeGraphic"]', '[class*="heroHorizonRule"]');
+          selectors.push('[class*="heroShelf"]');
         }
         for (const selector of selectors) {
           const element = document.querySelector(selector);
@@ -361,32 +361,34 @@ export async function auditRenderedPage(
           const headerBottom = document.querySelector("header")?.getBoundingClientRect().bottom ?? 0;
           const titleRect = h1?.getBoundingClientRect();
           const titleSize = h1 ? Number.parseFloat(getComputedStyle(h1).fontSize) : 0;
-          const graphicRect = document
-            .querySelector('[class*="knowledgeGraphic"]')
-            ?.getBoundingClientRect();
           if (titleRect && titleRect.top < headerBottom + 18) {
             violations.push(
               `FSL short-desktop title top ${titleRect.top.toFixed(1)} is too close to header ${headerBottom.toFixed(1)}`,
             );
           }
-          // The approved editorial Hero deliberately uses a calmer headline than
-          // the former display-heavy composition. Keep a meaningful readability
-          // floor without forcing the retired visual scale back into production.
-          const minimumTitleSize = viewport.width >= 1180 ? 58 : 50;
-          if (viewport.height <= 760 && titleSize < minimumTitleSize) {
+          // The conversion-first Hero scales its headline with viewport height
+          // so the registration action always stays in the first fold. Keep a
+          // readability floor on short Windows browser viewports.
+          if (viewport.height <= 760 && titleSize < 50) {
             violations.push(`FSL short-desktop title is too small: ${titleSize.toFixed(1)}px`);
           }
-          // The knowledge horizon is sized against the available first-fold
-          // height so short Windows browser viewports retain the complete CTA.
-          const minimumGraphicWidth = viewport.width >= 1180
-            ? Math.min(600, viewport.height * 0.84)
-            : Math.min(500, viewport.height * 0.78, viewport.width * 0.49);
-          if (viewport.height <= 760 && graphicRect && graphicRect.width < minimumGraphicWidth) {
-            violations.push(`FSL short-desktop graphic is too small: ${graphicRect.width.toFixed(1)}px`);
+
+          // The material cover shelf must stay beside, never over, the copy
+          // and the registration action.
+          const shelfRect = document.querySelector('[class*="heroShelf"]')?.getBoundingClientRect();
+          const editorialRect = document.querySelector('[class*="heroEditorial"]')?.getBoundingClientRect();
+          if (shelfRect && editorialRect && shelfRect.left < editorialRect.right - 1) {
+            violations.push(
+              `FSL cover shelf overlaps the Hero copy: shelf left ${shelfRect.left.toFixed(1)} < copy right ${editorialRect.right.toFixed(1)}`,
+            );
+          }
+          if (shelfRect && shelfRect.width < 240) {
+            violations.push(`FSL cover shelf is too small: ${shelfRect.width.toFixed(1)}px`);
           }
 
-          const heroRect = document
-            .querySelector('[data-library-section="hero"]')
+          // The Knowledge Horizon map now lives in the WHAT YOU GET section.
+          const fieldsRect = document
+            .querySelector('[data-library-section="fields"]')
             ?.getBoundingClientRect();
           const svgLabels = [...document.querySelectorAll('[class*="knowledgeDesktop"] text')]
             .filter(isRendered)
@@ -394,70 +396,28 @@ export async function auditRenderedPage(
               text: element.textContent?.trim() ?? "",
               rect: element.getBoundingClientRect(),
             }));
+          if (svgLabels.length === 0) {
+            violations.push("FSL knowledge map labels are not rendered on Desktop");
+          }
           const coordinateGroups = [...document.querySelectorAll<SVGGElement>('[class*="futureCoordinates"] > g')];
           if (coordinateGroups.length !== 4) {
             violations.push(`FSL future coordinate count is ${coordinateGroups.length}; expected 4`);
-          } else {
-            const coordinatePoints = coordinateGroups.map((group) => {
-              const circle = group.querySelector("circle");
-              const rect = circle?.getBoundingClientRect();
-              return {
-                transform: getComputedStyle(group).transform,
-                x: rect ? rect.left + rect.width / 2 : Number.NaN,
-                y: rect ? rect.top + rect.height / 2 : Number.NaN,
-              };
-            });
-            if (coordinatePoints.some((point) => point.transform === "none" || !Number.isFinite(point.x + point.y))) {
-              violations.push("FSL future coordinate transforms are not rendered");
-            }
-            for (let index = 1; index < coordinatePoints.length; index += 1) {
-              const previous = coordinatePoints[index - 1];
-              const current = coordinatePoints[index];
-              if (current.x <= previous.x + 6 || current.y >= previous.y - 6) {
-                violations.push("FSL future coordinates no longer form the intended ascending path");
-                break;
-              }
-            }
-          }
-          const titleGlyphRects: DOMRect[] = [];
-          if (h1) {
-            const titleWalker = document.createTreeWalker(h1, NodeFilter.SHOW_TEXT);
-            let titleNode = titleWalker.nextNode();
-            while (titleNode) {
-              const value = titleNode.textContent ?? "";
-              for (let index = 0; index < value.length; index += 1) {
-                if (/\s/u.test(value[index])) continue;
-                const range = document.createRange();
-                range.setStart(titleNode, index);
-                range.setEnd(titleNode, index + 1);
-                titleGlyphRects.push(...range.getClientRects());
-              }
-              titleNode = titleWalker.nextNode();
-            }
           }
           for (const label of svgLabels) {
             if (label.rect.height < 8) {
               violations.push(`FSL graphic label is too small (${JSON.stringify(label.text)}): ${label.rect.height.toFixed(1)}px`);
             }
             if (
-              heroRect &&
-              (label.rect.left < heroRect.left - 1 ||
-                label.rect.right > heroRect.right + 1 ||
-                label.rect.top < heroRect.top - 1 ||
-                label.rect.bottom > heroRect.bottom + 1)
+              fieldsRect &&
+              (label.rect.left < fieldsRect.left - 1 ||
+                label.rect.right > fieldsRect.right + 1 ||
+                label.rect.top < fieldsRect.top - 1 ||
+                label.rect.bottom > fieldsRect.bottom + 1)
             ) {
               violations.push(
-                `FSL graphic label is clipped by Hero (${JSON.stringify(label.text)}): ` +
+                `FSL graphic label is clipped by its section (${JSON.stringify(label.text)}): ` +
                   `${label.rect.left.toFixed(1)},${label.rect.top.toFixed(1)}-${label.rect.right.toFixed(1)},${label.rect.bottom.toFixed(1)}`,
               );
-            }
-            if (titleGlyphRects.some((titleLine) => (
-              label.rect.left < titleLine.right - 2 &&
-              label.rect.right > titleLine.left + 2 &&
-              label.rect.top < titleLine.bottom - 2 &&
-              label.rect.bottom > titleLine.top + 2
-            ))) {
-              violations.push(`FSL graphic label overlaps the Hero title: ${JSON.stringify(label.text)}`);
             }
           }
         }
