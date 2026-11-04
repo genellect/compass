@@ -1378,7 +1378,7 @@ expectOrdered(libraryText, [
   "未来は、知っている人から動き出す。",
   "北里大学薬学部生のための、 学生目線の資料ライブラリ。",
   "2024.02活動開始",
-  "73+利用登録者 2026年6月時点",
+  "150+利用登録者 2026年11月時点",
   "100+掲載資料",
   "WHY THIS LIBRARY",
   "未来戦略ライブラリは、北里大学薬学部生のための資料ライブラリです。",
@@ -1424,7 +1424,7 @@ expectOrdered(libraryText, [
   "入口は、次の試験でも、英語でも、研究室選びでも構いません。 今の自分に必要な一つを知ることから、未来は少しずつ動き始めます。"
 ], "Future Strategy Library canonical copy");
 
-for (const expected of ["2024.02", "73", "100"]) {
+for (const expected of ["2024.02", "150", "100"]) {
   expectIncludes(libraryMain, expected, "Future Strategy Library server-rendered metrics");
 }
 for (const unexpected of ['data-count-target=', ">0+</", "/images/future-strategy-library/library-horizon.webp"]) {
