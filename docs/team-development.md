@@ -92,6 +92,31 @@ COMPASSの変更の大半は静的Webの更新である。静的Webは開発速�
 | Automatically delete head branches | 有効 | merge済みbranchを残さない |
 | CODEOWNERS | [`.github/CODEOWNERS`](../.github/CODEOWNERS)で安全境界のpathにオーナーのreviewを自動で依頼する | 依頼だけで、承認を必須にはしない |
 
+### 設定の手順
+
+repository `genellect/compass`のSettingsで、オーナーが次の順に行う。設定を見直すときも同じ手順で現状と照合する。
+
+1. **Settings → General → Pull Requests**
+   1. **Allow squash merging**だけをオンにし、**Allow merge commits**と**Allow rebase merging**をオフにする。
+   2. squash mergeの件名の既定値は**Default to pull request title**を選ぶ。
+   3. **Automatically delete head branches**をオンにする。
+2. **Settings → Branches**で`main`のbranch保護ルールの有無と内容を控える。
+3. **Settings → Rules → Rulesets → New ruleset → New branch ruleset**で次のrulesetを作り、**Create**を押す。
+
+   | 項目 | 設定 |
+   |---|---|
+   | Ruleset name | `main` |
+   | Enforcement status | **Active** |
+   | Bypass list | 空のまま |
+   | Target branches | **Add target → Include default branch** |
+   | Restrict deletions | オン |
+   | Require a pull request before merging | オン。Required approvalsは**0**、Allowed merge methodsは**Squash**だけ |
+   | Require status checks to pass | オン。**Add checks**で`CI result`と`Library security result`を追加する。**Require branches to be up to date before merging**はオフ |
+   | Block force pushes | オン |
+
+4. 手順2で保護ルールがあった場合は、rulesetと食い違わないよう削除する。
+5. 確認：開いているPRで、2つのcheckに**Required**と表示され、mergeボタンの選択肢が**Squash and merge**だけであること。
+
 ## 9. このルールの変更
 
 変更はPRで提案し、オーナーの承認を得る。同じPRで`AGENTS.md`、`CONTRIBUTING.md`、`CLAUDE.md`、`.github/copilot-instructions.md`など関連する文書をすべて更新し、文書間に矛盾を残さない。
