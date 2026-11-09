@@ -4,7 +4,7 @@ import path from 'node:path';
 const files = [
   'README.md', 'AGENTS.md', 'CLAUDE.md', '.github/copilot-instructions.md',
   'THIRD_PARTY_NOTICES.md', 'docs/README.md', 'docs/CLOUD_DEVELOPMENT.md',
-  'docs/development-workflows.md', 'docs/dependency-maintenance.md',
+  'docs/development-workflows.md', 'docs/dependency-maintenance.md', 'docs/team-development.md', 'docs/agent-delivery-policy.md',
   'docs/documentation-maintenance.md', 'docs/legal/permissions.md', 'docs/legal/asset-register.md',
   'CONTRIBUTING.md', 'docs/PROJECT_GUIDE.md', 'docs/ROUTE_CONTRACT.md', 'docs/adr/README.md', 'docs/archive/README.md',
 ];

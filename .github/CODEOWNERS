@@ -7,6 +7,8 @@
 # Agent policy and its execution setup
 /AGENTS.md @genellect
 /CLAUDE.md @genellect
+/CONTRIBUTING.md @genellect
+/docs/team-development.md @genellect
 /.github/ @genellect
 
 # Public forms, Pages Functions and Google Apps Script

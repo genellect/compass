@@ -1,5 +1,7 @@
 # COMPASS Repository Instructions
 
+運用ルールの正本は[`docs/team-development.md`](docs/team-development.md)（役割、変更の区分、開発の流れ、Git、review、本番公開）であり、この文書はそれをAI agentの手順として具体化したものである。両者が食い違う場合は作業を止め、オーナー（`@genellect`）に確認する。
+
 ## Scope
 
 通常のCOMPASS依頼では、次を編集対象とする。
@@ -18,12 +20,24 @@ COMPASS Interactiveプロダクト本体、Productionデータベース、保護
 変更前に、次の順で必要な文書とソースを読む。
 
 1. `AGENTS.md`
-2. `docs/PROJECT_GUIDE.md`
-3. `docs/ARCHITECTURE.md`
-4. `docs/CONTENT_GOVERNANCE.md`
-5. 対象routeのソース、テスト、runbook
+2. `docs/team-development.md`
+3. `docs/PROJECT_GUIDE.md`
+4. `docs/ARCHITECTURE.md`
+5. `docs/CONTENT_GOVERNANCE.md`
+6. 対象routeのソース、テスト、runbook
 
 `docs/archive/`の旧PDF、完了済み移行要件、完了済みPhase報告は`Historical`であり、現行実装の正本ではない。
+
+## Work Procedure
+
+1. 上のRead Orderに従い、作業に関係する文書とソースを読む。
+2. `git status`で未commitの作業を確認し、`git fetch origin main`を実行する。新しいbranchは最新の`origin/main`から作り、名前は`docs/team-development.md`の§3に従う。agentのツールが決めたbranch名（`claude/`、`codex/`）はそのまま使ってよい。他者の変更と未commitの作業は保持する。
+3. タスクごとのbranchとworktreeで作業し、他の人やagentが使用中のcheckout・branchは編集しない。並行作業では割り当てられたfileだけを変更する。
+4. 変更が静的Webか安全境界か（`docs/team-development.md`の§2）を決め、それに見合った検証を選ぶ。1つの目的に絞り、関連する文書とテストを同じPRで更新する。
+5. 不具合は証拠で原因を特定する。個別の事例に合わせた規則・例外分岐・promptの文言を足さず、一般則か構造で対処する（`docs/team-development.md`の§6）。
+6. PRは[PR template](.github/pull_request_template.md)の全項目を書き、実行したcommandと結果、未実行・失敗・残る制約を区別する。
+7. mergeは、オーナーがそのPRについて明示的に指示した場合だけ、必須CIの成功を確かめたheadを`--match-head-commit`で固定してsquash mergeする。CIが失敗・未完了なら実行せず報告する。
+8. 引き継ぎはPRの説明とGitHub Issuesに記録する。sessionごとの引き継ぎ文書を新たに作らない。
 
 ## Independent Website Boundaries (user instruction, 2026-09-09)
 
@@ -42,6 +56,8 @@ COMPASS Interactiveプロダクト本体、Productionデータベース、保護
 - 文章整理では規則・承認条件・理念・canonical copyを保持する。事実訂正には現行sourceの根拠を添える。
 - READMEは人間向けに、価値・技術構成・実装箇所・検証方法を説明する。AGENTSは条件と行動を短い規則で示す。
 - 非本番の依存監査は`docs/dependency-maintenance.md`、開発コマンドは`docs/development-workflows.md`を参照する。
+- 方針・仕様・手順を変えるときは、関連する文書をすべて同じ変更で更新する。
+- 文書間の矛盾を見つけた場合は、どちらかの誤りとして扱い、自分の判断で直さない。code、設定、記録と事実を照合したうえで、ただちにオーナーに確認する。
 
 ## Current Identity (COMPASS)
 
@@ -157,7 +173,7 @@ Python依存の監査・テストは`docs/dependency-maintenance.md`に従う。
 
 - GitHubを正本とし、新規作業は最新`origin/main`から開始する。既定の開発環境はClaude Code cloud（claude.ai/code）とする（2026-10-23のユーザー決定）。Codex（Desktop / Cloud）とGitHub Codespaces / Dev Containerは同等にサポートし、Claude Code cloudで実行できないDocker・Windows専用作業は`docs/CLOUD_DEVELOPMENT.md`の代替経路で行う。
 - 依存導入は全経路で`scripts/dev-bootstrap.sh`を唯一の手順とし、各経路の入口はこれを呼ぶだけにする。version pinは`.devcontainer/toolchain.env`と各lockfileを正本とする。containerを作る経路（Codespaces、VS Code + Docker Desktop、Dev Container CLI）は同じ`.devcontainer/devcontainer.json`を使用する。
-- repositoryごとに環境とbranchを分離し、COMPASS Interactiveのcheckout、secret、runtimeを共有しない。
+- repositoryごとに環境とbranchを分離し、COMPASS Interactiveのcheckout、secret、runtimeを共有しない。Claude Code cloudではCOMPASS専用の環境`compass`を使い、全repository共有の`Default`環境や他repository用の環境で作業しない（`docs/CLOUD_DEVELOPMENT.md`）。sessionに他repositoryの認証情報が見える場合は使わず、オーナーに報告する。
 - Codespacesでは`.devcontainer/devcontainer.json`と`docs/CLOUD_DEVELOPMENT.md`を正本とする。
 - 既存PCの`.env*`、credential、Production dataをcloud環境へcopyしない。
 - 通常のcloud taskはnon-live testを基本とし、Production form、実email、Production deploy、migration、secret変更を実行しない。Web UI依頼の非本番PR/Cloudflare Previewは上記の完了契約に従う。
@@ -167,9 +183,9 @@ Python依存の監査・テストは`docs/dependency-maintenance.md`に従う。
 
 ## Agent Interoperability
 
-- `AGENTS.md`を全エージェント共通の正本とする。`CLAUDE.md`と`.github/copilot-instructions.md`はこの文書と`docs/CLOUD_DEVELOPMENT.md`へ従う。
+- `AGENTS.md`を全エージェント共通の正本とする。`CLAUDE.md`は先頭の`@AGENTS.md`でこの文書を毎回読み込み、`.github/copilot-instructions.md`とともにこの文書と`docs/CLOUD_DEVELOPMENT.md`へ従う。
 - Claude Code、Codex、GitHub Copilot、VS Code上のエージェントは、同じbootstrap（`scripts/dev-bootstrap.sh`）、同じnpm/uv lockfile、同じ検証コマンドを使用する。
-- agent別の実行設定は正本を分けない。`.codex/`はCodex、`.claude/`はClaude Codeの起動・権限・read-only agent定義のみを持ち、方針は`AGENTS.md`が唯一の正本である。両者の内容が食い違った場合は`AGENTS.md`を優先し、差分を報告する。
+- agent別の実行設定は正本を分けない。`.codex/`はCodex、`.claude/`はClaude Codeの起動・権限・read-only agent定義のみを持ち、方針は`AGENTS.md`とその基になる`docs/team-development.md`だけが持つ。agent別の設定が方針と食い違った場合は`AGENTS.md`を優先し、差分を報告する。
 - 複数のwrite-capable agentを同じbranch・worktreeで同時実行しない。並列実装はagentごとにbranchまたはworktreeを分離する。
 - 明示的に並列reviewを依頼された場合は、`.codex/agents/`または`.claude/agents/`のread-only agentを使い、main agentが判断と最終統合を担当する。両者は同じreview観点（repo mapping、quality、security）を持つ。
 
@@ -182,6 +198,8 @@ Python依存の監査・テストは`docs/dependency-maintenance.md`に従う。
 - responsive testを通すためにcanonical copy、背景、layoutを無関係に変更しない。意図的なcontract変更では、差分を人間が確認してからtest expectationを更新する。
 
 ## Final Report
+
+依頼者への報告は日本語で書く。実装、CIの通過、Cloudflare Previewでの表示、Productionでの動作は、それぞれ確認した事実として分けて報告し、未実行・失敗した検証を合格として書かない。
 
 実装後は次を報告する。
 

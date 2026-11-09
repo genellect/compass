@@ -2,39 +2,61 @@
 
 Status: Canonical
 Scope: このrepositoryで作業する人間の参加者
-Last verified: 2026-10-23
+Last verified: 2026-11-09
 
-この文書は、新しく参加したメンバーが最初の変更をPRにするまでの道順を示す。規則の本文は[`AGENTS.md`](AGENTS.md)と各文書にあり、ここではそこへの案内だけを置く。食い違う場合は`AGENTS.md`を優先する。
+この文書は、新しく参加したメンバーが最初の変更をPRにするまでの道順を示す。運用ルールの正本は[`docs/team-development.md`](docs/team-development.md)、agent向けの手順は[`AGENTS.md`](AGENTS.md)にあり、ここではそこへの案内だけを置く。文書どうしが食い違う場合は自分で直さず、オーナーに確認する。
 
 このrepositoryのソース公開は、改変・再配布・商用利用の許諾ではない。参加者も[`LICENSE`](LICENSE)と[利用許可](docs/legal/permissions.md)の範囲で作業する。
 
 ## 1. 開発環境を用意する
 
-推奨はGitHub Codespacesである。repositoryの`.devcontainer/devcontainer.json`が環境の唯一の正本で、Node、Python、uv、Playwright、Dockerなどは自動で揃う。個人PCへのglobal installで不足を補わない。
+既定の開発環境はClaude Code cloud（claude.ai/code）である（2026-10-23のユーザー決定）。Codex（Desktop / Cloud）とGitHub Codespaces / Dev Containerも同等に使え、DockerやWindows専用の作業はこれらで行う。どの経路でも依存の導入は`scripts/dev-bootstrap.sh`が行い、version pinは`.devcontainer/toolchain.env`と各lockfileが正本である。個人PCやcloud sessionへのglobal installで不足を補わない。
 
-ローカルで作業する場合は、VS Code + Docker DesktopまたはDev Container CLIで同じDev Containerを使う。手順、初回の受入check（`npm run dev:doctor`）、cloudで実行しないWindows専用手順は[`docs/CLOUD_DEVELOPMENT.md`](docs/CLOUD_DEVELOPMENT.md)にある。
+### クラウド開発（Claude Code cloud）
+
+1. claude.ai/codeでCOMPASS専用の個人環境`compass`を作る。全repository共有の`Default`環境は使わない。環境の環境変数とnetwork secretはその環境の全sessionへ渡るため、他repositoryの認証情報を持ち込まないためである。
+2. 環境のsetup scriptに、[`docs/CLOUD_DEVELOPMENT.md`](docs/CLOUD_DEVELOPMENT.md)の「環境設定」にあるbootstrap呼び出しを登録する。Node.jsとuvの固定版、npm依存、Playwright、Library API環境が揃う。
+3. 接続先は、package registry（npm、PyPI）の既定の許可に加えて次を許可する。
+
+   | 用途 | 接続先 |
+   |---|---|
+   | Node.jsの固定版、Git | `nodejs.org`、`github.com` |
+   | Cloudflare Previewの実表示の確認 | `*.pages.dev` |
+
+4. 通常の開発に環境変数とsecretは要らない。Cloudflare PreviewはPRごとにCloudflare PagesのGit連携が作る。認証情報が必要になった場合は、用途・環境・期間をオーナーに伝えて受け取り、`compass`環境にだけ登録する。値はchat、Issue、PR、commit、log、screenshotに書かない。
+5. sessionを開始し、`npm run dev:doctor`が`READY claude-cloud`を返すことを確かめる。
+
+使わなくなった環境はオーナーに伝え、サービス側で認証情報を失効させる。環境変数を消すだけでは失効しない。
+
+### Codespaces・ローカル
+
+GitHub Codespaces、VS Code + Docker Desktop、Dev Container CLIは、同じ`.devcontainer/devcontainer.json`を使う。手順、初回の受入check（`npm run dev:doctor`）、cloudで実行しないWindows専用手順は[`docs/CLOUD_DEVELOPMENT.md`](docs/CLOUD_DEVELOPMENT.md)にある。
 
 よく使うコマンドと、それぞれの副作用の有無は[`docs/development-workflows.md`](docs/development-workflows.md)にある。
 
 ## 2. 最初に読むもの
 
 1. [`README.md`](README.md): COMPASSの価値、技術構成、実装の場所
-2. [`AGENTS.md`](AGENTS.md): 作業範囲、編集・検証・承認の規則（人もagentも同じ規則に従う）
-3. [`docs/PROJECT_GUIDE.md`](docs/PROJECT_GUIDE.md): COMPASSの理念、identity、project間の関係、experience原則
-4. [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md)と[`docs/CONTENT_GOVERNANCE.md`](docs/CONTENT_GOVERNANCE.md): 技術境界と、正式な文言・CTA・状態語
-5. 変更する対象routeのsource、test、runbook
+2. [`docs/team-development.md`](docs/team-development.md): 役割、変更の区分（静的Web・安全境界）、branch名、review、merge、本番公開
+3. [`AGENTS.md`](AGENTS.md): 作業範囲、編集・検証・承認の規則（人もagentも同じ規則に従う）
+4. [`docs/PROJECT_GUIDE.md`](docs/PROJECT_GUIDE.md): COMPASSの理念、identity、project間の関係、experience原則
+5. [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md)と[`docs/CONTENT_GOVERNANCE.md`](docs/CONTENT_GOVERNANCE.md): 技術境界と、正式な文言・CTA・状態語
+6. 変更する対象routeのsource、test、runbook
 
 Interactive紹介、開発者紹介、yuto-matsui.comは、COMPASS公式サイトとは独立した編集範囲である。依頼で名指しされない限り変更しない。境界は`AGENTS.md`のIndependent Website Boundariesと[`docs/WEBSITE_BOUNDARIES.md`](docs/WEBSITE_BOUNDARIES.md)にある。
 
 ## 3. ブランチとPRの流れ
 
-1. 最新の`origin/main`から、作業ごとに専用branchを作る。`main`へ直接pushしない。
-2. 変更範囲を依頼された内容に限定する。無関係なcopy・file・architectureを「ついでに」整理しない。
-3. 変更のリスクに見合った検証を手元で行う。何を確認すべきかは[`docs/agent-delivery-policy.md`](docs/agent-delivery-policy.md)の表で選ぶ。
-4. commitしてpushし、PRを作る。PR本文は`.github/pull_request_template.md`の見出しを埋める。実行していない検証は「未実行」と書く。
-5. 必須checkが通り、reviewを受けた後、権利者の承認でmergeする。
+詳細と根拠は[`docs/team-development.md`](docs/team-development.md)の§2〜§5にある。
 
-同じbranchやworktreeを、複数の人やagentが同時に書き換えない。別のagentが作業中のbranchがある場合は、そのdiffを読んでから進める。
+1. 目的、対象範囲、完了条件をIssueまたは依頼に書く。
+2. 最新の`origin/main`から、作業ごとに`<種類>/<内容>`（例: `fix/library-hero-spacing`）のbranchを作る。`main`へ直接pushしない。
+3. 変更範囲を依頼された内容に限定する。無関係なcopy・file・architectureを「ついでに」整理しない。
+4. 変更が静的Webか安全境界かを決め、それに見合った検証を手元で行う。何を確認すべきかは[`docs/agent-delivery-policy.md`](docs/agent-delivery-policy.md)の表で選ぶ。
+5. commitしてpushし、PRを作る。PR本文は`.github/pull_request_template.md`の全項目を埋める。実行していない検証は「未実行」と書く。
+6. 必須checkが通り、区分に応じたreviewを得た後、オーナーがsquash mergeする。静的Webはオーナーのmerge判断をreviewとみなし、conflictがなければ最新`main`の取り込みを求めない。
+
+同じbranchやworktreeを、複数の人やagentが同時に書き換えない。別のagentが作業中のbranchがある場合は、そのdiffを読んでから進める。merge済みとmergeせずに閉じたPRのbranchは削除し、作業の引き継ぎはPRの説明とIssueに書く。
 
 ## 4. 必須check
 
@@ -79,6 +101,7 @@ Previewでは、Production branch、secret、独自domainの設定を変更し�
 | 知りたいこと | 文書 |
 |---|---|
 | 全文書の一覧と優先順位 | [`docs/README.md`](docs/README.md) |
+| 役割・変更の区分・branch・review・merge | [`docs/team-development.md`](docs/team-development.md) |
 | 作業規則・承認条件 | [`AGENTS.md`](AGENTS.md) |
 | 理念・identity・project間の関係 | [`docs/PROJECT_GUIDE.md`](docs/PROJECT_GUIDE.md) |
 | 開発環境 | [`docs/CLOUD_DEVELOPMENT.md`](docs/CLOUD_DEVELOPMENT.md) |

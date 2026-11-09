@@ -6,7 +6,7 @@ Produce the final report required by `AGENTS.md` for the work in this session.
 
 Gather the facts first — `git status`, `git diff --stat`, and the actual output of any gate you ran. Do not reconstruct results from memory.
 
-Then output exactly these sections:
+Then output the sections of `.github/pull_request_template.md`. Start with **背景・目的**, **概要**, and **変更の種類と区分** (feat/fix/docs/test/chore/ci, and 静的Web or 安全境界 under `docs/team-development.md` §2), then these Final Report sections:
 
 **変更ファイル** — every changed path, grouped by area.
 
