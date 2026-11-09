@@ -141,9 +141,16 @@ node_bin_from_manager() {
   # Prints the bin directory of the .node-version release from a version
   # manager that already exists. Never installs a manager or a system-wide Node;
   # nvm may add the pinned release to its own directory.
-  local want="$1" exe=""
-  local nvm_dir="${NVM_DIR:-$HOME/.nvm}"
-  if [[ -s "$nvm_dir/nvm.sh" ]]; then
+  local want="$1" exe="" nvm_dir="" candidate
+  # Claude Code cloud images install nvm system-wide in /opt/nvm and leave
+  # NVM_DIR unset until the lazy `nvm` shell function first runs.
+  for candidate in "${NVM_DIR:-}" "$HOME/.nvm" /opt/nvm /usr/local/nvm; do
+    if [[ -n "$candidate" && -s "$candidate/nvm.sh" ]]; then
+      nvm_dir="$candidate"
+      break
+    fi
+  done
+  if [[ -n "$nvm_dir" ]]; then
     # The switch is per process/session (PATH), never nvm's `default` alias:
     # other sessions or agents sharing this container keep their Node. A first
     # `nvm install` creates that alias, so remove it again if it did not exist.
@@ -152,6 +159,7 @@ node_bin_from_manager() {
     exe="$(
       set +eu
       # shellcheck disable=SC1091
+      export NVM_DIR="$nvm_dir"
       source "$nvm_dir/nvm.sh" --no-use >/dev/null 2>&1
       { nvm which "$want" || { nvm install --no-progress "$want" >"$log_dir/node-manager.log" 2>&1 && nvm which "$want"; }; } 2>/dev/null | tail -n 1
     )" || true
@@ -269,12 +277,33 @@ step_playwright() {
   esac
 }
 
+pin_cloud_uv() {
+  # Cloud images ship their own uv. Put the toolchain.env release in a
+  # COMPASS-only directory and prefer it on PATH for this process (and, in a
+  # Claude Code session, for later commands); the image's uv stays untouched.
+  local dir="${XDG_DATA_HOME:-$HOME/.local/share}/compass-cloud/uv-$UV_VERSION"
+  if [[ ! -x "$dir/bin/uv" ]]; then
+    command -v python3 >/dev/null 2>&1 || return 1
+    python3 -m pip install --quiet --disable-pip-version-check --no-deps --target "$dir" "uv==$UV_VERSION" \
+      >"$log_dir/uv-pin.log" 2>&1 || return 1
+  fi
+  [[ "$("$dir/bin/uv" --version 2>/dev/null | awk '{print $2}')" == "$UV_VERSION" ]] || return 1
+  export PATH="$dir/bin:$PATH"
+  persist_env "export PATH=\"$dir/bin:\$PATH\""
+}
+
 step_python() {
+  local actual_uv
+  actual_uv="$(uv --version 2>/dev/null | awk '{print $2}' || true)"
+  if [[ "$actual_uv" != "$UV_VERSION" && "$profile" != devcontainer ]]; then
+    if pin_cloud_uv; then
+      report OK python "uv ${actual_uv:-absent} replaced on PATH by the pinned $UV_VERSION (${XDG_DATA_HOME:-$HOME/.local/share}/compass-cloud)."
+    fi
+  fi
   if ! command -v uv >/dev/null 2>&1; then
-    report FAIL python "uv is not installed; services/library-api cannot be synced." "Dev Container installs uv $UV_VERSION via the python feature; on Codex/Claude cloud add 'pip install uv==$UV_VERSION' to the environment setup."
+    report FAIL python "uv is not installed; services/library-api cannot be synced." "Dev Container installs uv $UV_VERSION via the python feature; on Codex/Claude cloud allow PyPI so bootstrap can pin uv $UV_VERSION (log: $log_dir/uv-pin.log)."
     return
   fi
-  local actual_uv
   actual_uv="$(uv --version 2>/dev/null | awk '{print $2}')"
   if [[ "$actual_uv" != "$UV_VERSION" ]]; then
     report WARN python "uv $actual_uv differs from the pinned $UV_VERSION; the lockfile is still enforced with --locked." "pin uv $UV_VERSION in the environment for exact parity."

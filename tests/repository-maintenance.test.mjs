@@ -68,7 +68,10 @@ test('every environment entry point delegates to the single bootstrap', async ()
   const claude = JSON.parse(await readFile('.claude/settings.json', 'utf8'));
   const commands = claude.hooks.SessionStart.flatMap(group => group.hooks.map(hook => hook.command));
   assert.ok(commands.some(command => command.includes('.claude/hooks/session-start.sh')), 'SessionStart must run the bootstrap hook');
-  assert.equal(claude.permissions, undefined, 'permission allowlists stay personal (.claude/settings.json.example)');
+  // Shared settings may only deny; allow/ask lists stay personal (.claude/settings.json.example).
+  assert.deepEqual(Object.keys(claude.permissions ?? {}).filter(key => key !== 'deny'), [], 'permission allowlists stay personal');
+  for (const rule of ['Read(./.env)', 'Bash(git push --force *)']) assert.ok(claude.permissions.deny.includes(rule), `shared deny keeps ${rule}`);
+  assert.ok(!claude.permissions.deny.some(rule => /example/.test(rule)), 'committed templates stay readable');
 });
 
 test('Claude and Codex read-only agents cover the same review perspectives', async () => {

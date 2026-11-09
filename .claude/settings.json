@@ -5,6 +5,21 @@
     "NPM_CONFIG_UPDATE_NOTIFIER": "false",
     "PYTHONDONTWRITEBYTECODE": "1"
   },
+  "permissions": {
+    "deny": [
+      "Read(./.env)",
+      "Read(./.env.local)",
+      "Read(./.env.*.local)",
+      "Read(./.env.production)",
+      "Read(./.dev.vars)",
+      "Read(./services/library-api/.env)",
+      "Read(./**/client_secret*.json)",
+      "Read(./**/credentials.json)",
+      "Read(./**/token.json)",
+      "Bash(git push --force *)",
+      "Bash(git push -f *)"
+    ]
+  },
   "hooks": {
     "SessionStart": [
       {
