@@ -21,6 +21,7 @@ Last verified: 2026-11-09
    | 用途 | 接続先 |
    |---|---|
    | Node.jsの固定版、Git | `nodejs.org`、`github.com` |
+   | build時のWeb font（`next/font/google`） | `fonts.googleapis.com`、`fonts.gstatic.com` |
    | Cloudflare Previewの実表示の確認 | `*.pages.dev` |
 
 4. 通常の開発に環境変数とsecretは要らない。Cloudflare PreviewはPRごとにCloudflare PagesのGit連携が作る。認証情報が必要になった場合は、用途・環境・期間をオーナーに伝えて受け取り、`compass`環境にだけ登録する。値はchat、Issue、PR、commit、log、screenshotに書かない。

@@ -212,14 +212,20 @@ COMPASSはCOMPASS専用の個人環境`compass`で開発する。全repository�
 |---|---|
 | 名前 | `compass`（個人環境） |
 | Repositories | `genellect/compass` |
-| Network | package registry（npm、PyPI）を既定で許可し、`nodejs.org`（Node.jsの固定版）、`github.com`を加える。Cloudflare PreviewのURL（`*.pages.dev`）をブラウザーで確認するため、環境の設定画面で`*.pages.dev`を許可する |
+| Network | package registry（npm、PyPI）を既定で許可し、`nodejs.org`（Node.jsの固定版）、`github.com`、`fonts.googleapis.com`・`fonts.gstatic.com`（`next/font/google`がbuild時に取得する）を加える。Cloudflare PreviewのURL（`*.pages.dev`）をブラウザーで確認するため、環境の設定画面で`*.pages.dev`を許可する |
 | 環境変数・network secret | 通常の開発では不要。Cloudflare PreviewはCloudflare PagesのGit連携がPRごとに作るため、tokenを置かない |
 | Setup script | 下記 |
 
 setup scriptは新しいsessionの開始時にrepositoryの1階層上で実行される。Gitで保守できないため、bootstrapを呼ぶだけにし、手順はrepository側の`scripts/dev-bootstrap.sh`で保守する。失敗してもsessionの開始を止めないよう、結果はSessionStart hookとdoctorが報告する。
 
 ```bash
-if [ -d compass ]; then (cd compass && bash scripts/dev-bootstrap.sh --profile claude-cloud) || echo "compass bootstrap reported a problem; the SessionStart hook and npm run dev:doctor show the next step."; fi
+#!/usr/bin/env bash
+# COMPASS: all provisioning lives in scripts/dev-bootstrap.sh (docs/CLOUD_DEVELOPMENT.md).
+# A failure must not block the session; the SessionStart hook and npm run dev:doctor report it.
+if [ -d compass ]; then
+  (cd compass && bash scripts/dev-bootstrap.sh --profile claude-cloud) \
+    || echo "compass bootstrap reported a problem; see the SessionStart hook or npm run dev:doctor."
+fi
 ```
 
 setup scriptを設定しなくても、commit済みのSessionStart hookがsession開始時に同じbootstrapを実行する。setup scriptを併用すると依存導入が環境側で済み、hookはlockfile一致を確認するだけで終わる。
