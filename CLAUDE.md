@@ -1,8 +1,12 @@
+@AGENTS.md
+
 # Claude Code Instructions
 
-Read and follow `AGENTS.md` first. Use `docs/CLOUD_DEVELOPMENT.md` for environment setup, Docker/Dev Container commands, verification, isolation, and secret handling.
+`AGENTS.md` is imported above and loads with this file in every session. Team rules (roles, change classes, branch names, review, merge) are in `docs/team-development.md`. Use `docs/CLOUD_DEVELOPMENT.md` for environment setup, Docker/Dev Container commands, verification, isolation, and secret handling.
 
 - Treat GitHub as the canonical source and work on a dedicated branch.
+- Run cloud sessions in the COMPASS-only `compass` environment, never in the shared `Default` environment. If another repository's credentials are visible in the session, do not use them; tell the owner.
+- Keep the `Co-Authored-By` lines Claude Code adds to commits. Report to the requester in Japanese.
 - Use the repository-provisioned environment (`scripts/dev-bootstrap.sh`, or the Dev Container) instead of creating a separate machine-specific environment.
 - Select risk-proportionate checks using `docs/agent-delivery-policy.md`. Reserve `npm run cloud:check` for broad changes, explicit full audits, and CI; do not repeat the full suite for local UI refinements.
 - Never copy local `.env*`, credentials, protected materials, or Production data into this repository or a cloud environment.
@@ -12,12 +16,12 @@ Read and follow `AGENTS.md` first. Use `docs/CLOUD_DEVELOPMENT.md` for environme
 
 Claude Code cloud (claude.ai/code) is the default development environment for COMPASS (user decision, 2026-10-23). Codex (Desktop and Cloud) and GitHub Codespaces / the Dev Container are equally supported paths, and they take the work Claude Code cloud cannot run (Docker, Windows-only scripts; see `docs/CLOUD_DEVELOPMENT.md`). Another agent's branch may already be in progress: read the diff before proposing work, keep the change scoped to what was asked, and never run a write-capable agent on a branch another agent is holding.
 
-`AGENTS.md` is the only policy source. `.claude/` carries execution setup only and never overrides it.
+Policy lives only in `AGENTS.md` and the team rules it builds on (`docs/team-development.md`). `.claude/` carries execution setup only and never overrides them.
 
 ## Workspace assets
 
-- `.claude/settings.json` — committed and shared. Registers the SessionStart hook and the Dev Container session env only; no permission allowlist.
-- `.claude/hooks/session-start.sh` — delegates to `scripts/dev-bootstrap.sh --hook` in cloud sessions: npm, Playwright Chromium (with the `/opt/pw-browsers` fallback), and the Library API environment, then a doctor summary. Rerun `bash scripts/dev-bootstrap.sh` when it reports a problem.
+- `.claude/settings.json` — committed and shared. Registers the SessionStart hook, the Dev Container session env, and a `deny` boundary everyone shares (secret files, force push); no `allow` or `ask` list.
+- `.claude/hooks/session-start.sh` — delegates to `scripts/dev-bootstrap.sh --hook` in cloud sessions: the pinned Node (through the image's nvm) and uv, npm, Playwright Chromium (with the `/opt/pw-browsers` fallback), and the Library API environment, then a doctor summary. Rerun `bash scripts/dev-bootstrap.sh` when it reports a problem.
 - `.claude/settings.json.example` — optional personal permission allowlist and `deny` boundary; review it, then copy `permissions` into your own `.claude/settings.local.json`.
 - `.claude/agents/` — read-only `repo-mapper`, `quality-reviewer`, and `security-reviewer`, mirroring `.codex/agents/`.
 - `.claude/commands/` — `/cloud-check`, `/responsive-check`, `/handoff`.

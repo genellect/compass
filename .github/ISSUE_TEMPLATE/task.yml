@@ -1,0 +1,39 @@
+name: タスク
+description: 実装・改修・文書の依頼（人とAI agentの両方が対象）
+title: "[task] "
+body:
+  - type: markdown
+    attributes:
+      value: "個人情報、問い合わせ本文、認証情報、保護されたLibrary資料を書かないでください。運用ルールは docs/team-development.md にあります。"
+  - type: textarea
+    id: purpose
+    attributes:
+      label: 目的
+      description: なぜ必要か、何を達成したいか
+    validations:
+      required: true
+  - type: textarea
+    id: scope
+    attributes:
+      label: 対象範囲
+      description: 対象のsurface・route。触れてはいけない範囲（独立surfaceなど）があれば書く
+    validations:
+      required: true
+  - type: dropdown
+    id: class
+    attributes:
+      label: 変更の区分
+      description: docs/team-development.md の§2
+      options:
+        - 静的Web
+        - 安全境界
+        - 未定
+    validations:
+      required: true
+  - type: textarea
+    id: done
+    attributes:
+      label: 完了条件
+      description: 何を確認できたら完了か（Preview URLでの表示、CIの成功など）
+    validations:
+      required: true

@@ -42,7 +42,9 @@ version pinは`.devcontainer/toolchain.env`・`.node-version`・各lockfile、�
 | Python | system Python 3.12とLibrary API venv | Library API venvのPython 3.12 |
 | `node_modules`とpackage-lockの一致、Playwright Chromium、Library API venv | 必須（Chromiumは同梱版） | 必須（同梱版が無ければfallbackをWARNで許容） |
 
-Node.jsの版はbootstrapもdoctorもhardcodeせず、`.node-version`を読む。nvm・fnm・voltaのいずれかがあれば、bootstrapはその版へprocess単位で切り替え、Claude Code cloudでは`CLAUDE_ENV_FILE`の`PATH`でsession内の後続commandへ引き継ぐ。nvmの`default` aliasは書き換えない（同じcontainerの他のsession・agentのNodeを変えないため。初回`nvm install`が作ったaliasは削除する）。fnmは導入済みの版だけを使う。version managerが無ければglobal導入で隠さず、major一致で続行してdoctorにWARNを出す。Claude Code cloudの現行imageが提供するNode・uvはpinと異なるため、doctorはこの差分をWARNとして表示する。
+Node.jsの版はbootstrapもdoctorもhardcodeせず、`.node-version`を読む。nvm・fnm・voltaのいずれかがあれば、bootstrapはその版へprocess単位で切り替え、Claude Code cloudでは`CLAUDE_ENV_FILE`の`PATH`でsession内の後続commandへ引き継ぐ。nvmは`NVM_DIR`、`~/.nvm`、`/opt/nvm`、`/usr/local/nvm`の順に探す（Claude Code cloudのimageは`/opt/nvm`に導入し、`NVM_DIR`を初回利用まで設定しない）。nvmは配布物のchecksumを照合して導入する。nvmの`default` aliasは書き換えない（同じcontainerの他のsession・agentのNodeを変えないため。初回`nvm install`が作ったaliasは削除する）。fnmは導入済みの版だけを使う。version managerが無ければglobal導入で隠さず、major一致で続行してdoctorにWARNを出す。
+
+uvは、`claude-cloud`・`codex-cloud`でimageの版が`.devcontainer/toolchain.env`と異なる場合に限り、固定版をPyPIから`~/.local/share/compass-cloud/uv-<version>`へ導入し、`PATH`の先頭に置く。imageのuvと他repositoryのtoolは変更しない。PyPIへ接続できない場合は従来どおりimageのuvで続行し、doctorがWARNを出す。
 
 ## 自動プロビジョニング契約
 
@@ -79,7 +81,7 @@ npm run cloud:check
 
 ### Claude Code cloud（既定）
 
-1. claude.ai/codeでこのrepositoryのcloud環境を選び、環境設定のsetup scriptへ下記の1行を入れる（初回のみ）。
+1. claude.ai/codeでCOMPASS専用の環境`compass`を作って選び、setup scriptへ下記のbootstrap呼び出しを入れる（初回のみ。`Default`環境は使わない）。
 2. sessionを開始すると、commit済みの`.claude/settings.json`のSessionStart hookがbootstrapとdoctorを実行し、結果の要約をsessionへ渡す。
 3. 専用branchで作業し、`npm run dev:doctor`が`READY claude-cloud`であることを確認する。
 4. 変更後は`docs/agent-delivery-policy.md`に従い対象の検証を行い、commit、push、Draft PRを作成する。
@@ -204,20 +206,38 @@ Claude Code cloudを既定の開発環境とする。`CLAUDE.md` → `AGENTS.md`
 
 ### 環境設定（repository外、初回のみ）
 
-claude.ai/codeの環境設定にあるsetup scriptは、新しいsessionの開始時にrepositoryの1階層上で実行される。Gitで保守できないため、中身は次の1行だけにし、手順はrepository側の`scripts/dev-bootstrap.sh`で保守する。
+COMPASSはCOMPASS専用の個人環境`compass`で開発する。全repositoryが共有する`Default`環境や、他のrepository用の環境を使わない。環境の環境変数・network secret・setup scriptは、その環境で動く全sessionへ渡るため、他repositoryの認証情報がCOMPASSのsessionへ入り、COMPASSの手順が他repositoryへ混ざるからである。
+
+| 設定 | 値 |
+|---|---|
+| 名前 | `compass`（個人環境） |
+| Repositories | `genellect/compass` |
+| Network | package registry（npm、PyPI）を既定で許可し、`nodejs.org`（Node.jsの固定版）、`github.com`、`fonts.googleapis.com`・`fonts.gstatic.com`（`next/font/google`がbuild時に取得する）を加える。Cloudflare PreviewのURL（`*.pages.dev`）をブラウザーで確認するため、環境の設定画面で`*.pages.dev`を許可する |
+| 環境変数・network secret | 通常の開発では不要。Cloudflare PreviewはCloudflare PagesのGit連携がPRごとに作るため、tokenを置かない |
+| Setup script | 下記 |
+
+setup scriptは新しいsessionの開始時にrepositoryの1階層上で実行される。Gitで保守できないため、bootstrapを呼ぶだけにし、手順はrepository側の`scripts/dev-bootstrap.sh`で保守する。失敗してもsessionの開始を止めないよう、結果はSessionStart hookとdoctorが報告する。
 
 ```bash
-cd compass && bash scripts/dev-bootstrap.sh --profile claude-cloud
+#!/usr/bin/env bash
+# COMPASS: all provisioning lives in scripts/dev-bootstrap.sh (docs/CLOUD_DEVELOPMENT.md).
+# A failure must not block the session; the SessionStart hook and npm run dev:doctor report it.
+if [ -d compass ]; then
+  (cd compass && bash scripts/dev-bootstrap.sh --profile claude-cloud) \
+    || echo "compass bootstrap reported a problem; see the SessionStart hook or npm run dev:doctor."
+fi
 ```
 
 setup scriptを設定しなくても、commit済みのSessionStart hookがsession開始時に同じbootstrapを実行する。setup scriptを併用すると依存導入が環境側で済み、hookはlockfile一致を確認するだけで終わる。
+
+環境に認証情報を加える必要が生じた場合は、用途・環境・期間をオーナーに伝え、COMPASS専用の値を`compass`環境にだけ登録する。値はchat、Issue、PR、commit、log、screenshotに書かない。使わなくなった環境はオーナーに伝え、サービス側で失効させる。環境変数を消すだけでは失効しない。
 
 ### repository側で共有するもの
 
 | 資産 | 内容 |
 |---|---|
 | `CLAUDE.md` | 入口。`AGENTS.md`へ委譲し、gateとworkspace資産だけを示す |
-| `.claude/settings.json` | commit済みの共有設定。SessionStart hook（`startup`・`resume`）とDev Containerの`remoteEnv`と同じsession環境変数だけを持つ |
+| `.claude/settings.json` | commit済みの共有設定。SessionStart hook（`startup`・`resume`）、Dev Containerの`remoteEnv`と同じsession環境変数、全員に共通の`deny`境界（秘密fileの読み取り、force push）を持つ。`allow`・`ask`は持たない |
 | `.claude/hooks/session-start.sh` | `scripts/dev-bootstrap.sh --hook`へ委譲する。cloud session（`CLAUDE_CODE_REMOTE=true`）以外では何もしない |
 | `.claude/settings.json.example` | 任意の個人用permission allowlistと`deny`境界のtemplate |
 | `.claude/agents/` | read-onlyの`repo-mapper`、`quality-reviewer`、`security-reviewer` |
@@ -225,7 +245,7 @@ setup scriptを設定しなくても、commit済みのSessionStart hookがsessio
 
 hookはsessionを失敗させない。結果を1行ずつ要約してsessionのcontextへ渡し、詳細logは`${TMPDIR:-/tmp}/compass-bootstrap/`へ保存する。version managerでNode.jsを切り替えた場合だけ、`CLAUDE_ENV_FILE`へ`PATH`を追記して後続のBash commandへ引き継ぐ。
 
-`.claude/settings.json`は全員に適用されるため、permissionのallowlistを入れない。allowlistを使うかは各利用者の判断とし、`.claude/settings.json.example`の全ruleをreviewしてから`permissions`を自分の`.claude/settings.local.json`（Git管理外）へcopyする。`deny`はsecret操作、Terraform apply、force push、credential読み取り等の境界を保持する。Pages deployは非本番Previewまで一律拒否しないよう`ask`とし、AGENTS.mdに基づく既存の実装依頼と非本番branchの根拠をtoolの権限reviewへ提示する。Productionへの許可へ読み替えない。templateの変更は各利用者の有効な設定を自動変更しない。
+`.claude/settings.json`は全員に適用されるため、permissionのallowlistを入れない。どの承認があっても行わない操作だけを`deny`に置く。明示承認があれば行える操作（GAS deployment、Terraform apply、secret変更等）は共有の`deny`に入れない。`deny`はどの設定階層からも解除できないためである。allowlistを使うかは各利用者の判断とし、`.claude/settings.json.example`の全ruleをreviewしてから`permissions`を自分の`.claude/settings.local.json`（Git管理外）へcopyする。`deny`はsecret操作、Terraform apply、force push、credential読み取り等の境界を保持する。Pages deployは非本番Previewまで一律拒否しないよう`ask`とし、AGENTS.mdに基づく既存の実装依頼と非本番branchの根拠をtoolの権限reviewへ提示する。Productionへの許可へ読み替えない。templateの変更は各利用者の有効な設定を自動変更しない。
 
 Claude CodeのsubscriptionログインはGitへ保存しない。
 

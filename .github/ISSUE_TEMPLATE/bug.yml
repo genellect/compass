@@ -1,0 +1,25 @@
+name: 不具合の報告
+description: 公開サイト・フォーム・開発環境の不具合
+title: "[bug] "
+body:
+  - type: markdown
+    attributes:
+      value: "個人情報、問い合わせ本文、確認コード、認証情報、Production dataを書かないでください。再現には合成データを使ってください。脆弱性は公開Issueにせず、.github/SECURITY.md の手順で非公開に報告してください。"
+  - type: textarea
+    id: behavior
+    attributes:
+      label: 期待した動作と実際の動作
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: 再現手順
+      description: URL・route、端末とブラウザー、画面幅、操作
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: 確認した環境
+      description: Production、Cloudflare PreviewのURL、またはcommit

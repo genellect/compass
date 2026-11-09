@@ -1,13 +1,13 @@
 # COMPASS Documentation Index
 
 Status: Canonical Index
-Last verified: 2026-10-23 (entry documents; external operational states require their own checks)
+Last verified: 2026-11-09 (entry documents; external operational states require their own checks)
 
 ## 文書の優先順位
 
 1. そのtaskでユーザーが明示した要件
 2. 現行Production挙動と最新`origin/main`の実装
-3. [`AGENTS.md`](../AGENTS.md)
+3. [`team-development.md`](team-development.md)（運用ルール）/ [`AGENTS.md`](../AGENTS.md)（agent手順）。両者の食い違いはオーナーに確認する
 4. [`PROJECT_GUIDE.md`](PROJECT_GUIDE.md)
 5. [`ARCHITECTURE.md`](ARCHITECTURE.md) / [`CONTENT_GOVERNANCE.md`](CONTENT_GOVERNANCE.md)
 6. route-specific requirement・test・runbook
@@ -21,6 +21,7 @@ Productionと`origin/main`が食い違う場合は差分を報告し、どちら
 |---|---|
 | [`README.md`](../README.md) | repositoryの入口、開発・検証command、主要構成 |
 | [`CONTRIBUTING.md`](../CONTRIBUTING.md) | 新メンバー向けの開発の始め方、branchとPRの流れ、承認が必要な操作 |
+| [`team-development.md`](team-development.md) | 役割、変更の区分（静的Web・安全境界）、開発の流れ、Git、review、merge、本番公開、GitHub設定 |
 | [`AGENTS.md`](../AGENTS.md) | coding agent向け実装契約、安全境界、確認事項 |
 | [`PROJECT_GUIDE.md`](PROJECT_GUIDE.md) | COMPASSの理念、identity、project関係、experience原則 |
 | [`ARCHITECTURE.md`](ARCHITECTURE.md) | repository、runtime、deployment、form、data境界 |
