@@ -54,6 +54,15 @@ export const products = [
     links: [{ label: "Explore cytellect", href: "https://cytellect.vercel.app/" }]
   },
   {
+    key: "topos",
+    label: "Topos",
+    links: [{ label: "Explore Topos", href: "https://web--devfest2026-t167.asia-east1.hosted.app/lp" }],
+    recognition: [
+      { event: "DevFest GDGoC Hackathon 2026" },
+      { event: "Team Triple Helix", result: "Project Manager" }
+    ]
+  },
+  {
     key: "interactive",
     label: "COMPASS Interactive",
     title: "Real-time feedback and AI, built into the lecture experience.",

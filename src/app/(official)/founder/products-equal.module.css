@@ -1,12 +1,18 @@
 .world { position: relative; }
-.grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 22px; align-items: start; }
-.grid > .product { min-width: 0; grid-row: auto; }
+.grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 22px; align-items: stretch; }
+.grid > .product { min-width: 0; grid-row: auto; display: flex; flex-direction: column; }
+.grid > .product > .stage { flex: 1; display: flex; flex-direction: column; }
+.copy { flex: 1; display: flex; flex-direction: column; }
+.copy > .destination { margin-top: auto; }
 .stage { position: relative; isolation: isolate; overflow: hidden; border-radius: 8px; background: #111723; color: #f5f7fc; }
 .media { position: relative; isolation: isolate; aspect-ratio: 3 / 2; overflow: hidden; background: #080f1d; }
 .still, .still img { position: absolute; inset: 0; width: 100%; height: 100%; }
 .still img { display: block; object-fit: cover; }
 .product[data-product="cytellect"] .still img { object-position: 58% 58%; }
 .product[data-product="platform"] .still img { object-position: 78% 50%; }
+/* The Topos README image is 2:1 on pure black; contain keeps its headline and screens whole. */
+.product[data-product="topos"] .media { background: #000; }
+.product[data-product="topos"] .still img { object-fit: contain; }
 .copy { padding: 24px 24px 18px; }
 .identity { display: flex; align-items: center; gap: 10px; min-height: 18px; font-size: 12px; font-weight: 650; letter-spacing: .025em; }
 .mark { width: 14px; height: 14px; border: 1px solid currentColor; border-radius: 50%; position: relative; flex: 0 0 auto; }
@@ -15,8 +21,14 @@
 .title span, .title strong { display: block; }
 .title strong { font-weight: 750; }
 .product[data-product="cytellect"] .title strong { white-space: nowrap; }
+/* Japanese phrases break only at the marked boundary, never inside a phrase. */
+.product[data-product="topos"] .title { word-break: keep-all; overflow-wrap: anywhere; }
 .product[data-product="interactive"] .title span { font-size: .85em; letter-spacing: -.025em; }
 .product[data-product="interactive"] .title strong { font-size: 1.65em; line-height: 1.04; margin-top: 5px; letter-spacing: -.055em; }
+.recognition { display: grid; gap: 2px; margin: -4px 0 16px; padding: 0; list-style: none; color: #f5f7fcad; font-size: 12px; line-height: 1.65; }
+.recognition li { display: flex; flex-wrap: wrap; gap: 0 .8em; }
+.recognition strong { color: #f5f7fc; font-weight: 650; }
+.visuallyHidden { position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
 .destination { display: flex; align-items: center; justify-content: space-between; gap: 10px; min-height: 54px; border-top: 1px solid #ffffff5c; color: inherit; text-decoration: none; font-size: 15px; font-weight: 650; }
 .destination::before { content: ""; position: absolute; inset: 0; z-index: 2; }
 .destination > span, .destination svg { position: relative; pointer-events: none; }
