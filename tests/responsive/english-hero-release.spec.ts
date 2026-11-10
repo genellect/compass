@@ -8,7 +8,7 @@ test("EN Convergence Hero: photos, responsive layout, controls and retained work
   await page.goto("/en/", { waitUntil: "domcontentloaded" });
   const hero = page.locator("[data-hero-interface]");
   await expect(hero).toBeVisible();
-  await expect(page.locator("[data-products-cinematic] article")).toHaveCount(3);
+  await expect(page.locator("[data-products-cinematic] article")).toHaveCount(4);
   const order = await page.locator("main > section[id]").evaluateAll(nodes => nodes.map(n => n.id));
   expect(order.indexOf("experience")).toBeLessThan(order.indexOf("statement"));
   expect(order.indexOf("statement")).toBeLessThan(order.indexOf("work"));

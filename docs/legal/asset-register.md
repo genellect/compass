@@ -11,6 +11,7 @@ Last verified: 2026-09-10
 | Habitat Earth map | NASA Earth Observatory、Reto Stöckli | 同上のBlue Marble出典 | 地球画像を縮小し、独自の建築シーン内で使用 |
 | `public/habitat/mobile-v1/` | NASAのISS写真・タイムラプス | [出典説明](../mobile-space-media.md)、[ファイル単位manifest](../../public/habitat/mobile-v1/manifest.json)、[NASA方針](https://www.nasa.gov/nasa-brand-center/images-and-media/) | クロップ・縮小・WebP/H.264変換。生成画像ではない |
 | Founderの補助写真 | Jaron Nix、灿雄 邱、Rob Wingate、Nemuel Sereti、Fabio Sasso | [既存credits](../founder-image-credits.md)の各原ページ・確認日 | ローカル格納。独立サイトの素材として維持 |
+| Founderのプロダクト紹介 Topos画像 `public/images/founder-products/topos/readme-hero.webp` | genellect/devfest2026-t167の貢献者（チーム「Triple Helix」） | [NOTICE](../../public/images/founder-products/topos/NOTICE.md)、SHA-256、MIT | 2026-11-10確認。Topos READMEの冒頭画像を無加工で複製し、同一origin配信 |
 | Founderの人物写真・本人提供写真 | Yuto Matsui提供 | [既存credits](../founder-image-credits.md) | 提供目的の範囲で利用。第三者への一般的な再許諾なし |
 | Contactの建築映像・文字造形 | リポジトリの手続き的Blender制作 | [制作記録](../contact-door-entry.md) | 外部写真・HDRI・モデルを同梱しない。文字はmesh化しフォントファイルを再配布しない |
 | COMPASSのロゴ・独自文章・独自造形 | 権利者保有分 | [LICENSE](../../LICENSE) | 第三者権利が混在する場合は該当部分を除外 |
