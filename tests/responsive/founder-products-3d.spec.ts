@@ -24,7 +24,7 @@ for (const language of ["ja", "en"] as const) {
       await expect(cards.nth(1).locator("li")).toHaveText(["DevFest GDGoC Hackathon 2026出展作品", "チーム「Triple Helix」Project Manager"]);
     } else {
       expect(await products.innerText()).not.toMatch(/[\u3040-\u30ff\u3400-\u9fff]/);
-      await expect(cards.nth(1).locator("li")).toHaveText(["DevFest GDGoC Hackathon 2026", "Team Triple HelixProject Manager"]);
+      await expect(cards.nth(1).locator("li")).toHaveText(["DevFest GDGoC Hackathon 2026Exhibited Project", "Team Triple HelixProject Manager"]);
     }
     for (const [width, height] of [[1440, 900], [1180, 820], [1024, 1366], [1001, 900], [1000, 900], [768, 1024], [390, 844], [320, 568]]) {
       await page.setViewportSize({ width, height });
@@ -55,7 +55,7 @@ for (const language of ["ja", "en"] as const) {
         await expect.poll(() => image.evaluate((el: HTMLImageElement) => el.naturalWidth)).toBe(naturalWidth);
         await expect(cards.nth(index).locator("canvas, video")).toHaveCount(0);
       }
-      // Visible card titles must not overflow; the EN Topos card has only a visually hidden heading.
+      // Visible card titles must not overflow, including the restored EN Topos headline.
       expect(await products.locator("h3").evaluateAll(nodes => nodes.filter(n => n.clientWidth > 1).every(n => n.scrollWidth <= n.clientWidth))).toBe(true);
       expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
       if (width === 1440 || width === 390) await products.screenshot({ path: testInfo.outputPath(`${language}-${width}.png`) });
