@@ -51,14 +51,19 @@ export const products = [
     key: "cytellect",
     label: "cytellect",
     title: "Get your microscopy publication-ready.",
-    links: [{ label: "Explore cytellect", href: "https://cytellect.vercel.app/" }]
+    links: [{ label: "Explore cytellect", href: "https://cytellect.vercel.app/" }],
+    recognition: [
+      { event: "Kitasato University ChatGPT Hackathon 2026", result: "Runner-up" },
+      { event: "GIKUTEN 2026", result: "Finalist" }
+    ]
   },
   {
     key: "topos",
     label: "Topos",
+    headline: ["Every voice deserves", "to be heard."],
     links: [{ label: "Explore Topos", href: "https://web--devfest2026-t167.asia-east1.hosted.app/lp" }],
     recognition: [
-      { event: "DevFest GDGoC Hackathon 2026" },
+      { event: "DevFest GDGoC Hackathon 2026", result: "Exhibited Project" },
       { event: "Team Triple Helix", result: "Project Manager" }
     ]
   },

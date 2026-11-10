@@ -43,6 +43,10 @@
 .motion { display: flex; align-items: center; gap: 8px; margin: 13px 0 0 auto; padding: 7px 10px; min-height: 44px; background: transparent; border: 1px solid #34445a30; border-radius: 4px; color: #34445a; font: inherit; font-size: 11px; cursor: pointer; }
 .world[data-language="en"] .secondary a, .world[data-language="en"] .motion { color: #dce7e2; }
 .world[data-language="en"] .motion { border-color: #dce7e24d; }
+/* EN focuses on the analysis screens in the right half of the original image. */
+.world[data-language="en"] .product[data-product="topos"] .still { inset: 8% auto; left: 50%; width: auto; height: 84%; aspect-ratio: 1; transform: translateX(-50%); overflow: hidden; }
+.world[data-language="en"] .product[data-product="topos"] .still img { left: -100%; width: 200%; max-width: none; object-fit: fill; }
+.world[data-language="en"] .product[data-product="topos"] .title { word-break: normal; overflow-wrap: normal; }
 @media (max-width: 1000px) {
   .grid { grid-template-columns: 1fr; gap: 28px; }
   .media { aspect-ratio: 16 / 9; }
