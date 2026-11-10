@@ -8,6 +8,7 @@ import styles from "./products-equal.module.css";
 type Product = {
   key: SculptureKind | "cytellect" | "topos";
   label: string;
+  headline?: readonly [string, string];
   links: readonly { label: string; href: string }[];
   recognition?: readonly { event: string; result?: string }[];
 };
@@ -47,14 +48,15 @@ export function FounderProducts({ products, language = "ja" }: { products: reado
                 </div>
                 <div className={styles.copy}>
                 <div className={styles.identity}><span className={styles.mark} aria-hidden="true" />{product.label}</div>
-                {product.key === "topos" && english ? <><h3 className={styles.visuallyHidden}>{product.label}</h3><div className={styles.title} aria-hidden="true" /></> : <h3 className={styles.title}>
-                  {product.key === "interactive" ? <><span>LET EVERYTHING</span><strong>MOVE.</strong></>
+                <h3 className={styles.title}>
+                  {english && product.headline ? <><span>{product.headline[0]}</span><strong>{product.headline[1]}</strong></>
+                    : product.key === "interactive" ? <><span>LET EVERYTHING</span><strong>MOVE.</strong></>
                     : product.key === "cytellect" ? <><span>Get your microscopy</span><strong>publication-ready.</strong></>
                       : product.key === "topos" ? <><span>誰の考えも<wbr />埋もれない議論を、</span><strong>すべての教室に。</strong></>
                       : product.key === "platform" ? <><span>Don’t Just Learn.</span><strong>Build What’s Next.</strong></>
                       : english ? <><span>LIFE IN THE</span><strong>AGE OF AI.</strong></>
                         : <><span>AI時代を</span><strong>どう生きるか。</strong></>}
-                </h3>}
+                </h3>
                 {product.recognition && product.recognition.length > 0 && (
                   <ul className={styles.recognition} aria-label={english ? `${product.label} recognition` : `${product.label}の実績`}>
                     {product.recognition.map(item => <li key={item.event}><span>{item.event}</span>{item.result && <strong>{item.result}</strong>}</li>)}
