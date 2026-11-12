@@ -698,6 +698,7 @@ for (const expected of [
   "決勝進出",
   "チーム「Triple Helix」",
   "DevFest GDGoC Hackathon 2026",
+  "Gemini 3.5 Flash / sherpa-onnx",
   "English Proficiency",
   "Area / Experience / Focus",
   "EXPERIENCE",

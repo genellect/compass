@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, type CSSProperties } from "react";
 import { ProductSculpture, type SculptureKind } from "./ProductSculpture";
 import sceneStyles from "./products-cinematic.module.css";
 import styles from "./products-equal.module.css";
@@ -26,8 +26,10 @@ function Arrow() {
 export function FounderProducts({ products, language = "ja" }: { products: readonly Product[]; language?: "ja" | "en" }) {
   const [paused, setPaused] = useState(false);
   const english = language === "en";
+  // Recognition blocks in one row share the height of the longest list.
+  const ledgerRows = Math.max(0, ...products.map(product => product.recognition?.length ?? 0));
   return (
-    <div className={`${sceneStyles.world} ${styles.world}`} data-products-cinematic="true" data-language={language} data-paused={paused}>
+    <div className={`${sceneStyles.world} ${styles.world}`} data-products-cinematic="true" data-language={language} data-paused={paused} style={{ "--ledger-rows": ledgerRows } as CSSProperties}>
       <div className={styles.grid}>
         {products.map(product => {
           const [primary, ...secondary] = product.links;

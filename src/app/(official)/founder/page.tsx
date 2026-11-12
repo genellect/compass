@@ -89,7 +89,8 @@ const products = [
     links: [{ label: "プロダクトLP", href: "https://web--devfest2026-t167.asia-east1.hosted.app/lp" }],
     recognition: [
       { event: "チーム「Triple Helix」", result: "Project Manager" },
-      { event: "DevFest GDGoC Hackathon 2026", result: "出展" }
+      { event: "DevFest GDGoC Hackathon 2026", result: "出展" },
+      { event: "Gemini 3.5 Flash / sherpa-onnx", result: "技術" }
     ]
   },
   {

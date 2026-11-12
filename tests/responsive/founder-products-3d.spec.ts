@@ -21,7 +21,7 @@ for (const language of ["ja", "en"] as const) {
     await expect(products.locator("h3")).toHaveCount(4);
     if (language === "ja") {
       await expect(cards.nth(0).locator("li")).toHaveText(["北里大学ChatGPTハッカソン2026準優勝", "東京AIハッカソン2026本選進出", "技育展2026決勝進出"]);
-      await expect(cards.nth(1).locator("li")).toHaveText(["チーム「Triple Helix」Project Manager", "DevFest GDGoC Hackathon 2026出展"]);
+      await expect(cards.nth(1).locator("li")).toHaveText(["チーム「Triple Helix」Project Manager", "DevFest GDGoC Hackathon 2026出展", "Gemini 3.5 Flash / sherpa-onnx技術"]);
     } else {
       expect(await products.innerText()).not.toMatch(/[\u3040-\u30ff\u3400-\u9fff]/);
       await expect(cards.nth(1).locator("li")).toHaveText(["DevFest GDGoC Hackathon 2026Exhibited Project", "Team Triple HelixProject Manager"]);
@@ -46,6 +46,12 @@ for (const language of ["ja", "en"] as const) {
         expect(stages[2].x).toBe(stages[0].x);
         expect(Math.abs(stages[0].height - stages[1].height)).toBeLessThan(1);
         expect(Math.abs(stages[2].height - stages[3].height)).toBeLessThan(1);
+        // The lead cards' recognition blocks share one height and bottom edge.
+        const ledgers = await cards.evaluateAll(nodes => nodes.slice(0, 2).map(node => { const r = node.querySelector("ul")?.getBoundingClientRect(); return r ? { height: r.height, bottom: r.bottom } : null; }));
+        if (ledgers[0] && ledgers[1]) {
+          expect(Math.abs(ledgers[0].height - ledgers[1].height)).toBeLessThan(1);
+          expect(Math.abs(ledgers[0].bottom - ledgers[1].bottom)).toBeLessThan(1);
+        }
       } else {
         for (let i = 1; i < 4; i++) expect(stages[i - 1].y).toBeLessThan(stages[i].y);
       }
