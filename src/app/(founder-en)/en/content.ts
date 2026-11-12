@@ -54,7 +54,7 @@ export const products = [
     links: [{ label: "Explore cytellect", href: "https://cytellect.vercel.app/" }],
     recognition: [
       { event: "Kitasato University ChatGPT Hackathon 2026", result: "Runner-up" },
-      { event: "GIKUTEN 2026", result: "Finalist" }
+      { event: "Geekten 2026", result: "Finalist" }
     ]
   },
   {

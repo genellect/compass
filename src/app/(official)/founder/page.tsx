@@ -78,6 +78,7 @@ const products = [
     links: [{ label: "プロダクトLP", href: "https://cytellect.vercel.app/" }],
     recognition: [
       { event: "北里大学ChatGPTハッカソン2026", result: "準優勝" },
+      { event: "東京AIハッカソン2026", result: "本選進出" },
       { event: "技育展2026", result: "決勝進出" }
     ]
   },
@@ -87,8 +88,8 @@ const products = [
     title: "誰の考えも埋もれない議論を、すべての教室に。",
     links: [{ label: "プロダクトLP", href: "https://web--devfest2026-t167.asia-east1.hosted.app/lp" }],
     recognition: [
-      { event: "DevFest GDGoC Hackathon 2026", result: "出展作品" },
-      { event: "チーム「Triple Helix」", result: "Project Manager" }
+      { event: "チーム「Triple Helix」", result: "Project Manager" },
+      { event: "DevFest GDGoC Hackathon 2026", result: "出展" }
     ]
   },
   {
