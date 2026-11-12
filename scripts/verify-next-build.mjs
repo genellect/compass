@@ -696,7 +696,7 @@ for (const expected of [
   "本選進出",
   "技育展2026",
   "決勝進出",
-  "Project Manager / チーム「Triple Helix」",
+  "チーム「Triple Helix」",
   "DevFest GDGoC Hackathon 2026",
   "English Proficiency",
   "Area / Experience / Focus",

@@ -21,7 +21,7 @@ for (const language of ["ja", "en"] as const) {
     await expect(products.locator("h3")).toHaveCount(4);
     if (language === "ja") {
       await expect(cards.nth(0).locator("li")).toHaveText(["北里大学ChatGPTハッカソン2026準優勝", "東京AIハッカソン2026本選進出", "技育展2026決勝進出"]);
-      await expect(cards.nth(1).locator("li")).toHaveText(["Project Manager / チーム「Triple Helix」", "DevFest GDGoC Hackathon 2026出展"]);
+      await expect(cards.nth(1).locator("li")).toHaveText(["チーム「Triple Helix」Project Manager", "DevFest GDGoC Hackathon 2026出展"]);
     } else {
       expect(await products.innerText()).not.toMatch(/[\u3040-\u30ff\u3400-\u9fff]/);
       await expect(cards.nth(1).locator("li")).toHaveText(["DevFest GDGoC Hackathon 2026Exhibited Project", "Team Triple HelixProject Manager"]);

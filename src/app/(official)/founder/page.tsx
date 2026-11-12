@@ -88,7 +88,7 @@ const products = [
     title: "誰の考えも埋もれない議論を、すべての教室に。",
     links: [{ label: "プロダクトLP", href: "https://web--devfest2026-t167.asia-east1.hosted.app/lp" }],
     recognition: [
-      { event: "Project Manager / チーム「Triple Helix」" },
+      { event: "チーム「Triple Helix」", result: "Project Manager" },
       { event: "DevFest GDGoC Hackathon 2026", result: "出展" }
     ]
   },
