@@ -43,7 +43,7 @@ export function FounderProducts({ products, language = "ja" }: { products: reado
                       <img
                         src={!english && product.key === "cytellect" ? "/images/founder-products/cytellect/research-jp.png" : STILLS[product.key].src}
                         alt={!english && product.key === "cytellect" ? "顕微鏡画像から論文の図へ。顕微鏡と解析結果のビジュアル" : english ? STILLS[product.key].en : STILLS[product.key].ja}
-                        width={!english && product.key === "cytellect" ? 1280 : STILLS[product.key].width} height={!english && product.key === "cytellect" ? 1280 : STILLS[product.key].height} loading="lazy" decoding="async"
+                        width={!english && product.key === "cytellect" ? 2560 : STILLS[product.key].width} height={!english && product.key === "cytellect" ? 1280 : STILLS[product.key].height} loading="lazy" decoding="async"
                       />
                     </div>
                   ) : <ProductSculpture kind={product.key} paused={paused} />}
@@ -53,7 +53,7 @@ export function FounderProducts({ products, language = "ja" }: { products: reado
                 <h3 className={styles.title}>
                   {english && product.headline ? <><span>{product.headline[0]}</span><strong>{product.headline[1]}</strong></>
                     : product.key === "interactive" ? <><span>LET EVERYTHING</span><strong>MOVE.</strong></>
-                    : product.key === "cytellect" ? english ? <><span>Get your microscopy</span><strong>publication-ready.</strong></> : <><span>眠る顕微鏡画像を、</span><strong>病気を解くデータへ。</strong></>
+                    : product.key === "cytellect" ? <><span>Get your microscopy</span><strong>publication-ready.</strong></>
                       : product.key === "topos" ? <><span>誰の考えも<wbr />埋もれない議論を、</span><strong>すべての教室に。</strong></>
                       : product.key === "platform" ? <><span>Don’t Just Learn.</span><strong>Build What’s Next.</strong></>
                       : english ? <><span>LIFE IN THE</span><strong>AGE OF AI.</strong></>

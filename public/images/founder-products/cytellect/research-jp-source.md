@@ -1,1 +1,1 @@
-User-provided Cytellect promotional artwork, supplied 2026-11-13 for the JP portfolio. research-jp.png preserves the original right half (1280 x 1280) without recoloring; headline rendered as accessible HTML. Original not committed.
+User-provided Cytellect promotional artwork, supplied 2026-11-13 for the JP portfolio. research-jp.png is the full original 2560 x 1280 artwork, without cropping or recoloring. Card copy and recognition remain unchanged.
