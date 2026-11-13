@@ -68,3 +68,22 @@
   .destination svg { transition: none; }
   .motion { display: none; }
 }
+/* JP product artwork and secondary repository access. EN remains unchanged. */
+.world[data-language="ja"] .product[data-product="cytellect"] .stage { background: #edf1ee; color: #152d27; }
+.world[data-language="ja"] .product[data-product="cytellect"] .media { background: #edf1ee; }
+.world[data-language="ja"] .product[data-product="cytellect"] .still img { object-fit: contain; object-position: center; }
+.world[data-language="ja"] .product[data-product="cytellect"] .title { font-family: inherit; letter-spacing: -.04em; line-height: 1.5; font-size: clamp(20px, 2vw, 28px); }
+.world[data-language="ja"] .product[data-product="cytellect"] .title strong { color: #197361; white-space: normal; }
+.world[data-language="ja"] .product[data-product="cytellect"] .recognition,
+.world[data-language="ja"] .product[data-product="cytellect"] .recognition strong { color: #263e36; }
+.world[data-language="ja"] .product[data-product="cytellect"] .destination { border-color: #193c3433; }
+.world[data-language="ja"] .product:is([data-product="cytellect"], [data-product="topos"]) .copy { position: relative; }
+.world[data-language="ja"] .product:is([data-product="cytellect"], [data-product="topos"]) .destination { padding-right: 62px; }
+.repository { position: absolute; bottom: 23px; right: 24px; z-index: 3; display: grid; place-items: center; width: 44px; height: 44px; color: inherit; opacity: .7; border-radius: 50%; }
+.repository svg { width: 20px; height: 20px; }
+.repository:hover { opacity: 1; background: #80808018; }
+.repository:focus-visible { opacity: 1; outline: 2px solid currentColor; outline-offset: 2px; }
+@media (max-width: 540px) {
+  .world[data-language="ja"] .product[data-product="cytellect"] .title { font-size: clamp(19px, 5.7vw, 27px); }
+  .repository { right: 22px; bottom: 21px; }
+}

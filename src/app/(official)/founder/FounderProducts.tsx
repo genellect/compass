@@ -41,9 +41,9 @@ export function FounderProducts({ products, language = "ja" }: { products: reado
                   {product.key === "cytellect" || product.key === "topos" || product.key === "platform" ? (
                     <div className={styles.still} data-scene={product.key}>
                       <img
-                        src={STILLS[product.key].src}
-                        alt={english ? STILLS[product.key].en : STILLS[product.key].ja}
-                        width={STILLS[product.key].width} height={STILLS[product.key].height} loading="lazy" decoding="async"
+                        src={!english && product.key === "cytellect" ? "/images/founder-products/cytellect/research-jp.png" : STILLS[product.key].src}
+                        alt={!english && product.key === "cytellect" ? "顕微鏡画像から論文の図へ。顕微鏡と解析結果のビジュアル" : english ? STILLS[product.key].en : STILLS[product.key].ja}
+                        width={!english && product.key === "cytellect" ? 1280 : STILLS[product.key].width} height={!english && product.key === "cytellect" ? 1280 : STILLS[product.key].height} loading="lazy" decoding="async"
                       />
                     </div>
                   ) : <ProductSculpture kind={product.key} paused={paused} />}
@@ -53,7 +53,7 @@ export function FounderProducts({ products, language = "ja" }: { products: reado
                 <h3 className={styles.title}>
                   {english && product.headline ? <><span>{product.headline[0]}</span><strong>{product.headline[1]}</strong></>
                     : product.key === "interactive" ? <><span>LET EVERYTHING</span><strong>MOVE.</strong></>
-                    : product.key === "cytellect" ? <><span>Get your microscopy</span><strong>publication-ready.</strong></>
+                    : product.key === "cytellect" ? english ? <><span>Get your microscopy</span><strong>publication-ready.</strong></> : <><span>眠る顕微鏡画像を、</span><strong>病気を解くデータへ。</strong></>
                       : product.key === "topos" ? <><span>誰の考えも<wbr />埋もれない議論を、</span><strong>すべての教室に。</strong></>
                       : product.key === "platform" ? <><span>Don’t Just Learn.</span><strong>Build What’s Next.</strong></>
                       : english ? <><span>LIFE IN THE</span><strong>AGE OF AI.</strong></>
@@ -67,6 +67,11 @@ export function FounderProducts({ products, language = "ja" }: { products: reado
                 <a className={styles.destination} href={primary.href} aria-label={`${product.label}: ${primary.label}`} target={external ? "_blank" : undefined} rel={external ? "noopener noreferrer" : undefined}>
                   <span>{primary.label}</span><Arrow />
                 </a>
+                {!english && (product.key === "cytellect" || product.key === "topos") && (
+                  <a className={styles.repository} href={product.key === "cytellect" ? "https://github.com/genellect/cytellect" : "https://github.com/genellect/devfest2026-t167"} target="_blank" rel="noopener noreferrer" aria-label={`${product.label}のソースをGitHubで見る（新しいタブ）`} title="GitHubでソースを見る">
+                    <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 .9a11.1 11.1 0 0 0-3.51 21.63c.55.1.76-.24.76-.53v-2.06c-3.09.67-3.74-1.31-3.74-1.31-.5-1.28-1.24-1.62-1.24-1.62-1.01-.69.08-.68.08-.68 1.12.08 1.71 1.14 1.71 1.14.99 1.7 2.6 1.21 3.23.92.1-.72.39-1.21.71-1.49-2.47-.28-5.07-1.24-5.07-5.49 0-1.21.43-2.2 1.14-2.98-.11-.28-.49-1.41.11-2.94 0 0 .93-.3 3.05 1.14A10.6 10.6 0 0 1 12 6.26c.94 0 1.88.13 2.77.37 2.12-1.44 3.05-1.14 3.05-1.14.6 1.53.22 2.66.11 2.94.71.78 1.14 1.77 1.14 2.98 0 4.26-2.6 5.21-5.08 5.48.4.35.75 1.02.75 2.06V22c0 .29.2.64.76.53A11.1 11.1 0 0 0 12 .9Z"/></svg>
+                  </a>
+                )}
                 </div>
               </div>
               {secondary.length > 0 && <nav className={styles.secondary} aria-label={english ? `${product.label} links` : `${product.label}へのリンク`}>
