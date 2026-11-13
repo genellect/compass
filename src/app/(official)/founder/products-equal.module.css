@@ -69,6 +69,7 @@
   .motion { display: none; }
 }
 /* JP-only image replacement and repository links; preserve card styling. */
+.world[data-language="ja"] .product[data-product="cytellect"] .media { background: #edf0ee; }
 .world[data-language="ja"] .product[data-product="cytellect"] .still img { object-fit: contain; object-position: center; }
 .world[data-language="ja"] .product:is([data-product="cytellect"], [data-product="topos"]) .destination { padding-right: 62px; }
 .repository { position: absolute; bottom: 23px; right: 24px; z-index: 3; display: grid; place-items: center; width: 44px; height: 44px; color: inherit; opacity: .7; border-radius: 50%; }
